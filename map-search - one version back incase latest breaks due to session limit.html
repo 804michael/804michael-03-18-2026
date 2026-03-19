@@ -142,25 +142,16 @@
     .ft-logo svg{display:block}
 
     /* ── Address search — lives inline in the toolbar row ── */
-    /* .search-group is a flex container that never breaks internally —
-       the input+clear+button always travel together as one unit.
-       flex-shrink:0 prevents the group from being squeezed below usable width;
-       when the whole group can't fit on the current line it wraps as a block. */
-    .search-group{display:flex;align-items:center;gap:4px;flex-shrink:0}
-    .search-wrap{position:relative;width:220px}
-    .search-input{width:100%;height:36px;padding:0 28px 0 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--black);background:var(--white);outline:none;transition:border-color .15s}
+    .search-wrap{position:relative;flex:1;min-width:160px;max-width:340px}
+    .search-input{width:100%;height:36px;padding:0 36px 0 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--black);background:var(--white);outline:none;transition:border-color .15s}
     .search-input:focus{border-color:var(--red)}
     .search-input::placeholder{color:var(--gray-muted)}
-    .search-clear{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-muted);line-height:0;padding:2px;display:none}
+    .search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-muted);line-height:0;padding:2px;display:none}
     .search-clear.visible{display:block}
     .search-clear:hover{color:var(--black)}
-    /* Icon-only search button — matches tool-btn sizing */
-    .search-btn{width:36px;height:36px;padding:0;background:var(--red);color:var(--white);border:none;border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center;position:relative}
+    .search-btn{height:36px;padding:0 14px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;gap:5px}
     .search-btn:hover{background:var(--red-dark)}
     .search-btn svg{pointer-events:none}
-    /* Tooltip on search button */
-    .search-btn::after{content:'Search';position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
-    .search-btn:hover::after{opacity:1}
     .search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:2px solid var(--gray-mid);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden;z-index:9001;display:none}
     .search-results.open{display:block}
     .search-result-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--gray-light);font-size:.86rem;line-height:1.35;transition:background .12s}
@@ -189,8 +180,7 @@
     .custom-pin-label{background:var(--black);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.05em;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
     @media(max-width:600px){
-      .search-group{flex-wrap:nowrap}
-      .search-wrap{width:150px}
+      .search-wrap{max-width:none;min-width:120px}
     }
   </style>
 </head>
@@ -342,24 +332,22 @@
 
     <div class="tool-sep"></div>
 
-    <!-- Search group: input + clear + button wrapped together so they never split across lines -->
-    <div class="search-group">
-      <div class="search-wrap" id="search-wrap">
-        <input type="text" class="search-input" id="search-input"
-               placeholder="Search address or place…"
-               title="Drop a pin on an important location"
-               autocomplete="off" autocorrect="off" spellcheck="false"
-               aria-label="Search address — drop a pin on an important location" />
-        <button class="search-clear" id="search-clear" aria-label="Clear" tabindex="-1">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="search-results" id="search-results" role="listbox"></div>
-      </div>
-      <div class="search-spinner" id="search-spinner"></div>
-      <button class="search-btn" id="search-btn" aria-label="Search address">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <!-- Search: flex:1 fills remaining space on wide screens, wraps to next line on narrow -->
+    <div class="search-wrap" id="search-wrap">
+      <input type="text" class="search-input" id="search-input"
+             placeholder="Search address or place…"
+             autocomplete="off" autocorrect="off" spellcheck="false"
+             aria-label="Address search" />
+      <button class="search-clear" id="search-clear" aria-label="Clear" tabindex="-1">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+      <div class="search-results" id="search-results" role="listbox"></div>
     </div>
+    <div class="search-spinner" id="search-spinner"></div>
+    <button class="search-btn" id="search-btn" aria-label="Search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Find
+    </button>
 
   </div>
 </div>
