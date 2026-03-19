@@ -459,6 +459,11 @@
       <label for="modal-email">Your Email <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(so we can reply)</span></label>
       <input type="email" id="modal-email" placeholder="you@example.com" autocomplete="email" />
     </div>
+    <div class="modal-field">
+      <label for="modal-message">Your Message <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(optional — describe colors, areas, details)</span></label>
+      <textarea id="modal-message" placeholder="e.g. Green = areas I love, Red = areas to avoid. Looking for 3-bed under $450k…" maxlength="600" rows="4" style="resize:vertical;width:100%;padding:10px 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;box-sizing:border-box;line-height:1.45"></textarea>
+      <div id="modal-message-count" style="text-align:right;font-size:.75rem;color:var(--gray-muted);margin-top:3px">0 / 600</div>
+    </div>
     <div class="modal-actions">
       <button id="send-modal-cancel" onclick="closeSendModal()">Cancel</button>
       <button id="send-modal-submit" onclick="submitSendModal()">
@@ -491,7 +496,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 16_18</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 17_05</p>
   </div>
 </div>
 
@@ -582,6 +587,17 @@ window.openSendModal = function() {
   btn.disabled = false;
   btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Map';
   document.getElementById('send-modal-backdrop').classList.add('open');
+  // Textarea styling + character counter
+  var ta = document.getElementById('modal-message');
+  var counter = document.getElementById('modal-message-count');
+  ta.style.borderColor = 'var(--gray-mid)';
+  ta.oninput = function() {
+    var len = ta.value.length;
+    counter.textContent = len + ' / 600';
+    counter.style.color = len > 550 ? 'var(--red)' : 'var(--gray-muted)';
+  };
+  ta.onfocus = function() { ta.style.borderColor = 'var(--red)'; };
+  ta.onblur  = function() { ta.style.borderColor = 'var(--gray-mid)'; };
   setTimeout(function() { document.getElementById('modal-name').focus(); }, 80);
 };
 
@@ -597,11 +613,13 @@ document.addEventListener('keydown', function(e) {
 });
 
 window.submitSendModal = function() {
-  var nameEl   = document.getElementById('modal-name');
-  var emailEl  = document.getElementById('modal-email');
-  var statusEl = document.getElementById('modal-status');
-  var name  = nameEl.value.trim();
-  var email = emailEl.value.trim();
+  var nameEl    = document.getElementById('modal-name');
+  var emailEl   = document.getElementById('modal-email');
+  var messageEl = document.getElementById('modal-message');
+  var statusEl  = document.getElementById('modal-status');
+  var name    = nameEl.value.trim();
+  var email   = emailEl.value.trim();
+  var message = messageEl.value.trim();
   var valid = true;
   nameEl.classList.remove('invalid');
   emailEl.classList.remove('invalid');
@@ -623,15 +641,18 @@ window.submitSendModal = function() {
       return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         from_name:  name,
         from_email: email,
-        map_url:    mapUrl
+        map_url:    mapUrl,
+        message:    message || '(no message)'
       });
     })
     .then(function() {
       statusEl.textContent = '\u2713 Map sent! We\'ll be in touch soon.';
       statusEl.className = 'modal-status success';
       btn.innerHTML = '\u2713 Sent!';
-      nameEl.value  = '';
-      emailEl.value = '';
+      nameEl.value    = '';
+      emailEl.value   = '';
+      messageEl.value = '';
+      document.getElementById('modal-message-count').textContent = '0 / 600';
       setTimeout(closeSendModal, 2200);
     })
     .catch(function(err) {
