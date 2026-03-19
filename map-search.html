@@ -1435,7 +1435,7 @@ function dropPin(lat, lng, suggestedLabel) {
 
   var popup = L.popup({ closeButton: true, autoClose: false, minWidth: 230 }).setContent(wrap);
   marker.bindPopup(popup).openPopup();
-  marker.on('popupopen', function() { setTimeout(function(){ inp.focus(); inp.select(); }, 80); });
+  marker.on('popupopen', function() { /* no auto-focus — prevents mobile keyboard covering Save button */ });
 }
 
 searchInput.addEventListener('input', function() {
