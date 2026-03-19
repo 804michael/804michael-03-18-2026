@@ -98,12 +98,22 @@
     .color-swatch:hover::after{opacity:1}
 
 
-    /* Map — height driven by JS after DOM is ready so it always fills
-       exactly the space between the toolbar and the bottom of the viewport.
-       The 60vh here is just a non-zero initial value so the div isn't invisible
-       on the very first paint before JS runs. */
-    .map-wrap{position:relative;width:100%;height:60vh;min-height:300px}
-    #map{width:100%;height:100%}
+    /* ── Map height ────────────────────────────────────────────────────────────
+       pg-header is padding 6px top+bottom = 12px + h1 ~22px + p ~18px = ~52px
+       toolbar is ~52px
+       Total to subtract: banner(38) + nav(68) + header(52) + toolbar(52) = 210px
+       We use a CSS variable so it's easy to tweak. */
+    :root{ --chrome-h: 210px }
+    .map-wrap{
+      position: relative;
+      width: 100%;
+      height: calc(100dvh - var(--chrome-h));
+      min-height: 300px;
+    }
+    @supports not (height: 1dvh){
+      .map-wrap{ height: calc(100vh - var(--chrome-h)); }
+    }
+    #map{ width:100%; height:100%; }
 
     /* School loading overlay — full-map, big text, spinning pencil */
     .school-toast{
@@ -502,29 +512,15 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// ── Map height: measured from the bottom of the toolbar to the bottom of the viewport.
-// Uses 100dvh so mobile browser chrome changes (address bar show/hide) are handled.
-// ResizeObserver re-runs whenever the toolbar wraps to a second line.
-// Keep Leaflet in sync when fonts/layout settle
-function fitMapHeight() {
-  const toolbar = document.getElementById('toolbar');
-  const mapWrap = document.getElementById('map-wrap');
-  if (!toolbar || !mapWrap) return;
-  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const tbBottom = toolbar.getBoundingClientRect().bottom;
-  const h = Math.max(vh - tbBottom, 280);
-  mapWrap.style.height = h + 'px';
-  map.invalidateSize();
-}
-// Script runs after DOM is already parsed (inline at bottom of body),
-// so just call directly — no DOMContentLoaded needed.
+// Tell Leaflet to recalculate its container size after layout settles.
+// The map height comes from CSS; we just need invalidateSize so tiles load.
+function fitMapHeight() { map.invalidateSize(); }
 fitMapHeight();
 setTimeout(fitMapHeight, 100);
 setTimeout(fitMapHeight, 500);
 window.addEventListener('load', fitMapHeight);
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
-new ResizeObserver(fitMapHeight).observe(document.getElementById('toolbar'));
 
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
