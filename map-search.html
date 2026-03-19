@@ -72,10 +72,10 @@
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
     /* Page header — slim single line, collapses on mobile */
-    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:8px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.1rem,2.5vw,1.5rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
+    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:6px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
-    .pg-header p{color:rgba(255,255,255,.65);font-size:.82rem;line-height:1.3;margin:0}
+    .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
 
     /* Toolbar — single row, scrolls horizontally on small screens */
     .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
@@ -98,23 +98,11 @@
     .color-swatch:hover::after{opacity:1}
 
 
-    /* Map — fills viewport from bottom of sticky toolbar to bottom of screen.
-       The toolbar is sticky at top:(banner+nav). Toolbar height is ~52px.
-       pg-header is ~40px. Total offset = banner + nav + pg-header + toolbar. */
-    .map-wrap{
-      position:relative;
-      width:100%;
-      height:calc(100dvh - var(--banner-h) - var(--nav-h) - 40px - 52px);
-      min-height:320px;
-    }
-    @media(max-width:500px){
-      /* On very small phones pg-header may wrap to 2 lines (~64px) */
-      .map-wrap{height:calc(100dvh - var(--banner-h) - var(--nav-h) - 64px - 52px)}
-    }
-    /* Older browsers without dvh support */
-    @supports not (height:1dvh){
-      .map-wrap{height:calc(100vh - var(--banner-h) - var(--nav-h) - 40px - 52px)}
-    }
+    /* Map — height driven by JS after DOM is ready so it always fills
+       exactly the space between the toolbar and the bottom of the viewport.
+       The 60vh here is just a non-zero initial value so the div isn't invisible
+       on the very first paint before JS runs. */
+    .map-wrap{position:relative;width:100%;height:60vh;min-height:300px}
     #map{width:100%;height:100%}
 
     /* School loading overlay — full-map, big text, spinning pencil */
@@ -159,8 +147,8 @@
     .share-btn-text:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .share-btn-email{background:transparent;color:white;border-color:rgba(255,255,255,.35)}
     .share-btn-email:hover{border-color:white;background:rgba(255,255,255,.08)}
-    .share-btn-copy{background:transparent;color:white;border-color:rgba(255,255,255,.35)}
-    .share-btn-copy:hover{border-color:white;background:rgba(255,255,255,.08)}
+    .share-btn-copy{background:var(--red);color:white;border-color:var(--red)}
+    .share-btn-copy:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .share-btn-copy.copied{border-color:#188038;color:#5ab87a;background:rgba(24,128,56,.12)}
     .share-note{font-size:1.14rem;color:rgba(255,255,255,.7);line-height:1.5;max-width:560px}
 
@@ -328,7 +316,7 @@
 
 <div class="pg-header">
   <h1>Draw Your <span>Search</span> Area</h1>
-  <p>Show me the areas you are interested in on the map using the handy drawing tools.</p>
+  <p>Circle areas you're interested in — or want to avoid. Take a screenshot and send it to 804-Michael.</p>
 </div>
 
 <!-- TOOLBAR -->
@@ -421,7 +409,7 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h3>Are you done with your Master Piece? Now it&rsquo;s time to 📤 Share This Map with 804-Michael</h3>
+    <h3>Are you done with your Master Piece?<br>Now 📤 Share This Map<br>with 804-Michael</h3>
     <div class="share-btns">
       <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -509,9 +497,22 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Uses 100dvh so mobile browser chrome changes (address bar show/hide) are handled.
 // ResizeObserver re-runs whenever the toolbar wraps to a second line.
 // Keep Leaflet in sync when fonts/layout settle
-function fitMapHeight() { map.invalidateSize(); }
-requestAnimationFrame(() => { fitMapHeight(); setTimeout(fitMapHeight, 400); });
+function fitMapHeight() {
+  const toolbar = document.getElementById('toolbar');
+  const mapWrap = document.getElementById('map-wrap');
+  if (!toolbar || !mapWrap) return;
+  // getBoundingClientRect().bottom = px from top of viewport to bottom of toolbar
+  // This is always correct for a sticky element that hasn't been scrolled past
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const tbBottom = toolbar.getBoundingClientRect().bottom;
+  const h = Math.max(vh - tbBottom, 280);
+  mapWrap.style.height = h + 'px';
+  map.invalidateSize();
+}
+// Run at multiple points to handle fonts, mobile chrome, orientation changes
+document.addEventListener('DOMContentLoaded', fitMapHeight);
 window.addEventListener('load', fitMapHeight);
+requestAnimationFrame(() => { fitMapHeight(); setTimeout(fitMapHeight, 500); });
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
