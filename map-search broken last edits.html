@@ -12,8 +12,6 @@
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888;--nav-h:68px;--banner-h:38px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
     a{text-decoration:none;color:inherit}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -65,15 +63,62 @@
     .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
-    /* Page Header */
-    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:18px 24px 14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,3vw,2rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap}
-    .pg-header h1 span{color:var(--red)}
-    .pg-header p{color:rgba(255,255,255,.5);font-size:.82rem;line-height:1.5;max-width:680px}
+    /* ── Page layout ── */
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;
+         display:flex;flex-direction:column;}
 
-    /* Toolbar */
-    .toolbar{background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+    /* pg-header sits right below the fixed nav */
+    .pg-header{
+      flex-shrink:0;
+      margin-top:calc(var(--banner-h) + var(--nav-h));
+      background:var(--black);padding:14px 20px;
+    }
+    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.1rem,2.5vw,1.6rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1}
+    .pg-header h1 span{color:var(--red)}
+    .pg-header p{color:rgba(255,255,255,.5);font-size:.78rem;line-height:1.4;max-width:680px;margin-top:4px}
+
+    /* map-wrap fills all remaining vertical space */
+    .map-wrap{
+      flex:1;min-height:0;
+      display:flex;flex-direction:column;
+      position:relative;
+    }
+
+    /* toolbar inside map-wrap — scrolls horizontally, never wraps */
+    .map-toolbar{
+      flex-shrink:0;
+      background:#fff;
+      border-bottom:2px solid var(--gray-mid);
+      padding:5px 10px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      scrollbar-width:none;
+      z-index:800;
+      white-space:nowrap;
+    }
+    .map-toolbar::-webkit-scrollbar{display:none}
+    .toolbar-in{
+      display:inline-flex;align-items:center;gap:3px;
+      min-width:max-content;
+    }
+
+    /* search bar inside map-wrap */
+    .search-bar{
+      flex-shrink:0;
+      background:#fff;
+      border-bottom:1px solid var(--gray-mid);
+      padding:5px 10px;
+      display:flex;align-items:center;gap:6px;
+    }
+    .search-bar-label{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap;
+      flex-shrink:0;
+    }
+
+    /* map fills remaining space inside map-wrap */
+    #map{flex:1;min-height:0;min-width:0;z-index:1}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
 
     .tool-btn{
@@ -82,7 +127,13 @@
       background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;
     }
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
-    .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white)}
+    .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 0 0 3px rgba(218,41,28,.25)}
+    /* Active tool label shown in toolbar */
+    .active-label{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--red);
+      white-space:nowrap;margin-left:4px;
+    }
     .tool-btn svg{pointer-events:none}
     .tool-btn::after{
       content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
@@ -104,10 +155,6 @@
     .slider-wrap{display:flex;align-items:center;gap:4px}
     .slider-label{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap}
     .stroke-slider{width:60px;accent-color:var(--red);cursor:pointer}
-
-    /* Map */
-    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 120px);min-height:400px}
-    #map{width:100%;height:100%}
 
     /* Leaflet cursor overrides */
     .leaflet-grab{cursor:crosshair}
@@ -136,6 +183,7 @@
 
     footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
     .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+    .ft-in a{display:block;line-height:0}
     .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
   </style>
 </head>
@@ -217,82 +265,103 @@
   </div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <div class="toolbar-in">
-
-    <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
-    </button>
-
-    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-    </button>
-
-    <div class="tool-sep"></div>
-
-    <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-    </button>
-
-    <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
-    </button>
-
-    <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — click points, double-click to close">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 21,8 18,19 6,19 3,8"/></svg>
-    </button>
-
-    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — click a shape to delete it">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
-    </button>
-
-    <div class="tool-sep"></div>
-
-    <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
-    </button>
-
-    <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" disabled>
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
-    </button>
-
-    <div class="tool-sep"></div>
-
-    <div class="color-swatches">
-      <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
-      <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
-      <div class="color-swatch"        style="background:#DA291C" data-color="#DA291C" data-tip="Red"    onclick="setColor(this)"></div>
-      <div class="color-swatch"        style="background:#111111" data-color="#111111" data-tip="Black"  onclick="setColor(this)"></div>
-      <div class="color-swatch"        style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue"   onclick="setColor(this)"></div>
-    </div>
-
-    <div class="tool-sep"></div>
-
-    <div class="slider-wrap">
-      <span class="slider-label">Stroke</span>
-      <input type="range" class="stroke-slider" id="stroke-size" min="1" max="10" value="3" oninput="strokeWeight=+this.value;updatePreviewStyle()" />
-    </div>
-
-    <div class="tool-sep"></div>
-
-    <button class="tool-btn" id="btn-clear" onclick="clearAll()" data-tip="Clear all drawings">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-    </button>
-
-    <div class="tool-sep"></div>
-
-    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </button>
-
-  </div>
-</div>
-
-<!-- MAP -->
+<!-- MAP WRAP — toolbar lives inside so it sticks to map top -->
 <div class="map-wrap" id="map-wrap">
+
+  <!-- STICKY TOOLBAR -->
+  <div class="map-toolbar">
+    <div class="toolbar-in">
+
+      <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
+      </button>
+
+      <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+      </button>
+
+      <div class="tool-sep"></div>
+
+      <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — drag to draw. Release near start point to close into a shape.">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+      </button>
+
+      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward. Shows radius.">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+      </button>
+
+      <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — click points, double-click to close. Shows perimeter.">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 21,8 18,19 6,19 3,8"/></svg>
+      </button>
+
+      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — click a shape to delete it">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
+      </button>
+
+      <div class="tool-sep"></div>
+
+      <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      </button>
+
+      <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+      </button>
+
+      <div class="tool-sep"></div>
+
+      <div class="color-swatches">
+        <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
+        <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
+        <div class="color-swatch"        style="background:#DA291C" data-color="#DA291C" data-tip="Red"    onclick="setColor(this)"></div>
+        <div class="color-swatch"        style="background:#111111" data-color="#111111" data-tip="Black"  onclick="setColor(this)"></div>
+        <div class="color-swatch"        style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue"   onclick="setColor(this)"></div>
+      </div>
+
+      <div class="tool-sep"></div>
+
+      <div class="slider-wrap">
+        <span class="slider-label">Stroke</span>
+        <input type="range" class="stroke-slider" id="stroke-size" min="1" max="10" value="3" oninput="strokeWeight=+this.value;updatePreviewStyle()" />
+      </div>
+
+      <div class="tool-sep"></div>
+
+      <button class="tool-btn" id="btn-clear" onclick="clearAll()" data-tip="Clear all drawings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+
+      <div class="tool-sep"></div>
+
+      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </button>
+
+      <div class="tool-sep"></div>
+      <span class="active-label" id="active-label">✏️ Pencil</span>
+
+    </div>
+  </div>
+
+  <!-- ADDRESS SEARCH BAR — always visible -->
+  <div class="search-bar">
+    <span class="search-bar-label">📍 Drop Pin:</span>
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="Search an address, school, or landmark…"
+        onkeydown="if(event.key==='Enter')searchAddress()"
+        oninput="onSearchInput()" autocomplete="off" />
+      <button class="search-btn" onclick="searchAddress()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- MAP -->
   <div id="map"></div>
   <div class="map-hint" id="map-hint">✏️ Pick a tool and draw on the map</div>
+
 </div>
 
 <!-- BOTTOM CTA -->
@@ -436,6 +505,7 @@ out center;`;
   let drawingPolyline=null, polyLatLngs=[];
   let circleCenter=null, previewCircle=null, distTooltip=null;
   let polyPreviewLine=null;
+  let lastTap=0; // for double-tap detection on mobile
 
   // Move mode state
   let moveLayer=null, moveDragStart=null, moveOrigCenter=null, moveOrigLatLngs=null;
@@ -473,6 +543,7 @@ out center;`;
   function clearDistTooltip(){if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}}
 
   // ── Mode switching ──
+  const modeLabels={pan:'🖐 Pan',move:'✥ Move',freehand:'✏️ Pencil',circle:'⭕ Circle',polygon:'⬠ Polygon',erase:'🧹 Erase'};
   const allModes=['pan','move','freehand','circle','polygon','erase'];
   function setMode(m){
     cancelInProgress();
@@ -481,6 +552,8 @@ out center;`;
       const el=document.getElementById('btn-'+t);
       if(el) el.classList.toggle('active',t===m);
     });
+    const lbl=document.getElementById('active-label');
+    if(lbl) lbl.textContent=modeLabels[m]||m;
     // Remove move listeners from all layers when leaving move mode
     if(m!=='move') detachMoveListeners();
 
@@ -573,10 +646,21 @@ out center;`;
     updatePreviewStyle();
   }
 
-  // ── Map events ──
-  map.on('mousedown', function(e){
-    if(mode==='pan'||mode==='erase') return;
-    const ll=e.latlng;
+  // ── Map events — unified mouse + touch ──
+  function getLL(e){
+    // Works for both mouse and touch Leaflet events
+    if(e.latlng) return e.latlng;
+    if(e.touches && e.touches[0]){
+      const t=e.touches[0];
+      return map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    }
+    return null;
+  }
+
+  function onMapStart(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    const ll=getLL(e);
+    if(!ll) return;
     if(mode==='freehand'){
       polyLatLngs=[ll];
       drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
@@ -585,9 +669,156 @@ out center;`;
       circleCenter=ll;
       previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
     }
-  });
+  }
 
-  map.on('click', function(e){
+  function onMapMove(e){
+    const ll=getLL(e);
+    if(!ll) return;
+    if(mode==='freehand'&&drawingPolyline){
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+      return;
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll,'r ≈ '+fmtDist(r));
+      return;
+    }
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
+      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+      let perim=0;
+      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
+      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
+      showDistAt(ll,'perim ≈ '+fmtDist(perim));
+    }
+  }
+
+  function onMapEnd(e){
+    const ll = e.latlng || (e.changedTouches && e.changedTouches[0] ?
+      map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:e.changedTouches[0].clientX,clientY:e.changedTouches[0].clientY})) : null);
+    if(mode==='freehand'&&drawingPolyline&&polyLatLngs.length>=2){
+      // Snap-to-origin: if end is within ~50px of start, close as polygon
+      const startPx = map.latLngToContainerPoint(polyLatLngs[0]);
+      const endPx   = map.latLngToContainerPoint(polyLatLngs[polyLatLngs.length-1]);
+      const dist = startPx.distanceTo(endPx);
+      let layer;
+      if(dist < 50 && polyLatLngs.length >= 3){
+        layer = L.polygon(polyLatLngs, shapeStyle());
+      } else {
+        layer = drawingPolyline;
+      }
+      if(layer !== drawingPolyline) map.removeLayer(drawingPolyline);
+      drawingPolyline=null; polyLatLngs=[];
+      commitLayer(layer);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle&&ll){
+      const r=circleCenter.distanceTo(ll);
+      if(r>10){
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
+        map.removeLayer(previewCircle);previewCircle=null;
+        circleCenter=null;clearDistTooltip();
+        commitLayer(layer);
+      }
+    }
+  }
+
+  // Leaflet events (mouse)
+  map.on('mousedown', onMapStart);
+  map.on('mousemove', onMapMove);
+  map.on('mouseup',   onMapEnd);
+
+  // Native touch events on the map container (bypasses Leaflet's touch interception)
+  const mapContainer = map.getContainer();
+  mapContainer.addEventListener('touchstart', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    if(e.touches.length!==1) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'){
+      polyLatLngs=[ll];
+      drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
+      markDrawn();
+    }
+    if(mode==='circle'){
+      circleCenter=ll;
+      previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
+      markDrawn();
+    }
+    if(mode==='polygon'){
+      if(polyLatLngs.length===0){
+        polyLatLngs=[ll];
+        drawingPolyline=L.polyline([ll,ll],{color:strokeColor,weight:strokeWeight,opacity:0.7,dashArray:'6,4',fill:false}).addTo(map);
+        pushUndo({type:'poly-start'});
+      } else {
+        polyLatLngs.push(ll);
+        drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+        pushUndo({type:'poly-point',latlng:ll});
+      }
+      markDrawn();
+    }
+  },{passive:false});
+
+  mapContainer.addEventListener('touchmove', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    if(e.touches.length!==1) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'&&drawingPolyline){
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll,'r ≈ '+fmtDist(r));
+    }
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
+      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+    }
+  },{passive:false});
+
+  mapContainer.addEventListener('touchend', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    e.preventDefault();
+    const t=e.changedTouches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'&&drawingPolyline&&polyLatLngs.length>=2){
+      const startPx = map.latLngToContainerPoint(polyLatLngs[0]);
+      const endPx   = map.latLngToContainerPoint(polyLatLngs[polyLatLngs.length-1]);
+      const dist = startPx.distanceTo(endPx);
+      let layer;
+      if(dist < 50 && polyLatLngs.length >= 3){
+        layer = L.polygon(polyLatLngs, shapeStyle());
+      } else {
+        layer = drawingPolyline;
+      }
+      if(layer !== drawingPolyline) map.removeLayer(drawingPolyline);
+      drawingPolyline=null; polyLatLngs=[];
+      commitLayer(layer);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      if(r>10){
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
+        map.removeLayer(previewCircle);previewCircle=null;
+        circleCenter=null;clearDistTooltip();
+        commitLayer(layer);
+      }
+    }
+    // Double-tap detection for polygon/freehand close
+    const now=Date.now();
+    if(now-lastTap<350&&mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
+      const layer=L.polygon(polyLatLngs,shapeStyle());
+      map.removeLayer(drawingPolyline);drawingPolyline=null;
+      polyLatLngs=[];clearDistTooltip();
+      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')) undoStack.pop();
+      commitLayer(layer);
+    }
+    lastTap=now;
+  },{passive:false});
     // Erase
     if(mode==='erase'){
       let closest=null, minDist=Infinity;
@@ -652,61 +883,7 @@ out center;`;
     }
   });
 
-  map.on('mousemove', function(e){
-    const ll=e.latlng;
-    if(mode==='freehand'&&drawingPolyline){
-      polyLatLngs.push(ll);
-      drawingPolyline.setLatLngs(polyLatLngs);
-      return;
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(ll);
-      previewCircle.setRadius(r);
-      showDistAt(ll,'r ≈ '+fmtDist(r));
-      return;
-    }
-    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
-      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
-      let perim=0;
-      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
-      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
-      showDistAt(ll,'perim ≈ '+fmtDist(perim));
-    }
-  });
-
-  map.on('mouseup', function(e){
-    if(mode==='freehand'&&drawingPolyline){
-      const layer=drawingPolyline;
-      drawingPolyline=null;polyLatLngs=[];
-      commitLayer(layer);
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(e.latlng);
-      if(r>10){
-        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
-        map.removeLayer(previewCircle);previewCircle=null;
-        circleCenter=null;clearDistTooltip();
-        commitLayer(layer);
-      }
-    }
-  });
-
-  // Double-click closes polygon
-  map.on('dblclick', function(e){
-    L.DomEvent.stopPropagation(e);
-    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
-      const layer=L.polygon(polyLatLngs,shapeStyle());
-      map.removeLayer(drawingPolyline);drawingPolyline=null;
-      polyLatLngs=[];clearDistTooltip();
-      // Remove all poly-* steps from undoStack, replace with one commit
-      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')){
-        undoStack.pop();
-      }
-      commitLayer(layer);
-    }
-  });
-
-  // ── Undo / Redo — 15 steps, per-segment for polygon ──
+  // ── Undo / Redo — per-segment for polygon ──
   function undoLast(){
     if(mode==='polygon'&&drawingPolyline){
       if(polyLatLngs.length>1){
@@ -724,9 +901,10 @@ out center;`;
     }
     if(!undoStack.length) return;
     const action=undoStack.pop();
-    if(action.type==='add'){
+    if(action.type==='add'||action.type==='pin'){
       activeGroup.removeLayer(action.layer);
-      redoStack.push({type:'redo-add',layer:action.layer});
+      if(action.type==='pin') map.removeLayer(action.layer);
+      redoStack.push({type:'redo-'+action.type,layer:action.layer});
     } else if(action.type==='remove'){
       activeGroup.addLayer(action.layer);
       redoStack.push({type:'redo-remove',layer:action.layer});
@@ -746,9 +924,10 @@ out center;`;
   function redoLast(){
     if(!redoStack.length) return;
     const action=redoStack.pop();
-    if(action.type==='redo-add'){
-      activeGroup.addLayer(action.layer);
-      undoStack.push({type:'add',layer:action.layer});
+    if(action.type==='redo-add'||action.type==='redo-pin'){
+      if(action.type==='redo-pin') action.layer.addTo(map);
+      else activeGroup.addLayer(action.layer);
+      undoStack.push({type:action.type==='redo-pin'?'pin':'add',layer:action.layer});
     } else if(action.type==='redo-remove'){
       activeGroup.removeLayer(action.layer);
       undoStack.push({type:'remove',layer:action.layer});
@@ -773,6 +952,97 @@ out center;`;
     document.getElementById('map-hint').classList.remove('hidden');
     updateUndoRedo();
   }
+
+  // Freehand double-click to close shape
+  map.on('dblclick', function(e){
+    L.DomEvent.stopPropagation(e);
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
+      const layer=L.polygon(polyLatLngs,shapeStyle());
+      map.removeLayer(drawingPolyline);drawingPolyline=null;
+      polyLatLngs=[];clearDistTooltip();
+      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')){
+        undoStack.pop();
+      }
+      commitLayer(layer);
+    }
+  });
+
+  // ── Address search / pin drop ──
+  const pinGroup = L.featureGroup().addTo(map);
+  let searchDebounce = null;
+
+  function onSearchInput(){
+    clearTimeout(searchDebounce);
+    const val = document.getElementById('search-input').value.trim();
+    if(val.length < 3){ closeSearchResults(); return; }
+    searchDebounce = setTimeout(()=>fetchSuggestions(val), 350);
+  }
+
+  function fetchSuggestions(q){
+    // Nominatim autocomplete biased to Virginia area
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Virginia')}&format=json&limit=5&countrycodes=us&viewbox=-78.5,36.5,-76.0,39.0&bounded=0`;
+    fetch(url,{headers:{'Accept-Language':'en'}})
+      .then(r=>r.json())
+      .then(results=>{
+        const box = document.getElementById('search-results');
+        box.innerHTML='';
+        if(!results.length){
+          box.innerHTML='<div class="search-error">No results found</div>';
+          box.classList.add('open'); return;
+        }
+        results.forEach(r=>{
+          const div=document.createElement('div');
+          div.className='search-result-item';
+          div.textContent=r.display_name;
+          div.onclick=()=>dropPin(parseFloat(r.lat),parseFloat(r.lon),r.display_name);
+          box.appendChild(div);
+        });
+        box.classList.add('open');
+      })
+      .catch(()=>closeSearchResults());
+  }
+
+  function searchAddress(){
+    const val = document.getElementById('search-input').value.trim();
+    if(!val) return;
+    fetchSuggestions(val);
+  }
+
+  function dropPin(lat,lon,label){
+    closeSearchResults();
+    document.getElementById('search-input').value='';
+    // Custom red pin marker
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="position:relative;width:28px;height:36px">
+        <svg viewBox="0 0 28 36" width="28" height="36" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 0C6.27 0 0 6.27 0 14c0 9.33 14 22 14 22S28 23.33 28 14C28 6.27 21.73 0 14 0z" fill="#DA291C"/>
+          <circle cx="14" cy="14" r="6" fill="white"/>
+        </svg>
+      </div>`,
+      iconSize:[28,36],iconAnchor:[14,36],popupAnchor:[0,-36]
+    });
+    const marker = L.marker([lat,lon],{icon,draggable:true})
+      .bindPopup(`<b style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem">${label.split(',')[0]}</b><br><span style="font-size:.78rem;color:#888">${label.split(',').slice(1,3).join(',')}</span>`)
+      .addTo(map);
+    marker.openPopup();
+    map.setView([lat,lon],14);
+    pinGroup.addLayer(marker);
+    pushUndo({type:'pin',layer:marker});
+    markDrawn();
+  }
+
+  function closeSearchResults(){
+    const box=document.getElementById('search-results');
+    box.classList.remove('open');
+    box.innerHTML='';
+  }
+
+  // Close search results on map click
+  map.on('click',()=>closeSearchResults());
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.search-wrap')) closeSearchResults();
+  });
 
   // Start in freehand
   setMode('freehand');
