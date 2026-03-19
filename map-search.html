@@ -177,6 +177,7 @@
 
     footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
     .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+    .ft-in a{display:block;line-height:0}
     .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
   </style>
 </head>
@@ -494,6 +495,7 @@ out center;`;
   let drawingPolyline=null, polyLatLngs=[];
   let circleCenter=null, previewCircle=null, distTooltip=null;
   let polyPreviewLine=null;
+  let lastTap=0; // for double-tap detection on mobile
 
   // Move mode state
   let moveLayer=null, moveDragStart=null, moveOrigCenter=null, moveOrigLatLngs=null;
@@ -631,10 +633,21 @@ out center;`;
     updatePreviewStyle();
   }
 
-  // ── Map events ──
-  map.on('mousedown', function(e){
-    if(mode==='pan'||mode==='erase') return;
-    const ll=e.latlng;
+  // ── Map events — unified mouse + touch ──
+  function getLL(e){
+    // Works for both mouse and touch Leaflet events
+    if(e.latlng) return e.latlng;
+    if(e.touches && e.touches[0]){
+      const t=e.touches[0];
+      return map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    }
+    return null;
+  }
+
+  function onMapStart(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    const ll=getLL(e);
+    if(!ll) return;
     if(mode==='freehand'){
       polyLatLngs=[ll];
       drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
@@ -643,9 +656,137 @@ out center;`;
       circleCenter=ll;
       previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
     }
-  });
+  }
 
-  map.on('click', function(e){
+  function onMapMove(e){
+    const ll=getLL(e);
+    if(!ll) return;
+    if(mode==='freehand'&&drawingPolyline){
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+      return;
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll,'r ≈ '+fmtDist(r));
+      return;
+    }
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
+      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+      let perim=0;
+      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
+      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
+      showDistAt(ll,'perim ≈ '+fmtDist(perim));
+    }
+  }
+
+  function onMapEnd(e){
+    const ll = e.latlng || (e.changedTouches && e.changedTouches[0] ?
+      map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:e.changedTouches[0].clientX,clientY:e.changedTouches[0].clientY})) : null);
+    if(mode==='freehand'&&drawingPolyline){
+      const layer=drawingPolyline;
+      drawingPolyline=null;polyLatLngs=[];
+      commitLayer(layer);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle&&ll){
+      const r=circleCenter.distanceTo(ll);
+      if(r>10){
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
+        map.removeLayer(previewCircle);previewCircle=null;
+        circleCenter=null;clearDistTooltip();
+        commitLayer(layer);
+      }
+    }
+  }
+
+  // Leaflet events (mouse)
+  map.on('mousedown', onMapStart);
+  map.on('mousemove', onMapMove);
+  map.on('mouseup',   onMapEnd);
+
+  // Native touch events on the map container (bypasses Leaflet's touch interception)
+  const mapContainer = map.getContainer();
+  mapContainer.addEventListener('touchstart', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    if(e.touches.length!==1) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'){
+      polyLatLngs=[ll];
+      drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
+      markDrawn();
+    }
+    if(mode==='circle'){
+      circleCenter=ll;
+      previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
+      markDrawn();
+    }
+    if(mode==='polygon'){
+      if(polyLatLngs.length===0){
+        polyLatLngs=[ll];
+        drawingPolyline=L.polyline([ll,ll],{color:strokeColor,weight:strokeWeight,opacity:0.7,dashArray:'6,4',fill:false}).addTo(map);
+        pushUndo({type:'poly-start'});
+      } else {
+        polyLatLngs.push(ll);
+        drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+        pushUndo({type:'poly-point',latlng:ll});
+      }
+      markDrawn();
+    }
+  },{passive:false});
+
+  mapContainer.addEventListener('touchmove', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    if(e.touches.length!==1) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'&&drawingPolyline){
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll,'r ≈ '+fmtDist(r));
+    }
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
+      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+    }
+  },{passive:false});
+
+  mapContainer.addEventListener('touchend', function(e){
+    if(mode==='pan'||mode==='erase'||mode==='move') return;
+    e.preventDefault();
+    const t=e.changedTouches[0];
+    const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
+    if(mode==='freehand'&&drawingPolyline){
+      const layer=drawingPolyline;
+      drawingPolyline=null;polyLatLngs=[];
+      commitLayer(layer);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      if(r>10){
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
+        map.removeLayer(previewCircle);previewCircle=null;
+        circleCenter=null;clearDistTooltip();
+        commitLayer(layer);
+      }
+    }
+    // Double-tap detection for polygon/freehand close
+    const now=Date.now();
+    if(now-lastTap<350&&mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
+      const layer=L.polygon(polyLatLngs,shapeStyle());
+      map.removeLayer(drawingPolyline);drawingPolyline=null;
+      polyLatLngs=[];clearDistTooltip();
+      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')) undoStack.pop();
+      commitLayer(layer);
+    }
+    lastTap=now;
+  },{passive:false});
     // Erase
     if(mode==='erase'){
       let closest=null, minDist=Infinity;
@@ -710,46 +851,6 @@ out center;`;
     }
   });
 
-  map.on('mousemove', function(e){
-    const ll=e.latlng;
-    if(mode==='freehand'&&drawingPolyline){
-      polyLatLngs.push(ll);
-      drawingPolyline.setLatLngs(polyLatLngs);
-      return;
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(ll);
-      previewCircle.setRadius(r);
-      showDistAt(ll,'r ≈ '+fmtDist(r));
-      return;
-    }
-    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
-      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
-      let perim=0;
-      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
-      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
-      showDistAt(ll,'perim ≈ '+fmtDist(perim));
-    }
-  });
-
-  map.on('mouseup', function(e){
-    if(mode==='freehand'&&drawingPolyline){
-      const layer=drawingPolyline;
-      drawingPolyline=null;polyLatLngs=[];
-      commitLayer(layer);
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(e.latlng);
-      if(r>10){
-        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
-        map.removeLayer(previewCircle);previewCircle=null;
-        circleCenter=null;clearDistTooltip();
-        commitLayer(layer);
-      }
-    }
-  });
-
-  // Double-click closes polygon
   // ── Undo / Redo — per-segment for polygon ──
   function undoLast(){
     if(mode==='polygon'&&drawingPolyline){
