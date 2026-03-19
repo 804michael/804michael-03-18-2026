@@ -297,6 +297,10 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
 
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+    </button>
+
     <div class="tool-sep"></div>
 
     <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
@@ -519,16 +523,22 @@ function containerPointToLL(clientX, clientY) {
 }
 
 // ── Mode switching ────────────────────────────────────────────────────────────
-const ALL_MODES = ['pan', 'freehand', 'circle', 'erase'];
+const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
 
 window.setMode = function(m) {
   cancelInProgress();
+  if (mode === 'move') detachMoveListeners();
   mode = m;
   ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.toggle('active', t === m); });
   if (m === 'pan') {
     map.dragging.enable();
     map.scrollWheelZoom.enable();
     map.getContainer().style.cursor = 'grab';
+  } else if (m === 'move') {
+    map.dragging.disable();
+    map.scrollWheelZoom.disable();
+    map.getContainer().style.cursor = 'default';
+    attachMoveListeners();
   } else {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
@@ -554,6 +564,19 @@ window.undoLast = function() {
     const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
     g.addLayer(action.layer);
     redoStack.push({ type: 'redo-remove', layer: action.layer });
+  } else if (action.type === 'move') {
+    // Restore to original position
+    if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
+      action.layer.setLatLng(action.origC);
+    } else {
+      const restore = function(lls) {
+        if (!lls.length) return lls;
+        if (typeof lls[0].lat === 'number') return lls.map(function(ll) { return L.latLng(ll.lat, ll.lng); });
+        return lls.map(restore);
+      };
+      action.layer.setLatLngs(restore(action.origL));
+    }
+    redoStack.push(action);
   }
   updateUndoRedo();
 };
@@ -569,6 +592,19 @@ window.redoLast = function() {
     const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
     g.removeLayer(action.layer);
     undoStack.push({ type: 'remove', layer: action.layer });
+  } else if (action.type === 'move') {
+    // Re-apply the move
+    if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
+      action.layer.setLatLng(action.newC);
+    } else {
+      const restore = function(lls) {
+        if (!lls.length) return lls;
+        if (typeof lls[0].lat === 'number') return lls.map(function(ll) { return L.latLng(ll.lat, ll.lng); });
+        return lls.map(restore);
+      };
+      action.layer.setLatLngs(restore(action.newL));
+    }
+    undoStack.push(action);
   }
   updateUndoRedo();
 };
@@ -602,9 +638,8 @@ function onPointerDown(clientX, clientY) {
     circleCenter  = ll;
     previewCircle = L.circle(ll, { radius: 1, ...shapeStyle() }).addTo(map);
   }
-  if (mode === 'erase') {
-    eraseAt(ll);
-  }
+  if (mode === 'erase') { eraseAt(ll); }
+  if (mode === 'move')  { startMove(ll); }
 }
 
 function onPointerMove(clientX, clientY) {
@@ -619,15 +654,14 @@ function onPointerMove(clientX, clientY) {
     previewCircle.setRadius(r);
     showDistAt(ll, fmtMiles(r));
   }
-  // erase: drag to erase multiple shapes
-  if (mode === 'erase' && isErasing) {
-    eraseAt(ll);
-  }
+  if (mode === 'erase' && isErasing) { eraseAt(ll); }
+  if (mode === 'move')  { doMove(ll); }
 }
 
 function onPointerUp(clientX, clientY) {
   if (mode === 'pan') return;
   isErasing = false;
+  if (mode === 'move') { endMove(); return; }
   if (mode === 'freehand' && drawingPolyline) {
     const layer = drawingPolyline;
     drawingPolyline = null; polyLatLngs = [];
@@ -690,7 +724,131 @@ function eraseAt(ll) {
   }
 }
 
-// ── Schools overlay ───────────────────────────────────────────────────────────
+// ── Move / Select tool ────────────────────────────────────────────────────────
+// In move mode we intercept pointerdown on the map container, find the nearest
+// layer within a tap radius, then drag it as the pointer moves.
+// The undo entry stores origC/origL (before) and newC/newL (after) so both
+// undo and redo can restore or re-apply the exact displacement.
+
+let moveLayer      = null;  // the layer being dragged
+let moveDragStart  = null;  // latlng where drag began
+let moveOrigCenter = null;  // original circle center
+let moveOrigLatLngs = null; // original polyline/polygon latlngs (deep copy)
+
+function attachMoveListeners() {
+  // Give each draggable layer a move cursor so the user knows it's grabbable
+  [activeGroup, pinGroup].forEach(function(grp) {
+    grp.eachLayer(function(layer) {
+      if (layer.getElement) {
+        var el = layer.getElement();
+        if (el) el.style.cursor = 'grab';
+      }
+    });
+  });
+}
+
+function detachMoveListeners() {
+  [activeGroup, pinGroup].forEach(function(grp) {
+    grp.eachLayer(function(layer) {
+      if (layer.getElement) {
+        var el = layer.getElement();
+        if (el) el.style.cursor = '';
+      }
+    });
+  });
+  moveLayer = null; moveDragStart = null;
+  moveOrigCenter = null; moveOrigLatLngs = null;
+}
+
+function startMove(ll) {
+  // Find nearest layer across both groups (same distance logic as eraseAt)
+  var allLayers = [];
+  activeGroup.eachLayer(function(l) { allLayers.push({ layer: l, group: activeGroup }); });
+  pinGroup.eachLayer(function(l)    { allLayers.push({ layer: l, group: pinGroup }); });
+  if (!allLayers.length) return;
+
+  var centerPx  = map.latLngToContainerPoint(map.getCenter());
+  var edgeLL    = map.containerPointToLatLng(L.point(centerPx.x + 44, centerPx.y));
+  var threshold = map.getCenter().distanceTo(edgeLL);
+
+  function flatLL(lls) {
+    if (!lls || !lls.length) return [];
+    if (typeof lls[0].lat === 'number') return lls;
+    return lls.reduce(function(a, x) { return a.concat(flatLL(x)); }, []);
+  }
+
+  var closest = null, minDist = Infinity;
+  allLayers.forEach(function(entry) {
+    var layer = entry.layer;
+    var d = Infinity;
+    if (layer instanceof L.Marker) {
+      d = ll.distanceTo(layer.getLatLng());
+    } else if (layer instanceof L.Circle) {
+      d = ll.distanceTo(layer.getLatLng()); // grab by center
+    } else {
+      flatLL(layer.getLatLngs()).forEach(function(p) {
+        var dd = ll.distanceTo(p); if (dd < d) d = dd;
+      });
+      if (layer instanceof L.Polygon) {
+        var dc = ll.distanceTo(layer.getBounds().getCenter());
+        if (dc < d) d = dc;
+      }
+    }
+    if (d < minDist) { minDist = d; closest = layer; }
+  });
+
+  if (!closest || minDist > threshold) return;
+
+  moveLayer     = closest;
+  moveDragStart = ll;
+
+  if (closest instanceof L.Marker || closest instanceof L.Circle) {
+    moveOrigCenter = closest.getLatLng();
+  } else {
+    // Deep-copy the latlngs so we have a clean restore point
+    moveOrigLatLngs = JSON.parse(JSON.stringify(closest.getLatLngs()));
+  }
+
+  map.getContainer().style.cursor = 'grabbing';
+}
+
+function doMove(ll) {
+  if (!moveLayer || !moveDragStart) return;
+  var dlat = ll.lat - moveDragStart.lat;
+  var dlng = ll.lng - moveDragStart.lng;
+
+  if (moveLayer instanceof L.Marker || moveLayer instanceof L.Circle) {
+    moveLayer.setLatLng([moveOrigCenter.lat + dlat, moveOrigCenter.lng + dlng]);
+  } else {
+    function shiftLls(lls) {
+      if (!lls.length) return lls;
+      if (typeof lls[0].lat === 'number') {
+        return lls.map(function(p) { return L.latLng(p.lat + dlat, p.lng + dlng); });
+      }
+      return lls.map(shiftLls);
+    }
+    moveLayer.setLatLngs(shiftLls(moveOrigLatLngs));
+  }
+}
+
+function endMove() {
+  if (!moveLayer) return;
+  var layer = moveLayer;
+  var origC = moveOrigCenter ? L.latLng(moveOrigCenter.lat, moveOrigCenter.lng) : null;
+  var newC  = (layer instanceof L.Marker || layer instanceof L.Circle) ? layer.getLatLng() : null;
+  var origL = moveOrigLatLngs ? JSON.parse(JSON.stringify(moveOrigLatLngs)) : null;
+  var newL  = (origL !== null) ? JSON.parse(JSON.stringify(layer.getLatLngs())) : null;
+
+  // Only push to undo if the shape actually moved
+  var moved = origC ? origC.distanceTo(newC) > 0.5 : true;
+  if (moved) {
+    pushUndo({ type: 'move', layer: layer, origC: origC, newC: newC, origL: origL, newL: newL });
+  }
+
+  moveLayer = null; moveDragStart = null;
+  moveOrigCenter = null; moveOrigLatLngs = null;
+  map.getContainer().style.cursor = 'default';
+}
 // Covers: Hanover, Henrico, City of Richmond, Chesterfield, New Kent,
 // Goochland, Powhatan, Caroline, and bordering counties
 const schoolGroup  = L.featureGroup().addTo(map);
@@ -702,23 +860,25 @@ const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|prep
 // ── School loading toast ──────────────────────────────────────────────────────
 const SCHOOL_MSGS = [
   'One moment, loading schools with smiling students\u2026',
-  'Bribing the school bus to share its route data\u2026',
-  'Asking the principal for the attendance list\u2026',
+  'Bribing the school bus driver for GPS coordinates\u2026',
+  'Checking if the principal is in a good mood today\u2026',
   'Convincing the lunch lady to let us peek at the roster\u2026',
-  'Herding the kindergartners into the database\u2026',
-  'Checking if the gym teacher has Wi-Fi\u2026',
+  'Making sure recess is over before we count heads\u2026',
 ];
 let _schoolToastTimer = null;
 
 function showSchoolToast() {
   const toast = document.getElementById('school-toast');
   const msg   = document.getElementById('school-toast-msg');
+
+  // Fisher-Yates shuffle so messages appear in a different random order each time
+  const shuffled = SCHOOL_MSGS.slice().sort(function() { return Math.random() - 0.5; });
   let idx = 0;
-  msg.textContent = SCHOOL_MSGS[0];
+  msg.textContent = shuffled[0];
   toast.classList.add('visible');
   _schoolToastTimer = setInterval(function() {
-    idx = (idx + 1) % SCHOOL_MSGS.length;
-    msg.textContent = SCHOOL_MSGS[idx];
+    idx = (idx + 1) % shuffled.length;
+    msg.textContent = shuffled[idx];
   }, 2800);
 }
 
