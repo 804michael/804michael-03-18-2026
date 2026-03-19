@@ -9,151 +9,269 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet JS loaded in <head> with no defer/async so L is defined before any inline script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888;--nav-h:68px;--banner-h:38px}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-    a{text-decoration:none;color:inherit}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-
-    #banner{position:fixed;top:0;left:0;right:0;z-index:9999;height:var(--banner-h);background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);background-size:200% 100%;animation:shimmer 4s linear infinite;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px}
-    #banner p{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.95);text-align:center}
-    #banner .bd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
-
-    #nav{position:fixed;top:var(--banner-h);left:0;right:0;z-index:1000;height:var(--nav-h);background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(218,41,28,.1);transition:height .3s,box-shadow .3s}
-    #nav.scrolled{height:56px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
-    .nav-in{max-width:1200px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .nlogo{display:flex;align-items:center;flex-shrink:0}
-    .nav-links{display:flex;align-items:center;gap:24px;list-style:none}
-    .nav-links>li{position:relative}
-    .nav-links>li>a,.nav-links>li>button.nav-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--black);position:relative;padding-bottom:3px;transition:color .2s;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px}
-    .nav-links>li>a::after,.nav-links>li>button.nav-btn::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--red);transition:width .25s}
-    .nav-links>li>a:hover,.nav-links>li>button.nav-btn:hover{color:var(--red)}
-    .nav-links>li>a:hover::after,.nav-links>li>button.nav-btn:hover::after{width:100%}
-    .nav-chevron{display:inline-block;width:10px;height:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;flex-shrink:0}
-    .nav-dropdown{display:none;position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);background:var(--white);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid var(--gray-mid);min-width:190px;overflow:hidden;z-index:500}
-    .nav-dropdown a{display:flex;align-items:center;gap:10px;padding:11px 18px;font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;color:var(--black);white-space:nowrap;transition:background .15s,color .15s}
-    .nav-dropdown a:hover{background:var(--gray-light);color:var(--red)}
-    .nav-links>li:hover .nav-dropdown,.nav-links>li:focus-within .nav-dropdown{display:block}
-    .nav-links>li:hover .nav-chevron,.nav-links>li:focus-within .nav-chevron{transform:rotate(-135deg) translateY(2px)}
-    .btn-connect{background:var(--red);color:var(--white);border:2px solid var(--red);border-radius:999px;padding:8px 22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
-    .btn-connect:hover{background:var(--red-dark);border-color:var(--red-dark)}
-    .connect-wrap{position:relative}
-    .connect-dropdown{display:none;position:absolute;top:calc(100% + 10px);right:0;background:var(--white);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid var(--gray-mid);min-width:160px;overflow:hidden;z-index:500}
-    .connect-dropdown.open{display:block}
-    .connect-dropdown a{display:flex;align-items:center;gap:10px;padding:11px 18px;font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;color:var(--black);transition:background .15s,color .15s}
-    .connect-dropdown a:hover{background:var(--gray-light);color:var(--red)}
-    .cd-icon{width:15px;height:15px;flex-shrink:0;color:var(--red)}
-    .cd-divider{height:1px;background:var(--gray-mid);margin:4px 0}
-    .ham{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
-    .ham span{display:block;width:22px;height:2px;background:var(--black);border-radius:2px;transition:transform .3s,opacity .3s}
-    @media(max-width:768px){.nav-links,.nav-ctas{display:none}.ham{display:flex}}
-    #mob-menu{position:fixed;top:0;right:-100%;width:min(320px,90vw);height:100dvh;background:var(--white);z-index:2000;padding:72px 32px 40px;display:flex;flex-direction:column;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,.15);overflow-y:auto}
-    #mob-menu.open{right:0}
-    #mob-close{position:absolute;top:calc(var(--banner-h) + 14px);right:20px;font-size:1.8rem;background:none;border:none;cursor:pointer;color:var(--black);line-height:1}
-    #backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1999;backdrop-filter:blur(2px)}
-    #backdrop.open{display:block}
-    .mob-links{list-style:none;display:flex;flex-direction:column}
-    .mob-links li{border-bottom:1px solid var(--gray-mid)}
-    .mob-links li a{display:block;padding:14px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--black);transition:color .2s}
-    .mob-links li a:hover{color:var(--red)}
-    .mob-ctas{display:flex;flex-direction:column;gap:10px;margin-top:28px}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.28rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s;cursor:pointer;border:2px solid transparent}
-    .btn-red{background:var(--red);color:var(--white);border-color:var(--red)}
-    .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
-    .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
-
-    /* Page Header */
-    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:18px 24px 14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,3vw,2rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap}
-    .pg-header h1 span{color:var(--red)}
-    .pg-header p{color:rgba(255,255,255,.5);font-size:.82rem;line-height:1.5;max-width:680px}
-
-    /* Toolbar */
-    .toolbar{background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
-    .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
-
-    .tool-btn{
-      position:relative;display:inline-flex;align-items:center;justify-content:center;
-      width:34px;height:34px;border-radius:7px;border:2px solid transparent;
-      background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;
+    /* ── Variables ── */
+    :root {
+      --red: #DA291C;
+      --red-dark: #b01f15;
+      --black: #111;
+      --white: #fff;
+      --gray-light: #f5f5f5;
+      --gray-mid: #e0e0e0;
+      --gray-muted: #888;
+      --nav-h: 68px;
+      --banner-h: 38px;
+      --toolbar-h: 50px;
     }
-    .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
-    .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white)}
-    .tool-btn svg{pointer-events:none}
-    .tool-btn::after{
-      content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
-      background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;
-      white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000;
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Barlow', sans-serif; background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+    /* ── Banner ── */
+    #banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      height: var(--banner-h);
+      background: linear-gradient(90deg, #b01f15 0%, #DA291C 40%, #e8372a 60%, #b01f15 100%);
+      background-size: 200% 100%; animation: shimmer 4s linear infinite;
+      display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px;
     }
-    .tool-btn:hover::after{opacity:1}
-    .tool-btn:disabled{opacity:.28;cursor:not-allowed}
-    .tool-btn:disabled:hover{background:transparent;border-color:transparent}
-    .tool-btn:disabled::after{display:none}
+    #banner p { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.95); text-align: center; }
+    #banner .bd { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.5); flex-shrink: 0; }
 
-    .color-swatches{display:flex;gap:5px;align-items:center}
-    .color-swatch{position:relative;width:20px;height:20px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
-    .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
-    .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
-    .color-swatch:hover::after{opacity:1}
-
-    .slider-wrap{display:flex;align-items:center;gap:4px}
-    .slider-label{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap}
-    .stroke-slider{width:60px;accent-color:var(--red);cursor:pointer}
-
-    /* Map */
-    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 120px);min-height:400px}
-    #map{width:100%;height:100%}
-
-    /* Leaflet cursor overrides */
-    .leaflet-grab{cursor:crosshair}
-    .leaflet-dragging .leaflet-grab{cursor:move}
-
-    /* Distance tooltip on map */
-    .dist-tip{
-      background:rgba(0,0,0,.78);color:white;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;
-      padding:3px 9px;border-radius:5px;border:none;box-shadow:none;white-space:nowrap;
+    /* ── Nav ── */
+    #nav {
+      position: fixed; top: var(--banner-h); left: 0; right: 0; z-index: 1000;
+      height: var(--nav-h);
+      background: rgba(255,255,255,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(218,41,28,.1); transition: height .3s, box-shadow .3s;
     }
-    .dist-tip::before{display:none}
+    #nav.scrolled { height: 56px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+    .nav-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .nlogo { display: flex; align-items: center; flex-shrink: 0; line-height: 0; outline: none; }
 
-    /* Map hint */
-    .map-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:white;padding:8px 16px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:nowrap;animation:pulse 2.5s ease infinite}
-    .map-hint.hidden{display:none}
+    .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+    .nav-links > li { position: relative; }
+    .nav-links > li > a,
+    .nav-links > li > button.nav-btn {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: .82rem;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--black);
+      position: relative; padding-bottom: 3px; transition: color .2s;
+      background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;
+    }
+    .nav-links > li > a::after,
+    .nav-links > li > button.nav-btn::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+      background: var(--red); transition: width .25s;
+    }
+    .nav-links > li > a:hover,
+    .nav-links > li > button.nav-btn:hover { color: var(--red); }
+    .nav-links > li > a:hover::after,
+    .nav-links > li > button.nav-btn:hover::after { width: 100%; }
 
-    /* Bottom CTA */
-    .bottom-cta{background:var(--black);padding:22px 24px;text-align:center}
-    .bottom-cta-in{max-width:580px;margin:0 auto}
-    .bottom-cta h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.3rem,3vw,1.9rem);text-transform:uppercase;color:var(--white);margin-bottom:5px}
-    .bottom-cta h2 span{color:var(--red)}
-    .bottom-cta p{color:rgba(255,255,255,.5);font-size:.85rem;margin-bottom:16px;line-height:1.5}
-    .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-    .btn-lg{font-size:1.47rem;padding:14px 32px}
+    .nav-chevron {
+      display: inline-block; width: 10px; height: 10px;
+      border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+      transform: rotate(45deg) translateY(-2px); transition: transform .2s; flex-shrink: 0;
+    }
+    .nav-dropdown {
+      display: none; position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+      background: var(--white); border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.12);
+      border: 1px solid var(--gray-mid); min-width: 190px; overflow: hidden; z-index: 500;
+    }
+    .nav-dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 18px; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: .88rem; color: var(--black); white-space: nowrap; transition: background .15s, color .15s; }
+    .nav-dropdown a:hover { background: var(--gray-light); color: var(--red); }
+    .nav-links > li:hover .nav-dropdown,
+    .nav-links > li:focus-within .nav-dropdown { display: block; }
+    .nav-links > li:hover .nav-chevron,
+    .nav-links > li:focus-within .nav-chevron { transform: rotate(-135deg) translateY(2px); }
 
-    footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
-    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+    .btn-connect {
+      background: var(--red); color: var(--white); border: 2px solid var(--red); border-radius: 999px;
+      padding: 8px 22px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .2s;
+    }
+    .btn-connect:hover { background: var(--red-dark); border-color: var(--red-dark); }
+    .connect-wrap { position: relative; }
+    .connect-dropdown {
+      display: none; position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--white); border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.12);
+      border: 1px solid var(--gray-mid); min-width: 160px; overflow: hidden; z-index: 500;
+    }
+    .connect-dropdown.open { display: block; }
+    .connect-dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 18px; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: .88rem; color: var(--black); transition: background .15s, color .15s; }
+    .connect-dropdown a:hover { background: var(--gray-light); color: var(--red); }
+    .cd-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--red); }
+    .cd-divider { height: 1px; background: var(--gray-mid); margin: 4px 0; }
+
+    .ham { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .ham span { display: block; width: 22px; height: 2px; background: var(--black); border-radius: 2px; transition: transform .3s, opacity .3s; }
+    @media (max-width: 768px) { .nav-links, .nav-ctas { display: none; } .ham { display: flex; } }
+
+    /* ── Mobile menu ── */
+    #mob-menu {
+      position: fixed; top: 0; right: -100%; width: min(320px, 90vw); height: 100dvh;
+      background: var(--white); z-index: 2000; padding: 72px 32px 40px;
+      display: flex; flex-direction: column;
+      transition: right .35s cubic-bezier(.4,0,.2,1); box-shadow: -8px 0 40px rgba(0,0,0,.15); overflow-y: auto;
+    }
+    #mob-menu.open { right: 0; }
+    #mob-close { position: absolute; top: calc(var(--banner-h) + 14px); right: 20px; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: var(--black); line-height: 1; }
+    #backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1999; backdrop-filter: blur(2px); }
+    #backdrop.open { display: block; }
+    .mob-links { list-style: none; display: flex; flex-direction: column; }
+    .mob-links li { border-bottom: 1px solid var(--gray-mid); }
+    .mob-links li a { display: block; padding: 14px 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: .08em; text-transform: uppercase; color: var(--black); transition: color .2s; }
+    .mob-links li a:hover { color: var(--red); }
+    .mob-ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 999px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1.28rem; letter-spacing: .1em; text-transform: uppercase; transition: background .2s, color .2s; cursor: pointer; border: 2px solid transparent; }
+    .btn-red { background: var(--red); color: var(--white); border-color: var(--red); }
+    .btn-red:hover { background: var(--red-dark); border-color: var(--red-dark); }
+    .btn-outline { background: transparent; color: var(--black); border-color: var(--gray-mid); }
+
+    /* ── Page header ── */
+    .pg-header {
+      margin-top: calc(var(--banner-h) + var(--nav-h));
+      background: var(--black); padding: 16px 24px;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .pg-header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(1.4rem,3vw,2rem); color: var(--white); text-transform: uppercase; letter-spacing: -.01em; line-height: 1; white-space: nowrap; }
+    .pg-header h1 span { color: var(--red); }
+    .pg-header p { color: rgba(255,255,255,.5); font-size: .82rem; line-height: 1.5; max-width: 680px; }
+
+    /* ── Toolbar ── */
+    /*
+     * The toolbar is sticky so it stays on screen when the user scrolls the header off.
+     * top = banner + nav heights so it sits just below the nav bar.
+     * On mobile the nav collapses to ~56px when scrolled so we use the same offset.
+     */
+    .toolbar {
+      position: sticky;
+      top: calc(var(--banner-h) + var(--nav-h));
+      z-index: 800;
+      background: var(--white);
+      border-bottom: 2px solid var(--gray-mid);
+      padding: 6px 12px;
+      /* Subtle shadow to separate from map when floating */
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+    .toolbar-in { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+    .tool-sep { width: 1px; height: 26px; background: var(--gray-mid); flex-shrink: 0; margin: 0 4px; }
+
+    .tool-btn {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 7px; border: 2px solid transparent;
+      background: transparent; color: var(--black); cursor: pointer; transition: all .15s; flex-shrink: 0;
+    }
+    .tool-btn:hover { background: var(--gray-light); border-color: var(--gray-mid); }
+    .tool-btn.active { background: var(--red); border-color: var(--red); color: var(--white); }
+    .tool-btn svg { pointer-events: none; }
+    /* Tooltip */
+    .tool-btn::after {
+      content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: rgba(17,17,17,.92); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 5px;
+      white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; z-index: 9000;
+    }
+    .tool-btn:hover::after { opacity: 1; }
+    .tool-btn:disabled { opacity: .28; cursor: not-allowed; }
+    .tool-btn:disabled:hover { background: transparent; border-color: transparent; }
+    .tool-btn:disabled::after { display: none; }
+
+    .color-swatches { display: flex; gap: 5px; align-items: center; }
+    .color-swatch {
+      position: relative; width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: transform .15s, border-color .15s; flex-shrink: 0;
+    }
+    .color-swatch.active { border-color: var(--black); transform: scale(1.3); }
+    .color-swatch::after {
+      content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: rgba(17,17,17,.92); color: white; font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 5px; white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity .15s; z-index: 9000;
+    }
+    .color-swatch:hover::after { opacity: 1; }
+
+    .slider-wrap { display: flex; align-items: center; gap: 4px; }
+    .slider-label { font-family: 'Barlow Condensed', sans-serif; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gray-muted); white-space: nowrap; }
+    .stroke-slider { width: 60px; accent-color: var(--red); cursor: pointer; }
+
+    /* ── Map ── */
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      /* Full viewport minus: banner + nav + pg-header (~68px) + toolbar (~50px) */
+      height: calc(100vh - var(--banner-h) - var(--nav-h) - 68px - 50px);
+      min-height: 400px;
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* Hint overlay */
+    .map-hint {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.72); color: white; padding: 8px 16px; border-radius: 999px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: .8rem;
+      letter-spacing: .08em; text-transform: uppercase; pointer-events: none; z-index: 500;
+      white-space: nowrap; animation: pulse 2.5s ease infinite;
+    }
+    .map-hint.hidden { display: none; }
+
+    /* Distance tooltip on map (Leaflet tooltip class) */
+    .dist-tip {
+      background: rgba(0,0,0,.78) !important; color: white !important;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: .78rem; letter-spacing: .04em;
+      padding: 3px 9px; border-radius: 5px; border: none !important; box-shadow: none !important; white-space: nowrap;
+    }
+    .dist-tip::before { display: none !important; }
+
+    /* ── Bottom CTA ── */
+    .bottom-cta { background: var(--black); padding: 22px 24px; text-align: center; }
+    .bottom-cta-in { max-width: 580px; margin: 0 auto; }
+    .bottom-cta h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(1.3rem,3vw,1.9rem); text-transform: uppercase; color: var(--white); margin-bottom: 5px; }
+    .bottom-cta h2 span { color: var(--red); }
+    .bottom-cta p { color: rgba(255,255,255,.5); font-size: .85rem; margin-bottom: 16px; line-height: 1.5; }
+    .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-lg { font-size: 1.47rem; padding: 14px 32px; }
+
+    /* ── Footer ── */
+    footer { background: var(--black); padding: 22px 24px; border-top: 1px solid rgba(255,255,255,.07); }
+    .ft-in { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+    .ft-copy { font-size: .78rem; color: rgba(255,255,255,.35); line-height: 1.9; }
+
+    /* ── Mobile toolbar tweaks ── */
+    @media (max-width: 600px) {
+      .toolbar { top: calc(var(--banner-h) + var(--nav-h)); }
+      .slider-label { display: none; }
+      .stroke-slider { width: 50px; }
+    }
   </style>
 </head>
 <body>
 
+<!-- BANNER -->
 <div id="banner">
   <div class="bd"></div>
   <p>Site currently under construction with new tools launching soon. Some features may not work properly.</p>
   <div class="bd"></div>
 </div>
 
+<!-- NAV -->
 <header id="nav">
   <nav class="nav-in">
     <a href="index.html" class="nlogo" aria-label="804Michael Home">
-      <svg viewBox="0 0 786.329 238.272" style="height:38px;width:auto">
-        <path fill="#111" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
-        <path fill="#111" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
-        <path fill="#111" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+      <svg viewBox="0 0 786.329 238.272" style="height:38px;width:auto;display:block;overflow:visible" fill="none" aria-hidden="true">
+        <path fill="#111" fill-rule="evenodd" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="#111" fill-rule="evenodd" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="#111" fill-rule="evenodd" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
         <path fill="#111" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
         <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
         <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
@@ -178,20 +296,35 @@
     </ul>
     <div class="nav-ctas">
       <div class="connect-wrap">
-        <button class="btn-connect" id="connect-btn" aria-haspopup="true" aria-expanded="false">Connect <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <button class="btn-connect" id="connect-btn" aria-haspopup="true" aria-expanded="false">
+          Connect
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
         <div class="connect-dropdown" id="connect-dd" role="menu">
-          <a href="tel:8046424235"><svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Call</a>
+          <a href="tel:8046424235">
+            <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call
+          </a>
           <div class="cd-divider"></div>
-          <a href="sms:8046424235"><svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Text</a>
+          <a href="sms:8046424235">
+            <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Text
+          </a>
           <div class="cd-divider"></div>
-          <a href="mailto:michael@804re.com"><svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>Message</a>
+          <a href="mailto:michael@804michael.com">
+            <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
+            Message
+          </a>
         </div>
       </div>
     </div>
-    <button class="ham" id="ham-btn" aria-label="Open menu"><span id="h1"></span><span id="h2"></span><span id="h3"></span></button>
+    <button class="ham" id="ham-btn" aria-label="Open menu">
+      <span id="h1"></span><span id="h2"></span><span id="h3"></span>
+    </button>
   </nav>
 </header>
 
+<!-- MOBILE MENU -->
 <div id="mob-menu" role="dialog" aria-modal="true">
   <button id="mob-close" aria-label="Close menu">&times;</button>
   <ul class="mob-links">
@@ -213,52 +346,61 @@
 <div class="pg-header">
   <div>
     <h1>Draw Your <span>Search</span> Area</h1>
-    <p>Circle the areas you're interested in (or places you are not interested in) on the map. Take a screenshot and send it to 804-Michael to help him better understand where you want to live.</p>
+    <p>Circle the areas you're interested in on the map. Take a screenshot and text or email it to 804-Michael.</p>
   </div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
+<!-- TOOLBAR (sticky) -->
+<div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
+    <!-- Pan -->
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
     </button>
 
-    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
+    <!-- Move (drag shape) -->
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
+    <!-- Freehand -->
     <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
     </button>
 
+    <!-- Circle -->
     <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
     </button>
 
-    <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — click points, double-click to close">
+    <!-- Polygon -->
+    <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — tap points, double-tap to close">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 21,8 18,19 6,19 3,8"/></svg>
     </button>
 
-    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — click a shape to delete it">
+    <!-- Erase -->
+    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to delete it">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
+    <!-- Undo -->
     <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
     </button>
 
+    <!-- Redo -->
     <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" disabled>
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
+    <!-- Color swatches -->
     <div class="color-swatches">
       <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
@@ -269,19 +411,23 @@
 
     <div class="tool-sep"></div>
 
+    <!-- Stroke weight -->
     <div class="slider-wrap">
       <span class="slider-label">Stroke</span>
-      <input type="range" class="stroke-slider" id="stroke-size" min="1" max="10" value="3" oninput="strokeWeight=+this.value;updatePreviewStyle()" />
+      <input type="range" class="stroke-slider" id="stroke-size" min="1" max="10" value="3"
+             oninput="strokeWeight=+this.value; updatePreviewStyle()" />
     </div>
 
     <div class="tool-sep"></div>
 
+    <!-- Clear all -->
     <button class="tool-btn" id="btn-clear" onclick="clearAll()" data-tip="Clear all drawings">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
+    <!-- Schools toggle -->
     <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </button>
@@ -292,7 +438,7 @@
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
   <div id="map"></div>
-  <div class="map-hint" id="map-hint">✏️ Pick a tool and draw on the map</div>
+  <div class="map-hint" id="map-hint">✏️ Pick a tool above and draw on the map</div>
 </div>
 
 <!-- BOTTOM CTA -->
@@ -302,18 +448,20 @@
     <p>Screenshot your marked map and text or email it. Michael will reach out with listings and insight for every area you marked.</p>
     <div class="cta-btns">
       <a href="sms:8046424235" class="btn btn-red btn-lg">💬 Text 804-Michael</a>
-      <a href="mailto:michael@804re.com" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,.3)">✉️ Email Michael</a>
+      <a href="mailto:michael@804michael.com" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,.3)">✉️ Email Michael</a>
     </div>
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
   <div class="ft-in">
     <a href="index.html" aria-label="804Michael">
-      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto">
-        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
-        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
-        <path fill="white" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+      <!-- Footer logo: white background → use fill="white" for the number paths -->
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto;display:block;overflow:visible" fill="none" aria-hidden="true">
+        <path fill="white" fill-rule="evenodd" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" fill-rule="evenodd" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="white" fill-rule="evenodd" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
         <path fill="white" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
         <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z"/>
         <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
@@ -331,45 +479,85 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ── Nav ──
+  'use strict';
+
+  // ── Nav / UI boilerplate ──────────────────────────────────────────────────
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
-  const connectBtn=document.getElementById('connect-btn'), connectDd=document.getElementById('connect-dd');
-  connectBtn.addEventListener('click',e=>{e.stopPropagation();const o=connectDd.classList.toggle('open');connectBtn.setAttribute('aria-expanded',o)});
-  document.addEventListener('click',()=>{connectDd.classList.remove('open');connectBtn.setAttribute('aria-expanded','false')});
-  connectDd.addEventListener('click',e=>e.stopPropagation());
-  const mob=document.getElementById('mob-menu'),bd=document.getElementById('backdrop'),h1=document.getElementById('h1'),h2=document.getElementById('h2'),h3=document.getElementById('h3');
-  function openMob(){mob.classList.add('open');bd.classList.add('open');h1.style.transform='translateY(7px) rotate(45deg)';h2.style.opacity='0';h3.style.transform='translateY(-7px) rotate(-45deg)';document.body.style.overflow='hidden'}
-  window.closeMob=function(){mob.classList.remove('open');bd.classList.remove('open');h1.style.transform='';h2.style.opacity='';h3.style.transform='';document.body.style.overflow=''}
-  document.getElementById('ham-btn').addEventListener('click',openMob);
-  document.getElementById('mob-close').addEventListener('click',closeMob);
-  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40));
 
-  // findLastIndex polyfill
-  if(!Array.prototype.findLastIndex){Array.prototype.findLastIndex=function(fn){for(let i=this.length-1;i>=0;i--){if(fn(this[i],i,this))return i}return -1}}
+  const connectBtn = document.getElementById('connect-btn');
+  const connectDd  = document.getElementById('connect-dd');
+  connectBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = connectDd.classList.toggle('open');
+    connectBtn.setAttribute('aria-expanded', open);
+  });
+  document.addEventListener('click', () => {
+    connectDd.classList.remove('open');
+    connectBtn.setAttribute('aria-expanded', 'false');
+  });
+  connectDd.addEventListener('click', e => e.stopPropagation());
 
-  // ── Map ──
-  const map = L.map('map',{zoomControl:true,scrollWheelZoom:true,doubleClickZoom:false}).setView([37.755,-77.477],11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19
+  const mob = document.getElementById('mob-menu');
+  const bd  = document.getElementById('backdrop');
+  const h1  = document.getElementById('h1');
+  const h2  = document.getElementById('h2');
+  const h3  = document.getElementById('h3');
+
+  function openMob() {
+    mob.classList.add('open'); bd.classList.add('open');
+    h1.style.transform = 'translateY(7px) rotate(45deg)';
+    h2.style.opacity   = '0';
+    h3.style.transform = 'translateY(-7px) rotate(-45deg)';
+    document.body.style.overflow = 'hidden';
+  }
+  window.closeMob = function() {
+    mob.classList.remove('open'); bd.classList.remove('open');
+    h1.style.transform = ''; h2.style.opacity = ''; h3.style.transform = '';
+    document.body.style.overflow = '';
+  };
+  document.getElementById('ham-btn').addEventListener('click', openMob);
+  document.getElementById('mob-close').addEventListener('click', closeMob);
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ── Array polyfill (Safari < 15) ─────────────────────────────────────────
+  if (!Array.prototype.findLastIndex) {
+    Array.prototype.findLastIndex = function(fn) {
+      for (let i = this.length - 1; i >= 0; i--) { if (fn(this[i], i, this)) return i; }
+      return -1;
+    };
+  }
+
+  // ── Map init ─────────────────────────────────────────────────────────────
+  // doubleClickZoom: false so our polygon double-tap close doesn't zoom
+  const map = L.map('map', {
+    zoomControl:      true,
+    scrollWheelZoom:  true,
+    doubleClickZoom:  false,
+    // Leaflet's default tap handler converts touch events into mouse-like events
+    // so Leaflet map events (mousedown, mousemove, etc.) fire on mobile.
+    tap:              true,
+    tapTolerance:     15
+  }).setView([37.755, -77.477], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
   }).addTo(map);
 
-  // ── Schools layer (OpenStreetMap Overpass) ──
-  const schoolGroup = L.featureGroup();
-  let schoolsLoaded = false;
+  // ── Schools overlay ───────────────────────────────────────────────────────
+  const schoolGroup  = L.featureGroup();
+  let schoolsLoaded  = false;
   let schoolsVisible = false;
 
-  function loadSchools(){
-    if(schoolsLoaded) return;
+  const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep\s+school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary/i;
+
+  function loadSchools() {
+    if (schoolsLoaded) return;
     schoolsLoaded = true;
-    // Wide bounding box covering: Hanover, Henrico, Caroline, King William,
-    // Chesterfield, Powhatan, Goochland, City of Richmond, New Kent,
-    // plus bordering counties (Spotsylvania, King & Queen, Essex, Louisa,
-    // Fluvanna, Amelia, Dinwiddie, Colonial Heights, Petersburg, Prince George,
-    // Charles City, York, James City, Williamsburg area)
-    // bbox: south, west, north, east
-    const bbox = '37.0,-78.2,38.2,-76.5';
+    const bbox  = '37.0,-78.2,38.2,-76.5';
     const query = `[out:json][timeout:60];
 (
   way["amenity"="school"]["operator:type"!="private"]["fee"!="yes"](${bbox});
@@ -380,403 +568,450 @@
   node["amenity"="school"][!"operator:type"]["fee"!="yes"](${bbox});
 );
 out center;`;
-    fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)})
-      .then(r=>r.json())
-      .then(data=>{
+    fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(query) })
+      .then(r => r.json())
+      .then(data => {
         const seen = new Set();
-        // Filter out known private school keywords in names
-        const privateKeywords = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary/i;
-        data.elements.forEach(el=>{
-          const lat = el.lat || (el.center && el.center.lat);
-          const lon = el.lon || (el.center && el.center.lon);
-          if(!lat||!lon) return;
-          const name = el.tags.name || '';
-          if(!name) return;
-          // Skip obvious private schools by name
-          if(privateKeywords.test(name)) return;
+        data.elements.forEach(el => {
+          const lat  = el.lat  || (el.center && el.center.lat);
+          const lon  = el.lon  || (el.center && el.center.lon);
+          const name = (el.tags && el.tags.name) || '';
+          if (!lat || !lon || !name || PRIVATE_RE.test(name)) return;
           const key = `${lat.toFixed(3)},${lon.toFixed(3)}`;
-          if(seen.has(key)) return;
+          if (seen.has(key)) return;
           seen.add(key);
-          const marker = L.circleMarker([lat,lon],{
-            radius:7, color:'#1a73e8', weight:2,
-            fillColor:'#1a73e8', fillOpacity:0.9
-          }).bindTooltip(name,{permanent:false,direction:'top',offset:[0,-10],className:'dist-tip'});
-          schoolGroup.addLayer(marker);
+          L.circleMarker([lat, lon], {
+            radius: 7, color: '#1a73e8', weight: 2,
+            fillColor: '#1a73e8', fillOpacity: 0.9
+          }).bindTooltip(name, { permanent: false, direction: 'top', offset: [0, -10], className: 'dist-tip' })
+            .addTo(schoolGroup);
         });
       })
-      .catch(()=>{ schoolsLoaded=false; });
+      .catch(() => { schoolsLoaded = false; });
   }
 
-  function toggleSchools(){
-    schoolsVisible=!schoolsVisible;
-    const btn=document.getElementById('btn-schools');
-    if(schoolsVisible){
+  window.toggleSchools = function() {
+    schoolsVisible = !schoolsVisible;
+    const btn = document.getElementById('btn-schools');
+    if (schoolsVisible) {
       loadSchools();
       schoolGroup.addTo(map);
       btn.classList.add('active');
-      btn.setAttribute('data-tip','Hide Schools');
+      btn.setAttribute('data-tip', 'Hide Schools');
     } else {
       map.removeLayer(schoolGroup);
       btn.classList.remove('active');
-      btn.setAttribute('data-tip','Show Schools');
+      btn.setAttribute('data-tip', 'Show Schools');
     }
-  }
+  };
 
-  // ── State ──
-  let mode='freehand', strokeColor='#188038', strokeWeight=3;
-  let hasDrawn=false;
-  // No cap on undo history
+  // ── Drawing state ─────────────────────────────────────────────────────────
+  let mode        = 'freehand';
+  let strokeColor = '#188038';
+  let strokeWeight = 3;
+  let hasDrawn    = false;
 
-  // ── Undo/Redo history ──
-  const undoStack = [];
-  const redoStack = [];
+  const undoStack   = [];
+  const redoStack   = [];
   const activeGroup = L.featureGroup().addTo(map);
 
-  // In-progress drawing
-  let drawingPolyline=null, polyLatLngs=[];
-  let circleCenter=null, previewCircle=null, distTooltip=null;
-  let polyPreviewLine=null;
+  // In-progress drawing refs
+  let drawingPolyline = null;   // freehand / polygon preview
+  let polyLatLngs     = [];     // accumulated latlngs for freehand & polygon
+  let circleCenter    = null;
+  let previewCircle   = null;
+  let distTooltip     = null;
 
-  // Move mode state
-  let moveLayer=null, moveDragStart=null, moveOrigCenter=null, moveOrigLatLngs=null;
+  // Polygon double-tap detection
+  let lastPolyTap = 0;
 
-  // ── Helpers ──
-  function fmtDist(m){return m<1609?(m*3.28084).toFixed(0)+' ft':(m*0.000621371).toFixed(2)+' mi'}
-  function shapeStyle(){ return{color:strokeColor,weight:strokeWeight,opacity:1,fillColor:strokeColor,fillOpacity:0.10,fill:true} }
-  function updatePreviewStyle(){
-    if(drawingPolyline) drawingPolyline.setStyle({color:strokeColor,weight:strokeWeight});
-    if(previewCircle)   previewCircle.setStyle({color:strokeColor,weight:strokeWeight});
-  }
-  function markDrawn(){
-    if(!hasDrawn){hasDrawn=true;document.getElementById('map-hint').classList.add('hidden')}
-  }
-  function pushUndo(action){
-    undoStack.push(action);
-    redoStack.length=0;
-    updateUndoRedo();
-    markDrawn();
-  }
-  function commitLayer(layer){
-    activeGroup.addLayer(layer);
-    if(mode==='move') layer.on('mousedown', onLayerMoveStart);
-    pushUndo({type:'add',layer});
-  }
-  function updateUndoRedo(){
-    document.getElementById('btn-undo').disabled = undoStack.length===0 && polyLatLngs.length<2;
-    document.getElementById('btn-redo').disabled = redoStack.length===0;
-  }
-  function showDistAt(latlng,text){
-    if(distTooltip) map.removeLayer(distTooltip);
-    distTooltip=L.tooltip({permanent:true,direction:'right',offset:[10,-10],className:'dist-tip'})
-      .setLatLng(latlng).setContent(text).addTo(map);
-  }
-  function clearDistTooltip(){if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}}
+  // Move-mode state
+  let moveLayer       = null;
+  let moveDragStart   = null;
+  let moveOrigCenter  = null;
+  let moveOrigLatLngs = null;
 
-  // ── Mode switching ──
-  const allModes=['pan','move','freehand','circle','polygon','erase'];
-  function setMode(m){
-    cancelInProgress();
-    mode=m;
-    allModes.forEach(t=>{
-      const el=document.getElementById('btn-'+t);
-      if(el) el.classList.toggle('active',t===m);
-    });
-    // Remove move listeners from all layers when leaving move mode
-    if(m!=='move') detachMoveListeners();
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function fmtDist(m) {
+    return m < 1609 ? (m * 3.28084).toFixed(0) + ' ft' : (m * 0.000621371).toFixed(2) + ' mi';
+  }
 
-    if(m==='pan'){
-      map.dragging.enable();map.scrollWheelZoom.enable();
-      map.getContainer().style.cursor='grab';
-    } else if(m==='erase'){
-      map.dragging.disable();map.scrollWheelZoom.disable();
-      map.getContainer().style.cursor='not-allowed';
-    } else if(m==='move'){
-      map.dragging.disable();map.scrollWheelZoom.disable();
-      map.getContainer().style.cursor='default';
-      attachMoveListeners();
-    } else {
-      map.dragging.disable();map.scrollWheelZoom.disable();
-      map.getContainer().style.cursor='crosshair';
+  function shapeStyle() {
+    return {
+      color:       strokeColor,
+      weight:      strokeWeight,
+      opacity:     1,
+      fillColor:   strokeColor,
+      fillOpacity: 0.12,
+      fill:        true
+    };
+  }
+
+  function updatePreviewStyle() {
+    if (drawingPolyline) drawingPolyline.setStyle({ color: strokeColor, weight: strokeWeight });
+    if (previewCircle)   previewCircle.setStyle({ color: strokeColor, weight: strokeWeight });
+  }
+
+  function markDrawn() {
+    if (!hasDrawn) {
+      hasDrawn = true;
+      document.getElementById('map-hint').classList.add('hidden');
     }
   }
 
-  // ── Move layer logic ──
-  function attachMoveListeners(){
-    activeGroup.eachLayer(layer=>{
-      layer.on('mousedown', onLayerMoveStart);
-      if(layer.getElement) layer.getElement() && (layer.getElement().style.cursor='move');
-    });
+  function pushUndo(action) {
+    undoStack.push(action);
+    redoStack.length = 0;
+    updateUndoRedo();
   }
-  function detachMoveListeners(){
-    activeGroup.eachLayer(layer=>{
-      layer.off('mousedown', onLayerMoveStart);
-      if(layer.getElement) layer.getElement() && (layer.getElement().style.cursor='');
-    });
-    moveLayer=null; moveDragStart=null;
+
+  function commitLayer(layer) {
+    activeGroup.addLayer(layer);
+    if (mode === 'move') layer.on('mousedown touchstart', onLayerMoveStart);
+    pushUndo({ type: 'add', layer });
+    markDrawn();
   }
-  function onLayerMoveStart(e){
+
+  function updateUndoRedo() {
+    document.getElementById('btn-undo').disabled = undoStack.length === 0 && polyLatLngs.length < 2;
+    document.getElementById('btn-redo').disabled = redoStack.length === 0;
+  }
+
+  function showDistAt(latlng, text) {
+    if (distTooltip) map.removeLayer(distTooltip);
+    distTooltip = L.tooltip({ permanent: true, direction: 'right', offset: [10, -10], className: 'dist-tip' })
+      .setLatLng(latlng).setContent(text).addTo(map);
+  }
+
+  function clearDistTooltip() {
+    if (distTooltip) { map.removeLayer(distTooltip); distTooltip = null; }
+  }
+
+  function cancelInProgress() {
+    if (drawingPolyline) { map.removeLayer(drawingPolyline); drawingPolyline = null; }
+    if (previewCircle)   { map.removeLayer(previewCircle);   previewCircle   = null; }
+    clearDistTooltip();
+    polyLatLngs  = [];
+    circleCenter = null;
+    updateUndoRedo();
+  }
+
+  // ── Mode switching ────────────────────────────────────────────────────────
+  const ALL_MODES = ['pan', 'move', 'freehand', 'circle', 'polygon', 'erase'];
+
+  window.setMode = function(m) {
+    cancelInProgress();
+    if (m !== 'move') detachMoveListeners();
+    mode = m;
+    ALL_MODES.forEach(t => {
+      const el = document.getElementById('btn-' + t);
+      if (el) el.classList.toggle('active', t === m);
+    });
+
+    if (m === 'pan') {
+      map.dragging.enable();
+      map.scrollWheelZoom.enable();
+      map.getContainer().style.cursor = 'grab';
+    } else if (m === 'erase') {
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor = 'not-allowed';
+    } else if (m === 'move') {
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor = 'default';
+      attachMoveListeners();
+    } else {
+      // freehand / circle / polygon
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor = 'crosshair';
+    }
+  };
+
+  window.setColor = function(el) {
+    strokeColor = el.dataset.color;
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    if (mode === 'erase') setMode('freehand');
+    updatePreviewStyle();
+  };
+
+  // ── Undo / Redo ───────────────────────────────────────────────────────────
+  window.undoLast = function() {
+    // While drawing a polygon, undo removes last point
+    if (mode === 'polygon' && drawingPolyline) {
+      if (polyLatLngs.length > 1) {
+        polyLatLngs.pop();
+        drawingPolyline.setLatLngs([...polyLatLngs, polyLatLngs[polyLatLngs.length - 1]]);
+        const idx = undoStack.findLastIndex(a => a.type === 'poly-point');
+        if (idx > -1) undoStack.splice(idx, 1);
+        updateUndoRedo();
+        return;
+      } else {
+        cancelInProgress();
+        const idx = undoStack.findLastIndex(a => a.type === 'poly-start');
+        if (idx > -1) undoStack.splice(idx, 1);
+        updateUndoRedo();
+        return;
+      }
+    }
+    if (!undoStack.length) return;
+    const action = undoStack.pop();
+    if (action.type === 'add') {
+      activeGroup.removeLayer(action.layer);
+      redoStack.push({ type: 'redo-add', layer: action.layer });
+    } else if (action.type === 'remove') {
+      activeGroup.addLayer(action.layer);
+      redoStack.push({ type: 'redo-remove', layer: action.layer });
+    } else if (action.type === 'move') {
+      if (action.layer instanceof L.Circle) {
+        action.layer.setLatLng(action.origC);
+      } else {
+        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll => L.latLng(ll.lat, ll.lng));
+        action.layer.setLatLngs(restore(action.origL));
+      }
+      redoStack.push(action);
+    }
+    updateUndoRedo();
+  };
+
+  window.redoLast = function() {
+    if (!redoStack.length) return;
+    const action = redoStack.pop();
+    if (action.type === 'redo-add') {
+      activeGroup.addLayer(action.layer);
+      undoStack.push({ type: 'add', layer: action.layer });
+    } else if (action.type === 'redo-remove') {
+      activeGroup.removeLayer(action.layer);
+      undoStack.push({ type: 'remove', layer: action.layer });
+    } else if (action.type === 'move') {
+      if (action.layer instanceof L.Circle) {
+        action.layer.setLatLng(action.newC);
+      } else {
+        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll => L.latLng(ll.lat, ll.lng));
+        action.layer.setLatLngs(restore(action.newL));
+      }
+      undoStack.push(action);
+    }
+    updateUndoRedo();
+  };
+
+  window.clearAll = function() {
+    cancelInProgress();
+    activeGroup.clearLayers();
+    undoStack.length = 0; redoStack.length = 0;
+    hasDrawn = false;
+    document.getElementById('map-hint').classList.remove('hidden');
+    updateUndoRedo();
+  };
+
+  // ── Move-layer logic ──────────────────────────────────────────────────────
+  function attachMoveListeners() {
+    activeGroup.eachLayer(layer => layer.on('mousedown touchstart', onLayerMoveStart));
+  }
+  function detachMoveListeners() {
+    activeGroup.eachLayer(layer => layer.off('mousedown touchstart', onLayerMoveStart));
+    moveLayer = null; moveDragStart = null;
+  }
+  function onLayerMoveStart(e) {
     L.DomEvent.stopPropagation(e);
-    moveLayer = e.target;
+    moveLayer     = e.target;
     moveDragStart = e.latlng;
-    // Save original position
-    if(moveLayer instanceof L.Circle){
-      moveOrigCenter = moveLayer.getLatLng();
+    if (moveLayer instanceof L.Circle) {
+      moveOrigCenter  = moveLayer.getLatLng();
     } else {
       moveOrigLatLngs = JSON.parse(JSON.stringify(moveLayer.getLatLngs()));
     }
-    map.on('mousemove', onLayerMoveDrag);
-    map.on('mouseup',   onLayerMoveEnd);
+    map.on('mousemove touchmove', onLayerMoveDrag);
+    map.on('mouseup   touchend',  onLayerMoveEnd);
   }
-  function onLayerMoveDrag(e){
-    if(!moveLayer||!moveDragStart) return;
-    const dlat = e.latlng.lat - moveDragStart.lat;
-    const dlng = e.latlng.lng - moveDragStart.lng;
-    if(moveLayer instanceof L.Circle){
+  function onLayerMoveDrag(e) {
+    if (!moveLayer || !moveDragStart) return;
+    const ll   = e.latlng;
+    const dlat = ll.lat - moveDragStart.lat;
+    const dlng = ll.lng - moveDragStart.lng;
+    if (moveLayer instanceof L.Circle) {
       const c = moveOrigCenter;
-      moveLayer.setLatLng([c.lat+dlat, c.lng+dlng]);
+      moveLayer.setLatLng([c.lat + dlat, c.lng + dlng]);
     } else {
-      const shift = lls => {
-        if(Array.isArray(lls[0])) return lls.map(shift);
-        return lls.map(ll => L.latLng(ll.lat+dlat, ll.lng+dlng));
-      };
+      const shift = lls => Array.isArray(lls[0]) ? lls.map(shift) : lls.map(ll => L.latLng(ll.lat + dlat, ll.lng + dlng));
       moveLayer.setLatLngs(shift(moveOrigLatLngs));
     }
   }
-  function onLayerMoveEnd(e){
-    if(!moveLayer) return;
-    // Save undo for move
+  function onLayerMoveEnd() {
+    if (!moveLayer) return;
     const layer = moveLayer;
     const origC = moveOrigCenter;
     const origL = moveOrigLatLngs;
     const newC  = layer instanceof L.Circle ? layer.getLatLng() : null;
     const newL  = layer instanceof L.Circle ? null : JSON.parse(JSON.stringify(layer.getLatLngs()));
-    pushUndo({type:'move', layer, origC, origL, newC, newL});
-    moveLayer=null; moveDragStart=null; moveOrigCenter=null; moveOrigLatLngs=null;
-    map.off('mousemove', onLayerMoveDrag);
-    map.off('mouseup',   onLayerMoveEnd);
+    pushUndo({ type: 'move', layer, origC, origL, newC, newL });
+    moveLayer = null; moveDragStart = null; moveOrigCenter = null; moveOrigLatLngs = null;
+    map.off('mousemove touchmove', onLayerMoveDrag);
+    map.off('mouseup   touchend',  onLayerMoveEnd);
   }
 
-  function cancelInProgress(){
-    if(drawingPolyline){map.removeLayer(drawingPolyline);drawingPolyline=null}
-    if(polyPreviewLine){map.removeLayer(polyPreviewLine);polyPreviewLine=null}
-    if(previewCircle){map.removeLayer(previewCircle);previewCircle=null}
-    clearDistTooltip();
-    polyLatLngs=[];circleCenter=null;
-    updateUndoRedo();
-  }
+  // ── Map draw events ───────────────────────────────────────────────────────
+  // Leaflet's unified tap handler means these mouse events fire on touch too.
 
-  function setColor(el){
-    strokeColor=el.dataset.color;
-    document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
-    el.classList.add('active');
-    if(mode==='erase') setMode('freehand');
-    updatePreviewStyle();
-  }
-
-  // ── Map events ──
-  map.on('mousedown', function(e){
-    if(mode==='pan'||mode==='erase') return;
-    const ll=e.latlng;
-    if(mode==='freehand'){
-      polyLatLngs=[ll];
-      drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
+  map.on('mousedown', function(e) {
+    if (mode === 'pan' || mode === 'erase' || mode === 'move') return;
+    const ll = e.latlng;
+    if (mode === 'freehand') {
+      polyLatLngs    = [ll];
+      drawingPolyline = L.polyline([ll], { ...shapeStyle(), fill: false }).addTo(map);
     }
-    if(mode==='circle'){
-      circleCenter=ll;
-      previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
+    if (mode === 'circle') {
+      circleCenter  = ll;
+      previewCircle = L.circle(ll, { radius: 1, ...shapeStyle() }).addTo(map);
+    }
+    // polygon clicks handled in 'click' event below
+  });
+
+  map.on('mousemove', function(e) {
+    const ll = e.latlng;
+    if (mode === 'freehand' && drawingPolyline) {
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+      return;
+    }
+    if (mode === 'circle' && circleCenter && previewCircle) {
+      const r = circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll, 'r ≈ ' + fmtDist(r));
+      return;
+    }
+    if (mode === 'polygon' && drawingPolyline && polyLatLngs.length > 0) {
+      drawingPolyline.setLatLngs([...polyLatLngs, ll]);
+      let perim = 0;
+      for (let i = 1; i < polyLatLngs.length; i++) perim += polyLatLngs[i - 1].distanceTo(polyLatLngs[i]);
+      perim += polyLatLngs[polyLatLngs.length - 1].distanceTo(ll);
+      showDistAt(ll, 'perim ≈ ' + fmtDist(perim));
     }
   });
 
-  map.on('click', function(e){
-    // Erase
-    if(mode==='erase'){
-      let closest=null, minDist=Infinity;
-      const layers=[];
-      activeGroup.eachLayer(l=>layers.push(l));
+  map.on('mouseup', function(e) {
+    if (mode === 'freehand' && drawingPolyline) {
+      const layer = drawingPolyline;
+      drawingPolyline = null; polyLatLngs = [];
+      commitLayer(layer);
+    }
+    if (mode === 'circle' && circleCenter && previewCircle) {
+      const r = circleCenter.distanceTo(e.latlng);
+      if (r > 10) {
+        const layer = L.circle(circleCenter, { radius: r, ...shapeStyle() });
+        map.removeLayer(previewCircle); previewCircle = null;
+        circleCenter = null; clearDistTooltip();
+        commitLayer(layer);
+      } else {
+        map.removeLayer(previewCircle); previewCircle = null;
+        circleCenter = null;
+      }
+    }
+  });
 
-      // Convert a pixel hit radius to meters at current zoom
-      const pxThreshold = 30; // pixels
-      const mapSize = map.getSize();
-      const centerPx = map.latLngToContainerPoint(map.getCenter());
-      const edgePx   = L.point(centerPx.x + pxThreshold, centerPx.y);
-      const edgeLL   = map.containerPointToLatLng(edgePx);
-      const meterThreshold = map.getCenter().distanceTo(edgeLL);
+  // Polygon: each click adds a point; double-click (or fast double-tap) closes
+  map.on('click', function(e) {
+    // ── Erase: tap nearest shape ──
+    if (mode === 'erase') {
+      const layers = [];
+      activeGroup.eachLayer(l => layers.push(l));
+      if (!layers.length) return;
 
-      function flatLatLngs(lls){
-        if(!lls||!lls.length) return [];
-        if(typeof lls[0].lat === 'number') return lls;
-        return lls.reduce((a,x)=>a.concat(flatLatLngs(x)),[]);
+      // Convert a pixel threshold to meters at current map center
+      const pxThreshold  = 35;
+      const centerPx     = map.latLngToContainerPoint(map.getCenter());
+      const edgeLL       = map.containerPointToLatLng(L.point(centerPx.x + pxThreshold, centerPx.y));
+      const mThreshold   = map.getCenter().distanceTo(edgeLL);
+
+      function flatLatLngs(lls) {
+        if (!lls || !lls.length) return [];
+        if (typeof lls[0].lat === 'number') return lls;
+        return lls.reduce((a, x) => a.concat(flatLatLngs(x)), []);
       }
 
-      layers.forEach(layer=>{
-        let d=Infinity;
-        if(layer instanceof L.Circle){
-          // Distance to circumference
-          d=Math.abs(e.latlng.distanceTo(layer.getLatLng())-layer.getRadius());
+      let closest = null, minDist = Infinity;
+      layers.forEach(layer => {
+        let d = Infinity;
+        if (layer instanceof L.Circle) {
+          d = Math.abs(e.latlng.distanceTo(layer.getLatLng()) - layer.getRadius());
         } else {
-          const pts = flatLatLngs(layer.getLatLngs());
-          pts.forEach(p=>{ const dd=e.latlng.distanceTo(p); if(dd<d) d=dd; });
-          // Also check centroid for filled polygons
-          if(layer instanceof L.Polygon){
-            const bounds = layer.getBounds();
-            const dc = e.latlng.distanceTo(bounds.getCenter());
-            if(dc<d) d=dc;
+          flatLatLngs(layer.getLatLngs()).forEach(p => { const dd = e.latlng.distanceTo(p); if (dd < d) d = dd; });
+          if (layer instanceof L.Polygon) {
+            const dc = e.latlng.distanceTo(layer.getBounds().getCenter());
+            if (dc < d) d = dc;
           }
         }
-        if(d<minDist){minDist=d;closest=layer}
+        if (d < minDist) { minDist = d; closest = layer; }
       });
 
-      if(closest && minDist < meterThreshold){
+      if (closest && minDist < mThreshold) {
         activeGroup.removeLayer(closest);
-        const idx=undoStack.findLastIndex(a=>a.layer===closest);
-        if(idx>-1) undoStack.splice(idx,1);
-        pushUndo({type:'remove',layer:closest});
+        const idx = undoStack.findLastIndex(a => a.layer === closest);
+        if (idx > -1) undoStack.splice(idx, 1);
+        pushUndo({ type: 'remove', layer: closest });
       }
       return;
     }
 
-    // Polygon: each click = one segment = one undo step
-    if(mode==='polygon'){
-      const ll=e.latlng;
-      if(polyLatLngs.length===0){
-        polyLatLngs=[ll];
-        // Start dashed preview polyline
-        drawingPolyline=L.polyline([ll,ll],{color:strokeColor,weight:strokeWeight,opacity:0.7,dashArray:'6,4',fill:false}).addTo(map);
-        pushUndo({type:'poly-start'});
+    // ── Polygon: accumulate points ──
+    if (mode === 'polygon') {
+      const ll  = e.latlng;
+      const now = Date.now();
+
+      // Double-tap / double-click detection (< 350ms between taps)
+      if (polyLatLngs.length >= 2 && (now - lastPolyTap) < 350) {
+        // Close the polygon
+        const layer = L.polygon(polyLatLngs, shapeStyle());
+        map.removeLayer(drawingPolyline); drawingPolyline = null;
+        polyLatLngs = []; clearDistTooltip();
+        // Clean poly-* steps from undoStack, replace with one commit action
+        while (undoStack.length && (undoStack[undoStack.length - 1].type === 'poly-point' || undoStack[undoStack.length - 1].type === 'poly-start')) {
+          undoStack.pop();
+        }
+        commitLayer(layer);
+        lastPolyTap = 0;
+        return;
+      }
+      lastPolyTap = now;
+
+      if (polyLatLngs.length === 0) {
+        polyLatLngs     = [ll];
+        drawingPolyline = L.polyline([ll, ll], { color: strokeColor, weight: strokeWeight, opacity: 0.7, dashArray: '6,4', fill: false }).addTo(map);
+        pushUndo({ type: 'poly-start' });
       } else {
         polyLatLngs.push(ll);
-        drawingPolyline.setLatLngs([...polyLatLngs,ll]);
-        pushUndo({type:'poly-point',latlng:ll});
+        drawingPolyline.setLatLngs([...polyLatLngs, ll]);
+        pushUndo({ type: 'poly-point', latlng: ll });
       }
       markDrawn();
     }
   });
 
-  map.on('mousemove', function(e){
-    const ll=e.latlng;
-    if(mode==='freehand'&&drawingPolyline){
-      polyLatLngs.push(ll);
-      drawingPolyline.setLatLngs(polyLatLngs);
-      return;
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(ll);
-      previewCircle.setRadius(r);
-      showDistAt(ll,'r ≈ '+fmtDist(r));
-      return;
-    }
-    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
-      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
-      let perim=0;
-      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
-      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
-      showDistAt(ll,'perim ≈ '+fmtDist(perim));
-    }
-  });
-
-  map.on('mouseup', function(e){
-    if(mode==='freehand'&&drawingPolyline){
-      const layer=drawingPolyline;
-      drawingPolyline=null;polyLatLngs=[];
-      commitLayer(layer);
-    }
-    if(mode==='circle'&&circleCenter&&previewCircle){
-      const r=circleCenter.distanceTo(e.latlng);
-      if(r>10){
-        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
-        map.removeLayer(previewCircle);previewCircle=null;
-        circleCenter=null;clearDistTooltip();
-        commitLayer(layer);
-      }
-    }
-  });
-
-  // Double-click closes polygon
-  map.on('dblclick', function(e){
+  // Native double-click also closes polygon (desktop)
+  map.on('dblclick', function(e) {
     L.DomEvent.stopPropagation(e);
-    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
-      const layer=L.polygon(polyLatLngs,shapeStyle());
-      map.removeLayer(drawingPolyline);drawingPolyline=null;
-      polyLatLngs=[];clearDistTooltip();
-      // Remove all poly-* steps from undoStack, replace with one commit
-      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')){
+    if (mode === 'polygon' && drawingPolyline && polyLatLngs.length >= 3) {
+      const layer = L.polygon(polyLatLngs, shapeStyle());
+      map.removeLayer(drawingPolyline); drawingPolyline = null;
+      polyLatLngs = []; clearDistTooltip();
+      while (undoStack.length && (undoStack[undoStack.length - 1].type === 'poly-point' || undoStack[undoStack.length - 1].type === 'poly-start')) {
         undoStack.pop();
       }
       commitLayer(layer);
     }
   });
 
-  // ── Undo / Redo — 15 steps, per-segment for polygon ──
-  function undoLast(){
-    if(mode==='polygon'&&drawingPolyline){
-      if(polyLatLngs.length>1){
-        polyLatLngs.pop();
-        drawingPolyline.setLatLngs([...polyLatLngs,polyLatLngs[polyLatLngs.length-1]]);
-        const idx=undoStack.findLastIndex(a=>a.type==='poly-point');
-        if(idx>-1) undoStack.splice(idx,1);
-        updateUndoRedo(); return;
-      } else {
-        cancelInProgress();
-        const idx=undoStack.findLastIndex(a=>a.type==='poly-start');
-        if(idx>-1) undoStack.splice(idx,1);
-        updateUndoRedo(); return;
-      }
-    }
-    if(!undoStack.length) return;
-    const action=undoStack.pop();
-    if(action.type==='add'){
-      activeGroup.removeLayer(action.layer);
-      redoStack.push({type:'redo-add',layer:action.layer});
-    } else if(action.type==='remove'){
-      activeGroup.addLayer(action.layer);
-      redoStack.push({type:'redo-remove',layer:action.layer});
-    } else if(action.type==='move'){
-      // Restore original position
-      if(action.layer instanceof L.Circle){
-        action.layer.setLatLng(action.origC);
-      } else {
-        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll=>L.latLng(ll.lat,ll.lng));
-        action.layer.setLatLngs(restore(action.origL));
-      }
-      redoStack.push(action);
-    }
-    updateUndoRedo();
-  }
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoLast(); }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); redoLast(); }
+    if (e.key === 'Escape') cancelInProgress();
+  });
 
-  function redoLast(){
-    if(!redoStack.length) return;
-    const action=redoStack.pop();
-    if(action.type==='redo-add'){
-      activeGroup.addLayer(action.layer);
-      undoStack.push({type:'add',layer:action.layer});
-    } else if(action.type==='redo-remove'){
-      activeGroup.removeLayer(action.layer);
-      undoStack.push({type:'remove',layer:action.layer});
-    } else if(action.type==='move'){
-      // Re-apply the move
-      if(action.layer instanceof L.Circle){
-        action.layer.setLatLng(action.newC);
-      } else {
-        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll=>L.latLng(ll.lat,ll.lng));
-        action.layer.setLatLngs(restore(action.newL));
-      }
-      undoStack.push(action);
-    }
-    updateUndoRedo();
-  }
-
-  function clearAll(){
-    cancelInProgress();
-    activeGroup.clearLayers();
-    undoStack.length=0;redoStack.length=0;
-    hasDrawn=false;
-    document.getElementById('map-hint').classList.remove('hidden');
-    updateUndoRedo();
-  }
-
-  // Start in freehand
+  // Start in freehand, map panning off
   setMode('freehand');
-  updateUndoRedo();
 </script>
 </body>
 </html>
