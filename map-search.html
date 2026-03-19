@@ -9,9 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Leaflet in <head>, no defer/async, so L is defined before any script -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- EmailJS — loaded via unpkg to avoid Cloudflare email-decode mangling the @emailjs scope -->
   <script src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px}
@@ -93,9 +91,7 @@
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
-    /* Tooltip — fixed <div> via JS, escapes toolbar overflow:hidden */
     #toolbar-tip{position:fixed;background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s}
-    /* Animated ellipsis for school loading */
     @keyframes ellipsis{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
     .anim-ellipsis::after{content:'.';animation:ellipsis 1.2s steps(1,end) infinite}
 
@@ -240,8 +236,6 @@
       .search-group{flex-wrap:nowrap}
       .search-wrap{width:150px}
     }
-
-    /* ── Send Map modal ────────────────────────────────────────────────────── */
     #send-modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center}
     #send-modal-backdrop.open{display:flex}
     #send-modal{background:var(--white);border-radius:16px;padding:32px 28px 24px;width:min(420px,92vw);box-shadow:0 24px 60px rgba(0,0,0,.25);position:relative}
@@ -264,9 +258,9 @@
     .modal-status{margin-top:14px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-align:center;min-height:1.2em}
     .modal-status.success{color:#188038}
     .modal-status.error{color:#e53935}
-    /* Spinner inside submit button */
     .btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
     @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
 
@@ -445,10 +439,10 @@
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
   <div id="map"></div>
-  <div class="map-hint" id="map-hint">✏️ Pick a tool above and draw on the map</div>
+  <div class="map-hint" id="map-hint">&#x270F;&#xFE0F; Pick a tool above and draw on the map</div>
   <div class="school-toast" id="school-toast">
-    <span class="school-toast-pencil" aria-hidden="true">✏️</span>
-    <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students…</span>
+    <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
+    <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
     <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:clamp(.85rem,2vw,1.1rem);color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase">Loading school locations<span class="anim-ellipsis"></span></span>
   </div>
 </div>
@@ -456,7 +450,7 @@
 <!-- SEND MAP MODAL -->
 <div id="send-modal-backdrop">
   <div id="send-modal" role="dialog" aria-modal="true" aria-labelledby="send-modal-title">
-    <button id="send-modal-close" aria-label="Close" onclick="closeSendModal()">✕</button>
+    <button id="send-modal-close" aria-label="Close" onclick="closeSendModal()">&#x2715;</button>
     <h2 id="send-modal-title">Send My Map to<br><span>804-Michael</span></h2>
     <p class="modal-sub">We'll get a link to your exact map — no account, no signup.</p>
     <div class="modal-field">
@@ -499,7 +493,7 @@
       </button>
     </div>
     <p class="share-note">The link encodes your drawings so whoever receives it sees the exact same map &mdash; no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.2);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 2026-100</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19:20:36</p>
   </div>
 </div>
 
@@ -575,22 +569,10 @@ window.addEventListener('scroll', () => document.getElementById('nav').classList
   toolbar.addEventListener('mouseout',  function(e) { var el = e.target.closest('[data-tip]'); if (el) hideTip(); });
 })();
 
-// ── EmailJS — Send Map to 804-Michael ────────────────────────────────────────
-// Setup instructions (one-time, 5 minutes):
-//   1. Create a free account at https://www.emailjs.com
-//   2. Add an Email Service (Gmail works great) — copy the Service ID
-//   3. Create an Email Template with these variables:
-//        {{from_name}}   — sender's name
-//        {{from_email}}  — sender's email (set as Reply-To in template)
-//        {{map_url}}     — the TinyURL map link
-//      Subject line:  Home Search Map from {{from_name}}
-//      Body:          Click to see my home search map: {{map_url}}
-//   4. Copy the Template ID and your Public Key
-//   5. Replace the three placeholder values below
+// ── EmailJS ───────────────────────────────────────────────────────────────────
 var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
 var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
 var EMAILJS_TEMPLATE_ID = 'template_qbvwd6k';
-
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 window.openSendModal = function() {
@@ -598,9 +580,9 @@ window.openSendModal = function() {
   document.getElementById('modal-status').className = 'modal-status';
   document.getElementById('modal-name').classList.remove('invalid');
   document.getElementById('modal-email').classList.remove('invalid');
-  document.getElementById('send-modal-submit').disabled = false;
-  document.getElementById('send-modal-submit').innerHTML =
-    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Map';
+  var btn = document.getElementById('send-modal-submit');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Map';
   document.getElementById('send-modal-backdrop').classList.add('open');
   setTimeout(function() { document.getElementById('modal-name').focus(); }, 80);
 };
@@ -609,41 +591,35 @@ window.closeSendModal = function() {
   document.getElementById('send-modal-backdrop').classList.remove('open');
 };
 
-// Close on backdrop click
 document.getElementById('send-modal-backdrop').addEventListener('click', function(e) {
   if (e.target === this) closeSendModal();
 });
-
-// Close on Escape
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeSendModal();
 });
 
 window.submitSendModal = function() {
-  var nameEl  = document.getElementById('modal-name');
-  var emailEl = document.getElementById('modal-email');
+  var nameEl   = document.getElementById('modal-name');
+  var emailEl  = document.getElementById('modal-email');
   var statusEl = document.getElementById('modal-status');
   var name  = nameEl.value.trim();
   var email = emailEl.value.trim();
   var valid = true;
-
   nameEl.classList.remove('invalid');
   emailEl.classList.remove('invalid');
-
-  if (!name) { nameEl.classList.add('invalid'); valid = false; }
+  if (!name)  { nameEl.classList.add('invalid');  valid = false; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { emailEl.classList.add('invalid'); valid = false; }
   if (!valid) { statusEl.textContent = 'Please fill in all fields.'; statusEl.className = 'modal-status error'; return; }
 
   var btn = document.getElementById('send-modal-submit');
   btn.disabled = true;
-  btn.innerHTML = '<span class="btn-spinner"></span> Sending…';
+  btn.innerHTML = '<span class="btn-spinner"></span> Sending\u2026';
   statusEl.textContent = '';
 
-  // Shorten the URL first, then send
   var fullUrl = buildShareURL();
   fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(fullUrl))
     .then(function(r) { return r.text(); })
-    .then(function(short) { return short.trim() || fullUrl; })
+    .then(function(s) { return s.trim() || fullUrl; })
     .catch(function() { return fullUrl; })
     .then(function(mapUrl) {
       return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -653,16 +629,16 @@ window.submitSendModal = function() {
       });
     })
     .then(function() {
-      statusEl.textContent = '✓ Map sent! We\'ll be in touch soon.';
+      statusEl.textContent = '\u2713 Map sent! We\'ll be in touch soon.';
       statusEl.className = 'modal-status success';
-      btn.innerHTML = '✓ Sent!';
-      nameEl.value = '';
+      btn.innerHTML = '\u2713 Sent!';
+      nameEl.value  = '';
       emailEl.value = '';
       setTimeout(closeSendModal, 2200);
     })
     .catch(function(err) {
       console.error('EmailJS error:', err);
-      statusEl.textContent = 'Something went wrong — please try again.';
+      statusEl.textContent = 'Something went wrong \u2014 please try again.';
       statusEl.className = 'modal-status error';
       btn.disabled = false;
       btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Map';
@@ -685,7 +661,7 @@ const map = L.map('map', {
 L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
 }).addTo(map);
 
