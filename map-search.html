@@ -138,7 +138,7 @@
       color:white;text-align:center;padding:0 24px;line-height:1.2;
       max-width:800px;
     }
-    .map-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:white;padding:8px 16px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:nowrap;animation:pulse 2.5s ease infinite}
+    .map-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:2.4rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:nowrap;animation:pulse 2.5s ease infinite}
     .map-hint.hidden{display:none}
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
     .dist-tip::before{display:none!important}
@@ -372,7 +372,7 @@
         <div class="search-results" id="search-results" role="listbox"></div>
       </div>
       <div class="search-spinner" id="search-spinner"></div>
-      <button class="search-btn" id="search-btn" aria-label="Search address" data-tip="Search address">
+      <button class="search-btn" id="search-btn" aria-label="Search address" data-tip="Search Location to Pin">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
@@ -491,7 +491,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 15_52</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 16_18</p>
   </div>
 </div>
 
@@ -1284,14 +1284,19 @@ async function doSearch(query) {
     // Build viewbox from current map bounds so results are biased to what's visible
     var b = map.getBounds();
     var vb = b.getWest()+','+b.getNorth()+','+b.getEast()+','+b.getSouth();
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=' + encodeURIComponent(query) + '&viewbox=' + vb + '&bounded=0';
+    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=8&addressdetails=1&countrycodes=us&q=' + encodeURIComponent(query) + '&viewbox=' + vb + '&bounded=0';
     const res  = await fetch(url, { headers: { 'Accept-Language': 'en-US,en', 'User-Agent': '804Michael-MapSearch/1.0' } });
     const data = await res.json();
     const places = data.map(r => {
-      const parts = r.display_name.split(', ');
-      const name  = parts.slice(0, 2).join(', ');
-      const addr  = parts.slice(2, 5).join(', ');
-      return { name, addr, lat: parseFloat(r.lat), lng: parseFloat(r.lon) };
+      // Build a clean display name from structured address fields
+      var a = r.address || {};
+      var num    = a.house_number || '';
+      var street = a.road || a.pedestrian || a.path || '';
+      var city   = a.city || a.town || a.village || a.hamlet || a.county || '';
+      var state  = a.state || '';
+      var name   = (num ? num + ' ' + street : street) || r.display_name.split(', ')[0];
+      var addr   = [city, state].filter(Boolean).join(', ');
+      return { name: name.trim(), addr: addr, lat: parseFloat(r.lat), lng: parseFloat(r.lon) };
     });
     renderResults(places);
   } catch(err) {
@@ -1458,23 +1463,32 @@ window.clearAll = function() {
   var confirmDiv = document.createElement('div');
   confirmDiv.id = 'clear-confirm';
   confirmDiv.style.cssText = [
-    'position:fixed;bottom:80px;left:50%;transform:translateX(-50%)',
-    'background:rgba(17,17,17,.95);color:white;border-radius:12px',
-    'padding:14px 20px;display:flex;align-items:center;gap:12px',
-    'font-family:Barlow Condensed,sans-serif;font-weight:600;font-size:1rem',
-    'letter-spacing:.04em;box-shadow:0 8px 28px rgba(0,0,0,.3)',
+    'position:fixed;left:50%;transform:translateX(-50%)',
+    'background:rgba(17,17,17,.97);color:white;border-radius:14px',
+    'padding:18px 28px;display:flex;align-items:center;gap:16px',
+    'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.5rem',
+    'letter-spacing:.04em;box-shadow:0 12px 40px rgba(0,0,0,.4)',
     'z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s',
     'white-space:nowrap'
   ].join(';');
   confirmDiv.innerHTML = [
     '<span>Clear all drawings?</span>',
-    '<button id="clear-yes" style="background:#DA291C;color:white;border:none;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;cursor:pointer">Yes, clear</button>',
-    '<button id="clear-no"  style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;cursor:pointer">Cancel</button>'
+    '<button id="clear-yes" style="background:#DA291C;color:white;border:none;border-radius:8px;padding:9px 20px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.06em;cursor:pointer">Yes, clear</button>',
+    '<button id="clear-no"  style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:8px;padding:9px 20px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.06em;cursor:pointer">Cancel</button>'
   ].join('');
   document.body.appendChild(confirmDiv);
 
+  function positionConfirm() {
+    var tb = document.getElementById('toolbar');
+    if (tb) {
+      var r = tb.getBoundingClientRect();
+      confirmDiv.style.top = (r.bottom + 10) + 'px';
+    }
+  }
+
   var _confirmTimer = null;
   window.confirmClearAll = function() {
+    positionConfirm();
     confirmDiv.style.opacity = '1';
     confirmDiv.style.pointerEvents = 'auto';
     clearTimeout(_confirmTimer);
