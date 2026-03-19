@@ -501,7 +501,7 @@ const map = L.map('map', {
   scrollWheelZoom:  true,
   doubleClickZoom:  false,
   dragging:         true
-  // tap: false removed — disabling Leaflet's tap handler can prevent tile rendering on iOS Safari
+  // tap:false removed — disabling Leaflet's tap handler blocks tile rendering on iOS Safari
 }).setView([37.755, -77.477], 11);
 
 // Zoom control — bottom-left so it doesn't overlap the toolbar
@@ -512,15 +512,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// Tell Leaflet to recalculate its container size after layout settles.
-// The map height comes from CSS; we just need invalidateSize so tiles load.
-// We do NOT call invalidateSize synchronously — the dvh-based layout and
-// Cloudflare injected scripts may not have resolved yet. Defer until after
-// window load + a short grace period for fonts and sticky toolbars.
+// Defer invalidateSize until after window load so that dvh layout, fonts,
+// and Cloudflare injected scripts have all resolved before Leaflet measures
+// the container. Calling it synchronously here would see height:0.
 function fitMapHeight() { map.invalidateSize(); }
-window.addEventListener('load', function() {
-  setTimeout(fitMapHeight, 250);
-});
+window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
