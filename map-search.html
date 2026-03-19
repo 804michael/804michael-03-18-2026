@@ -78,9 +78,9 @@
     .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
 
     /* Toolbar — single row, scrolls horizontally on small screens */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
     .toolbar::-webkit-scrollbar{display:none}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
@@ -369,11 +369,6 @@
       <div class="color-swatch"        style="background:#111111" data-color="#111111" data-tip="Black"  onclick="setColor(this)"></div>
     </div>
     <div class="tool-sep"></div>
-    <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
-    </button>
-
-    <div class="tool-sep"></div>
 
     <!-- ③ Draw tools | Schools -->
     <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
@@ -397,8 +392,12 @@
 
     <div class="tool-sep"></div>
 
-    <!-- ④ Undo | Redo | Trash — flex-shrink:0 group so they never wrap apart -->
+    <!-- ④ Pan | Undo | Redo | Trash -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
+      <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
+      </button>
+      <div class="tool-sep"></div>
       <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
       </button>
@@ -497,14 +496,13 @@ if (!Array.prototype.findLastIndex) {
 
 // ── Map ──────────────────────────────────────────────────────────────────────
 const map = L.map('map', {
-  zoomControl:      false,   // disable default top-left; we add it bottom-left below
+  zoomControl:      false,
   scrollWheelZoom:  true,
   doubleClickZoom:  false,
   dragging:         true
   // tap:false removed — disabling Leaflet's tap handler blocks tile rendering on iOS Safari
 }).setView([37.755, -77.477], 11);
 
-// Zoom control — bottom-left so it doesn't overlap the toolbar
 L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -512,9 +510,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// Defer invalidateSize until after window load so that dvh layout, fonts,
-// and Cloudflare injected scripts have all resolved before Leaflet measures
-// the container. Calling it synchronously would see height:0.
 function fitMapHeight() { map.invalidateSize(); }
 window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
@@ -1035,28 +1030,28 @@ let parcelsVisible = false;
 let parcelLayer    = null;
 
 function buildParcelLayer() {
-  // Virginia parcel boundaries via the state's public ArcGIS FeatureServer,
-  // rendered as a dynamic map tile — no Referer header required, no API key.
-  // Uses Esri's public Virginia Parcels hosted feature service.
-  return L.tileLayer(
-    'https://maps.hanovercounty.gov/arcgis/rest/services/Basemaps/ParcelBoundaries/MapServer/tile/{z}/{y}/{x}',
+  // Virginia Geographic Information Network (VGIN) public parcel WMS
+  return L.tileLayer.wms(
+    'https://gismaps.vgin.vdem.virginia.gov/arcgis/services/VGIN/Virginia_Base_Map_Service/MapServer/WMSServer',
     {
-      minZoom:     13,
-      maxZoom:     20,
-      opacity:     0.6,
-      attribution: 'Parcels © Hanover County GIS',
-      errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+      layers:      'Parcel_Boundaries',
+      format:      'image/png',
+      transparent:  true,
+      version:     '1.3.0',
+      minZoom:      13,
+      maxZoom:      20,
+      opacity:      0.6,
+      attribution: 'Parcels © VGIN'
     }
   );
 }
 
 function buildParcelLayerFallback() {
-  // Regrid free parcel tile — covers all US counties, browser-safe, no Referer needed
   return L.tileLayer(
-    'https://tiles.regrid.com/api/v1/parcels/{z}/{x}/{y}.png?token=',
+    'https://tiles.arcgis.com/tiles/sFnw0xNflSi8J0uh/arcgis/rest/services/Virginia_Parcels/MapServer/tile/{z}/{y}/{x}',
     {
       minZoom: 14, maxZoom: 19, opacity: 0.5,
-      attribution: 'Parcels © Regrid'
+      attribution: 'Parcels © ArcGIS Online'
     }
   );
 }
