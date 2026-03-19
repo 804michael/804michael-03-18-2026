@@ -119,8 +119,20 @@
     .map-toolbar::-webkit-scrollbar{display:none}
     #map{flex:1;min-height:0}
 
-    /* Address search */
-    .search-wrap{display:flex;align-items:center;gap:4px;position:relative}
+    /* Search bar — sits above map, always visible */
+    .search-bar{
+      background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--gray-mid);
+      padding:6px 10px;
+      flex-shrink:0;
+      display:flex;align-items:center;gap:6px;
+    }
+    .search-bar-label{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap;
+      flex-shrink:0;
+    }
+    .search-wrap{display:flex;align-items:center;gap:5px;position:relative;flex:1;max-width:480px}
     .search-input{
       height:34px;padding:0 10px;border:2px solid var(--gray-mid);border-radius:7px;
       font-family:'Barlow',sans-serif;font-size:.85rem;color:var(--black);
@@ -276,7 +288,7 @@
 
       <div class="tool-sep"></div>
 
-      <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — drag to draw, double-click to close shape">
+      <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — drag to draw. Release near start point to close into a shape.">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
       </button>
 
@@ -331,20 +343,21 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </button>
 
-      <div class="tool-sep"></div>
+    </div>
+  </div>
 
-      <!-- Address search -->
-      <div class="search-wrap">
-        <input type="text" class="search-input" id="search-input" placeholder="Search address or place…"
-          onkeydown="if(event.key==='Enter')searchAddress()"
-          oninput="onSearchInput()" autocomplete="off" />
-        <button class="search-btn" onclick="searchAddress()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Pin It
-        </button>
-        <div class="search-results" id="search-results"></div>
-      </div>
-
+  <!-- ADDRESS SEARCH BAR — always visible -->
+  <div class="search-bar">
+    <span class="search-bar-label">📍 Drop Pin:</span>
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="Search an address, school, or landmark…"
+        onkeydown="if(event.key==='Enter')searchAddress()"
+        oninput="onSearchInput()" autocomplete="off" />
+      <button class="search-btn" onclick="searchAddress()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+      <div class="search-results" id="search-results"></div>
     </div>
   </div>
 
@@ -684,9 +697,19 @@ out center;`;
   function onMapEnd(e){
     const ll = e.latlng || (e.changedTouches && e.changedTouches[0] ?
       map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:e.changedTouches[0].clientX,clientY:e.changedTouches[0].clientY})) : null);
-    if(mode==='freehand'&&drawingPolyline){
-      const layer=drawingPolyline;
-      drawingPolyline=null;polyLatLngs=[];
+    if(mode==='freehand'&&drawingPolyline&&polyLatLngs.length>=2){
+      // Snap-to-origin: if end is within ~50px of start, close as polygon
+      const startPx = map.latLngToContainerPoint(polyLatLngs[0]);
+      const endPx   = map.latLngToContainerPoint(polyLatLngs[polyLatLngs.length-1]);
+      const dist = startPx.distanceTo(endPx);
+      let layer;
+      if(dist < 50 && polyLatLngs.length >= 3){
+        layer = L.polygon(polyLatLngs, shapeStyle());
+      } else {
+        layer = drawingPolyline;
+      }
+      if(layer !== drawingPolyline) map.removeLayer(drawingPolyline);
+      drawingPolyline=null; polyLatLngs=[];
       commitLayer(layer);
     }
     if(mode==='circle'&&circleCenter&&previewCircle&&ll){
@@ -762,9 +785,18 @@ out center;`;
     e.preventDefault();
     const t=e.changedTouches[0];
     const ll=map.containerPointToLatLng(map.mouseEventToContainerPoint({clientX:t.clientX,clientY:t.clientY}));
-    if(mode==='freehand'&&drawingPolyline){
-      const layer=drawingPolyline;
-      drawingPolyline=null;polyLatLngs=[];
+    if(mode==='freehand'&&drawingPolyline&&polyLatLngs.length>=2){
+      const startPx = map.latLngToContainerPoint(polyLatLngs[0]);
+      const endPx   = map.latLngToContainerPoint(polyLatLngs[polyLatLngs.length-1]);
+      const dist = startPx.distanceTo(endPx);
+      let layer;
+      if(dist < 50 && polyLatLngs.length >= 3){
+        layer = L.polygon(polyLatLngs, shapeStyle());
+      } else {
+        layer = drawingPolyline;
+      }
+      if(layer !== drawingPolyline) map.removeLayer(drawingPolyline);
+      drawingPolyline=null; polyLatLngs=[];
       commitLayer(layer);
     }
     if(mode==='circle'&&circleCenter&&previewCircle){
@@ -924,12 +956,6 @@ out center;`;
   // Freehand double-click to close shape
   map.on('dblclick', function(e){
     L.DomEvent.stopPropagation(e);
-    if(mode==='freehand'&&drawingPolyline&&polyLatLngs.length>=3){
-      const layer=L.polygon(polyLatLngs,shapeStyle());
-      map.removeLayer(drawingPolyline);drawingPolyline=null;
-      polyLatLngs=[];
-      commitLayer(layer);
-    }
     if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
       const layer=L.polygon(polyLatLngs,shapeStyle());
       map.removeLayer(drawingPolyline);drawingPolyline=null;
