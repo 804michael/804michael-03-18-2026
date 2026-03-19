@@ -65,120 +65,76 @@
     .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
-    /* ── Page Header ── */
-    .pg-header{
-      margin-top:calc(var(--banner-h) + var(--nav-h));
-      background:var(--black);
-      padding:20px 24px 16px;
-      display:flex;align-items:center;gap:20px;flex-wrap:wrap;
-    }
-    .pg-header-text h1{
-      font-family:'Barlow Condensed',sans-serif;font-weight:900;
-      font-size:clamp(1.4rem,3vw,2rem);color:var(--white);
-      text-transform:uppercase;letter-spacing:-.01em;line-height:1;
-    }
-    .pg-header-text h1 span{color:var(--red)}
-    .pg-header-text p{
-      color:rgba(255,255,255,.55);font-size:.85rem;
-      margin-top:5px;max-width:680px;line-height:1.5;
-    }
+    /* Page Header */
+    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:18px 24px 14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,3vw,2rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap}
+    .pg-header h1 span{color:var(--red)}
+    .pg-header p{color:rgba(255,255,255,.5);font-size:.82rem;line-height:1.5;max-width:680px}
 
-    /* ── Toolbar ── */
-    .toolbar{
-      background:var(--white);
-      border-bottom:2px solid var(--gray-mid);
-      padding:8px 16px;
-    }
-    .toolbar-in{
-      max-width:100%;
-      display:flex;align-items:center;gap:4px;flex-wrap:wrap;
-    }
-    .tool-sep{width:1px;height:28px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
+    /* Toolbar */
+    .toolbar{background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+    .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
 
-    /* Icon-only tool buttons with tooltip */
     .tool-btn{
-      position:relative;
-      display:inline-flex;align-items:center;justify-content:center;
-      width:36px;height:36px;border-radius:8px;
-      border:2px solid transparent;
-      background:transparent;color:var(--black);
-      cursor:pointer;transition:all .15s;flex-shrink:0;
+      position:relative;display:inline-flex;align-items:center;justify-content:center;
+      width:34px;height:34px;border-radius:7px;border:2px solid transparent;
+      background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;
     }
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white)}
-    .tool-btn.danger.active{background:var(--red);border-color:var(--red);color:var(--white)}
     .tool-btn svg{pointer-events:none}
-    /* Tooltip */
     .tool-btn::after{
-      content:attr(data-tip);
-      position:absolute;
-      bottom:calc(100% + 8px);
-      left:50%;transform:translateX(-50%);
-      background:rgba(17,17,17,.92);color:white;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
-      padding:5px 10px;border-radius:6px;white-space:nowrap;
-      pointer-events:none;opacity:0;transition:opacity .15s;
-      z-index:600;
+      content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+      background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;
+      white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000;
     }
     .tool-btn:hover::after{opacity:1}
-
-    /* Disabled state */
-    .tool-btn:disabled{opacity:.3;cursor:not-allowed}
+    .tool-btn:disabled{opacity:.28;cursor:not-allowed}
     .tool-btn:disabled:hover{background:transparent;border-color:transparent}
     .tool-btn:disabled::after{display:none}
 
-    /* Color swatches */
     .color-swatches{display:flex;gap:5px;align-items:center}
-    .color-swatch{
-      position:relative;
-      width:22px;height:22px;border-radius:50%;cursor:pointer;
-      border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;
-    }
-    .color-swatch.active{border-color:var(--black);transform:scale(1.25)}
-    .color-swatch::after{
-      content:attr(data-tip);
-      position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
-      background:rgba(17,17,17,.92);color:white;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
-      padding:4px 8px;border-radius:6px;white-space:nowrap;
-      pointer-events:none;opacity:0;transition:opacity .15s;z-index:600;
-    }
+    .color-swatch{position:relative;width:20px;height:20px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
+    .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
+    .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
     .color-swatch:hover::after{opacity:1}
 
-    /* Size & fill sliders */
-    .slider-wrap{display:flex;align-items:center;gap:5px}
+    .slider-wrap{display:flex;align-items:center;gap:4px}
     .slider-label{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap}
     .stroke-slider{width:60px;accent-color:var(--red);cursor:pointer}
-    .fill-slider{width:50px;accent-color:var(--red);cursor:pointer}
-
-    /* Distance badge */
-    .dist-badge{
-      position:absolute;
-      background:rgba(0,0,0,.78);color:white;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.04em;
-      padding:4px 10px;border-radius:6px;pointer-events:none;
-      z-index:500;display:none;white-space:nowrap;
-    }
 
     /* Map */
-    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 155px);min-height:400px}
+    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 120px);min-height:400px}
     #map{width:100%;height:100%}
-    #draw-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:400;touch-action:none}
+
+    /* Leaflet cursor overrides */
+    .leaflet-grab{cursor:crosshair}
+    .leaflet-dragging .leaflet-grab{cursor:move}
+
+    /* Distance tooltip on map */
+    .dist-tip{
+      background:rgba(0,0,0,.78);color:white;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;
+      padding:3px 9px;border-radius:5px;border:none;box-shadow:none;white-space:nowrap;
+    }
+    .dist-tip::before{display:none}
+
+    /* Map hint */
     .map-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:white;padding:8px 16px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:nowrap;animation:pulse 2.5s ease infinite}
     .map-hint.hidden{display:none}
-    .poly-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid white;transform:translate(-50%,-50%);z-index:450;pointer-events:none}
 
     /* Bottom CTA */
-    .bottom-cta{background:var(--black);padding:24px;text-align:center}
-    .bottom-cta-in{max-width:600px;margin:0 auto}
-    .bottom-cta h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,3.5vw,2rem);text-transform:uppercase;color:var(--white);margin-bottom:6px}
+    .bottom-cta{background:var(--black);padding:22px 24px;text-align:center}
+    .bottom-cta-in{max-width:580px;margin:0 auto}
+    .bottom-cta h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.3rem,3vw,1.9rem);text-transform:uppercase;color:var(--white);margin-bottom:5px}
     .bottom-cta h2 span{color:var(--red)}
-    .bottom-cta p{color:rgba(255,255,255,.55);font-size:.88rem;margin-bottom:18px;line-height:1.5}
-    .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .bottom-cta p{color:rgba(255,255,255,.5);font-size:.85rem;margin-bottom:16px;line-height:1.5}
+    .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
     .btn-lg{font-size:1.47rem;padding:14px 32px}
 
-    footer{background:var(--black);padding:24px;border-top:1px solid rgba(255,255,255,.07)}
+    footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
     .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
     .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
   </style>
@@ -255,7 +211,7 @@
 
 <!-- PAGE HEADER -->
 <div class="pg-header">
-  <div class="pg-header-text">
+  <div>
     <h1>Draw Your <span>Search</span> Area</h1>
     <p>Circle the areas you're interested in (or places you are not interested in) on the map. Take a screenshot and send it to 804-Michael to help him better understand where you want to live.</p>
   </div>
@@ -265,75 +221,59 @@
 <div class="toolbar">
   <div class="toolbar-in">
 
-    <!-- Pan -->
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
-    <!-- Freehand (pencil) -->
     <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
     </button>
 
-    <!-- Circle -->
-    <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center. Shows radius.">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+    <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
     </button>
 
-    <!-- Polygon -->
-    <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — click points, double-click to close. Shows perimeter.">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 21,8 18,19 6,19 3,8"/></svg>
+    <button class="tool-btn" id="btn-polygon" onclick="setMode('polygon')" data-tip="Polygon — click points, double-click to close">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 21,8 18,19 6,19 3,8"/></svg>
     </button>
 
-    <!-- Erase -->
-    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — drag to erase">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
+    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — click a shape to delete it">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
-    <!-- Undo -->
-    <button class="tool-btn" id="btn-undo" onclick="undo()" data-tip="Undo" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+    <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
     </button>
 
-    <!-- Redo -->
-    <button class="tool-btn" id="btn-redo" onclick="redo()" data-tip="Redo" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+    <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" disabled>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
     </button>
 
     <div class="tool-sep"></div>
 
-    <!-- Colors: Green, Yellow, Red, Black, Blue -->
     <div class="color-swatches">
-      <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green" onclick="setColor(this)"></div>
-      <div class="color-swatch" style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
-      <div class="color-swatch" style="background:#DA291C" data-color="#DA291C" data-tip="Red" onclick="setColor(this)"></div>
-      <div class="color-swatch" style="background:#111111" data-color="#111111" data-tip="Black" onclick="setColor(this)"></div>
-      <div class="color-swatch" style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue" onclick="setColor(this)"></div>
+      <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
+      <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
+      <div class="color-swatch"        style="background:#DA291C" data-color="#DA291C" data-tip="Red"    onclick="setColor(this)"></div>
+      <div class="color-swatch"        style="background:#111111" data-color="#111111" data-tip="Black"  onclick="setColor(this)"></div>
+      <div class="color-swatch"        style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue"   onclick="setColor(this)"></div>
     </div>
 
     <div class="tool-sep"></div>
 
-    <!-- Size -->
     <div class="slider-wrap">
-      <span class="slider-label">Size</span>
-      <input type="range" class="stroke-slider" id="stroke-size" min="2" max="28" value="4" oninput="strokeSize=+this.value" />
-    </div>
-
-    <!-- Fill opacity -->
-    <div class="slider-wrap">
-      <span class="slider-label">Fill</span>
-      <input type="range" class="fill-slider" id="fill-opacity" min="0" max="60" value="20" oninput="fillOpacity=+this.value/100" />
+      <span class="slider-label">Stroke</span>
+      <input type="range" class="stroke-slider" id="stroke-size" min="1" max="10" value="3" oninput="strokeWeight=+this.value;updatePreviewStyle()" />
     </div>
 
     <div class="tool-sep"></div>
 
-    <!-- Clear All -->
-    <button class="tool-btn danger" id="btn-clear" onclick="clearAll()" data-tip="Clear all drawings">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    <button class="tool-btn" id="btn-clear" onclick="clearAll()" data-tip="Clear all drawings">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </button>
 
   </div>
@@ -342,16 +282,14 @@
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
   <div id="map"></div>
-  <canvas id="draw-canvas"></canvas>
-  <div class="dist-badge" id="dist-badge"></div>
-  <div class="map-hint" id="map-hint">✏️ Pick a tool above and draw on the map</div>
+  <div class="map-hint" id="map-hint">✏️ Pick a tool and draw on the map</div>
 </div>
 
 <!-- BOTTOM CTA -->
 <div class="bottom-cta">
   <div class="bottom-cta-in">
     <h2>Send It to <span>804-Michael</span></h2>
-    <p>Screenshot your marked map and text or email it. Michael will reach out with listings and local insight for every area you marked.</p>
+    <p>Screenshot your marked map and text or email it. Michael will reach out with listings and insight for every area you marked.</p>
     <div class="cta-btns">
       <a href="sms:8046424235" class="btn btn-red btn-lg">💬 Text 804-Michael</a>
       <a href="mailto:michael@804re.com" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,.3)">✉️ Email Michael</a>
@@ -387,335 +325,243 @@
 <script>
   // ── Nav ──
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
-  const connectBtn = document.getElementById('connect-btn');
-  const connectDd  = document.getElementById('connect-dd');
-  connectBtn.addEventListener('click', e => { e.stopPropagation(); const open = connectDd.classList.toggle('open'); connectBtn.setAttribute('aria-expanded', open); });
-  document.addEventListener('click', () => { connectDd.classList.remove('open'); connectBtn.setAttribute('aria-expanded','false'); });
-  connectDd.addEventListener('click', e => e.stopPropagation());
-  const mob=document.getElementById('mob-menu'), bd=document.getElementById('backdrop');
-  const h1=document.getElementById('h1'), h2=document.getElementById('h2'), h3=document.getElementById('h3');
-  function openMob(){ mob.classList.add('open'); bd.classList.add('open'); h1.style.transform='translateY(7px) rotate(45deg)'; h2.style.opacity='0'; h3.style.transform='translateY(-7px) rotate(-45deg)'; document.body.style.overflow='hidden'; }
-  window.closeMob = function(){ mob.classList.remove('open'); bd.classList.remove('open'); h1.style.transform=''; h2.style.opacity=''; h3.style.transform=''; document.body.style.overflow=''; }
-  document.getElementById('ham-btn').addEventListener('click', openMob);
-  document.getElementById('mob-close').addEventListener('click', closeMob);
-  window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40));
+  const connectBtn=document.getElementById('connect-btn'), connectDd=document.getElementById('connect-dd');
+  connectBtn.addEventListener('click',e=>{e.stopPropagation();const o=connectDd.classList.toggle('open');connectBtn.setAttribute('aria-expanded',o)});
+  document.addEventListener('click',()=>{connectDd.classList.remove('open');connectBtn.setAttribute('aria-expanded','false')});
+  connectDd.addEventListener('click',e=>e.stopPropagation());
+  const mob=document.getElementById('mob-menu'),bd=document.getElementById('backdrop'),h1=document.getElementById('h1'),h2=document.getElementById('h2'),h3=document.getElementById('h3');
+  function openMob(){mob.classList.add('open');bd.classList.add('open');h1.style.transform='translateY(7px) rotate(45deg)';h2.style.opacity='0';h3.style.transform='translateY(-7px) rotate(-45deg)';document.body.style.overflow='hidden'}
+  window.closeMob=function(){mob.classList.remove('open');bd.classList.remove('open');h1.style.transform='';h2.style.opacity='';h3.style.transform='';document.body.style.overflow=''}
+  document.getElementById('ham-btn').addEventListener('click',openMob);
+  document.getElementById('mob-close').addEventListener('click',closeMob);
+  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40));
 
   // ── Map ──
-  const map = L.map('map', { zoomControl: true, scrollWheelZoom: true })
-    .setView([37.755, -77.477], 11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19
+  const map = L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([37.755,-77.477],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19
   }).addTo(map);
 
-  // ── Canvas ──
-  const canvas   = document.getElementById('draw-canvas');
-  const ctx      = canvas.getContext('2d');
-  const mapWrap  = document.getElementById('map-wrap');
-  const distBadge = document.getElementById('dist-badge');
+  // ── State ──
+  let mode='freehand', strokeColor='#188038', strokeWeight=3;
+  let hasDrawn=false;
 
-  let mode        = 'freehand';
-  let strokeColor = '#188038';
-  let strokeSize  = 4;
-  let fillOpacity = 0.20;
-  let isDrawing   = false;
-  let hasDrawn    = false;
-  let startX=0, startY=0, lastX=0, lastY=0;
-  let polyPoints=[], polyDots=[];
-  let snapshot=null;
+  // All committed shapes stored as Leaflet layers
+  const drawnLayers = []; // stack of layers for undo
+  const redoLayers  = []; // stack for redo
+  const activeGroup = L.featureGroup().addTo(map);
 
-  // ── Undo/Redo stacks (store canvas ImageData) ──
-  const undoStack = [];
-  const redoStack = [];
-  const MAX_HISTORY = 40;
-
-  function saveHistory() {
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    if (undoStack.length > MAX_HISTORY) undoStack.shift();
-    redoStack.length = 0;
-    updateUndoRedo();
-  }
-
-  function undo() {
-    if (!undoStack.length) return;
-    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    ctx.putImageData(undoStack.pop(), 0, 0);
-    updateUndoRedo();
-  }
-
-  function redo() {
-    if (!redoStack.length) return;
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    ctx.putImageData(redoStack.pop(), 0, 0);
-    updateUndoRedo();
-  }
-
-  function updateUndoRedo() {
-    document.getElementById('btn-undo').disabled = undoStack.length === 0;
-    document.getElementById('btn-redo').disabled = redoStack.length === 0;
-  }
-
-  // ── Canvas resize ──
-  function resizeCanvas() {
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    canvas.width  = mapWrap.offsetWidth;
-    canvas.height = mapWrap.offsetHeight;
-    ctx.putImageData(data, 0, 0);
-  }
-  resizeCanvas();
-  new ResizeObserver(resizeCanvas).observe(mapWrap);
-
-  function getPos(e) {
-    const r  = canvas.getBoundingClientRect();
-    const sx = canvas.width  / r.width;
-    const sy = canvas.height / r.height;
-    const src = e.touches ? e.touches[0] : e;
-    return { x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy, cx:src.clientX, cy:src.clientY };
-  }
-
-  // ── Distance helpers ──
-  // Convert canvas pixels to approximate meters using Leaflet
-  function pxToMeters(px, py, qx, qy) {
-    const wrap = canvas.getBoundingClientRect();
-    const p1 = map.containerPointToLatLng([px * (wrap.width / canvas.width), py * (wrap.height / canvas.height)]);
-    const p2 = map.containerPointToLatLng([qx * (wrap.width / canvas.width), qy * (wrap.height / canvas.height)]);
-    return p1.distanceTo(p2);
-  }
-
-  function fmtDist(m) {
-    if (m < 1609) return (m * 0.000621371 * 5280).toFixed(0) + ' ft';
-    return (m * 0.000621371).toFixed(2) + ' mi';
-  }
-
-  function showDistBadge(cx, cy, text) {
-    distBadge.style.display = 'block';
-    distBadge.textContent   = text;
-    const bw = distBadge.offsetWidth  || 80;
-    const bh = distBadge.offsetHeight || 28;
-    const mw = mapWrap.offsetWidth;
-    const mh = mapWrap.offsetHeight;
-    let x = cx + 12, y = cy - bh - 8;
-    if (x + bw > mw) x = cx - bw - 12;
-    if (y < 0)       y = cy + 12;
-    distBadge.style.left = x + 'px';
-    distBadge.style.top  = y + 'px';
-  }
-
-  function hideDistBadge() { distBadge.style.display = 'none'; }
+  // In-progress drawing temps
+  let drawingPolyline=null, drawingCircle=null, polyLatLngs=[];
+  let circleCenter=null, previewCircle=null, distTooltip=null;
 
   // ── Helpers ──
-  function hexToRgba(hex, a) {
-    const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-    return `rgba(${r},${g},${b},${a})`;
+  function fmtDist(m){return m<1609?(m*3.28084).toFixed(0)+' ft':(m*0.000621371).toFixed(2)+' mi'}
+
+  function shapeStyle(){return{color:strokeColor,weight:strokeWeight,opacity:1,fill:false}}
+
+  function updatePreviewStyle(){
+    if(drawingPolyline) drawingPolyline.setStyle({color:strokeColor,weight:strokeWeight});
+    if(previewCircle)   previewCircle.setStyle({color:strokeColor,weight:strokeWeight});
   }
 
-  function saveSnapshot() { snapshot = ctx.getImageData(0,0,canvas.width,canvas.height); }
-  function restoreSnapshot() { if(snapshot) ctx.putImageData(snapshot,0,0); }
-
-  function applyStroke() {
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth   = strokeSize;
-    ctx.lineCap     = 'round';
-    ctx.lineJoin    = 'round';
-    ctx.setLineDash([]);
-    ctx.globalCompositeOperation = 'source-over';
+  function markDrawn(){
+    if(!hasDrawn){hasDrawn=true;document.getElementById('map-hint').classList.add('hidden')}
   }
 
-  // ── Draw circle ──
-  function drawCirclePreview(x, y, cx, cy) {
-    restoreSnapshot();
-    const radius = Math.sqrt((x-startX)**2 + (y-startY)**2);
-    ctx.beginPath();
-    ctx.arc(startX, startY, radius, 0, Math.PI*2);
-    applyStroke();
-    ctx.stroke();
-    ctx.fillStyle = hexToRgba(strokeColor, fillOpacity);
-    ctx.fill();
-    // distance badge
-    const m = pxToMeters(startX, startY, x, y);
-    showDistBadge(cx, cy, 'r ≈ ' + fmtDist(m));
-  }
-
-  function commitCircle(x, y) {
-    saveHistory();
-    drawCirclePreview(x, y, 0, 0);
-    hideDistBadge();
-    snapshot = null;
-  }
-
-  // ── Draw polygon ──
-  function addPolyDot(x, y) {
-    const dot = document.createElement('div');
-    dot.className = 'poly-dot';
-    const r = canvas.getBoundingClientRect();
-    dot.style.left = (x / (canvas.width/r.width)) + 'px';
-    dot.style.top  = (y / (canvas.height/r.height)) + 'px';
-    mapWrap.appendChild(dot);
-    polyDots.push(dot);
-  }
-
-  function drawPolyPreview(mx, my, cx, cy) {
-    if (!polyPoints.length) return;
-    restoreSnapshot();
-    ctx.beginPath();
-    ctx.moveTo(polyPoints[0].x, polyPoints[0].y);
-    polyPoints.forEach(p => ctx.lineTo(p.x, p.y));
-    applyStroke();
-    ctx.setLineDash([6,4]);
-    ctx.stroke();
-    // preview segment
-    const last = polyPoints[polyPoints.length-1];
-    ctx.beginPath();
-    ctx.moveTo(last.x, last.y);
-    ctx.lineTo(mx, my);
-    ctx.strokeStyle = hexToRgba(strokeColor, 0.5);
-    ctx.lineWidth   = strokeSize;
-    ctx.setLineDash([4,4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    // perimeter distance
-    let perim = 0;
-    for (let i=1; i<polyPoints.length; i++) {
-      perim += pxToMeters(polyPoints[i-1].x, polyPoints[i-1].y, polyPoints[i].x, polyPoints[i].y);
-    }
-    perim += pxToMeters(last.x, last.y, mx, my);
-    showDistBadge(cx, cy, 'perim ≈ ' + fmtDist(perim));
-  }
-
-  function commitPolygon() {
-    if (polyPoints.length < 3) { cancelPolygon(); return; }
-    saveHistory();
-    restoreSnapshot();
-    ctx.beginPath();
-    ctx.moveTo(polyPoints[0].x, polyPoints[0].y);
-    polyPoints.forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.closePath();
-    applyStroke();
-    ctx.stroke();
-    ctx.fillStyle = hexToRgba(strokeColor, fillOpacity);
-    ctx.fill();
-    cancelPolygon();
-    hideDistBadge();
-    snapshot = null;
-  }
-
-  function cancelPolygon() {
-    polyPoints=[]; polyDots.forEach(d=>d.remove()); polyDots=[];
-  }
-
-  // ── Events ──
-  function markDrawn() {
-    if (!hasDrawn) { hasDrawn=true; document.getElementById('map-hint').classList.add('hidden'); }
-  }
-
-  function onDown(e) {
-    if (mode==='pan') return;
-    e.preventDefault();
-    const pos = getPos(e);
-
-    if (mode==='polygon') {
-      if (!polyPoints.length) saveSnapshot();
-      // Double-tap closes
-      if (polyPoints.length >= 2) {
-        const last = polyPoints[polyPoints.length-1];
-        if (Math.sqrt((pos.x-last.x)**2+(pos.y-last.y)**2) < 18) { commitPolygon(); return; }
-      }
-      polyPoints.push({x:pos.x, y:pos.y});
-      addPolyDot(pos.x, pos.y);
-      markDrawn(); return;
-    }
-
-    isDrawing=true;
-    startX=pos.x; startY=pos.y; lastX=pos.x; lastY=pos.y;
-    if (mode==='circle') saveSnapshot();
-    if (mode==='freehand' || mode==='erase') saveHistory();
+  function commitLayer(layer){
+    activeGroup.addLayer(layer);
+    drawnLayers.push(layer);
+    redoLayers.length=0;
+    updateUndoRedo();
     markDrawn();
   }
 
-  function onMove(e) {
-    if (mode==='pan') return;
-    e.preventDefault();
-    const pos = getPos(e);
-
-    if (mode==='polygon') {
-      drawPolyPreview(pos.x, pos.y, pos.cx, pos.cy); return;
-    }
-    if (!isDrawing) return;
-
-    if (mode==='circle') {
-      drawCirclePreview(pos.x, pos.y, pos.cx, pos.cy); return;
-    }
-    if (mode==='freehand') {
-      ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(pos.x,pos.y);
-      applyStroke(); ctx.stroke();
-      lastX=pos.x; lastY=pos.y; return;
-    }
-    if (mode==='erase') {
-      ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(pos.x,pos.y);
-      ctx.globalCompositeOperation='destination-out';
-      ctx.lineWidth=strokeSize*5; ctx.lineCap='round';
-      ctx.stroke();
-      ctx.globalCompositeOperation='source-over';
-      lastX=pos.x; lastY=pos.y;
-    }
+  function updateUndoRedo(){
+    document.getElementById('btn-undo').disabled=drawnLayers.length===0;
+    document.getElementById('btn-redo').disabled=redoLayers.length===0;
   }
 
-  function onUp(e) {
-    if (!isDrawing) return;
-    isDrawing=false;
-    if (mode==='circle') {
-      const pos = getPos(e.changedTouches ? e.changedTouches[0] : e);
-      commitCircle(pos.x, pos.y);
-    }
+  // ── Distance tooltip attached to mouse position on map ──
+  function showDistAt(latlng, text){
+    if(distTooltip){map.removeLayer(distTooltip)}
+    distTooltip = L.tooltip({permanent:true,direction:'right',offset:[8,-10],className:'dist-tip'})
+      .setLatLng(latlng).setContent(text).addTo(map);
+  }
+  function clearDistTooltip(){
+    if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}
   }
 
-  canvas.addEventListener('mousedown',  onDown);
-  canvas.addEventListener('mousemove',  onMove);
-  canvas.addEventListener('mouseup',    onUp);
-  canvas.addEventListener('mouseleave', ()=>{ if(isDrawing&&mode==='circle'){isDrawing=false;snapshot=null;hideDistBadge();} });
-  canvas.addEventListener('dblclick',   e=>{ if(mode==='polygon'){e.preventDefault();commitPolygon();} });
-  canvas.addEventListener('touchstart', onDown, {passive:false});
-  canvas.addEventListener('touchmove',  onMove, {passive:false});
-  canvas.addEventListener('touchend',   onUp);
-
-  // ── Tool controls ──
-  const allModes = ['pan','freehand','circle','polygon','erase'];
-
-  function setMode(m) {
-    if (mode==='polygon' && m!=='polygon') cancelPolygon();
-    mode = m;
-    allModes.forEach(t => {
-      const el = document.getElementById('btn-'+t);
-      if (el) el.classList.toggle('active', t===m);
+  // ── Mode switching ──
+  const allModes=['pan','freehand','circle','polygon','erase'];
+  function setMode(m){
+    cancelInProgress();
+    mode=m;
+    allModes.forEach(t=>{
+      const el=document.getElementById('btn-'+t);
+      if(el) el.classList.toggle('active',t===m);
     });
-    if (m==='pan') {
-      canvas.style.pointerEvents='none';
-      map.dragging.enable();
-      map.scrollWheelZoom.enable();
+    if(m==='pan'){
+      map.dragging.enable();map.scrollWheelZoom.enable();
+      map.getContainer().style.cursor='grab';
+    } else if(m==='erase'){
+      map.dragging.disable();map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor='not-allowed';
     } else {
-      canvas.style.pointerEvents='auto';
-      map.dragging.disable();
-      map.scrollWheelZoom.disable();
-      canvas.style.cursor = m==='erase' ? 'cell' : 'crosshair';
+      map.dragging.disable();map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor='crosshair';
     }
   }
 
-  function setColor(el) {
-    strokeColor = el.dataset.color;
+  function cancelInProgress(){
+    if(drawingPolyline){map.removeLayer(drawingPolyline);drawingPolyline=null}
+    if(previewCircle){map.removeLayer(previewCircle);previewCircle=null}
+    clearDistTooltip();
+    polyLatLngs=[];circleCenter=null;
+  }
+
+  function setColor(el){
+    strokeColor=el.dataset.color;
     document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
     el.classList.add('active');
-    if (mode==='erase') setMode('freehand');
+    if(mode==='erase') setMode('freehand');
+    updatePreviewStyle();
   }
 
-  function clearAll() {
-    saveHistory();
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    cancelPolygon(); snapshot=null; hideDistBadge();
+  // ── Map events ──
+  map.on('mousedown touchstart', function(e){
+    if(mode==='pan'||mode==='erase') return;
+    const ll=e.latlng;
+
+    if(mode==='freehand'){
+      polyLatLngs=[ll];
+      drawingPolyline=L.polyline([ll],shapeStyle()).addTo(map);
+      return;
+    }
+    if(mode==='circle'){
+      circleCenter=ll;
+      previewCircle=L.circle(ll,{radius:1,...shapeStyle(),fill:false}).addTo(map);
+      return;
+    }
+    if(mode==='polygon'){
+      if(!drawingPolyline){
+        polyLatLngs=[ll];
+        drawingPolyline=L.polyline([ll,ll],{...shapeStyle(),dashArray:'6,4'}).addTo(map);
+      } else {
+        polyLatLngs.push(ll);
+        drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+      }
+      markDrawn();
+      return;
+    }
+  });
+
+  map.on('mousemove', function(e){
+    const ll=e.latlng;
+
+    if(mode==='freehand'&&drawingPolyline){
+      polyLatLngs.push(ll);
+      drawingPolyline.setLatLngs(polyLatLngs);
+      return;
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const r=circleCenter.distanceTo(ll);
+      previewCircle.setRadius(r);
+      showDistAt(ll,'r ≈ '+fmtDist(r));
+      return;
+    }
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
+      const pts=[...polyLatLngs,ll];
+      drawingPolyline.setLatLngs(pts);
+      // perimeter
+      let perim=0;
+      for(let i=1;i<pts.length;i++) perim+=pts[i-1].distanceTo(pts[i]);
+      showDistAt(ll,'perim ≈ '+fmtDist(perim));
+    }
+  });
+
+  map.on('mouseup touchend', function(e){
+    if(mode==='freehand'&&drawingPolyline){
+      const layer=drawingPolyline;
+      drawingPolyline=null;polyLatLngs=[];
+      commitLayer(layer);
+    }
+    if(mode==='circle'&&circleCenter&&previewCircle){
+      const ll=e.latlng||circleCenter;
+      const r=circleCenter.distanceTo(ll);
+      if(r>10){
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle(),fill:false});
+        map.removeLayer(previewCircle);previewCircle=null;
+        circleCenter=null;clearDistTooltip();
+        commitLayer(layer);
+      }
+    }
+  });
+
+  // Double-click closes polygon
+  map.on('dblclick', function(e){
+    L.DomEvent.stopPropagation(e);
+    if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
+      const layer=L.polygon(polyLatLngs,{...shapeStyle(),fill:false});
+      map.removeLayer(drawingPolyline);drawingPolyline=null;
+      polyLatLngs=[];clearDistTooltip();
+      commitLayer(layer);
+    }
+  });
+
+  // Erase: click on any drawn layer to remove it
+  map.on('click', function(e){
+    if(mode!=='erase') return;
+    let closest=null, minDist=Infinity;
+    drawnLayers.forEach(layer=>{
+      let d=Infinity;
+      if(layer instanceof L.Circle){
+        d=Math.abs(e.latlng.distanceTo(layer.getLatLng())-layer.getRadius());
+      } else if(layer instanceof L.Polygon){
+        const c=layer.getBounds().getCenter();
+        d=e.latlng.distanceTo(c);
+      } else if(layer instanceof L.Polyline){
+        const pts=layer.getLatLngs().flat();
+        pts.forEach(p=>{ const dd=e.latlng.distanceTo(p); if(dd<d) d=dd; });
+      }
+      if(d<minDist){minDist=d;closest=layer}
+    });
+    if(closest&&minDist<map.getContainer().offsetWidth*0.05){
+      activeGroup.removeLayer(closest);
+      const idx=drawnLayers.indexOf(closest);
+      if(idx>-1) drawnLayers.splice(idx,1);
+      redoLayers.length=0;
+      updateUndoRedo();
+    }
+  });
+
+  // ── Undo / Redo ──
+  function undoLast(){
+    if(!drawnLayers.length) return;
+    const layer=drawnLayers.pop();
+    activeGroup.removeLayer(layer);
+    redoLayers.push(layer);
+    updateUndoRedo();
+  }
+
+  function redoLast(){
+    if(!redoLayers.length) return;
+    const layer=redoLayers.pop();
+    activeGroup.addLayer(layer);
+    drawnLayers.push(layer);
+    updateUndoRedo();
+  }
+
+  function clearAll(){
+    cancelInProgress();
+    drawnLayers.forEach(l=>activeGroup.removeLayer(l));
+    drawnLayers.length=0;redoLayers.length=0;
     hasDrawn=false;
     document.getElementById('map-hint').classList.remove('hidden');
+    updateUndoRedo();
   }
 
-  // Start in freehand mode
+  // Start in freehand
   setMode('freehand');
   updateUndoRedo();
 </script>
