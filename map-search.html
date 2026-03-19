@@ -276,6 +276,12 @@
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </button>
 
+    <div class="tool-sep"></div>
+
+    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Toggle schools layer">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </button>
+
   </div>
 </div>
 
@@ -336,29 +342,79 @@
   document.getElementById('mob-close').addEventListener('click',closeMob);
   window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40));
 
+  // findLastIndex polyfill
+  if(!Array.prototype.findLastIndex){Array.prototype.findLastIndex=function(fn){for(let i=this.length-1;i>=0;i--){if(fn(this[i],i,this))return i}return -1}}
+
   // ── Map ──
-  const map = L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([37.755,-77.477],11);
+  const map = L.map('map',{zoomControl:true,scrollWheelZoom:true,doubleClickZoom:false}).setView([37.755,-77.477],11);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19
   }).addTo(map);
 
+  // ── Schools layer (OpenStreetMap Overpass) ──
+  const schoolGroup = L.featureGroup().addTo(map);
+  let schoolsLoaded = false;
+  let schoolsVisible = false;
+
+  function loadSchools(){
+    if(schoolsLoaded) return;
+    schoolsLoaded = true;
+    // Bounding box for Ashland/Hanover/Mechanicsville/Glen Allen area
+    const query = `[out:json][timeout:25];
+(
+  node["amenity"="school"](37.4,-77.8,38.0,-77.1);
+  node["amenity"="college"](37.4,-77.8,38.0,-77.1);
+);out body;`;
+    fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)})
+      .then(r=>r.json())
+      .then(data=>{
+        data.elements.forEach(el=>{
+          const name = el.tags.name || 'School';
+          const marker = L.circleMarker([el.lat,el.lon],{
+            radius:7, color:'#1a73e8', weight:2,
+            fillColor:'#1a73e8', fillOpacity:0.9
+          }).bindTooltip(name,{permanent:false,direction:'top',offset:[0,-8],className:'dist-tip'});
+          schoolGroup.addLayer(marker);
+        });
+      })
+      .catch(()=>{ schoolsLoaded=false; });
+  }
+
+  function toggleSchools(){
+    schoolsVisible=!schoolsVisible;
+    const btn=document.getElementById('btn-schools');
+    if(schoolsVisible){
+      loadSchools();
+      schoolGroup.addTo(map);
+      btn.classList.add('active');
+    } else {
+      map.removeLayer(schoolGroup);
+      btn.classList.remove('active');
+    }
+  }
+
   // ── State ──
   let mode='freehand', strokeColor='#188038', strokeWeight=3;
   let hasDrawn=false;
+  const MAX_HISTORY=15;
 
-  // All committed shapes stored as Leaflet layers
-  const drawnLayers = []; // stack of layers for undo
-  const redoLayers  = []; // stack for redo
+  // ── Undo/Redo history ──
+  // Each entry is an action: {type:'add'|'remove', layer}
+  // For polygon-in-progress, each segment click is its own undo step
+  const undoStack = [];
+  const redoStack = [];
   const activeGroup = L.featureGroup().addTo(map);
 
-  // In-progress drawing temps
-  let drawingPolyline=null, drawingCircle=null, polyLatLngs=[];
+  // In-progress drawing
+  let drawingPolyline=null, polyLatLngs=[];
   let circleCenter=null, previewCircle=null, distTooltip=null;
+  // For polygon segment undo: track preview line separately
+  let polyPreviewLine=null;
 
   // ── Helpers ──
   function fmtDist(m){return m<1609?(m*3.28084).toFixed(0)+' ft':(m*0.000621371).toFixed(2)+' mi'}
 
-  function shapeStyle(){return{color:strokeColor,weight:strokeWeight,opacity:1,fill:false}}
+  function shapeStyle(){ return{color:strokeColor,weight:strokeWeight,opacity:1,fillColor:strokeColor,fillOpacity:0.10,fill:true} }
 
   function updatePreviewStyle(){
     if(drawingPolyline) drawingPolyline.setStyle({color:strokeColor,weight:strokeWeight});
@@ -369,28 +425,32 @@
     if(!hasDrawn){hasDrawn=true;document.getElementById('map-hint').classList.add('hidden')}
   }
 
-  function commitLayer(layer){
-    activeGroup.addLayer(layer);
-    drawnLayers.push(layer);
-    redoLayers.length=0;
+  // Push an add-action to undo stack (cap at MAX_HISTORY)
+  function pushUndo(action){
+    undoStack.push(action);
+    if(undoStack.length>MAX_HISTORY) undoStack.shift();
+    redoStack.length=0;
     updateUndoRedo();
     markDrawn();
   }
 
-  function updateUndoRedo(){
-    document.getElementById('btn-undo').disabled=drawnLayers.length===0;
-    document.getElementById('btn-redo').disabled=redoLayers.length===0;
+  function commitLayer(layer){
+    activeGroup.addLayer(layer);
+    pushUndo({type:'add',layer});
   }
 
-  // ── Distance tooltip attached to mouse position on map ──
-  function showDistAt(latlng, text){
-    if(distTooltip){map.removeLayer(distTooltip)}
-    distTooltip = L.tooltip({permanent:true,direction:'right',offset:[8,-10],className:'dist-tip'})
+  function updateUndoRedo(){
+    document.getElementById('btn-undo').disabled = undoStack.length===0 && polyLatLngs.length<2;
+    document.getElementById('btn-redo').disabled = redoStack.length===0;
+  }
+
+  // ── Distance tooltip ──
+  function showDistAt(latlng,text){
+    if(distTooltip) map.removeLayer(distTooltip);
+    distTooltip=L.tooltip({permanent:true,direction:'right',offset:[10,-10],className:'dist-tip'})
       .setLatLng(latlng).setContent(text).addTo(map);
   }
-  function clearDistTooltip(){
-    if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}
-  }
+  function clearDistTooltip(){if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}}
 
   // ── Mode switching ──
   const allModes=['pan','freehand','circle','polygon','erase'];
@@ -415,9 +475,11 @@
 
   function cancelInProgress(){
     if(drawingPolyline){map.removeLayer(drawingPolyline);drawingPolyline=null}
+    if(polyPreviewLine){map.removeLayer(polyPreviewLine);polyPreviewLine=null}
     if(previewCircle){map.removeLayer(previewCircle);previewCircle=null}
     clearDistTooltip();
     polyLatLngs=[];circleCenter=null;
+    updateUndoRedo();
   }
 
   function setColor(el){
@@ -429,36 +491,68 @@
   }
 
   // ── Map events ──
-  map.on('mousedown touchstart', function(e){
+  map.on('mousedown', function(e){
     if(mode==='pan'||mode==='erase') return;
     const ll=e.latlng;
-
     if(mode==='freehand'){
       polyLatLngs=[ll];
-      drawingPolyline=L.polyline([ll],shapeStyle()).addTo(map);
-      return;
+      drawingPolyline=L.polyline([ll],{...shapeStyle(),fill:false}).addTo(map);
     }
     if(mode==='circle'){
       circleCenter=ll;
-      previewCircle=L.circle(ll,{radius:1,...shapeStyle(),fill:false}).addTo(map);
+      previewCircle=L.circle(ll,{radius:1,...shapeStyle()}).addTo(map);
+    }
+  });
+
+  map.on('click', function(e){
+    // Erase
+    if(mode==='erase'){
+      let closest=null, minDist=Infinity;
+      const layers=[];
+      activeGroup.eachLayer(l=>layers.push(l));
+      layers.forEach(layer=>{
+        let d=Infinity;
+        if(layer instanceof L.Circle){
+          d=Math.abs(e.latlng.distanceTo(layer.getLatLng())-layer.getRadius());
+        } else if(layer instanceof L.Polygon){
+          const pts=layer.getLatLngs().flat();
+          pts.forEach(p=>{const dd=e.latlng.distanceTo(p);if(dd<d)d=dd});
+        } else if(layer instanceof L.Polyline){
+          const pts=layer.getLatLngs().flat();
+          pts.forEach(p=>{const dd=e.latlng.distanceTo(p);if(dd<d)d=dd});
+        }
+        if(d<minDist){minDist=d;closest=layer}
+      });
+      const threshold=map.getContainer().offsetWidth*0.06;
+      if(closest&&minDist<threshold){
+        activeGroup.removeLayer(closest);
+        // remove from undoStack
+        const idx=undoStack.findLastIndex(a=>a.layer===closest);
+        if(idx>-1) undoStack.splice(idx,1);
+        pushUndo({type:'remove',layer:closest});
+      }
       return;
     }
+
+    // Polygon: each click = one segment = one undo step
     if(mode==='polygon'){
-      if(!drawingPolyline){
+      const ll=e.latlng;
+      if(polyLatLngs.length===0){
         polyLatLngs=[ll];
-        drawingPolyline=L.polyline([ll,ll],{...shapeStyle(),dashArray:'6,4'}).addTo(map);
+        // Start dashed preview polyline
+        drawingPolyline=L.polyline([ll,ll],{color:strokeColor,weight:strokeWeight,opacity:0.7,dashArray:'6,4',fill:false}).addTo(map);
+        pushUndo({type:'poly-start'});
       } else {
         polyLatLngs.push(ll);
         drawingPolyline.setLatLngs([...polyLatLngs,ll]);
+        pushUndo({type:'poly-point',latlng:ll});
       }
       markDrawn();
-      return;
     }
   });
 
   map.on('mousemove', function(e){
     const ll=e.latlng;
-
     if(mode==='freehand'&&drawingPolyline){
       polyLatLngs.push(ll);
       drawingPolyline.setLatLngs(polyLatLngs);
@@ -471,26 +565,24 @@
       return;
     }
     if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>0){
-      const pts=[...polyLatLngs,ll];
-      drawingPolyline.setLatLngs(pts);
-      // perimeter
+      drawingPolyline.setLatLngs([...polyLatLngs,ll]);
       let perim=0;
-      for(let i=1;i<pts.length;i++) perim+=pts[i-1].distanceTo(pts[i]);
+      for(let i=1;i<polyLatLngs.length;i++) perim+=polyLatLngs[i-1].distanceTo(polyLatLngs[i]);
+      perim+=polyLatLngs[polyLatLngs.length-1].distanceTo(ll);
       showDistAt(ll,'perim ≈ '+fmtDist(perim));
     }
   });
 
-  map.on('mouseup touchend', function(e){
+  map.on('mouseup', function(e){
     if(mode==='freehand'&&drawingPolyline){
       const layer=drawingPolyline;
       drawingPolyline=null;polyLatLngs=[];
       commitLayer(layer);
     }
     if(mode==='circle'&&circleCenter&&previewCircle){
-      const ll=e.latlng||circleCenter;
-      const r=circleCenter.distanceTo(ll);
+      const r=circleCenter.distanceTo(e.latlng);
       if(r>10){
-        const layer=L.circle(circleCenter,{radius:r,...shapeStyle(),fill:false});
+        const layer=L.circle(circleCenter,{radius:r,...shapeStyle()});
         map.removeLayer(previewCircle);previewCircle=null;
         circleCenter=null;clearDistTooltip();
         commitLayer(layer);
@@ -502,60 +594,67 @@
   map.on('dblclick', function(e){
     L.DomEvent.stopPropagation(e);
     if(mode==='polygon'&&drawingPolyline&&polyLatLngs.length>=3){
-      const layer=L.polygon(polyLatLngs,{...shapeStyle(),fill:false});
+      const layer=L.polygon(polyLatLngs,shapeStyle());
       map.removeLayer(drawingPolyline);drawingPolyline=null;
       polyLatLngs=[];clearDistTooltip();
+      // Remove all poly-* steps from undoStack, replace with one commit
+      while(undoStack.length&&(undoStack[undoStack.length-1].type==='poly-point'||undoStack[undoStack.length-1].type==='poly-start')){
+        undoStack.pop();
+      }
       commitLayer(layer);
     }
   });
 
-  // Erase: click on any drawn layer to remove it
-  map.on('click', function(e){
-    if(mode!=='erase') return;
-    let closest=null, minDist=Infinity;
-    drawnLayers.forEach(layer=>{
-      let d=Infinity;
-      if(layer instanceof L.Circle){
-        d=Math.abs(e.latlng.distanceTo(layer.getLatLng())-layer.getRadius());
-      } else if(layer instanceof L.Polygon){
-        const c=layer.getBounds().getCenter();
-        d=e.latlng.distanceTo(c);
-      } else if(layer instanceof L.Polyline){
-        const pts=layer.getLatLngs().flat();
-        pts.forEach(p=>{ const dd=e.latlng.distanceTo(p); if(dd<d) d=dd; });
-      }
-      if(d<minDist){minDist=d;closest=layer}
-    });
-    if(closest&&minDist<map.getContainer().offsetWidth*0.05){
-      activeGroup.removeLayer(closest);
-      const idx=drawnLayers.indexOf(closest);
-      if(idx>-1) drawnLayers.splice(idx,1);
-      redoLayers.length=0;
-      updateUndoRedo();
-    }
-  });
-
-  // ── Undo / Redo ──
+  // ── Undo / Redo — 15 steps, per-segment for polygon ──
   function undoLast(){
-    if(!drawnLayers.length) return;
-    const layer=drawnLayers.pop();
-    activeGroup.removeLayer(layer);
-    redoLayers.push(layer);
+    // If polygon in progress, undo last point
+    if(mode==='polygon'&&drawingPolyline){
+      if(polyLatLngs.length>1){
+        polyLatLngs.pop();
+        drawingPolyline.setLatLngs([...polyLatLngs,polyLatLngs[polyLatLngs.length-1]]);
+        // pop the matching undo entry
+        const idx=undoStack.findLastIndex(a=>a.type==='poly-point');
+        if(idx>-1) undoStack.splice(idx,1);
+        updateUndoRedo();
+        return;
+      } else {
+        // cancel entire polygon
+        cancelInProgress();
+        const idx=undoStack.findLastIndex(a=>a.type==='poly-start');
+        if(idx>-1) undoStack.splice(idx,1);
+        updateUndoRedo();
+        return;
+      }
+    }
+    if(!undoStack.length) return;
+    const action=undoStack.pop();
+    if(action.type==='add'){
+      activeGroup.removeLayer(action.layer);
+      redoStack.push({type:'redo-add',layer:action.layer});
+    } else if(action.type==='remove'){
+      activeGroup.addLayer(action.layer);
+      redoStack.push({type:'redo-remove',layer:action.layer});
+    }
     updateUndoRedo();
   }
 
   function redoLast(){
-    if(!redoLayers.length) return;
-    const layer=redoLayers.pop();
-    activeGroup.addLayer(layer);
-    drawnLayers.push(layer);
+    if(!redoStack.length) return;
+    const action=redoStack.pop();
+    if(action.type==='redo-add'){
+      activeGroup.addLayer(action.layer);
+      undoStack.push({type:'add',layer:action.layer});
+    } else if(action.type==='redo-remove'){
+      activeGroup.removeLayer(action.layer);
+      undoStack.push({type:'remove',layer:action.layer});
+    }
     updateUndoRedo();
   }
 
   function clearAll(){
     cancelInProgress();
-    drawnLayers.forEach(l=>activeGroup.removeLayer(l));
-    drawnLayers.length=0;redoLayers.length=0;
+    activeGroup.clearLayers();
+    undoStack.length=0;redoStack.length=0;
     hasDrawn=false;
     document.getElementById('map-hint').classList.remove('hidden');
     updateUndoRedo();
