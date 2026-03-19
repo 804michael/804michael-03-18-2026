@@ -78,24 +78,21 @@
     .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
 
     /* Toolbar — single row, scrolls horizontally on small screens */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
     .toolbar::-webkit-scrollbar{display:none}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white)}
     .tool-btn svg{pointer-events:none}
-    .tool-btn::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
-    .tool-btn:hover::after{opacity:1}
     .tool-btn:disabled{opacity:.28;cursor:not-allowed}
     .tool-btn:disabled:hover{background:transparent;border-color:transparent}
-    .tool-btn:disabled::after{display:none}
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
-    .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
-    .color-swatch:hover::after{opacity:1}
+    /* Tooltip — rendered as a fixed div via JS so it escapes overflow:hidden on .toolbar */
+    #toolbar-tip{position:fixed;background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s;}
 
 
     /* ── Map height ────────────────────────────────────────────────────────────
@@ -489,6 +486,47 @@ document.getElementById('ham-btn').addEventListener('click', openMob);
 document.getElementById('mob-close').addEventListener('click', closeMob);
 window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40));
 
+// ── Toolbar tooltips ─────────────────────────────────────────────────────────
+// CSS ::after tooltips are clipped by toolbar's overflow-y:hidden, so we use
+// a single fixed <div> positioned via getBoundingClientRect instead.
+(function() {
+  var tip = document.createElement('div');
+  tip.id = 'toolbar-tip';
+  document.body.appendChild(tip);
+  var hideTimer;
+
+  function showTip(el) {
+    var label = el.getAttribute('data-tip');
+    if (!label || el.disabled) return;
+    clearTimeout(hideTimer);
+    var r = el.getBoundingClientRect();
+    tip.textContent = label;
+    tip.style.opacity = '0';
+    tip.style.display = 'block';
+    // Position below the button, centered
+    var tipW = tip.offsetWidth;
+    var left = r.left + (r.width / 2) - (tipW / 2);
+    // Clamp to viewport
+    left = Math.max(6, Math.min(left, window.innerWidth - tipW - 6));
+    tip.style.left = left + 'px';
+    tip.style.top  = (r.bottom + 6) + 'px';
+    tip.style.opacity = '1';
+  }
+
+  function hideTip() {
+    hideTimer = setTimeout(function() { tip.style.opacity = '0'; }, 80);
+  }
+
+  document.querySelector('.toolbar').addEventListener('mouseover', function(e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) showTip(el);
+  });
+  document.querySelector('.toolbar').addEventListener('mouseout', function(e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) hideTip();
+  });
+})();
+
 // ── Safari polyfill ──────────────────────────────────────────────────────────
 if (!Array.prototype.findLastIndex) {
   Array.prototype.findLastIndex = function(fn){ for(let i=this.length-1;i>=0;i--){ if(fn(this[i],i,this)) return i; } return -1; };
@@ -500,7 +538,6 @@ const map = L.map('map', {
   scrollWheelZoom:  true,
   doubleClickZoom:  false,
   dragging:         true
-  // tap:false removed — disabling Leaflet's tap handler blocks tile rendering on iOS Safari
 }).setView([37.755, -77.477], 11);
 
 L.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -1030,7 +1067,6 @@ let parcelsVisible = false;
 let parcelLayer    = null;
 
 function buildParcelLayer() {
-  // Virginia Geographic Information Network (VGIN) public parcel WMS
   return L.tileLayer.wms(
     'https://gismaps.vgin.vdem.virginia.gov/arcgis/services/VGIN/Virginia_Base_Map_Service/MapServer/WMSServer',
     {
