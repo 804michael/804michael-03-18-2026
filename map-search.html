@@ -1428,9 +1428,7 @@ function shareViaSMS() {
 function shareViaEmail() {
   var url = buildShareURL();
   var subject = encodeURIComponent('My 804Michael Map Search');
-  var body = encodeURIComponent('I marked some areas I’m interested in on this map. Click to see them:
-
-' + url);
+  var body = encodeURIComponent('Check out the areas I marked on this map. Click to see them:\n\n' + url);
   window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
 }
 
