@@ -499,7 +499,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 17_05</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 18_42</p>
   </div>
 </div>
 
@@ -1429,8 +1429,10 @@ function dropPin(lat, lng, suggestedLabel) {
     markDrawn();
   }
 
-  saveBtn.addEventListener('click', function() { inp.blur(); applyLabel(inp.value); });
-  skipBtn.addEventListener('click', function() { inp.blur(); applyLabel(''); });
+  saveBtn.addEventListener('click',    function() { inp.blur(); applyLabel(inp.value); });
+  saveBtn.addEventListener('touchend', function(e) { e.preventDefault(); inp.blur(); applyLabel(inp.value); });
+  skipBtn.addEventListener('click',    function() { inp.blur(); applyLabel(''); });
+  skipBtn.addEventListener('touchend', function(e) { e.preventDefault(); inp.blur(); applyLabel(''); });
   inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { inp.blur(); applyLabel(inp.value); } });
 
   var popup = L.popup({ closeButton: true, autoClose: false, minWidth: 230 }).setContent(wrap);
@@ -1489,11 +1491,11 @@ window.clearAll = function() {
   confirmDiv.style.cssText = [
     'position:fixed;left:50%;transform:translateX(-50%)',
     'background:rgba(17,17,17,.97);color:white;border-radius:14px',
-    'padding:18px 28px;display:flex;align-items:center;gap:16px',
+    'padding:18px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center',
     'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.5rem',
     'letter-spacing:.04em;box-shadow:0 12px 40px rgba(0,0,0,.4)',
     'z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s',
-    'white-space:nowrap'
+    'max-width:min(92vw,520px);text-align:center'
   ].join(';');
   confirmDiv.innerHTML = [
     '<span>Clear all drawings?</span>',
