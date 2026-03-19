@@ -437,7 +437,10 @@
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
   <div id="map"></div>
-  <div class="map-hint" id="map-hint">Pick a tool ✏️ &amp; draw on the <span style="white-space:nowrap">map 🗺️</span></div>
+  <div class="map-hint" id="map-hint">
+    Pick a tool ✏️ &amp; draw on the <span style="white-space:nowrap">map 🗺️</span>
+    <div style="font-size:.7em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
+  </div>
   <div class="school-toast" id="school-toast">
     <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
     <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
@@ -453,7 +456,7 @@
     <p class="modal-sub">We'll get a link to your exact map — no account, no signup.</p>
     <div class="modal-field">
       <label for="modal-name">Your Name</label>
-      <input type="text" id="modal-name" placeholder="e.g. Sarah Johnson" autocomplete="name" />
+      <input type="text" id="modal-name" placeholder="e.g. A Really Smart Home Buyer" autocomplete="name" />
     </div>
     <div class="modal-field">
       <label for="modal-email">Your Email <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(so we can reply)</span></label>
@@ -461,7 +464,7 @@
     </div>
     <div class="modal-field">
       <label for="modal-message">Your Message <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(optional — describe colors, areas, details)</span></label>
-      <textarea id="modal-message" placeholder="e.g. Green = areas I love, Red = areas to avoid. Looking for 3-bed under $450k…" maxlength="600" rows="4" style="resize:vertical;width:100%;padding:10px 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;box-sizing:border-box;line-height:1.45"></textarea>
+      <textarea id="modal-message" placeholder="Do your different colors mean different things? Green = Favorite Places, Red = I do NOT want to live here?" maxlength="600" rows="4" style="resize:vertical;width:100%;padding:10px 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;box-sizing:border-box;line-height:1.45"></textarea>
       <div id="modal-message-count" style="text-align:right;font-size:.75rem;color:var(--gray-muted);margin-top:3px">0 / 600</div>
     </div>
     <div class="modal-actions">
