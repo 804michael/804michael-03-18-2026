@@ -96,8 +96,8 @@
     .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
     .color-swatch:hover::after{opacity:1}
 
-    /* Map */
-    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 68px - 50px);min-height:420px}
+    /* Map — fills remaining viewport below the sticky toolbar */
+    .map-wrap{position:relative;width:100%;height:calc(100vh - var(--banner-h) - var(--nav-h) - 68px - 52px);min-height:400px}
     #map{width:100%;height:100%}
     .map-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:white;padding:8px 16px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:nowrap;animation:pulse 2.5s ease infinite}
     .map-hint.hidden{display:none}
@@ -122,9 +122,8 @@
     .ft-logo{display:inline-flex;line-height:0;outline:none}
     .ft-logo svg{display:block}
 
-    /* ── Address search bar ── */
-    .search-bar{background:var(--gray-light);border-bottom:2px solid var(--gray-mid);padding:6px 12px;display:flex;align-items:center;gap:6px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 50px);z-index:799}
-    .search-wrap{position:relative;flex:1;max-width:480px}
+    /* ── Address search — lives inline in the toolbar row ── */
+    .search-wrap{position:relative;flex:1;min-width:160px;max-width:340px}
     .search-input{width:100%;height:36px;padding:0 36px 0 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--black);background:var(--white);outline:none;transition:border-color .15s}
     .search-input:focus{border-color:var(--red)}
     .search-input::placeholder{color:var(--gray-muted)}
@@ -162,8 +161,7 @@
     .custom-pin-label{background:var(--black);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.05em;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
     @media(max-width:600px){
-      .search-bar{top:calc(var(--banner-h) + var(--nav-h) + 50px)}
-      .search-wrap{max-width:none}
+      .search-wrap{max-width:none;min-width:120px}
     }
   </style>
 </head>
@@ -269,8 +267,8 @@
   </div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
+<!-- TOOLBAR — single sticky bar; flex-wrap lets search flow to next line on narrow screens -->
+<div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
@@ -285,6 +283,10 @@
 
     <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+    </button>
+
+    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
 
     <div class="tool-sep"></div>
@@ -312,27 +314,32 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </button>
 
+    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </button>
+
+    <div class="tool-sep"></div>
+
+    <!-- Search: flex:1 fills remaining space on wide screens, wraps to next line on narrow -->
+    <div class="search-wrap" id="search-wrap">
+      <input type="text" class="search-input" id="search-input"
+             placeholder="Search address or place…"
+             autocomplete="off" autocorrect="off" spellcheck="false"
+             aria-label="Address search" />
+      <button class="search-clear" id="search-clear" aria-label="Clear" tabindex="-1">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="search-results" id="search-results" role="listbox"></div>
+    </div>
+    <div class="search-spinner" id="search-spinner"></div>
+    <button class="search-btn" id="search-btn" aria-label="Search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Find
+    </button>
+
   </div>
 </div>
 
-<!-- ADDRESS SEARCH BAR -->
-<div class="search-bar" id="search-bar">
-  <div class="search-wrap" id="search-wrap">
-    <input type="text" class="search-input" id="search-input"
-           placeholder="Search an address or place…"
-           autocomplete="off" autocorrect="off" spellcheck="false"
-           aria-label="Address search" />
-    <button class="search-clear" id="search-clear" aria-label="Clear search" tabindex="-1">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="search-results" id="search-results" role="listbox"></div>
-  </div>
-  <div class="search-spinner" id="search-spinner"></div>
-  <button class="search-btn" id="search-btn" aria-label="Search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    Find
-  </button>
-</div>
 
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
@@ -482,7 +489,7 @@ function containerPointToLL(clientX, clientY) {
 }
 
 // ── Mode switching ────────────────────────────────────────────────────────────
-const ALL_MODES = ['pan', 'freehand', 'circle'];
+const ALL_MODES = ['pan', 'freehand', 'circle', 'erase'];
 
 window.setMode = function(m) {
   cancelInProgress();
@@ -495,7 +502,7 @@ window.setMode = function(m) {
   } else {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
-    map.getContainer().style.cursor = 'crosshair';
+    map.getContainer().style.cursor = m === 'erase' ? 'cell' : 'crosshair';
   }
 };
 
@@ -510,10 +517,12 @@ window.undoLast = function() {
   if (!undoStack.length) return;
   const action = undoStack.pop();
   if (action.type === 'add') {
-    activeGroup.removeLayer(action.layer);
+    const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
+    g.removeLayer(action.layer);
     redoStack.push({ type: 'redo-add', layer: action.layer });
   } else if (action.type === 'remove') {
-    activeGroup.addLayer(action.layer);
+    const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
+    g.addLayer(action.layer);
     redoStack.push({ type: 'redo-remove', layer: action.layer });
   }
   updateUndoRedo();
@@ -523,10 +532,12 @@ window.redoLast = function() {
   if (!redoStack.length) return;
   const action = redoStack.pop();
   if (action.type === 'redo-add') {
-    activeGroup.addLayer(action.layer);
+    const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
+    g.addLayer(action.layer);
     undoStack.push({ type: 'add', layer: action.layer });
   } else if (action.type === 'redo-remove') {
-    activeGroup.removeLayer(action.layer);
+    const g = action.layer instanceof L.Marker ? pinGroup : activeGroup;
+    g.removeLayer(action.layer);
     undoStack.push({ type: 'remove', layer: action.layer });
   }
   updateUndoRedo();
@@ -547,6 +558,9 @@ window.clearAll = function() {
 
 const mapEl = map.getContainer();
 
+// Erase state
+let isErasing = false;
+
 function onPointerDown(clientX, clientY) {
   if (mode === 'pan') return;
   const ll = containerPointToLL(clientX, clientY);
@@ -557,6 +571,9 @@ function onPointerDown(clientX, clientY) {
   if (mode === 'circle') {
     circleCenter  = ll;
     previewCircle = L.circle(ll, { radius: 1, ...shapeStyle() }).addTo(map);
+  }
+  if (mode === 'erase') {
+    eraseAt(ll);
   }
 }
 
@@ -572,10 +589,15 @@ function onPointerMove(clientX, clientY) {
     previewCircle.setRadius(r);
     showDistAt(ll, fmtMiles(r));
   }
+  // erase: drag to erase multiple shapes
+  if (mode === 'erase' && isErasing) {
+    eraseAt(ll);
+  }
 }
 
 function onPointerUp(clientX, clientY) {
   if (mode === 'pan') return;
+  isErasing = false;
   if (mode === 'freehand' && drawingPolyline) {
     const layer = drawingPolyline;
     drawingPolyline = null; polyLatLngs = [];
@@ -591,6 +613,121 @@ function onPointerUp(clientX, clientY) {
     circleCenter = null; clearDistTooltip();
   }
 }
+
+// Erase the closest drawing layer to a given latlng
+function eraseAt(ll) {
+  isErasing = true;
+  const layers = [];
+  activeGroup.eachLayer(l => layers.push({ layer: l, group: activeGroup }));
+  pinGroup.eachLayer(l    => layers.push({ layer: l, group: pinGroup }));
+  if (!layers.length) return;
+
+  // Threshold: ~30 CSS pixels converted to meters at current zoom
+  const centerPx  = map.latLngToContainerPoint(map.getCenter());
+  const edgeLL    = map.containerPointToLatLng(L.point(centerPx.x + 30, centerPx.y));
+  const threshold = map.getCenter().distanceTo(edgeLL);
+
+  function flatLL(lls) {
+    if (!lls || !lls.length) return [];
+    if (typeof lls[0].lat === 'number') return lls;
+    return lls.reduce((a, x) => a.concat(flatLL(x)), []);
+  }
+
+  let closest = null, minDist = Infinity;
+  layers.forEach(({ layer }) => {
+    let d = Infinity;
+    if (layer instanceof L.Marker) {
+      d = ll.distanceTo(layer.getLatLng());
+    } else if (layer instanceof L.Circle) {
+      d = Math.abs(ll.distanceTo(layer.getLatLng()) - layer.getRadius());
+    } else {
+      flatLL(layer.getLatLngs()).forEach(p => { const dd = ll.distanceTo(p); if (dd < d) d = dd; });
+      if (layer instanceof L.Polygon) {
+        const dc = ll.distanceTo(layer.getBounds().getCenter());
+        if (dc < d) d = dc;
+      }
+    }
+    if (d < minDist) { minDist = d; closest = layer; }
+  });
+
+  if (closest && minDist < threshold) {
+    // Find which group it belongs to
+    const entry = layers.find(e => e.layer === closest);
+    entry.group.removeLayer(closest);
+    const idx = undoStack.findLastIndex(a => a.layer === closest);
+    if (idx > -1) undoStack.splice(idx, 1);
+    pushUndo({ type: 'remove', layer: closest });
+  }
+}
+
+// ── Schools overlay ───────────────────────────────────────────────────────────
+// Covers: Hanover, Henrico, City of Richmond, Chesterfield, New Kent,
+// Goochland, Powhatan, Caroline, and bordering counties
+const schoolGroup  = L.featureGroup().addTo(map);
+let schoolsLoaded  = false;
+let schoolsVisible = false;
+
+const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep\s*school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary|private|religious/i;
+
+function loadSchools() {
+  if (schoolsLoaded) return;
+  schoolsLoaded = true;
+  // Bounding box covering all target counties + bordering areas
+  // south=36.9, west=-78.3, north=38.3, east=-76.4
+  const bbox  = '36.9,-78.3,38.3,-76.4';
+  const query = '[out:json][timeout:90];(' +
+    'node["amenity"="school"]('+bbox+');' +
+    'way["amenity"="school"]('+bbox+');' +
+    ');out center;';
+
+  fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(query)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    const seen = new Set();
+    data.elements.forEach(function(el) {
+      var lat  = el.lat  || (el.center && el.center.lat);
+      var lon  = el.lon  || (el.center && el.center.lon);
+      var tags = el.tags || {};
+      var name = tags.name || '';
+      if (!lat || !lon || !name) return;
+      // Skip private / religious schools
+      if (PRIVATE_RE.test(name)) return;
+      if (tags['operator:type'] === 'private') return;
+      if (tags['school:type'] === 'private')   return;
+      if (tags['fee'] === 'yes')                return;
+      var key = lat.toFixed(3) + ',' + lon.toFixed(3);
+      if (seen.has(key)) return;
+      seen.add(key);
+      L.circleMarker([lat, lon], {
+        radius: 6, color: '#1a73e8', weight: 2,
+        fillColor: '#4285f4', fillOpacity: 0.9,
+        interactive: true
+      }).bindTooltip(name, {
+        permanent: false, direction: 'top', offset: [0, -8],
+        className: 'dist-tip'
+      }).addTo(schoolGroup);
+    });
+  })
+  .catch(function() { schoolsLoaded = false; });
+}
+
+window.toggleSchools = function() {
+  schoolsVisible = !schoolsVisible;
+  var btn = document.getElementById('btn-schools');
+  if (schoolsVisible) {
+    loadSchools();
+    schoolGroup.addTo(map);
+    btn.classList.add('active');
+    btn.setAttribute('data-tip', 'Hide Schools');
+  } else {
+    map.removeLayer(schoolGroup);
+    btn.classList.remove('active');
+    btn.setAttribute('data-tip', 'Show Schools');
+  }
+};
 
 // Mouse events
 mapEl.addEventListener('mousedown', e => { if (e.button !== 0) return; onPointerDown(e.clientX, e.clientY); });
