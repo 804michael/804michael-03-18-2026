@@ -1405,8 +1405,13 @@ function encodeState() {
   var obj = serializeDrawings();
   var json = JSON.stringify(obj);
   // btoa needs to handle UTF-8 — encode via encodeURIComponent first
-  var b64 = btoa(unescape(encodeURIComponent(json)))
-    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  // Encode UTF-8 safe base64url
+  var b64;
+  try {
+    b64 = btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, function(m, p1) {
+      return String.fromCharCode(parseInt(p1, 16));
+    })).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  } catch(e) { b64 = btoa(json).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
   return b64;
 }
 
@@ -1469,7 +1474,9 @@ function showCopied(btn) {
     var b64 = hash.slice(3).replace(/-/g,'+').replace(/_/g,'/');
     // Pad base64
     while (b64.length % 4) b64 += '=';
-    var json = decodeURIComponent(escape(atob(b64)));
+    var json = decodeURIComponent(atob(b64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
     var obj  = JSON.parse(json);
     if (!obj || !obj.layers) return;
 
@@ -1478,7 +1485,6 @@ function showCopied(btn) {
       map.setView([obj.lat, obj.lng], obj.z, { animate: false });
     }
 
-    var WEIGHT = 3;
     obj.layers.forEach(function(layer) {
       var col  = layer.col || '#188038';
       var style = { color:col, weight:WEIGHT, opacity:1, fillColor:col, fillOpacity:0.12, fill:true };
@@ -1500,7 +1506,12 @@ function showCopied(btn) {
       } else if (layer.t === 'm') {
         // Re-drop pin (without opening the label popup)
         var pinColor = col || '#188038';
-        var pinSvg = '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + pinColor + '"/><circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+        var pinSvg = [
+          '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">',
+          '<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + pinColor + '"/>',
+          '<circle cx="14" cy="14" r="5.5" fill="white"/>',
+          '</svg>'
+        ].join('');
         var icon = L.divIcon({ html:pinSvg, className:'', iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-38] });
         var mk = L.marker([layer.ll[0], layer.ll[1]], { icon:icon });
         if (layer.lbl) {
