@@ -96,10 +96,8 @@
     .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
     .color-swatch:hover::after{opacity:1}
 
-    /* Map — height set by JS to fill whatever's left in the viewport.
-       100dvh accounts for mobile browser chrome shrinking/growing as you scroll.
-       min-height ensures usability on very short screens. */
-    .map-wrap{position:relative;width:100%;height:60dvh;min-height:360px}
+    /* Map — JS sets the exact pixel height on load and resize */
+    .map-wrap{position:relative;width:100%}
     #map{width:100%;height:100%}
 
     /* School loading overlay — full-map, big text, spinning pencil */
@@ -494,16 +492,18 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Uses 100dvh so mobile browser chrome changes (address bar show/hide) are handled.
 // ResizeObserver re-runs whenever the toolbar wraps to a second line.
 function fitMapHeight() {
-  const toolbar  = document.getElementById('toolbar');
-  const mapWrap  = document.getElementById('map-wrap');
-  const tbBottom = toolbar.getBoundingClientRect().bottom + window.scrollY;
-  // dvh is supported in all modern browsers; fall back to vh on older ones
-  const vhPx = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const h = Math.max(vhPx - tbBottom + window.scrollY, 360);
+  const toolbar = document.getElementById('toolbar');
+  const mapWrap = document.getElementById('map-wrap');
+  if(!toolbar || !mapWrap) return;
+  // getBoundingClientRect().bottom = pixels from top of viewport to bottom of toolbar
+  const toolbarBottom = toolbar.getBoundingClientRect().bottom;
+  const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const h = Math.max(viewportH - toolbarBottom, 300);
   mapWrap.style.height = h + 'px';
   map.invalidateSize();
 }
 fitMapHeight();
+setTimeout(fitMapHeight, 100); // ensure mobile browser chrome is settled
 new ResizeObserver(fitMapHeight).observe(document.getElementById('toolbar'));
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 window.addEventListener('resize', fitMapHeight);
