@@ -78,9 +78,8 @@
     .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
 
     /* Toolbar — single row, scrolls horizontally on small screens */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow-x:auto;overflow-y:visible;scrollbar-width:none}
-    .toolbar::-webkit-scrollbar{display:none}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content}
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
@@ -202,9 +201,6 @@
     .search-btn{width:36px;height:36px;padding:0;background:var(--red);color:var(--white);border:none;border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center;position:relative}
     .search-btn:hover{background:var(--red-dark)}
     .search-btn svg{pointer-events:none}
-    /* Tooltip on search button */
-    .search-btn::after{content:'Search';position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
-    .search-btn:hover::after{opacity:1}
     .search-results{position:fixed;background:var(--white);border:2px solid var(--gray-mid);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden;z-index:9001;display:none}
     .search-results.open{display:block}
     .search-result-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--gray-light);font-size:.86rem;line-height:1.35;transition:background .12s}
@@ -376,7 +372,7 @@
         <div class="search-results" id="search-results" role="listbox"></div>
       </div>
       <div class="search-spinner" id="search-spinner"></div>
-      <button class="search-btn" id="search-btn" aria-label="Search address">
+      <button class="search-btn" id="search-btn" aria-label="Search address" data-tip="Search address">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
@@ -495,7 +491,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19-r2</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 15_35</p>
   </div>
 </div>
 
