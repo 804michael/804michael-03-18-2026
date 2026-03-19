@@ -1429,9 +1429,9 @@ function dropPin(lat, lng, suggestedLabel) {
     markDrawn();
   }
 
-  saveBtn.addEventListener('click', function() { applyLabel(inp.value); });
-  skipBtn.addEventListener('click', function() { applyLabel(''); });
-  inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') applyLabel(inp.value); });
+  saveBtn.addEventListener('click', function() { inp.blur(); applyLabel(inp.value); });
+  skipBtn.addEventListener('click', function() { inp.blur(); applyLabel(''); });
+  inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { inp.blur(); applyLabel(inp.value); } });
 
   var popup = L.popup({ closeButton: true, autoClose: false, minWidth: 230 }).setContent(wrap);
   marker.bindPopup(popup).openPopup();
