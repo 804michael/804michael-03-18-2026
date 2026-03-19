@@ -113,7 +113,7 @@
     @supports not (height: 1dvh){
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
     }
-    #map{ width:100%; height:100%; }
+    #map{ position:absolute; top:0; left:0; right:0; bottom:0; }
 
     /* School loading overlay — full-map, big text, spinning pencil */
     .school-toast{
@@ -500,8 +500,8 @@ const map = L.map('map', {
   zoomControl:      false,   // disable default top-left; we add it bottom-left below
   scrollWheelZoom:  true,
   doubleClickZoom:  false,
-  dragging:         true,
-  tap:              false
+  dragging:         true
+  // tap: false removed — disabling Leaflet's tap handler can prevent tile rendering on iOS Safari
 }).setView([37.755, -77.477], 11);
 
 // Zoom control — bottom-left so it doesn't overlap the toolbar
@@ -514,11 +514,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Tell Leaflet to recalculate its container size after layout settles.
 // The map height comes from CSS; we just need invalidateSize so tiles load.
+// We do NOT call invalidateSize synchronously — the dvh-based layout and
+// Cloudflare injected scripts may not have resolved yet. Defer until after
+// window load + a short grace period for fonts and sticky toolbars.
 function fitMapHeight() { map.invalidateSize(); }
-fitMapHeight();
-setTimeout(fitMapHeight, 100);
-setTimeout(fitMapHeight, 500);
-window.addEventListener('load', fitMapHeight);
+window.addEventListener('load', function() {
+  setTimeout(fitMapHeight, 250);
+});
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
