@@ -491,7 +491,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 15_35</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.19 15_52</p>
   </div>
 </div>
 
@@ -1315,28 +1315,55 @@ function selectResult(i) {
 function dropPin(lat, lng, suggestedLabel) {
   // Use the currently selected drawing colour for the pin
   var pinColor = strokeColor;
-  var pinSvg = '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + pinColor + '"/><circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+
+  function makePinSvg(col) {
+    return '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + col + '"/><circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+  }
+
+  function makeIcon(col) {
+    return L.divIcon({ html: makePinSvg(col), className: '', iconSize: [28,36], iconAnchor: [14,36], popupAnchor: [0,-38] });
+  }
 
   // Strip leading comma from Nominatim display_name parsing artifact
   // e.g. "123, Main Street" → "123 Main Street"
   var defaultLabel = (suggestedLabel || '').replace(/^(\d+),\s*/, '$1 ').trim();
 
-  var icon = L.divIcon({
-    html: pinSvg,
-    className: '',
-    iconSize:    [28, 36],
-    iconAnchor:  [14, 36],
-    popupAnchor: [0, -38]
+  var marker = L.marker([lat, lng], { icon: makeIcon(pinColor) }).addTo(pinGroup);
+
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'padding:12px;font-family:Barlow,sans-serif;min-width:210px';
+
+  // ── Color row ──
+  var colorRow = document.createElement('div');
+  colorRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:8px';
+
+  var colorLabel = document.createElement('span');
+  colorLabel.textContent = 'Pin color:';
+  colorLabel.style.cssText = 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#888;flex-shrink:0';
+  colorRow.appendChild(colorLabel);
+
+  var PIN_COLORS = ['#188038','#f29900','#DA291C','#111111','#1a73e8'];
+  PIN_COLORS.forEach(function(col) {
+    var sw = document.createElement('button');
+    sw.style.cssText = 'width:20px;height:20px;border-radius:50%;background:' + col + ';border:3px solid transparent;cursor:pointer;flex-shrink:0;padding:0;transition:border-color .12s,transform .12s';
+    if (col === pinColor) { sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.25)'; }
+    sw.addEventListener('click', function() {
+      pinColor = col;
+      // Update marker icon live
+      marker.setIcon(makeIcon(col));
+      // Update swatch ring
+      colorRow.querySelectorAll('button').forEach(function(s) {
+        s.style.borderColor = 'transparent'; s.style.transform = 'scale(1)';
+      });
+      sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.25)';
+    });
+    colorRow.appendChild(sw);
   });
-
-  var marker = L.marker([lat, lng], { icon: icon }).addTo(pinGroup);
-
-  var wrap  = document.createElement('div');
-  wrap.style.cssText = 'padding:12px;font-family:Barlow,sans-serif';
+  wrap.appendChild(colorRow);
 
   var inp = document.createElement('input');
   inp.type = 'text';
-  inp.placeholder = 'Label this pin…';
+  inp.placeholder = 'Name this pin…';
   inp.maxLength = 60;
   inp.value = defaultLabel;
   inp.style.cssText = 'width:100%;height:34px;padding:0 10px;border:2px solid #e0e0e0;border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box';
@@ -1347,7 +1374,7 @@ function dropPin(lat, lng, suggestedLabel) {
   btns.style.cssText = 'display:flex;gap:6px;margin-top:8px';
 
   var saveBtn = document.createElement('button');
-  saveBtn.textContent = 'Save Label';
+  saveBtn.textContent = 'Save Pin Name';
   saveBtn.style.cssText = 'flex:1;height:32px;background:#DA291C;color:white;border:none;border-radius:6px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer';
 
   var skipBtn = document.createElement('button');
