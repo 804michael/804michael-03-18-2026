@@ -77,9 +77,10 @@
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.65);font-size:.82rem;line-height:1.3;margin:0}
 
-    /* Toolbar — sticky so it floats when header scrolls away */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+    /* Toolbar — single row, scrolls horizontally on small screens */
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+    .toolbar::-webkit-scrollbar{display:none}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:max-content}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:var(--gray-light);border-color:var(--gray-mid)}
@@ -96,8 +97,24 @@
     .color-swatch::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:9000}
     .color-swatch:hover::after{opacity:1}
 
-    /* Map — JS sets the exact pixel height on load and resize */
-    .map-wrap{position:relative;width:100%}
+
+    /* Map — fills viewport from bottom of sticky toolbar to bottom of screen.
+       The toolbar is sticky at top:(banner+nav). Toolbar height is ~52px.
+       pg-header is ~40px. Total offset = banner + nav + pg-header + toolbar. */
+    .map-wrap{
+      position:relative;
+      width:100%;
+      height:calc(100dvh - var(--banner-h) - var(--nav-h) - 40px - 52px);
+      min-height:320px;
+    }
+    @media(max-width:500px){
+      /* On very small phones pg-header may wrap to 2 lines (~64px) */
+      .map-wrap{height:calc(100dvh - var(--banner-h) - var(--nav-h) - 64px - 52px)}
+    }
+    /* Older browsers without dvh support */
+    @supports not (height:1dvh){
+      .map-wrap{height:calc(100vh - var(--banner-h) - var(--nav-h) - 40px - 52px)}
+    }
     #map{width:100%;height:100%}
 
     /* School loading overlay — full-map, big text, spinning pencil */
@@ -491,22 +508,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // ── Map height: measured from the bottom of the toolbar to the bottom of the viewport.
 // Uses 100dvh so mobile browser chrome changes (address bar show/hide) are handled.
 // ResizeObserver re-runs whenever the toolbar wraps to a second line.
-function fitMapHeight() {
-  const toolbar = document.getElementById('toolbar');
-  const mapWrap = document.getElementById('map-wrap');
-  if(!toolbar || !mapWrap) return;
-  // getBoundingClientRect().bottom = pixels from top of viewport to bottom of toolbar
-  const toolbarBottom = toolbar.getBoundingClientRect().bottom;
-  const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const h = Math.max(viewportH - toolbarBottom, 300);
-  mapWrap.style.height = h + 'px';
-  map.invalidateSize();
-}
-fitMapHeight();
-setTimeout(fitMapHeight, 100); // ensure mobile browser chrome is settled
-new ResizeObserver(fitMapHeight).observe(document.getElementById('toolbar'));
-window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
+// Keep Leaflet in sync when fonts/layout settle
+function fitMapHeight() { map.invalidateSize(); }
+requestAnimationFrame(() => { fitMapHeight(); setTimeout(fitMapHeight, 400); });
+window.addEventListener('load', fitMapHeight);
 window.addEventListener('resize', fitMapHeight);
+window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
