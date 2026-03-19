@@ -514,7 +514,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Defer invalidateSize until after window load so that dvh layout, fonts,
 // and Cloudflare injected scripts have all resolved before Leaflet measures
-// the container. Calling it synchronously here would see height:0.
+// the container. Calling it synchronously would see height:0.
 function fitMapHeight() { map.invalidateSize(); }
 window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
@@ -1495,7 +1495,6 @@ function copyMapLink() {
         fallbackCopy(url, btn);
       }
     });
-}
 }
 
 function fallbackCopy(text, btn) {
