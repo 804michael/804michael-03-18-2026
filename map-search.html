@@ -138,8 +138,15 @@
 
     /* Share panel */
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
-    .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-    .share-panel h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(1.2rem,3vw,1.8rem);letter-spacing:.04em;text-transform:uppercase;color:var(--white);line-height:1.2}
+    .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+    .share-panel h3{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
+    .share-panel .share-cta{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,4vw,2rem);color:var(--white);text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
+    .share-panel .share-cta span{color:var(--red)}
+    .bounce-finger{display:block;font-size:1.8rem;line-height:1;animation:bounce-down .9s ease-in-out infinite}
+    @keyframes bounce-down{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(6px)}
+    }
     .share-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
     .share-btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:2px solid transparent;transition:all .15s;text-decoration:none;flex-shrink:0;white-space:nowrap}
     .share-btn svg{flex-shrink:0;pointer-events:none}
@@ -409,7 +416,9 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h3>Are you done with your Master Piece?<br>Now 📤 Share This Map<br>with 804-Michael</h3>
+    <h3>Are you done with your masterpiece?</h3>
+    <div class="share-cta">📤 Share This Map<br>with <span>804-Michael</span></div>
+    <span class="bounce-finger" aria-hidden="true">👇</span>
     <div class="share-btns">
       <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -501,20 +510,21 @@ function fitMapHeight() {
   const toolbar = document.getElementById('toolbar');
   const mapWrap = document.getElementById('map-wrap');
   if (!toolbar || !mapWrap) return;
-  // getBoundingClientRect().bottom = px from top of viewport to bottom of toolbar
-  // This is always correct for a sticky element that hasn't been scrolled past
   const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
   const tbBottom = toolbar.getBoundingClientRect().bottom;
   const h = Math.max(vh - tbBottom, 280);
   mapWrap.style.height = h + 'px';
   map.invalidateSize();
 }
-// Run at multiple points to handle fonts, mobile chrome, orientation changes
-document.addEventListener('DOMContentLoaded', fitMapHeight);
+// Script runs after DOM is already parsed (inline at bottom of body),
+// so just call directly — no DOMContentLoaded needed.
+fitMapHeight();
+setTimeout(fitMapHeight, 100);
+setTimeout(fitMapHeight, 500);
 window.addEventListener('load', fitMapHeight);
-requestAnimationFrame(() => { fitMapHeight(); setTimeout(fitMapHeight, 500); });
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
+new ResizeObserver(fitMapHeight).observe(document.getElementById('toolbar'));
 
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
