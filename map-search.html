@@ -225,6 +225,10 @@
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
     </button>
 
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+    </button>
+
     <div class="tool-sep"></div>
 
     <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
@@ -278,7 +282,7 @@
 
     <div class="tool-sep"></div>
 
-    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Toggle schools layer">
+    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </button>
 
@@ -352,28 +356,51 @@
   }).addTo(map);
 
   // ── Schools layer (OpenStreetMap Overpass) ──
-  const schoolGroup = L.featureGroup().addTo(map);
+  const schoolGroup = L.featureGroup();
   let schoolsLoaded = false;
   let schoolsVisible = false;
 
   function loadSchools(){
     if(schoolsLoaded) return;
     schoolsLoaded = true;
-    // Bounding box for Ashland/Hanover/Mechanicsville/Glen Allen area
-    const query = `[out:json][timeout:25];
+    // Wide bounding box covering: Hanover, Henrico, Caroline, King William,
+    // Chesterfield, Powhatan, Goochland, City of Richmond, New Kent,
+    // plus bordering counties (Spotsylvania, King & Queen, Essex, Louisa,
+    // Fluvanna, Amelia, Dinwiddie, Colonial Heights, Petersburg, Prince George,
+    // Charles City, York, James City, Williamsburg area)
+    // bbox: south, west, north, east
+    const bbox = '37.0,-78.2,38.2,-76.5';
+    const query = `[out:json][timeout:60];
 (
-  node["amenity"="school"](37.4,-77.8,38.0,-77.1);
-  node["amenity"="college"](37.4,-77.8,38.0,-77.1);
-);out body;`;
+  way["amenity"="school"]["operator:type"!="private"]["fee"!="yes"](${bbox});
+  node["amenity"="school"]["operator:type"!="private"]["fee"!="yes"](${bbox});
+  way["amenity"="school"]["school:type"="public"](${bbox});
+  node["amenity"="school"]["school:type"="public"](${bbox});
+  way["amenity"="school"][!"operator:type"]["fee"!="yes"](${bbox});
+  node["amenity"="school"][!"operator:type"]["fee"!="yes"](${bbox});
+);
+out center;`;
     fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)})
       .then(r=>r.json())
       .then(data=>{
+        const seen = new Set();
+        // Filter out known private school keywords in names
+        const privateKeywords = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary/i;
         data.elements.forEach(el=>{
-          const name = el.tags.name || 'School';
-          const marker = L.circleMarker([el.lat,el.lon],{
+          const lat = el.lat || (el.center && el.center.lat);
+          const lon = el.lon || (el.center && el.center.lon);
+          if(!lat||!lon) return;
+          const name = el.tags.name || '';
+          if(!name) return;
+          // Skip obvious private schools by name
+          if(privateKeywords.test(name)) return;
+          const key = `${lat.toFixed(3)},${lon.toFixed(3)}`;
+          if(seen.has(key)) return;
+          seen.add(key);
+          const marker = L.circleMarker([lat,lon],{
             radius:7, color:'#1a73e8', weight:2,
             fillColor:'#1a73e8', fillOpacity:0.9
-          }).bindTooltip(name,{permanent:false,direction:'top',offset:[0,-8],className:'dist-tip'});
+          }).bindTooltip(name,{permanent:false,direction:'top',offset:[0,-10],className:'dist-tip'});
           schoolGroup.addLayer(marker);
         });
       })
@@ -387,20 +414,20 @@
       loadSchools();
       schoolGroup.addTo(map);
       btn.classList.add('active');
+      btn.setAttribute('data-tip','Hide Schools');
     } else {
       map.removeLayer(schoolGroup);
       btn.classList.remove('active');
+      btn.setAttribute('data-tip','Show Schools');
     }
   }
 
   // ── State ──
   let mode='freehand', strokeColor='#188038', strokeWeight=3;
   let hasDrawn=false;
-  const MAX_HISTORY=15;
+  // No cap on undo history
 
   // ── Undo/Redo history ──
-  // Each entry is an action: {type:'add'|'remove', layer}
-  // For polygon-in-progress, each segment click is its own undo step
   const undoStack = [];
   const redoStack = [];
   const activeGroup = L.featureGroup().addTo(map);
@@ -408,43 +435,36 @@
   // In-progress drawing
   let drawingPolyline=null, polyLatLngs=[];
   let circleCenter=null, previewCircle=null, distTooltip=null;
-  // For polygon segment undo: track preview line separately
   let polyPreviewLine=null;
+
+  // Move mode state
+  let moveLayer=null, moveDragStart=null, moveOrigCenter=null, moveOrigLatLngs=null;
 
   // ── Helpers ──
   function fmtDist(m){return m<1609?(m*3.28084).toFixed(0)+' ft':(m*0.000621371).toFixed(2)+' mi'}
-
   function shapeStyle(){ return{color:strokeColor,weight:strokeWeight,opacity:1,fillColor:strokeColor,fillOpacity:0.10,fill:true} }
-
   function updatePreviewStyle(){
     if(drawingPolyline) drawingPolyline.setStyle({color:strokeColor,weight:strokeWeight});
     if(previewCircle)   previewCircle.setStyle({color:strokeColor,weight:strokeWeight});
   }
-
   function markDrawn(){
     if(!hasDrawn){hasDrawn=true;document.getElementById('map-hint').classList.add('hidden')}
   }
-
-  // Push an add-action to undo stack (cap at MAX_HISTORY)
   function pushUndo(action){
     undoStack.push(action);
-    if(undoStack.length>MAX_HISTORY) undoStack.shift();
     redoStack.length=0;
     updateUndoRedo();
     markDrawn();
   }
-
   function commitLayer(layer){
     activeGroup.addLayer(layer);
+    if(mode==='move') layer.on('mousedown', onLayerMoveStart);
     pushUndo({type:'add',layer});
   }
-
   function updateUndoRedo(){
     document.getElementById('btn-undo').disabled = undoStack.length===0 && polyLatLngs.length<2;
     document.getElementById('btn-redo').disabled = redoStack.length===0;
   }
-
-  // ── Distance tooltip ──
   function showDistAt(latlng,text){
     if(distTooltip) map.removeLayer(distTooltip);
     distTooltip=L.tooltip({permanent:true,direction:'right',offset:[10,-10],className:'dist-tip'})
@@ -453,7 +473,7 @@
   function clearDistTooltip(){if(distTooltip){map.removeLayer(distTooltip);distTooltip=null}}
 
   // ── Mode switching ──
-  const allModes=['pan','freehand','circle','polygon','erase'];
+  const allModes=['pan','move','freehand','circle','polygon','erase'];
   function setMode(m){
     cancelInProgress();
     mode=m;
@@ -461,16 +481,79 @@
       const el=document.getElementById('btn-'+t);
       if(el) el.classList.toggle('active',t===m);
     });
+    // Remove move listeners from all layers when leaving move mode
+    if(m!=='move') detachMoveListeners();
+
     if(m==='pan'){
       map.dragging.enable();map.scrollWheelZoom.enable();
       map.getContainer().style.cursor='grab';
     } else if(m==='erase'){
       map.dragging.disable();map.scrollWheelZoom.disable();
       map.getContainer().style.cursor='not-allowed';
+    } else if(m==='move'){
+      map.dragging.disable();map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor='default';
+      attachMoveListeners();
     } else {
       map.dragging.disable();map.scrollWheelZoom.disable();
       map.getContainer().style.cursor='crosshair';
     }
+  }
+
+  // ── Move layer logic ──
+  function attachMoveListeners(){
+    activeGroup.eachLayer(layer=>{
+      layer.on('mousedown', onLayerMoveStart);
+      if(layer.getElement) layer.getElement() && (layer.getElement().style.cursor='move');
+    });
+  }
+  function detachMoveListeners(){
+    activeGroup.eachLayer(layer=>{
+      layer.off('mousedown', onLayerMoveStart);
+      if(layer.getElement) layer.getElement() && (layer.getElement().style.cursor='');
+    });
+    moveLayer=null; moveDragStart=null;
+  }
+  function onLayerMoveStart(e){
+    L.DomEvent.stopPropagation(e);
+    moveLayer = e.target;
+    moveDragStart = e.latlng;
+    // Save original position
+    if(moveLayer instanceof L.Circle){
+      moveOrigCenter = moveLayer.getLatLng();
+    } else {
+      moveOrigLatLngs = JSON.parse(JSON.stringify(moveLayer.getLatLngs()));
+    }
+    map.on('mousemove', onLayerMoveDrag);
+    map.on('mouseup',   onLayerMoveEnd);
+  }
+  function onLayerMoveDrag(e){
+    if(!moveLayer||!moveDragStart) return;
+    const dlat = e.latlng.lat - moveDragStart.lat;
+    const dlng = e.latlng.lng - moveDragStart.lng;
+    if(moveLayer instanceof L.Circle){
+      const c = moveOrigCenter;
+      moveLayer.setLatLng([c.lat+dlat, c.lng+dlng]);
+    } else {
+      const shift = lls => {
+        if(Array.isArray(lls[0])) return lls.map(shift);
+        return lls.map(ll => L.latLng(ll.lat+dlat, ll.lng+dlng));
+      };
+      moveLayer.setLatLngs(shift(moveOrigLatLngs));
+    }
+  }
+  function onLayerMoveEnd(e){
+    if(!moveLayer) return;
+    // Save undo for move
+    const layer = moveLayer;
+    const origC = moveOrigCenter;
+    const origL = moveOrigLatLngs;
+    const newC  = layer instanceof L.Circle ? layer.getLatLng() : null;
+    const newL  = layer instanceof L.Circle ? null : JSON.parse(JSON.stringify(layer.getLatLngs()));
+    pushUndo({type:'move', layer, origC, origL, newC, newL});
+    moveLayer=null; moveDragStart=null; moveOrigCenter=null; moveOrigLatLngs=null;
+    map.off('mousemove', onLayerMoveDrag);
+    map.off('mouseup',   onLayerMoveEnd);
   }
 
   function cancelInProgress(){
@@ -510,23 +593,41 @@
       let closest=null, minDist=Infinity;
       const layers=[];
       activeGroup.eachLayer(l=>layers.push(l));
+
+      // Convert a pixel hit radius to meters at current zoom
+      const pxThreshold = 30; // pixels
+      const mapSize = map.getSize();
+      const centerPx = map.latLngToContainerPoint(map.getCenter());
+      const edgePx   = L.point(centerPx.x + pxThreshold, centerPx.y);
+      const edgeLL   = map.containerPointToLatLng(edgePx);
+      const meterThreshold = map.getCenter().distanceTo(edgeLL);
+
+      function flatLatLngs(lls){
+        if(!lls||!lls.length) return [];
+        if(typeof lls[0].lat === 'number') return lls;
+        return lls.reduce((a,x)=>a.concat(flatLatLngs(x)),[]);
+      }
+
       layers.forEach(layer=>{
         let d=Infinity;
         if(layer instanceof L.Circle){
+          // Distance to circumference
           d=Math.abs(e.latlng.distanceTo(layer.getLatLng())-layer.getRadius());
-        } else if(layer instanceof L.Polygon){
-          const pts=layer.getLatLngs().flat();
-          pts.forEach(p=>{const dd=e.latlng.distanceTo(p);if(dd<d)d=dd});
-        } else if(layer instanceof L.Polyline){
-          const pts=layer.getLatLngs().flat();
-          pts.forEach(p=>{const dd=e.latlng.distanceTo(p);if(dd<d)d=dd});
+        } else {
+          const pts = flatLatLngs(layer.getLatLngs());
+          pts.forEach(p=>{ const dd=e.latlng.distanceTo(p); if(dd<d) d=dd; });
+          // Also check centroid for filled polygons
+          if(layer instanceof L.Polygon){
+            const bounds = layer.getBounds();
+            const dc = e.latlng.distanceTo(bounds.getCenter());
+            if(dc<d) d=dc;
+          }
         }
         if(d<minDist){minDist=d;closest=layer}
       });
-      const threshold=map.getContainer().offsetWidth*0.06;
-      if(closest&&minDist<threshold){
+
+      if(closest && minDist < meterThreshold){
         activeGroup.removeLayer(closest);
-        // remove from undoStack
         const idx=undoStack.findLastIndex(a=>a.layer===closest);
         if(idx>-1) undoStack.splice(idx,1);
         pushUndo({type:'remove',layer:closest});
@@ -607,23 +708,18 @@
 
   // ── Undo / Redo — 15 steps, per-segment for polygon ──
   function undoLast(){
-    // If polygon in progress, undo last point
     if(mode==='polygon'&&drawingPolyline){
       if(polyLatLngs.length>1){
         polyLatLngs.pop();
         drawingPolyline.setLatLngs([...polyLatLngs,polyLatLngs[polyLatLngs.length-1]]);
-        // pop the matching undo entry
         const idx=undoStack.findLastIndex(a=>a.type==='poly-point');
         if(idx>-1) undoStack.splice(idx,1);
-        updateUndoRedo();
-        return;
+        updateUndoRedo(); return;
       } else {
-        // cancel entire polygon
         cancelInProgress();
         const idx=undoStack.findLastIndex(a=>a.type==='poly-start');
         if(idx>-1) undoStack.splice(idx,1);
-        updateUndoRedo();
-        return;
+        updateUndoRedo(); return;
       }
     }
     if(!undoStack.length) return;
@@ -634,6 +730,15 @@
     } else if(action.type==='remove'){
       activeGroup.addLayer(action.layer);
       redoStack.push({type:'redo-remove',layer:action.layer});
+    } else if(action.type==='move'){
+      // Restore original position
+      if(action.layer instanceof L.Circle){
+        action.layer.setLatLng(action.origC);
+      } else {
+        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll=>L.latLng(ll.lat,ll.lng));
+        action.layer.setLatLngs(restore(action.origL));
+      }
+      redoStack.push(action);
     }
     updateUndoRedo();
   }
@@ -647,6 +752,15 @@
     } else if(action.type==='redo-remove'){
       activeGroup.removeLayer(action.layer);
       undoStack.push({type:'remove',layer:action.layer});
+    } else if(action.type==='move'){
+      // Re-apply the move
+      if(action.layer instanceof L.Circle){
+        action.layer.setLatLng(action.newC);
+      } else {
+        const restore = lls => Array.isArray(lls[0]) ? lls.map(restore) : lls.map(ll=>L.latLng(ll.lat,ll.lng));
+        action.layer.setLatLngs(restore(action.newL));
+      }
+      undoStack.push(action);
     }
     updateUndoRedo();
   }
