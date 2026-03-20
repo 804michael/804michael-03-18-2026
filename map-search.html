@@ -524,7 +524,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 15_40</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 16_55</p>
   </div>
 </div>
 
@@ -723,6 +723,57 @@ function fitMapHeight() { map.invalidateSize(); }
 window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
+
+// ── Keep toolbar visible when mobile keyboard opens ───────────────────────────
+// sticky breaks when the soft keyboard shrinks visualViewport.
+// Solution: switch toolbar to position:fixed anchored to visual viewport top.
+(function() {
+  if (!window.visualViewport) return;
+  var toolbar = document.getElementById('toolbar');
+  var baselineH = 0;
+
+  function getNavBottom() {
+    // Nav is fixed; its bottom = its top offset + its height
+    var nav = document.getElementById('nav');
+    if (nav) {
+      var r = nav.getBoundingClientRect();
+      return r.bottom;
+    }
+    var bannerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 0;
+    var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+    return bannerH + navH;
+  }
+
+  function onViewportChange() {
+    var vv = window.visualViewport;
+    if (!baselineH) baselineH = vv.height;
+    var shrinkage = baselineH - vv.height;
+    if (shrinkage > 120) {
+      // Keyboard is open — pin toolbar fixed to visual viewport
+      toolbar.style.position = 'fixed';
+      toolbar.style.top      = Math.round(vv.offsetTop + getNavBottom()) + 'px';
+      toolbar.style.left     = vv.offsetLeft + 'px';
+      toolbar.style.right    = '0';
+      toolbar.style.width    = vv.width + 'px';
+    } else {
+      // Keyboard closed — restore sticky
+      baselineH = vv.height;
+      toolbar.style.position = '';
+      toolbar.style.top      = '';
+      toolbar.style.left     = '';
+      toolbar.style.right    = '';
+      toolbar.style.width    = '';
+    }
+  }
+
+  // Calibrate once layout is settled
+  window.addEventListener('load', function() {
+    setTimeout(function() { baselineH = window.visualViewport.height; }, 400);
+  });
+
+  window.visualViewport.addEventListener('resize', onViewportChange);
+  window.visualViewport.addEventListener('scroll', onViewportChange);
+})();
 
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
