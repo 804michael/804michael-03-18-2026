@@ -15,8 +15,6 @@
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px;--toolbar-h:52px}
     @media(max-width:768px){
       :root{--nav-h:48px;--header-h:26px;--chrome-h:180px}
-      /* On mobile toolbar is fixed, so pg-header must clear banner+nav+toolbar */
-      .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h) + var(--toolbar-h))}
     }
     /* Banner hide transition */
     #banner{transition:transform .5s ease,opacity .5s ease}
@@ -85,6 +83,8 @@
 
     /* Page header — slim single line, collapses on mobile */
     .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease}
+    /* On mobile toolbar is fixed — push pg-header below banner+nav+toolbar */
+    @media(max-width:768px){.pg-header{margin-top:calc(var(--banner-h) + var(--nav-h) + var(--toolbar-h))}}
     .pg-header.compact{padding:2px 16px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
@@ -536,7 +536,7 @@
       </div>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 19_05</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 19_44</p>
   </div>
 </div>
 
