@@ -12,10 +12,10 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
-    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px}
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px}
     @media(max-width:768px){
-      :root{--nav-h:48px}
-      :root{ --chrome-h: 172px } /* banner(38) + nav(48) + header(36) + toolbar(50) */
+      :root{--nav-h:48px;--header-h:22px}
+      :root{ --chrome-h: 148px } /* banner(38) + nav(48) + header(22) + toolbar(40) */
     }
     /* Banner hide transition */
     #banner{transition:transform .5s ease,opacity .5s ease}
@@ -82,13 +82,13 @@
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
     /* Page header — slim single line, collapses on mobile */
-    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:3px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .pg-header{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:799;margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:2px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:var(--header-h)}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
 
     /* Toolbar — single row, scrolls horizontally on small screens */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h) + var(--header-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
@@ -225,17 +225,17 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ── Pin bottom sheet ── */
-    #pin-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--white);border-radius:18px 18px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.18);padding:16px 20px 24px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:70vh;overflow-y:auto}
+    #pin-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--white);border-radius:14px 14px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.18);padding:8px 16px 16px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:70vh;overflow-y:auto}
     #pin-sheet.open{transform:translateY(0)}
-    #pin-sheet-handle{width:36px;height:4px;background:var(--gray-mid);border-radius:2px;margin:0 auto 14px}
-    #pin-sheet h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--black);margin-bottom:12px}
-    #pin-sheet-colors{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-    #pin-sheet-colors span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);flex-shrink:0}
-    #pin-sheet-inp{width:100%;height:44px;padding:0 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);outline:none;box-sizing:border-box;transition:border-color .15s}
+    #pin-sheet-handle{width:32px;height:3px;background:var(--gray-mid);border-radius:2px;margin:0 auto 8px}
+    #pin-sheet h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--black);margin-bottom:6px}
+    #pin-sheet-colors{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+    #pin-sheet-colors span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);flex-shrink:0}
+    #pin-sheet-inp{width:100%;height:36px;padding:0 10px;border:2px solid var(--gray-mid);border-radius:7px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;box-sizing:border-box;transition:border-color .15s}
     #pin-sheet-inp:focus{border-color:var(--red)}
-    #pin-sheet-btns{display:flex;gap:10px;margin-top:12px}
-    #pin-sheet-save{flex:1;height:44px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
-    #pin-sheet-skip{height:44px;padding:0 18px;background:transparent;color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+    #pin-sheet-btns{display:flex;gap:8px;margin-top:8px}
+    #pin-sheet-save{flex:1;height:36px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    #pin-sheet-skip{height:36px;padding:0 14px;background:transparent;color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
     #pin-sheet-backdrop{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.3)}
     #pin-sheet-backdrop.open{display:block}
     .pin-label-popup .leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:0;overflow:hidden}
@@ -524,7 +524,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 11_08</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 12_44</p>
   </div>
 </div>
 
@@ -1802,7 +1802,6 @@ setTimeout(function() {
 <div id="pin-sheet-backdrop"></div>
 <div id="pin-sheet" role="dialog" aria-modal="true" aria-label="Name this pin">
   <div id="pin-sheet-handle"></div>
-  <h3>Name This Pin</h3>
   <div id="pin-sheet-colors">
     <span>Color:</span>
   </div>
