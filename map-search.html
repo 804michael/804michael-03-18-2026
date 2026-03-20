@@ -903,12 +903,7 @@ window.undoLast = function() {
     if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
       action.layer.setLatLng(action.origC);
     } else {
-      const restore = function(lls) {
-        if (!lls.length) return lls;
-        if (typeof lls[0].lat === 'number') return lls.map(function(ll) { return L.latLng(ll.lat, ll.lng); });
-        return lls.map(restore);
-      };
-      action.layer.setLatLngs(restore(action.origL));
+      action.layer.setLatLngs(_deepCopyLLs(action.origL));
     }
     redoStack.push(action);
   }
@@ -931,12 +926,7 @@ window.redoLast = function() {
     if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
       action.layer.setLatLng(action.newC);
     } else {
-      const restore = function(lls) {
-        if (!lls.length) return lls;
-        if (typeof lls[0].lat === 'number') return lls.map(function(ll) { return L.latLng(ll.lat, ll.lng); });
-        return lls.map(restore);
-      };
-      action.layer.setLatLngs(restore(action.newL));
+      action.layer.setLatLngs(_deepCopyLLs(action.newL));
     }
     undoStack.push(action);
   }
@@ -1065,88 +1055,102 @@ function eraseAt(ll) {
 }
 
 // ── Move / Select tool ────────────────────────────────────────────────────────
-// In move mode we intercept pointerdown on the map container, find the nearest
-// layer within a tap radius, then drag it as the pointer moves.
-// The undo entry stores origC/origL (before) and newC/newL (after) so both
-// undo and redo can restore or re-apply the exact displacement.
+// Finds the nearest layer to the tap point (using both vertex proximity AND
+// bounding-box containment for polygons/circles), then translates it as the
+// pointer moves by applying a consistent delta from the original latlngs.
+// Drag state is always cleaned up — including on mouseleave and touchcancel.
 
-let moveLayer      = null;  // the layer being dragged
-let moveDragStart  = null;  // latlng where drag began
-let moveOrigCenter = null;  // original circle center
-let moveOrigLatLngs = null; // original polyline/polygon latlngs (deep copy)
+let moveLayer       = null;   // layer currently being dragged
+let moveDragStart   = null;   // latlng where the drag began
+let moveOrigCenter  = null;   // saved center for Marker / Circle (L.LatLng)
+let moveOrigLatLngs = null;   // saved latlngs for Polyline / Polygon (deep array of L.LatLng)
 
-function attachMoveListeners() {
-  // Give each draggable layer a move cursor so the user knows it's grabbable
-  [activeGroup, pinGroup].forEach(function(grp) {
-    grp.eachLayer(function(layer) {
-      if (layer.getElement) {
-        var el = layer.getElement();
-        if (el) el.style.cursor = 'grab';
-      }
-    });
-  });
-}
+function attachMoveListeners() {}   // cursor styling handled in setMode
+function detachMoveListeners() { _resetMoveState(); }
 
-function detachMoveListeners() {
-  [activeGroup, pinGroup].forEach(function(grp) {
-    grp.eachLayer(function(layer) {
-      if (layer.getElement) {
-        var el = layer.getElement();
-        if (el) el.style.cursor = '';
-      }
-    });
-  });
+function _resetMoveState() {
   moveLayer = null; moveDragStart = null;
   moveOrigCenter = null; moveOrigLatLngs = null;
 }
 
+// Deep-copy a (possibly nested) latlng array into plain L.LatLng objects.
+function _deepCopyLLs(lls) {
+  if (!lls || !lls.length) return [];
+  if (typeof lls[0].lat === 'number') {
+    return lls.map(function(p) { return L.latLng(p.lat, p.lng); });
+  }
+  return lls.map(_deepCopyLLs);
+}
+
+// Flatten any nesting level to a single array of L.LatLng.
+function _flatLLs(lls) {
+  if (!lls || !lls.length) return [];
+  if (typeof lls[0].lat === 'number') return lls.slice();
+  return lls.reduce(function(a, x) { return a.concat(_flatLLs(x)); }, []);
+}
+
+// Shift a (possibly nested) latlng array by dlat/dlng, always returning L.LatLng.
+function _shiftLLs(lls, dlat, dlng) {
+  if (!lls || !lls.length) return [];
+  if (typeof lls[0].lat === 'number') {
+    return lls.map(function(p) { return L.latLng(p.lat + dlat, p.lng + dlng); });
+  }
+  return lls.map(function(sub) { return _shiftLLs(sub, dlat, dlng); });
+}
+
 function startMove(ll) {
-  // Find nearest layer across both groups (same distance logic as eraseAt)
   var allLayers = [];
   activeGroup.eachLayer(function(l) { allLayers.push({ layer: l, group: activeGroup }); });
   pinGroup.eachLayer(function(l)    { allLayers.push({ layer: l, group: pinGroup }); });
   if (!allLayers.length) return;
 
-  var centerPx  = map.latLngToContainerPoint(map.getCenter());
-  var edgeLL    = map.containerPointToLatLng(L.point(centerPx.x + 44, centerPx.y));
-  var threshold = map.getCenter().distanceTo(edgeLL);
+  // Threshold: ~48 CSS pixels → meters at current zoom
+  var cpx = map.latLngToContainerPoint(map.getCenter());
+  var threshold = map.getCenter().distanceTo(
+    map.containerPointToLatLng(L.point(cpx.x + 48, cpx.y))
+  );
 
-  function flatLL(lls) {
-    if (!lls || !lls.length) return [];
-    if (typeof lls[0].lat === 'number') return lls;
-    return lls.reduce(function(a, x) { return a.concat(flatLL(x)); }, []);
-  }
+  var best = null, bestDist = Infinity;
 
-  var closest = null, minDist = Infinity;
   allLayers.forEach(function(entry) {
     var layer = entry.layer;
     var d = Infinity;
+
     if (layer instanceof L.Marker) {
       d = ll.distanceTo(layer.getLatLng());
+
     } else if (layer instanceof L.Circle) {
-      d = ll.distanceTo(layer.getLatLng()); // grab by center
+      // Inside the circle? d = 0. Outside? d = distance past the edge.
+      var toCenter = ll.distanceTo(layer.getLatLng());
+      d = Math.max(0, toCenter - layer.getRadius());
+
     } else {
-      flatLL(layer.getLatLngs()).forEach(function(p) {
-        var dd = ll.distanceTo(p); if (dd < d) d = dd;
+      // Polyline or Polygon — check every vertex
+      _flatLLs(layer.getLatLngs()).forEach(function(p) {
+        var dd = ll.distanceTo(p);
+        if (dd < d) d = dd;
       });
+      // For polygons also check if the tap is inside the bounds (catches
+      // taps on the interior that are far from any vertex)
       if (layer instanceof L.Polygon) {
-        var dc = ll.distanceTo(layer.getBounds().getCenter());
-        if (dc < d) d = dc;
+        var b = layer.getBounds();
+        if (b.contains(ll)) d = 0;
       }
     }
-    if (d < minDist) { minDist = d; closest = layer; }
+
+    if (d < bestDist) { bestDist = d; best = layer; }
   });
 
-  if (!closest || minDist > threshold) return;
+  if (!best || bestDist > threshold) return;
 
-  moveLayer     = closest;
-  moveDragStart = ll;
+  moveLayer     = best;
+  moveDragStart = L.latLng(ll.lat, ll.lng);
 
-  if (closest instanceof L.Marker || closest instanceof L.Circle) {
-    moveOrigCenter = closest.getLatLng();
+  if (best instanceof L.Marker || best instanceof L.Circle) {
+    var c = best.getLatLng();
+    moveOrigCenter = L.latLng(c.lat, c.lng);
   } else {
-    // Deep-copy the latlngs so we have a clean restore point
-    moveOrigLatLngs = JSON.parse(JSON.stringify(closest.getLatLngs()));
+    moveOrigLatLngs = _deepCopyLLs(best.getLatLngs());
   }
 
   map.getContainer().style.cursor = 'grabbing';
@@ -1158,35 +1162,27 @@ function doMove(ll) {
   var dlng = ll.lng - moveDragStart.lng;
 
   if (moveLayer instanceof L.Marker || moveLayer instanceof L.Circle) {
-    moveLayer.setLatLng([moveOrigCenter.lat + dlat, moveOrigCenter.lng + dlng]);
+    moveLayer.setLatLng(L.latLng(moveOrigCenter.lat + dlat, moveOrigCenter.lng + dlng));
   } else {
-    function shiftLls(lls) {
-      if (!lls.length) return lls;
-      if (typeof lls[0].lat === 'number') {
-        return lls.map(function(p) { return L.latLng(p.lat + dlat, p.lng + dlng); });
-      }
-      return lls.map(shiftLls);
-    }
-    moveLayer.setLatLngs(shiftLls(moveOrigLatLngs));
+    moveLayer.setLatLngs(_shiftLLs(moveOrigLatLngs, dlat, dlng));
   }
 }
 
 function endMove() {
   if (!moveLayer) return;
-  var layer = moveLayer;
-  var origC = moveOrigCenter ? L.latLng(moveOrigCenter.lat, moveOrigCenter.lng) : null;
-  var newC  = (layer instanceof L.Marker || layer instanceof L.Circle) ? layer.getLatLng() : null;
-  var origL = moveOrigLatLngs ? JSON.parse(JSON.stringify(moveOrigLatLngs)) : null;
-  var newL  = (origL !== null) ? JSON.parse(JSON.stringify(layer.getLatLngs())) : null;
+  var layer  = moveLayer;
+  var origC  = moveOrigCenter  ? L.latLng(moveOrigCenter.lat, moveOrigCenter.lng) : null;
+  var origL  = moveOrigLatLngs ? _deepCopyLLs(moveOrigLatLngs) : null;
+  var newC   = (origC  !== null) ? layer.getLatLng() : null;
+  var newL   = (origL  !== null) ? _deepCopyLLs(layer.getLatLngs()) : null;
 
-  // Only push to undo if the shape actually moved
-  var moved = origC ? origC.distanceTo(newC) > 0.5 : true;
+  // Push to undo only if the shape genuinely moved
+  var moved = origC ? origC.distanceTo(newC) > 0.5 : (origL !== null);
   if (moved) {
-    pushUndo({ type: 'move', layer: layer, origC: origC, newC: newC, origL: origL, newL: newL });
+    pushUndo({ type:'move', layer:layer, origC:origC, newC:newC, origL:origL, newL:newL });
   }
 
-  moveLayer = null; moveDragStart = null;
-  moveOrigCenter = null; moveOrigLatLngs = null;
+  _resetMoveState();
   map.getContainer().style.cursor = 'default';
 }
 // Covers: Hanover, Henrico, City of Richmond, Chesterfield, New Kent,
@@ -1307,6 +1303,8 @@ mapEl.addEventListener('mouseleave', () => {
     const layer = drawingPolyline; drawingPolyline = null; polyLatLngs = [];
     if (layer.getLatLngs().length > 2) commitLayer(layer); else map.removeLayer(layer);
   }
+  // Cleanly end a move drag if the cursor leaves the map
+  if (mode === 'move') endMove();
 });
 
 // Touch events — preventDefault stops the page scrolling while drawing
@@ -1334,6 +1332,13 @@ mapEl.addEventListener('touchend', e => {
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
 }, { passive: false });
+
+// System gestures (swipe-up for home bar, incoming call, etc.) fire touchcancel.
+// Without this the move tool gets stuck in a dragging state.
+mapEl.addEventListener('touchcancel', () => {
+  if (mode === 'move') endMove();
+  cancelInProgress();
+}, { passive: true });
 
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
