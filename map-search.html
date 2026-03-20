@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 01_14                                 ║
+  ║  MAP VERSION: 26.03.21 10_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -76,9 +76,12 @@
   <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700&display=swap&font-display=swap" rel="stylesheet" />
 
   <!-- ── Leaflet CSS (preload + stylesheet) ───────────────────────────────── -->
+  <link rel="preconnect" href="https://a.tile.openstreetmap.org" />
+  <link rel="preconnect" href="https://b.tile.openstreetmap.org" />
+  <link rel="preconnect" href="https://c.tile.openstreetmap.org" />
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
@@ -429,7 +432,7 @@
   </nav>
 </header>
 
-<div id="mob-menu" role="dialog" aria-modal="true">
+<div id="mob-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
   <button id="mob-close" aria-label="Close menu">&times;</button>
   <ul class="mob-links">
     <li><a href="index.html" onclick="closeMob()">Home</a></li>
@@ -487,22 +490,22 @@
 
     <!-- ③ Draw tools | Schools -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
-      <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw">
+      <button class="tool-btn active" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
       </button>
-      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward">
+      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
       </button>
-      <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it">
+      <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it" aria-label="Move — drag a shape to reposition it">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
       </button>
-      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it">
+      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
       </button>
-      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools">
+      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </button>
-      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location">
+      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
       </button>
     </div>
@@ -511,22 +514,22 @@
 
     <!-- ④ Pan | Zoom | Undo | Redo | Trash -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
-      <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map">
+      <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
       </button>
-      <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in">
+      <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
       </button>
-      <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out">
+      <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
       </button>
-      <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" disabled>
+      <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" aria-label="Undo" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
       </button>
-      <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" disabled>
+      <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" aria-label="Redo" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
       </button>
-      <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings">
+      <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings" aria-label="Clear all drawings">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>
     </div>
@@ -581,7 +584,7 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h3>Ready to find your home in Ashland VA or Hanover County? <span id="art-emoji">🎨</span></h3>
+    <h2>Ready to find your home in Ashland VA or Hanover County? <span id="art-emoji">🎨</span></h2>
     <div class="share-cta">📤 Send This Map to<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em"><span style="color:var(--red);font-weight:600">Michael Hottman</span></span></div>
     <span class="bounce-finger" aria-hidden="true">👇</span>
     <div class="share-btns" style="flex-direction:column;align-items:stretch">
@@ -604,7 +607,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 01_14</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 10_00</p>
   </div>
 </div>
 
