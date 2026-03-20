@@ -1838,13 +1838,17 @@ function pinPgHeader() {
   var toolbar = document.getElementById('toolbar');
   var pgHeader = document.querySelector('.pg-header');
   if (!toolbar || !pgHeader) return;
-  var toolbarBottom = toolbar.getBoundingClientRect().bottom + window.scrollY;
+  // toolbar is position:fixed on mobile, so getBoundingClientRect().bottom is
+  // already a viewport-relative px value — do NOT add scrollY or the margin
+  // grows whenever the user scrolls down and back up, leaving a white gap.
+  var toolbarBottom = toolbar.getBoundingClientRect().bottom;
   pgHeader.style.marginTop = toolbarBottom + 'px';
 }
 
 // Run on load and whenever layout might shift
 window.addEventListener('load', function() { setTimeout(pinPgHeader, 100); });
 window.addEventListener('resize', pinPgHeader);
+window.addEventListener('scroll', pinPgHeader);
 </script>
 <!-- PIN BOTTOM SHEET -->
 <div id="pin-sheet-backdrop"></div>
