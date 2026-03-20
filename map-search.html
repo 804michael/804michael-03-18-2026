@@ -13,6 +13,16 @@
   <script src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px}
+    @media(max-width:768px){
+      :root{--nav-h:48px}
+      :root{ --chrome-h: 172px } /* banner(38) + nav(48) + header(36) + toolbar(50) */
+    }
+    /* Banner hide transition */
+    #banner{transition:transform .5s ease,opacity .5s ease}
+    #banner.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
+    /* pg-header description fade */
+    .pg-header p{transition:opacity .5s ease,max-height .5s ease,margin .5s ease,padding .5s ease;overflow:hidden;max-height:40px}
+    .pg-header p.hide{opacity:0;max-height:0;margin:0;pointer-events:none}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -101,6 +111,7 @@
        Total to subtract: banner(38) + nav(68) + header(52) + toolbar(52) = 210px
        We use a CSS variable so it's easy to tweak. */
     :root{ --chrome-h: 210px }
+    @media(max-width:768px){ :root{ --chrome-h: 152px } /* collapses further once banner hides */ }
     .map-wrap{
       position: relative;
       width: 100%;
@@ -138,7 +149,7 @@
       color:white;text-align:center;padding:0 24px;line-height:1.2;
       max-width:800px;
     }
-    .map-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.44rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:normal;word-break:break-word;overflow-wrap:break-word;text-align:center;width:min(90vw,680px);animation:pulse 2.5s ease infinite;transition:opacity .6s ease}
+    .map-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.44rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:normal;word-break:break-word;overflow-wrap:break-word;text-align:center;width:min(90vw,680px);animation:pulse 2.5s ease infinite;transition:opacity 1.5s ease}
     .map-hint.hidden{display:none}
     .map-hint.faded{opacity:0}
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
@@ -500,7 +511,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 09_14</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 10_15</p>
   </div>
 </div>
 
@@ -732,12 +743,12 @@ function showHintTimed(ms) {
   _hintFadeTimer = setTimeout(function() {
     hint.classList.add('faded');
     // After fade transition completes, fully hide so it doesn't block touches
-    _hintHideTimer = setTimeout(function() { hint.classList.add('hidden'); }, 650);
+    _hintHideTimer = setTimeout(function() { hint.classList.add('hidden'); }, 1600);
   }, ms);
 }
 
 // Show on load for 4 seconds
-showHintTimed(4000);
+showHintTimed(7000);
 
 function markDrawn() {
   if (!hasDrawn) {
@@ -746,7 +757,7 @@ function markDrawn() {
     clearTimeout(_hintHideTimer);
     var hint = document.getElementById('map-hint');
     hint.classList.add('faded');
-    setTimeout(function() { hint.classList.add('hidden'); }, 650);
+    setTimeout(function() { hint.classList.add('hidden'); }, 1600);
   }
 }
 
@@ -878,7 +889,7 @@ window.clearAll = function() {
   activeGroup.clearLayers();
   undoStack.length = 0; redoStack.length = 0;
   hasDrawn = false;
-  showHintTimed(3000);
+  showHintTimed(4000);
   updateUndoRedo();
 };
 
@@ -1748,6 +1759,26 @@ function showCopied(btn) {
 
 // Init
 setMode('freehand');
+
+// ── A: Auto-hide banner on mobile after 5s ────────────────────────────────────
+if (window.innerWidth <= 768) {
+  setTimeout(function() {
+    var banner = document.getElementById('banner');
+    banner.classList.add('hide');
+    // After transition, collapse it so nav/toolbar shift up
+    setTimeout(function() {
+      banner.style.display = 'none';
+      // Now banner is gone — shift nav and toolbar up
+      document.documentElement.style.setProperty('--banner-h', '0px');
+    }, 520);
+  }, 5000);
+}
+
+// ── B: Auto-hide pg-header description after 4s ───────────────────────────────
+setTimeout(function() {
+  var pgP = document.querySelector('.pg-header p');
+  if (pgP) pgP.classList.add('hide');
+}, 4000);
 </script>
 </body>
 </html>
