@@ -82,7 +82,7 @@
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
     /* Page header — slim single line, collapses on mobile */
-    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:6px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:3px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.55);font-size:.75rem;line-height:1.25;margin:0}
@@ -224,7 +224,20 @@
     .search-spinner.active{display:block}
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* Label editor popup (appears above the pin after placing) */
+    /* ── Pin bottom sheet ── */
+    #pin-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--white);border-radius:18px 18px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.18);padding:16px 20px 24px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:70vh;overflow-y:auto}
+    #pin-sheet.open{transform:translateY(0)}
+    #pin-sheet-handle{width:36px;height:4px;background:var(--gray-mid);border-radius:2px;margin:0 auto 14px}
+    #pin-sheet h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--black);margin-bottom:12px}
+    #pin-sheet-colors{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    #pin-sheet-colors span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);flex-shrink:0}
+    #pin-sheet-inp{width:100%;height:44px;padding:0 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);outline:none;box-sizing:border-box;transition:border-color .15s}
+    #pin-sheet-inp:focus{border-color:var(--red)}
+    #pin-sheet-btns{display:flex;gap:10px;margin-top:12px}
+    #pin-sheet-save{flex:1;height:44px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    #pin-sheet-skip{height:44px;padding:0 18px;background:transparent;color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+    #pin-sheet-backdrop{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.3)}
+    #pin-sheet-backdrop.open{display:block}
     .pin-label-popup .leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:0;overflow:hidden}
     .pin-label-popup .leaflet-popup-content{margin:0;width:220px!important}
     .pin-label-popup .leaflet-popup-tip-container{display:none}
@@ -511,7 +524,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 10_15</p>
+    <p style="font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 11_08</p>
   </div>
 </div>
 
@@ -564,10 +577,12 @@ window.addEventListener('scroll', () => document.getElementById('nav').classList
   tip.id = 'toolbar-tip';
   document.body.appendChild(tip);
   var hideTimer;
+  var autoFadeTimer;
   function showTip(el) {
     var label = el.getAttribute('data-tip');
     if (!label || el.disabled) return;
     clearTimeout(hideTimer);
+    clearTimeout(autoFadeTimer);
     var r = el.getBoundingClientRect();
     tip.textContent = label;
     tip.style.opacity = '0';
@@ -578,13 +593,18 @@ window.addEventListener('scroll', () => document.getElementById('nav').classList
     tip.style.left = left + 'px';
     tip.style.top  = (r.bottom + 6) + 'px';
     tip.style.opacity = '1';
+    // Auto-fade after 2 seconds
+    autoFadeTimer = setTimeout(function() { tip.style.opacity = '0'; }, 2000);
   }
   function hideTip() {
+    clearTimeout(autoFadeTimer);
     hideTimer = setTimeout(function() { tip.style.opacity = '0'; }, 80);
   }
   var toolbar = document.querySelector('.toolbar');
   toolbar.addEventListener('mouseover', function(e) { var el = e.target.closest('[data-tip]'); if (el) showTip(el); });
   toolbar.addEventListener('mouseout',  function(e) { var el = e.target.closest('[data-tip]'); if (el) hideTip(); });
+  // Also show tip on touch (tap) for mobile
+  toolbar.addEventListener('touchstart', function(e) { var el = e.target.closest('[data-tip]'); if (el) showTip(el); }, { passive: true });
 })();
 
 // ── EmailJS ───────────────────────────────────────────────────────────────────
@@ -1385,102 +1405,100 @@ function selectResult(i) {
 }
 
 function dropPin(lat, lng, suggestedLabel) {
-  // Use the currently selected drawing colour for the pin
   var pinColor = strokeColor;
 
   function makePinSvg(col) {
     return '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + col + '"/><circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
   }
-
   function makeIcon(col) {
     return L.divIcon({ html: makePinSvg(col), className: '', iconSize: [28,36], iconAnchor: [14,36], popupAnchor: [0,-38] });
   }
 
-  // Strip leading comma from Nominatim display_name parsing artifact
-  // e.g. "123, Main Street" → "123 Main Street"
   var defaultLabel = (suggestedLabel || '').replace(/^(\d+),\s*/, '$1 ').trim();
-
   var marker = L.marker([lat, lng], { icon: makeIcon(pinColor) }).addTo(pinGroup);
 
-  var wrap = document.createElement('div');
-  wrap.style.cssText = 'padding:12px;font-family:Barlow,sans-serif;min-width:210px';
+  // ── Bottom sheet ──────────────────────────────────────────────────────────
+  var sheet     = document.getElementById('pin-sheet');
+  var backdrop  = document.getElementById('pin-sheet-backdrop');
+  var inp       = document.getElementById('pin-sheet-inp');
+  var saveBtn   = document.getElementById('pin-sheet-save');
+  var skipBtn   = document.getElementById('pin-sheet-skip');
+  var colorsDiv = document.getElementById('pin-sheet-colors');
 
-  // ── Color row ──
-  var colorRow = document.createElement('div');
-  colorRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:8px';
-
-  var colorLabel = document.createElement('span');
-  colorLabel.textContent = 'Pin color:';
-  colorLabel.style.cssText = 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#888;flex-shrink:0';
-  colorRow.appendChild(colorLabel);
-
+  // Rebuild color swatches
+  colorsDiv.innerHTML = '<span>Color:</span>';
   var PIN_COLORS = ['#188038','#f29900','#DA291C','#111111','#1a73e8'];
   PIN_COLORS.forEach(function(col) {
     var sw = document.createElement('button');
-    sw.style.cssText = 'width:20px;height:20px;border-radius:50%;background:' + col + ';border:3px solid transparent;cursor:pointer;flex-shrink:0;padding:0;transition:border-color .12s,transform .12s';
-    if (col === pinColor) { sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.25)'; }
+    sw.style.cssText = 'width:26px;height:26px;border-radius:50%;background:' + col + ';border:3px solid transparent;cursor:pointer;flex-shrink:0;padding:0;transition:border-color .12s,transform .12s';
+    if (col === pinColor) { sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.2)'; }
     sw.addEventListener('click', function() {
       pinColor = col;
-      // Update marker icon live
       marker.setIcon(makeIcon(col));
-      // Update swatch ring
-      colorRow.querySelectorAll('button').forEach(function(s) {
-        s.style.borderColor = 'transparent'; s.style.transform = 'scale(1)';
-      });
-      sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.25)';
+      colorsDiv.querySelectorAll('button').forEach(function(s) { s.style.borderColor = 'transparent'; s.style.transform = 'scale(1)'; });
+      sw.style.borderColor = '#111'; sw.style.transform = 'scale(1.2)';
     });
-    colorRow.appendChild(sw);
+    colorsDiv.appendChild(sw);
   });
-  wrap.appendChild(colorRow);
 
-  var inp = document.createElement('input');
-  inp.type = 'text';
-  inp.placeholder = 'Name this pin…';
-  inp.maxLength = 60;
   inp.value = defaultLabel;
-  inp.style.cssText = 'width:100%;height:34px;padding:0 10px;border:2px solid #e0e0e0;border-radius:7px;font-size:.88rem;outline:none;box-sizing:border-box';
-  inp.addEventListener('focus', function() { inp.style.borderColor = '#DA291C'; });
-  inp.addEventListener('blur',  function() { inp.style.borderColor = '#e0e0e0'; });
 
-  var btns = document.createElement('div');
-  btns.style.cssText = 'display:flex;gap:6px;margin-top:8px';
+  // Float sheet above keyboard using visualViewport
+  function reposition() {
+    var vv = window.visualViewport;
+    if (vv) {
+      sheet.style.bottom = (window.innerHeight - vv.height - vv.offsetTop) + 'px';
+    }
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', reposition);
+    window.visualViewport.addEventListener('scroll', reposition);
+  }
+  reposition();
 
-  var saveBtn = document.createElement('button');
-  saveBtn.textContent = 'Save Pin Name';
-  saveBtn.style.cssText = 'flex:1;height:32px;background:#DA291C;color:white;border:none;border-radius:6px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer';
+  // Open
+  backdrop.classList.add('open');
+  sheet.classList.add('open');
 
-  var skipBtn = document.createElement('button');
-  skipBtn.textContent = 'No Label';
-  skipBtn.style.cssText = 'height:32px;padding:0 10px;background:#f5f5f5;color:#888;border:2px solid #e0e0e0;border-radius:6px;font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer';
+  // Focus after sheet animates in — keyboard opens here, above the sheet
+  setTimeout(function() { inp.focus(); inp.select(); }, 320);
 
-  btns.appendChild(saveBtn);
-  btns.appendChild(skipBtn);
-  wrap.appendChild(inp);
-  wrap.appendChild(btns);
+  function closeSheet() {
+    sheet.classList.remove('open');
+    backdrop.classList.remove('open');
+    sheet.style.bottom = '';
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', reposition);
+      window.visualViewport.removeEventListener('scroll', reposition);
+    }
+    // Remove listeners to prevent stacking on next pin
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+    skipBtn.replaceWith(skipBtn.cloneNode(true));
+  }
 
   function applyLabel(label) {
-    marker.closePopup();
+    inp.blur();
+    closeSheet();
     if (label.trim()) {
       marker.bindTooltip(label.trim(), {
-        permanent:  true,
-        direction:  'top',
-        offset:     [0, -38],
-        className:  'custom-pin-label'
+        permanent: true, direction: 'top', offset: [0,-38], className: 'custom-pin-label'
       }).openTooltip();
     }
     pushUndo({ type: 'add', layer: marker });
     markDrawn();
   }
 
-  saveBtn.addEventListener('click',    function() { inp.blur(); applyLabel(inp.value); });
-  saveBtn.addEventListener('touchend', function(e) { e.preventDefault(); inp.blur(); applyLabel(inp.value); });
-  skipBtn.addEventListener('click',    function() { inp.blur(); applyLabel(''); });
-  skipBtn.addEventListener('touchend', function(e) { e.preventDefault(); inp.blur(); applyLabel(''); });
-  inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { inp.blur(); applyLabel(inp.value); } });
+  // Re-fetch after cloneNode
+  function getSheet() {
+    document.getElementById('pin-sheet-save').addEventListener('click',    function() { applyLabel(document.getElementById('pin-sheet-inp').value); });
+    document.getElementById('pin-sheet-save').addEventListener('touchend', function(e) { e.preventDefault(); applyLabel(document.getElementById('pin-sheet-inp').value); });
+    document.getElementById('pin-sheet-skip').addEventListener('click',    function() { applyLabel(''); });
+    document.getElementById('pin-sheet-skip').addEventListener('touchend', function(e) { e.preventDefault(); applyLabel(''); });
+  }
+  getSheet();
 
-  var popup = L.popup({ closeButton: true, autoClose: false, minWidth: 230 }).setContent(wrap);
-  marker.bindPopup(popup).openPopup();
-  marker.on('popupopen', function() { /* no auto-focus — prevents mobile keyboard covering Save button */ });
+  inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') applyLabel(inp.value); });
+  backdrop.onclick = function() { applyLabel(inp.value); };
 }
 
 searchInput.addEventListener('input', function() {
@@ -1780,5 +1798,20 @@ setTimeout(function() {
   if (pgP) pgP.classList.add('hide');
 }, 4000);
 </script>
+<!-- PIN BOTTOM SHEET -->
+<div id="pin-sheet-backdrop"></div>
+<div id="pin-sheet" role="dialog" aria-modal="true" aria-label="Name this pin">
+  <div id="pin-sheet-handle"></div>
+  <h3>Name This Pin</h3>
+  <div id="pin-sheet-colors">
+    <span>Color:</span>
+  </div>
+  <input id="pin-sheet-inp" type="text" placeholder="Name this pin…" maxlength="60" autocomplete="off" />
+  <div id="pin-sheet-btns">
+    <button id="pin-sheet-save">Save Pin Name</button>
+    <button id="pin-sheet-skip">No Label</button>
+  </div>
+</div>
+
 </body>
 </html>
