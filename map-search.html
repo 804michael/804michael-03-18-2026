@@ -37,6 +37,7 @@
     /* Nav */
     #nav{position:fixed;top:var(--banner-h);left:0;right:0;z-index:1000;height:var(--nav-h);background:rgba(255,255,255,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(218,41,28,.1);transition:height .3s,box-shadow .3s}
     #nav.scrolled{height:56px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+    @media(max-width:768px){#nav.scrolled{height:44px}}
     .nav-in{max-width:1200px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
     /* Logo link — no underline, no focus box, no color bleed into the SVG */
     .nlogo{display:flex;align-items:center;flex-shrink:0;line-height:0;outline:none;text-decoration:none;color:transparent}
@@ -524,7 +525,7 @@
       </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 16_55</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 17_38</p>
   </div>
 </div>
 
@@ -569,7 +570,14 @@ function openMob(){ mob.classList.add('open'); bd.classList.add('open'); h1.styl
 window.closeMob = function(){ mob.classList.remove('open'); bd.classList.remove('open'); h1.style.transform=''; h2.style.opacity=''; h3.style.transform=''; document.body.style.overflow=''; };
 document.getElementById('ham-btn').addEventListener('click', openMob);
 document.getElementById('mob-close').addEventListener('click', closeMob);
-window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40));
+window.addEventListener('scroll', function() {
+  var scrolled = window.scrollY > 40;
+  var nav = document.getElementById('nav');
+  nav.classList.toggle('scrolled', scrolled);
+  // Keep --nav-h in sync so toolbar sticky top tracks the actual nav height
+  var mobile = window.innerWidth <= 768;
+  document.documentElement.style.setProperty('--nav-h', scrolled ? (mobile ? '44px' : '56px') : (mobile ? '48px' : '68px'));
+});
 
 // ── Toolbar tooltips ─────────────────────────────────────────────────────────
 (function() {
@@ -725,23 +733,14 @@ window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
 // ── Keep toolbar visible when mobile keyboard opens ───────────────────────────
-// sticky breaks when the soft keyboard shrinks visualViewport.
-// Solution: switch toolbar to position:fixed anchored to visual viewport top.
 (function() {
   if (!window.visualViewport) return;
-  var toolbar = document.getElementById('toolbar');
+  var toolbar   = document.getElementById('toolbar');
   var baselineH = 0;
 
   function getNavBottom() {
-    // Nav is fixed; its bottom = its top offset + its height
     var nav = document.getElementById('nav');
-    if (nav) {
-      var r = nav.getBoundingClientRect();
-      return r.bottom;
-    }
-    var bannerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 0;
-    var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
-    return bannerH + navH;
+    return nav ? Math.round(nav.getBoundingClientRect().bottom) : 86;
   }
 
   function onViewportChange() {
@@ -749,14 +748,14 @@ window.visualViewport && window.visualViewport.addEventListener('resize', fitMap
     if (!baselineH) baselineH = vv.height;
     var shrinkage = baselineH - vv.height;
     if (shrinkage > 120) {
-      // Keyboard is open — pin toolbar fixed to visual viewport
+      // Keyboard open — pin toolbar fixed directly below nav
       toolbar.style.position = 'fixed';
-      toolbar.style.top      = Math.round(vv.offsetTop + getNavBottom()) + 'px';
-      toolbar.style.left     = vv.offsetLeft + 'px';
+      toolbar.style.top      = getNavBottom() + 'px';
+      toolbar.style.left     = '0';
       toolbar.style.right    = '0';
-      toolbar.style.width    = vv.width + 'px';
+      toolbar.style.width    = '100%';
     } else {
-      // Keyboard closed — restore sticky
+      // Keyboard closed — restore sticky, recalibrate baseline
       baselineH = vv.height;
       toolbar.style.position = '';
       toolbar.style.top      = '';
@@ -766,7 +765,6 @@ window.visualViewport && window.visualViewport.addEventListener('resize', fitMap
     }
   }
 
-  // Calibrate once layout is settled
   window.addEventListener('load', function() {
     setTimeout(function() { baselineH = window.visualViewport.height; }, 400);
   });
