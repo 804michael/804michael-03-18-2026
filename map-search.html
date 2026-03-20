@@ -12,9 +12,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
-    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px}
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px;--toolbar-h:52px}
     @media(max-width:768px){
       :root{--nav-h:48px;--header-h:26px;--chrome-h:180px}
+      /* On mobile toolbar is fixed, so pg-header must clear banner+nav+toolbar */
+      .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h) + var(--toolbar-h))}
     }
     /* Banner hide transition */
     #banner{transition:transform .5s ease,opacity .5s ease}
@@ -534,7 +536,7 @@
       </div>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 18_20</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 19_05</p>
   </div>
 </div>
 
