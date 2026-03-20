@@ -60,7 +60,8 @@
     ],
     "sameAs": [
       "https://www.zillow.com/profile/804Michael",
-      "https://www.realtor.com/realestateagents/804michael"
+      "https://www.realtor.com/realestateagents/56b05db30fa41701007434f7",
+      "https://www.homes.com/real-estate-agents/michael-hottman/h3njsd1/"
     ]
   }
   </script>
@@ -74,8 +75,9 @@
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <!-- ── Leaflet + EmailJS deferred so they don't block first paint ────────── -->
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- ── Leaflet must load synchronously — map code depends on L being available ── -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- ── EmailJS can safely defer as it's only needed on form submit ──────────── -->
   <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px;--toolbar-h:52px}
