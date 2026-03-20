@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 11_22                                 ║
+  ║  MAP VERSION: 26.03.21 11_40                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -98,7 +98,7 @@
     #banner{transition:transform .5s ease,opacity .5s ease}
     #banner.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
     /* pg-header description fade */
-    .pg-header p{transition:opacity .5s ease,max-height .5s ease,margin .5s ease,padding .5s ease;overflow:hidden;max-height:60px}
+    .pg-header p{transition:opacity .5s ease,max-height .5s ease,margin .5s ease,padding .5s ease;overflow:hidden;max-height:80px}
     .pg-header p.hide{opacity:0;max-height:0;margin:0;pointer-events:none}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
@@ -190,12 +190,12 @@
 
 
     /* ── Map height ────────────────────────────────────────────────────────────
-       pg-header is padding 6px top+bottom = 12px + h1 ~22px + p ~18px = ~52px
+       pg-header is padding 6px top+bottom = 12px + h1 ~22px + p ~36px (2 lines at larger size) = ~70px
        toolbar is ~52px
-       Total to subtract: banner(38) + nav(68) + header(52) + toolbar(52) = 210px
+       Total to subtract: banner(38) + nav(68) + header(70) + toolbar(52) = 228px
        We use a CSS variable so it's easy to tweak. */
     :root{ --chrome-h: 210px }
-    @media(max-width:768px){ :root{ --chrome-h: 152px } /* collapses further once banner hides */ }
+    @media(max-width:768px){ :root{ --chrome-h: 172px } /* larger description text wraps to 2 lines on mobile */ }
     .map-wrap{
       position: relative;
       width: 100%;
@@ -607,7 +607,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 11_22</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 11_40</p>
   </div>
 </div>
 
