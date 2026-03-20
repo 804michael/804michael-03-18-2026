@@ -16,14 +16,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Draw Your Search Area | 804Michael</title>
-  <meta name="description" content="Circle the areas you're interested in on the map and send it to 804-Michael." />
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
+  <title>Draw Your Home Search Area | Ashland VA Real Estate — 804Michael</title>
+  <meta name="description" content="Looking for homes for sale in Ashland VA, Hanover County, or Glen Allen? Draw your ideal search area on the map and send it directly to Michael Hottman — local Ashland VA real estate expert." />
+  <meta name="keywords" content="Ashland VA real estate, homes for sale in Ashland VA, Hanover County homes for sale, Glen Allen VA real estate, buy a home in Ashland Virginia, real estate agent Ashland VA, Michael Hottman realtor, 804Michael, draw my home search" />
+  <link rel="canonical" href="https://804michael.com/map-search.html" />
+
+  <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://804michael.com/map-search.html" />
+  <meta property="og:title"       content="Draw Your Home Search Area in Ashland VA — 804Michael" />
+  <meta property="og:description" content="Circle the neighborhoods you love on an interactive map and send it straight to Michael Hottman, your Ashland VA real estate agent. No signup needed." />
+  <meta property="og:image"       content="https://804michael.com/images/og-map-search.jpg" />
+  <meta property="og:site_name"   content="804Michael — Ashland VA Real Estate" />
+  <meta name="twitter:card"       content="summary_large_image" />
+  <meta name="twitter:title"      content="Draw Your Home Search Area | 804Michael" />
+  <meta name="twitter:description" content="Circle the neighborhoods you love and send your map to Michael Hottman — local Ashland VA REALTOR®." />
+
+  <!-- ── Local Business + Real Estate Agent Schema (JSON-LD) ──────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "804Michael — Michael Hottman Real Estate",
+    "url": "https://804michael.com",
+    "logo": "https://804michael.com/images/804michael-logo.png",
+    "image": "https://804michael.com/images/og-map-search.jpg",
+    "description": "Michael Hottman is a licensed Virginia real estate broker helping buyers and sellers in Ashland VA, Hanover County, Glen Allen, and Mechanicsville.",
+    "telephone": "+18046424235",
+    "email": "michael@804michael.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ashland",
+      "addressRegion": "VA",
+      "addressCountry": "US"
+    },
+    "areaServed": [
+      { "@type": "City",   "name": "Ashland",        "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "County", "name": "Hanover County",  "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Glen Allen",      "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Mechanicsville",  "containedInPlace": { "@type": "State", "name": "Virginia" } }
+    ],
+    "sameAs": [
+      "https://www.zillow.com/profile/804Michael",
+      "https://www.realtor.com/realestateagents/804michael"
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ── Leaflet CSS (preload + stylesheet) ───────────────────────────────── -->
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
+
+  <!-- ── Leaflet + EmailJS deferred so they don't block first paint ────────── -->
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px;--toolbar-h:52px}
     @media(max-width:768px){
@@ -203,15 +256,6 @@
     .share-btn-copy.copied{border-color:#188038;color:#5ab87a;background:rgba(24,128,56,.12)}
     .share-note{font-size:1.14rem;color:rgba(255,255,255,.7);line-height:1.5;max-width:560px}
 
-    /* Bottom CTA */
-    .bottom-cta{background:var(--black);padding:22px 24px;text-align:center}
-    .bottom-cta-in{max-width:580px;margin:0 auto}
-    .bottom-cta h2{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:clamp(1.3rem,3vw,1.9rem);text-transform:uppercase;color:var(--white);margin-bottom:5px}
-    .bottom-cta h2 span{color:var(--red)}
-    .bottom-cta p{color:rgba(255,255,255,.65);font-size:1.28rem;margin-bottom:16px;line-height:1.5}
-    .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-    .btn-lg{font-size:1.47rem;padding:14px 32px}
-
     /* Footer */
     footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
     .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
@@ -263,16 +307,6 @@
     #pin-sheet-btns{display:flex;gap:8px;margin-top:8px}
     #pin-sheet-save{flex:1;height:36px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
     #pin-sheet-skip{height:36px;padding:0 14px;background:transparent;color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
-    .pin-label-popup .leaflet-popup-content-wrapper{border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:0;overflow:hidden}
-    .pin-label-popup .leaflet-popup-content{margin:0;width:220px!important}
-    .pin-label-popup .leaflet-popup-tip-container{display:none}
-    .plp-inner{padding:12px}
-    .plp-inner input{width:100%;height:34px;padding:0 10px;border:2px solid var(--gray-mid);border-radius:7px;font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .15s}
-    .plp-inner input:focus{border-color:var(--red)}
-    .plp-btns{display:flex;gap:6px;margin-top:8px}
-    .plp-save{flex:1;height:32px;background:var(--red);color:white;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .15s}
-    .plp-save:hover{background:var(--red-dark)}
-    .plp-skip{height:32px;padding:0 10px;background:var(--gray-light);color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
 
     /* Custom pin marker */
     .custom-pin{width:28px;height:36px;cursor:pointer}
@@ -310,7 +344,6 @@
     .modal-status.success{color:#188038}
     .modal-status.error{color:#e53935}
     .btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -405,8 +438,8 @@
 <div id="backdrop" onclick="closeMob()"></div>
 
 <div class="pg-header">
-  <h1>Draw Your <span>Search</span> Area</h1>
-  <p>Draw on the map to show areas you're interested in (use your finger).</p>
+  <h1>Draw Your <span>Search Area</span> — Ashland &amp; Hanover VA Homes</h1>
+  <p>Circle the neighborhoods you want in Ashland VA, Hanover County, Glen Allen &amp; beyond — then send your map to Michael.</p>
 </div>
 
 <!-- TOOLBAR -->
@@ -539,8 +572,8 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h3>Done with your masterpiece? <span id="art-emoji">🎨</span></h3>
-    <div class="share-cta">📤 Share This Map<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em">with <span style="color:var(--red);font-weight:600">804-Michael</span></span></div>
+    <h3>Ready to find your home in Ashland VA or Hanover County? <span id="art-emoji">🎨</span></h3>
+    <div class="share-cta">📤 Send This Map to<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em"><span style="color:var(--red);font-weight:600">Michael Hottman</span> — Your Local REALTOR®</span></div>
     <span class="bounce-finger" aria-hidden="true">👇</span>
     <div class="share-btns" style="flex-direction:column;align-items:stretch">
       <!-- Row 1: Send to 804-Michael -->
@@ -560,7 +593,7 @@
         </button>
       </div>
     </div>
-    <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
+    <p class="share-note">Michael Hottman is a licensed Virginia real estate broker specializing in homes for sale in Ashland VA, Hanover County, Glen Allen, and Mechanicsville. Send your map and he'll reach out — no account needed.</p>
     <!-- ⚠ AI: Update this version string AND the one at the top of the file whenever you modify this file. Format: YY.MM.DD HH_MM -->
     <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 20_18</p>
   </div>
@@ -584,9 +617,13 @@
       </svg>
     </a>
     <p class="ft-copy">
-      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
-      Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
-      Licensed Real Estate Broker in Virginia
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman — Licensed Real Estate Broker in Virginia<br/>
+      Helping buyers find <strong style="font-weight:600;color:rgba(255,255,255,.55)">homes for sale in Ashland VA</strong>, Hanover County, Glen Allen &amp; Mechanicsville<br/>
+      <span itemscope itemtype="https://schema.org/RealEstateAgent">
+        <span itemprop="name">Michael Hottman</span> &bull;
+        <a href="tel:8046424235" itemprop="telephone" style="color:inherit">804-642-4235</a> &bull;
+        <span itemprop="areaServed">Ashland, VA</span>
+      </span>
     </p>
   </div>
 </footer>
@@ -656,7 +693,9 @@ window.addEventListener('scroll', function() {
 var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
 var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
 var EMAILJS_TEMPLATE_ID = 'template_qbvwd6k';
-emailjs.init(EMAILJS_PUBLIC_KEY);
+// emailjs is loaded with defer — init as soon as the script is ready
+function _initEmailJS() { if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); }
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', _initEmailJS); } else { _initEmailJS(); }
 
 window.openSendModal = function() {
   document.getElementById('modal-status').textContent = '';
@@ -687,9 +726,6 @@ window.closeSendModal = function() {
 
 document.getElementById('send-modal-backdrop').addEventListener('click', function(e) {
   if (e.target === this) closeSendModal();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSendModal();
 });
 
 window.submitSendModal = function() {
@@ -764,18 +800,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
+// ── Keep map size correct when mobile keyboard opens / closes ─────────────────
 function fitMapHeight() { map.invalidateSize(); }
 window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
-window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
-
-// ── Keep toolbar visible when mobile keyboard opens ───────────────────────────
-// Toolbar is position:fixed on mobile via CSS so this is only needed for
-// the visualViewport scroll listener that keeps map height correct.
-(function() {
-  if (!window.visualViewport) return;
-  window.visualViewport.addEventListener('resize', function() { map && map.invalidateSize(); });
-})();
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fitMapHeight);
 
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
@@ -1358,7 +1387,7 @@ mapEl.addEventListener('touchcancel', () => {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoLast(); }
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); redoLast(); }
-  if (e.key === 'Escape') cancelInProgress();
+  if (e.key === 'Escape') { cancelInProgress(); closeSendModal(); }
 });
 
 // ── Address search (Nominatim / OpenStreetMap) ────────────────────────────────
