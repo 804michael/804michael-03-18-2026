@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Draw Your Search Area | 804Michael</title>
   <meta name="description" content="Circle the areas you're interested in on the map and send it to 804-Michael." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -123,6 +123,12 @@
       width: 100%;
       height: calc(100dvh - var(--chrome-h));
       min-height: 300px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media(max-width:768px){
+      .map-wrap{
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+      }
     }
     @supports not (height: 1dvh){
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
@@ -258,6 +264,11 @@
     /* Custom pin marker */
     .custom-pin{width:28px;height:36px;cursor:pointer}
     .custom-pin-label{background:var(--black);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.05em;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+    /* Push Leaflet's zoom control above the phone's home bar / gesture strip on mobile */
+    @media(max-width:768px){
+      .leaflet-bottom{ padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px) !important; }
+    }
 
     @media(max-width:600px){
       .search-group{flex-wrap:nowrap}
@@ -1821,7 +1832,7 @@ function goToMyLocation() {
     function(pos) {
       var lat = pos.coords.latitude;
       var lng = pos.coords.longitude;
-      map.setView([lat, lng], 14, { animate: true });
+      map.setView([lat, lng], 12, { animate: true });
       btn.classList.remove('active');
       btn.disabled = false;
     },
