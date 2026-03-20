@@ -83,8 +83,6 @@
 
     /* Page header — slim single line, collapses on mobile */
     .pg-header{margin-top:calc(var(--banner-h) + var(--nav-h));background:var(--black);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease}
-    /* On mobile toolbar is fixed — push pg-header below banner+nav+toolbar */
-    @media(max-width:768px){.pg-header{margin-top:calc(var(--banner-h) + var(--nav-h) + var(--toolbar-h))}}
     .pg-header.compact{padding:2px 16px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
@@ -536,7 +534,7 @@
       </div>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 19_44</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 20_18</p>
   </div>
 </div>
 
@@ -1818,11 +1816,10 @@ if (window.innerWidth <= 768) {
   setTimeout(function() {
     var banner = document.getElementById('banner');
     banner.classList.add('hide');
-    // After transition, collapse it so nav/toolbar shift up
     setTimeout(function() {
       banner.style.display = 'none';
-      // Now banner is gone — shift nav and toolbar up
       document.documentElement.style.setProperty('--banner-h', '0px');
+      pinPgHeader(); // reposition after banner collapses
     }, 520);
   }, 5000);
 }
@@ -1834,6 +1831,20 @@ setTimeout(function() {
   var pgH = document.querySelector('.pg-header');
   if (pgH) pgH.classList.add('compact');
 }, 4000);
+
+// ── Pin pg-header below toolbar on mobile using real measurements ─────────────
+function pinPgHeader() {
+  if (window.innerWidth > 768) return;
+  var toolbar = document.getElementById('toolbar');
+  var pgHeader = document.querySelector('.pg-header');
+  if (!toolbar || !pgHeader) return;
+  var toolbarBottom = toolbar.getBoundingClientRect().bottom + window.scrollY;
+  pgHeader.style.marginTop = toolbarBottom + 'px';
+}
+
+// Run on load and whenever layout might shift
+window.addEventListener('load', function() { setTimeout(pinPgHeader, 100); });
+window.addEventListener('resize', pinPgHeader);
 </script>
 <!-- PIN BOTTOM SHEET -->
 <div id="pin-sheet-backdrop"></div>
