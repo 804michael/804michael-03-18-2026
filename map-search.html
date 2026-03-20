@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 14_30                                 ║
+  ║  MAP VERSION: 26.03.21 15_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -203,6 +203,10 @@
     }
     @media(max-width:768px){
       .map-wrap{
+        /* Push map content below the fixed pg-header + toolbar stack */
+        padding-top: var(--chrome-h, 172px);
+        /* Height must add it back so total stays 100dvh */
+        height: 100dvh;
         padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
       }
     }
@@ -210,6 +214,9 @@
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; }
+    @media(max-width:768px){
+      #map{ top:var(--chrome-h, 172px); }
+    }
 
     /* School loading overlay — full-map, big text, spinning pencil */
     .school-toast{
@@ -238,9 +245,6 @@
       max-width:800px;
     }
     .map-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.44rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:normal;word-break:break-word;overflow-wrap:break-word;text-align:center;width:min(90vw,680px);animation:pulse 2.5s ease infinite;transition:opacity 1.5s ease}
-    @media(max-width:768px){
-      .map-hint{top:calc(50% + var(--toolbar-h, 52px) / 2 + 10px)}
-    }
     .map-hint.hidden{display:none}
     .map-hint.faded{opacity:0}
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
@@ -608,7 +612,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 14_30</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 15_15</p>
   </div>
 </div>
 
@@ -1933,12 +1937,14 @@ function updateLayout() {
                   ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 38
                   : 0;
   var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
-  var toolbarH = 52; // toolbar height is fixed
+  var toolbarEl = document.getElementById('toolbar');
+  var toolbarH  = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
+  var chromeH   = bannerH + navH + pgH + toolbarH;
 
   document.documentElement.style.setProperty('--pgheader-h', pgH + 'px');
-  document.documentElement.style.setProperty('--chrome-h', (bannerH + navH + pgH + toolbarH) + 'px');
+  document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
 
-  // Also invalidate map size so Leaflet redraws correctly
+  // On mobile #map top is driven by --chrome-h via CSS; just invalidate size
   if (window.map) { setTimeout(function(){ map.invalidateSize(); }, 50); }
 }
 
