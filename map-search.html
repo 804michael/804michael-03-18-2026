@@ -90,6 +90,11 @@
 
     /* Toolbar — single row, scrolls horizontally on small screens */
     .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
+    @media(max-width:768px){
+      .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0}
+      /* Push content below the fixed toolbar so map sits underneath correctly */
+      .map-wrap{margin-top:0}
+    }
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-sep{width:1px;height:26px;background:var(--gray-mid);flex-shrink:0;margin:0 4px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:2px solid transparent;background:transparent;color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
@@ -167,7 +172,7 @@
       0%,100%{transform:translateY(0)}
       50%{transform:translateY(6px)}
     }
-    .share-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .share-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:400px}
     .share-btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:2px solid transparent;transition:all .15s;text-decoration:none;flex-shrink:0;white-space:nowrap}
     .share-btn svg{flex-shrink:0;pointer-events:none}
     .share-btn-text{background:var(--red);color:white;border-color:var(--red)}
@@ -511,21 +516,23 @@
     <div class="share-cta">📤 Share This Map<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em">with <span style="color:var(--red);font-weight:600">804-Michael</span></span></div>
     <span class="bounce-finger" aria-hidden="true">👇</span>
     <div class="share-btns">
-      <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Text this map
-      </button>
-      <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()">
+      <!-- Row 1: Send to 804-Michael — full width, black -->
+      <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="width:100%;justify-content:center;background:var(--black);color:white;border-color:var(--black)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         Send to 804-Michael
       </button>
+      <!-- Row 2: Copy link (red) + Text this map (black) -->
       <button class="share-btn share-btn-copy" id="share-copy" onclick="copyMapLink()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy link
       </button>
+      <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()" style="background:var(--black);border-color:var(--black)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Text this map
+      </button>
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 17_38</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.20 18_20</p>
   </div>
 </div>
 
@@ -733,44 +740,11 @@ window.addEventListener('resize', fitMapHeight);
 window.visualViewport && window.visualViewport.addEventListener('resize', fitMapHeight);
 
 // ── Keep toolbar visible when mobile keyboard opens ───────────────────────────
+// Toolbar is position:fixed on mobile via CSS so this is only needed for
+// the visualViewport scroll listener that keeps map height correct.
 (function() {
   if (!window.visualViewport) return;
-  var toolbar   = document.getElementById('toolbar');
-  var baselineH = 0;
-
-  function getNavBottom() {
-    var nav = document.getElementById('nav');
-    return nav ? Math.round(nav.getBoundingClientRect().bottom) : 86;
-  }
-
-  function onViewportChange() {
-    var vv = window.visualViewport;
-    if (!baselineH) baselineH = vv.height;
-    var shrinkage = baselineH - vv.height;
-    if (shrinkage > 120) {
-      // Keyboard open — pin toolbar fixed directly below nav
-      toolbar.style.position = 'fixed';
-      toolbar.style.top      = getNavBottom() + 'px';
-      toolbar.style.left     = '0';
-      toolbar.style.right    = '0';
-      toolbar.style.width    = '100%';
-    } else {
-      // Keyboard closed — restore sticky, recalibrate baseline
-      baselineH = vv.height;
-      toolbar.style.position = '';
-      toolbar.style.top      = '';
-      toolbar.style.left     = '';
-      toolbar.style.right    = '';
-      toolbar.style.width    = '';
-    }
-  }
-
-  window.addEventListener('load', function() {
-    setTimeout(function() { baselineH = window.visualViewport.height; }, 400);
-  });
-
-  window.visualViewport.addEventListener('resize', onViewportChange);
-  window.visualViewport.addEventListener('scroll', onViewportChange);
+  window.visualViewport.addEventListener('resize', function() { map && map.invalidateSize(); });
 })();
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -1830,7 +1804,7 @@ setMode('freehand');
 
 // ── Rotating art emoji ────────────────────────────────────────────────────────
 (function() {
-  var artEmojis = ['🎨','🖌️','🖍️','✏️','🖼️','🎭','🖊️','🗿'];
+  var artEmojis = ['🎨','🖌️','🖍️','✏️','🖼️','🎭','🖊️'];
   var el = document.getElementById('art-emoji');
   if (el) el.textContent = artEmojis[Math.floor(Math.random() * artEmojis.length)];
 })();
