@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 12_00                                 ║
+  ║  MAP VERSION: 26.03.21 15_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -329,15 +329,15 @@
     }
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
 
-    /* On desktop: the map-section wraps map-wrap + masterpiece bar in a flex column
-       that exactly fills the remaining viewport. The map grows to fill available space,
-       and the masterpiece bar sits naturally at the bottom — visible on load.
-       Scrolling below brings the share panel content along with it. */
+    /* On desktop: map-section is a flex column exactly as tall as the remaining
+       viewport below the sticky toolbar (the only in-flow element above it).
+       background:var(--black) prevents white bleed when h2 fades to opacity:0. */
+    .map-section{ background:var(--black); }
     @media(min-width:769px){
       .map-section{
         display:flex;
         flex-direction:column;
-        height:calc(100dvh - var(--chrome-h));
+        height:calc(100dvh - var(--toolbar-h, 52px));
         min-height:400px;
       }
       .map-section .map-wrap{
@@ -349,6 +349,7 @@
         flex:0 0 auto;
         position:static;
         background:var(--black);
+        color:rgba(255,255,255,.75);
         text-align:center;
         padding:6px 16px;
         margin:0;
@@ -742,7 +743,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 12_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 15_00</p>
   </div>
 </div>
 
