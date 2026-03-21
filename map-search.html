@@ -836,6 +836,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // ── Keep map size correct when mobile keyboard opens / closes ─────────────────
 function fitMapHeight() { map.invalidateSize(); updateLayout(); }
+// Scroll to top on every load — prevents browser restoring a scrolled position
+// which causes the map to render over the black share panel below it.
+if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+window.addEventListener('load', function() { window.scrollTo(0, 0); });
+
 window.addEventListener('load', function() { setTimeout(fitMapHeight, 250); });
 window.addEventListener('resize', fitMapHeight);
 if (window.visualViewport) window.visualViewport.addEventListener('resize', fitMapHeight);
