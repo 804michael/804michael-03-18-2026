@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 21_30                                 ║
+  ║  MAP VERSION: 26.03.21 21_50                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -184,17 +184,7 @@
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
     /* Pulsing hint on pencil + circle buttons when no tool is selected yet */
-    @keyframes tool-pulse{
-      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:transparent;background:transparent}
-      50%{box-shadow:0 0 0 5px rgba(218,41,28,.25);border-color:rgba(218,41,28,.6);background:rgba(218,41,28,.08)}
-    }
-    @keyframes finger-bounce{
-      0%,100%{transform:translateY(0)}
-      50%{transform:translateY(-4px)}
-    }
-    .tool-btn.hint-pulse{animation:tool-pulse 1.4s ease-in-out infinite}
-    .tool-btn.hint-pulse .hint-finger{display:inline-block;animation:finger-bounce 0.8s ease-in-out infinite}
-    .map-hint .hint-finger{display:inline-block;animation:finger-bounce 0.8s ease-in-out infinite}
+    /* hint-pulse and finger-bounce animations removed — static hint only */
     #toolbar-tip{position:fixed;background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s}
     @keyframes ellipsis{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
     .anim-ellipsis::after{content:'.';animation:ellipsis 1.2s steps(1,end) infinite}
@@ -277,7 +267,7 @@
       text-align:center;
       width:auto;
       max-width:min(90vw,680px);
-      animation:pulse 2.5s ease infinite;
+      opacity:0.88;
       transition:transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease;
     }
     /* On mobile: left-justified, pinned to left edge, two explicit lines */
@@ -601,7 +591,7 @@
 <div class="map-wrap" id="map-wrap">
   <div id="map">
     <div class="map-hint" id="map-hint">
-      <span class="hint-line-1"><span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" class="hint-finger" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
+      <span class="hint-line-1"><span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
       <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
     </div>
   </div>
@@ -668,7 +658,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 21_30</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 21_50</p>
   </div>
 </div>
 
@@ -982,9 +972,7 @@ const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
 
 window.setMode = function(m) {
   markDrawn(); // dismiss "Pick a tool" hint the moment any tool is selected
-  // Remove pulse hint from pencil + circle once user has made a choice
-  document.getElementById('btn-freehand').classList.remove('hint-pulse');
-  document.getElementById('btn-circle').classList.remove('hint-pulse');
+
   cancelInProgress();
   if (mode === 'move') detachMoveListeners();
   mode = m;
@@ -1954,8 +1942,7 @@ function showCopied(btn) {
   map.dragging.disable();
   map.scrollWheelZoom.disable();
   map.getContainer().style.cursor = 'crosshair';
-  document.getElementById('btn-freehand').classList.add('hint-pulse');
-  document.getElementById('btn-circle').classList.add('hint-pulse');
+
 })();
 
 // ── Go to my location (Home button) ───────────────────────────────────────────
