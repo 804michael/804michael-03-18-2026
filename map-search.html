@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 10_30                                 ║
+  ║  MAP VERSION: 26.03.22 11_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -203,15 +203,15 @@
 
 
     /* ── Map height ────────────────────────────────────────────────────────────
-       Fixed chrome: banner(38) + nav(68) + pgheader(~34px expanded) + toolbar(52) = ~192px
-       --pgheader-h is kept accurate by JS; --chrome-h is the full stack total.
-       JS updates --chrome-h dynamically via updateLayout(). */
+       Desktop: map fills full remaining viewport so share panel starts just below fold.
+       Only the masterpiece question peeks up, rest scrolls into view.
+       Mobile: 100dvh with padding-top to clear fixed chrome. */
     :root{ --chrome-h: 192px; --pgheader-h: 34px }
     @media(max-width:768px){ :root{ --chrome-h: 172px; --pgheader-h: 34px } }
     .map-wrap{
       position: relative;
       width: 100%;
-      height: 85vh;
+      height: calc(100dvh - var(--chrome-h));
       min-height: 400px;
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -225,7 +225,7 @@
       }
     }
     @supports not (height: 1dvh){
-      .map-wrap{ height: 85vh; }
+      .map-wrap{ height: calc(100vh - var(--chrome-h)); }
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
     @media(max-width:768px){
@@ -304,6 +304,11 @@
 
     /* Share panel */
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
+    /* On desktop: nudge share panel up so only the masterpiece h2 peeks below the map */
+    @media(min-width:769px){
+      .share-panel{ margin-top:-2.5rem; padding-top:0.5rem; }
+      .share-panel .share-panel-in > *:not(#masterpiece-h2){ opacity:1; }
+    }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
     .share-panel h3{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
     .share-panel h2{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
@@ -681,12 +686,12 @@
         </button>
         <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()" style="flex:1;min-width:140px;justify-content:center;background:var(--black);border-color:white">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          Text your map
+          Text Your Map
         </button>
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 10_30</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 11_00</p>
   </div>
 </div>
 
