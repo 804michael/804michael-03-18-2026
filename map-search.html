@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 20_30                                 ║
+  ║  MAP VERSION: 26.03.21 21_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -169,16 +169,19 @@
     .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
 
     /* Page header — fixed, sits between nav and toolbar */
-    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:var(--black);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease}
+    /* ── FROSTED PG-HEADER: to revert to solid black, replace the background/backdrop lines
+       with just: background:var(--black);  and remove the two backdrop-filter lines. ── */
+    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease}
     .pg-header.compact{padding:2px 16px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.375rem,2.75vw,1.75rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — single row, sits snug below pg-header */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));z-index:800;background:var(--white);border-bottom:2px solid var(--gray-mid);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
+    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));z-index:800;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.1);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:visible}
     @media(max-width:768px){
-      .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0}
+      /* Mobile: solid white — frosted effect wastes GPU on small screens */
+      .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;background:var(--white);backdrop-filter:none;-webkit-backdrop-filter:none}
       .map-wrap{margin-top:0}
     }
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
@@ -721,7 +724,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 20_30</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 21_00</p>
   </div>
 </div>
 
@@ -1035,6 +1038,8 @@ function containerPointToLL(clientX, clientY) {
 const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
 
 window.setMode = function(m) {
+  // Pan toggles: pressing it again while active reverts to freehand draw
+  if (m === 'pan' && mode === 'pan') { m = 'freehand'; }
   markDrawn(); // dismiss "Pick a tool" hint the moment any tool is selected
   // Remove glow from pencil + circle once user has made a choice
   document.getElementById('btn-freehand').classList.remove('hint-pulse');
