@@ -345,7 +345,15 @@
     .custom-pin{width:28px;height:36px;cursor:pointer}
     .custom-pin-label{background:var(--black);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.05em;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
-    /* Push Leaflet's zoom control above the phone's home bar / gesture strip on mobile */
+    /* Pin Leaflet attribution + zoom to the bottom edge of the visible map */
+    .leaflet-bottom{ bottom: 0 !important; }
+    .leaflet-bottom.leaflet-right{ bottom: 0 !important; right: 0 !important; }
+    .leaflet-control-attribution{
+      border-radius: 4px 0 0 0 !important;
+      font-size: .68rem !important;
+      opacity: .85;
+    }
+    /* Push above the phone's home bar / gesture strip on mobile */
     @media(max-width:768px){
       .leaflet-bottom{ padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px) !important; }
     }
