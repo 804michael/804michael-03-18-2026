@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 13_45                                 ║
+  ║  MAP VERSION: 26.03.22 14_25                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -202,6 +202,13 @@
       0%,100%{transform:rotate(-35deg) translateY(0)}
       50%{transform:rotate(-35deg) translateY(-5px)}
     }
+    @keyframes finger-bounce-straight{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-5px)}
+    }
+    @media(max-width:768px){
+      .map-hint .hint-line-1 span[aria-hidden]{animation:finger-bounce-straight 0.9s ease-in-out infinite !important}
+    }
     #toolbar-tip{position:fixed;background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s}
     @keyframes ellipsis{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
     .anim-ellipsis::after{content:'.';animation:ellipsis 1.2s steps(1,end) infinite}
@@ -307,11 +314,34 @@
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
     .dist-tip::before{display:none!important}
 
-    /* Share panel */
+    /* Mobile: masterpiece h2 sits statically inside share panel flow */
+    @media(max-width:768px){
+      #masterpiece-h2{
+        position:static !important;
+        background:none !important;
+        border-top:none !important;
+        padding:0 !important;
+        margin:0 !important;
+        cursor:default !important;
+        width:auto !important;
+      }
+    }
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
-    /* On desktop: map height leaves ~2.5rem so masterpiece h2 peeks naturally below */
+    /* On desktop: masterpiece h2 is fixed to bottom of viewport so map can be full height */
     @media(min-width:769px){
-      .map-wrap{ height:calc(100dvh - var(--chrome-h) - 2.5rem); }
+      #masterpiece-h2{
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        z-index:500;
+        background:var(--black);
+        text-align:center;
+        padding:6px 16px;
+        margin:0;
+        border-top:1px solid rgba(255,255,255,.08);
+        cursor:pointer;
+      }
     }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
     .share-panel h3{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
@@ -670,7 +700,7 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h2 id="masterpiece-h2" style="transition:opacity 1s ease"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
+    <h2 id="masterpiece-h2" style="transition:opacity 1s ease" onclick="window.innerWidth>768&&document.getElementById('share-panel').scrollIntoView({behavior:'smooth'})" title="Click to see sharing options"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem)">Share where you're looking</div>
     <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;background:var(--black);color:white;border-color:white;max-width:320px;margin:0 auto;width:100%">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -694,7 +724,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 13_45</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 14_25</p>
   </div>
 </div>
 
