@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 13_00                                 ║
+  ║  MAP VERSION: 26.03.22 13_25                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -309,9 +309,9 @@
 
     /* Share panel */
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
-    /* On desktop: nudge share panel up so only the masterpiece h2 peeks below the map */
+    /* On desktop: map height leaves ~2.5rem so masterpiece h2 peeks naturally below */
     @media(min-width:769px){
-      .share-panel{ margin-top:-2.5rem; padding-top:0.5rem; }
+      .map-wrap{ height:calc(100dvh - var(--chrome-h) - 2.5rem); }
     }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
     .share-panel h3{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
@@ -523,7 +523,7 @@
 
 <div class="pg-header">
   <h1>Draw Your <span>Search Area</span></h1>
-  <p>Draw areas you prefer in green🟢. Places you'd rather not be in 🟡or 🔴- You can Pin locations too</p>
+  <p>Draw areas you prefer in green🟢. Places you'd rather not be in 🟡or 🔴- You can Pin locations too 📍</p>
 </div>
 
 <!-- TOOLBAR -->
@@ -694,7 +694,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 13_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 13_25</p>
   </div>
 </div>
 
