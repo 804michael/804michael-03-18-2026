@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 20_00                                 ║
+  ║  MAP VERSION: 26.03.21 20_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -273,9 +273,10 @@
       text-transform:uppercase;
       pointer-events:none;
       z-index:790;
-      white-space:nowrap;
+      white-space:normal;
       text-align:center;
-      width:min(90vw,680px);
+      width:auto;
+      max-width:min(90vw,680px);
       animation:pulse 2.5s ease infinite;
       transition:transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease;
     }
@@ -585,8 +586,9 @@
 <div class="map-wrap" id="map-wrap">
   <div id="map">
     <div class="map-hint" id="map-hint">
-      <span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" class="hint-finger" aria-hidden="true">☝️</span> Pick a tool &amp; draw on the map 🗺️
-      <div style="font-size:.7em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
+      <div><span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" class="hint-finger" aria-hidden="true">☝️</span> Pick a tool &amp;</div>
+      <div>draw on the map 🗺️</div>
+      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
     </div>
   </div>
   <div class="school-toast" id="school-toast">
@@ -652,7 +654,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 20_00</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 20_30</p>
   </div>
 </div>
 
