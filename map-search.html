@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 14_25                                 ║
+  ║  MAP VERSION: 26.03.21 12_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -314,33 +314,47 @@
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
     .dist-tip::before{display:none!important}
 
-    /* Mobile: masterpiece h2 sits statically inside share panel flow */
+    /* Mobile: masterpiece h2 sits in document flow below the map, styled like share panel */
     @media(max-width:768px){
       #masterpiece-h2{
         position:static !important;
-        background:none !important;
-        border-top:none !important;
-        padding:0 !important;
+        background:var(--black) !important;
+        border-top:1px solid rgba(255,255,255,.08) !important;
+        padding:10px 16px !important;
         margin:0 !important;
         cursor:default !important;
-        width:auto !important;
+        width:100% !important;
+        text-align:center;
       }
     }
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
-    /* On desktop: masterpiece h2 is fixed to bottom of viewport so map can be full height */
+
+    /* On desktop: the map-section wraps map-wrap + masterpiece bar in a flex column
+       that exactly fills the remaining viewport. The map grows to fill available space,
+       and the masterpiece bar sits naturally at the bottom — visible on load.
+       Scrolling below brings the share panel content along with it. */
     @media(min-width:769px){
+      .map-section{
+        display:flex;
+        flex-direction:column;
+        height:calc(100dvh - var(--chrome-h));
+        min-height:400px;
+      }
+      .map-section .map-wrap{
+        flex:1 1 auto;
+        height:auto;
+        min-height:0;
+      }
       #masterpiece-h2{
-        position:fixed;
-        bottom:0;
-        left:0;
-        right:0;
-        z-index:500;
+        flex:0 0 auto;
+        position:static;
         background:var(--black);
         text-align:center;
         padding:6px 16px;
         margin:0;
         border-top:1px solid rgba(255,255,255,.08);
         cursor:pointer;
+        width:100%;
       }
     }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
@@ -652,7 +666,8 @@
   </div>
 </div>
 
-<!-- MAP -->
+<!-- MAP SECTION: map + masterpiece bar, fills viewport on desktop -->
+<div class="map-section" id="map-section">
 <div class="map-wrap" id="map-wrap">
   <div id="map">
     <div class="map-hint" id="map-hint">
@@ -665,6 +680,10 @@
     <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
     <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:clamp(.85rem,2vw,1.1rem);color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase">Loading school locations<span class="anim-ellipsis"></span></span>
   </div>
+</div>
+
+<!-- MASTERPIECE BAR — anchored to bottom of map-section on desktop -->
+<h2 id="masterpiece-h2" style="transition:opacity 1s ease" onclick="window.innerWidth>768&&document.getElementById('share-panel').scrollIntoView({behavior:'smooth'})" title="Click to see sharing options"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
 </div>
 
 <!-- SEND MAP MODAL -->
@@ -700,7 +719,6 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h2 id="masterpiece-h2" style="transition:opacity 1s ease" onclick="window.innerWidth>768&&document.getElementById('share-panel').scrollIntoView({behavior:'smooth'})" title="Click to see sharing options"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem)">Share where you're looking</div>
     <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;background:var(--black);color:white;border-color:white;max-width:320px;margin:0 auto;width:100%">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -724,7 +742,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 14_25</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 12_00</p>
   </div>
 </div>
 
