@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 20_30                                 ║
+  ║  MAP VERSION: 26.03.21 20_50                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -273,12 +273,22 @@
       text-transform:uppercase;
       pointer-events:none;
       z-index:790;
-      white-space:normal;
+      white-space:nowrap;
       text-align:center;
       width:auto;
       max-width:min(90vw,680px);
       animation:pulse 2.5s ease infinite;
       transition:transform .5s cubic-bezier(.4,0,.2,1), opacity .5s ease;
+    }
+    /* On mobile: break into two explicit lines, width fits "draw on the map 🗺️" */
+    @media(max-width:768px){
+      .map-hint{
+        white-space:normal;
+        width:max-content;
+        max-width:min(90vw,680px);
+      }
+      .map-hint .hint-line-1{ display:block; white-space:nowrap; }
+      .map-hint .hint-line-2{ display:block; white-space:nowrap; }
     }
     .map-hint.hidden{display:none}
     .map-hint.faded{transform:translateX(-50%) translateY(-110%);opacity:0}
@@ -586,8 +596,7 @@
 <div class="map-wrap" id="map-wrap">
   <div id="map">
     <div class="map-hint" id="map-hint">
-      <div><span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" class="hint-finger" aria-hidden="true">☝️</span> Pick a tool &amp;</div>
-      <div>draw on the map 🗺️</div>
+      <span class="hint-line-1"><span style="display:inline-block;transform:rotate(-35deg);font-size:1.4em;vertical-align:middle;margin-right:4px" class="hint-finger" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
       <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
     </div>
   </div>
@@ -654,7 +663,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 20_30</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 20_50</p>
   </div>
 </div>
 
