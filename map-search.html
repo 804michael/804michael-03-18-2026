@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 13_25                                 ║
+  ║  MAP VERSION: 26.03.22 13_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -197,7 +197,7 @@
       0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:transparent;background:transparent}
       50%{box-shadow:0 0 0 5px rgba(218,41,28,.25);border-color:rgba(218,41,28,.6);background:rgba(218,41,28,.08)}
     }
-    .tool-btn.hint-pulse{animation:tool-pulse 1.4s ease-in-out infinite}
+    .tool-btn.hint-pulse{animation:tool-pulse 2.4s ease-in-out infinite}
     @keyframes finger-bounce{
       0%,100%{transform:rotate(-35deg) translateY(0)}
       50%{transform:rotate(-35deg) translateY(-5px)}
@@ -694,7 +694,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 13_25</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 13_45</p>
   </div>
 </div>
 
@@ -1012,6 +1012,7 @@ window.setMode = function(m) {
   // Remove glow from pencil + circle once user has made a choice
   document.getElementById('btn-freehand').classList.remove('hint-pulse');
   document.getElementById('btn-circle').classList.remove('hint-pulse');
+  document.getElementById('btn-circle').style.animationDelay = '';
 
   cancelInProgress();
   if (mode === 'move') detachMoveListeners();
@@ -1986,6 +1987,8 @@ function showCopied(btn) {
   map.getContainer().style.cursor = 'crosshair';
   document.getElementById('btn-freehand').classList.add('hint-pulse');
   document.getElementById('btn-circle').classList.add('hint-pulse');
+  // Offset circle by half the pulse cycle so they alternate
+  document.getElementById('btn-circle').style.animationDelay = '-1.2s';
 })();
 
 // ── Go to my location (Home button) ───────────────────────────────────────────
