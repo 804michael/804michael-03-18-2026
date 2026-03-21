@@ -931,6 +931,7 @@ function containerPointToLL(clientX, clientY) {
 const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
 
 window.setMode = function(m) {
+  markDrawn(); // dismiss "Pick a tool" hint the moment any tool is selected
   cancelInProgress();
   if (mode === 'move') detachMoveListeners();
   mode = m;
