@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 15_45                                 ║
+  ║  MAP VERSION: 26.03.21 16_20                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -213,7 +213,7 @@
     @supports not (height: 1dvh){
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
     }
-    #map{ position:absolute; top:0; left:0; right:0; bottom:0; }
+    #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
     @media(max-width:768px){
       #map{ top:var(--chrome-h, 172px); }
     }
@@ -244,7 +244,17 @@
       color:white;text-align:center;padding:0 24px;line-height:1.2;
       max-width:800px;
     }
-    .map-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.44rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:500;white-space:normal;word-break:break-word;overflow-wrap:break-word;text-align:center;width:min(90vw,680px);animation:pulse 2.5s ease infinite;transition:opacity 1.5s ease}
+    .map-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:white;padding:14px 28px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.44rem;letter-spacing:.06em;text-transform:uppercase;pointer-events:none;z-index:501;white-space:normal;word-break:break-word;overflow-wrap:break-word;text-align:center;width:min(90vw,680px);animation:pulse 2.5s ease infinite;transition:opacity 1.5s ease}
+    @media(max-width:768px){
+      /* On mobile, fix the hint to the viewport so it's always centered
+         in the visible map area — unaffected by #map's top offset */
+      .map-hint{
+        position:fixed;
+        top:calc(var(--chrome-h, 172px) + (100dvh - var(--chrome-h, 172px)) / 2);
+        left:50%;
+        transform:translate(-50%,-50%);
+      }
+    }
     .map-hint.hidden{display:none}
     .map-hint.faded{opacity:0}
     .dist-tip{background:rgba(0,0,0,.78)!important;color:white!important;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:3px 9px;border-radius:5px;border:none!important;box-shadow:none!important;white-space:nowrap}
@@ -544,10 +554,11 @@
 
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
-  <div id="map"></div>
-  <div class="map-hint" id="map-hint">
-    Pick a tool ✏️ &amp; draw on the <span style="white-space:nowrap">map 🗺️</span>
-    <div style="font-size:.7em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
+  <div id="map">
+    <div class="map-hint" id="map-hint">
+      Pick a tool ✏️ &amp; draw on the <span style="white-space:nowrap">map 🗺️</span>
+      <div style="font-size:.7em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none">Use colors how you want — like favorites in Green🟢, or Red🔴 pins for work</div>
+    </div>
   </div>
   <div class="school-toast" id="school-toast">
     <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
@@ -612,7 +623,7 @@
     </div>
     <p class="share-note">Your drawing will be sent to 804-Michael so he can see where you're interested in — no account needed.</p>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 15_45</p>
+    <p style="font-size:.975rem;color:rgba(255,255,255,.18);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 16_20</p>
   </div>
 </div>
 
