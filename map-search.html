@@ -1959,23 +1959,29 @@ function goToMyLocation() {
 // the description text shows/hides. We measure it and update CSS variables so
 // the toolbar top and map height stay perfectly snug at all times.
 function updateLayout() {
-  var pgHeader = document.querySelector('.pg-header');
-  var banner   = document.getElementById('banner');
+  var pgHeader  = document.querySelector('.pg-header');
+  var banner    = document.getElementById('banner');
+  var toolbarEl = document.getElementById('toolbar');
   if (!pgHeader) return;
 
-  var pgH     = pgHeader.getBoundingClientRect().height;
-  var bannerH = (banner && banner.style.display !== 'none')
-                  ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 38
-                  : 0;
-  var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
-  var toolbarEl = document.getElementById('toolbar');
-  var toolbarH  = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
-  var chromeH   = bannerH + navH + pgH + toolbarH;
+  var pgH      = pgHeader.getBoundingClientRect().height;
+  var toolbarH = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
 
+  // --pgheader-h drives toolbar top on ALL screen sizes
   document.documentElement.style.setProperty('--pgheader-h', pgH + 'px');
-  document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
 
-  // On mobile #map top is driven by --chrome-h via CSS; just invalidate size
+  // --chrome-h drives map height — only override on mobile where
+  // map-wrap uses padding-top instead of natural document flow.
+  // On desktop, map-wrap is in flow and the CSS calc handles it correctly.
+  if (window.innerWidth <= 768) {
+    var bannerH = (banner && banner.style.display !== 'none')
+                    ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 38
+                    : 0;
+    var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 48;
+    var chromeH = bannerH + navH + pgH + toolbarH;
+    document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
+  }
+
   if (window.map) { setTimeout(function(){ map.invalidateSize(); }, 50); }
 }
 
