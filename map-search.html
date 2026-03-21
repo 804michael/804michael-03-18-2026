@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 11_00                                 ║
+  ║  MAP VERSION: 26.03.22 11_20                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -92,7 +92,8 @@
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-muted:#888;--nav-h:68px;--banner-h:38px;--header-h:26px;--toolbar-h:52px}
     @media(max-width:768px){
-      :root{--nav-h:48px;--header-h:26px}
+      :root{--nav-h:48px;--header-h:26px;--banner-h:52px}
+    }
     }
     /* Banner hide transition */
     #banner{transition:transform .5s ease,opacity .5s ease}
@@ -109,7 +110,11 @@
 
     /* Banner */
     #banner{position:fixed;top:0;left:0;right:0;z-index:9999;height:var(--banner-h);background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);background-size:200% 100%;animation:shimmer 4s linear infinite;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px}
+    @media(max-width:768px){
+      #banner{height:auto;min-height:var(--banner-h);padding:8px 16px}
+    }
     #banner p{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.95);text-align:center}
+    @media(max-width:480px){ #banner p{font-size:.75rem;white-space:normal} }
     #banner .bd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
 
     /* Nav */
@@ -691,7 +696,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 11_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 11_20</p>
   </div>
 </div>
 
@@ -2085,8 +2090,10 @@ function updateLayout() {
   // On desktop, map-wrap is in flow and the CSS calc handles it correctly.
   if (window.innerWidth <= 768) {
     var bannerH = (banner && banner.style.display !== 'none')
-                    ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--banner-h')) || 38
+                    ? banner.getBoundingClientRect().height
                     : 0;
+    // Keep --banner-h accurate so nav top and pg-header top stay correct
+    document.documentElement.style.setProperty('--banner-h', bannerH + 'px');
     var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 48;
     var chromeH = bannerH + navH + pgH + toolbarH;
     document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
