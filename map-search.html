@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.21 23_45                                 ║
+  ║  MAP VERSION: 26.03.22 09_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -209,8 +209,8 @@
     .map-wrap{
       position: relative;
       width: 100%;
-      height: calc(100dvh - var(--chrome-h));
-      min-height: 300px;
+      height: 85vh;
+      min-height: 400px;
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     @media(max-width:768px){
@@ -223,7 +223,7 @@
       }
     }
     @supports not (height: 1dvh){
-      .map-wrap{ height: calc(100vh - var(--chrome-h)); }
+      .map-wrap{ height: 85vh; }
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
     @media(max-width:768px){
@@ -562,7 +562,14 @@
       <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
       </button>
-      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="font-size:1.2rem;line-height:1">🍎</button>
+      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- apple body -->
+          <path d="M12 3.5C12 3.5 10 2 8 3c-3 1.5-4 5-3 8.5C6 15 8 18 10 19.5c.8.5 1.6.5 2 .5s1.2 0 2-.5C16 18 18 15 19 11.5c1-3.5 0-7-3-8.5-2-1-4 .5-4 .5z"/>
+          <!-- leaf stem -->
+          <path d="M12 3.5 C12 2 13.5 1 15 1.5"/>
+        </svg>
+      </button>
       <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
       </button>
@@ -644,28 +651,28 @@
     <h2 id="masterpiece-h2" style="transition:opacity 1s ease"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
     <div class="share-cta">📤 Send This Map 🗺️<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em">to <span style="color:var(--red);font-weight:600">804-Michael</span></span></div>
     <span class="bounce-finger" aria-hidden="true">👇</span>
-    <div class="share-btns" style="flex-direction:column;align-items:stretch">
+    <div class="share-btns" style="flex-direction:column;align-items:stretch;max-width:420px;width:100%;margin:0 auto">
       <!-- Row 1: Send to 804-Michael -->
-      <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;background:var(--black);color:white;border-color:white">
+      <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;background:var(--black);color:white;border-color:white;max-width:320px;margin:0 auto;width:100%">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         Click here to Send to 804-Michael
       </button>
       <!-- Note between send button and share buttons -->
       <p class="share-note" style="margin:6px 0 4px">Your drawing will be sent to 804-Michael<br>so he can see where you're interested in<br>— no account needed —</p>
       <!-- Row 2: Copy link (red) + Text this map (black) -->
-      <div style="display:flex;gap:10px">
-        <button class="share-btn share-btn-copy" id="share-copy" onclick="copyMapLink()" style="flex:1;justify-content:center">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="share-btn share-btn-copy" id="share-copy" onclick="copyMapLink()" style="flex:1;min-width:140px;justify-content:center">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           Copy link to share map
         </button>
-        <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()" style="flex:1;justify-content:center;background:var(--black);border-color:white">
+        <button class="share-btn share-btn-text" id="share-sms" onclick="shareViaSMS()" style="flex:1;min-width:140px;justify-content:center;background:var(--black);border-color:white">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
           Text your map
         </button>
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.21 23_45</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 09_00</p>
   </div>
 </div>
 
@@ -688,7 +695,7 @@
     </a>
     <p class="ft-copy">
       &copy; <span class="yr"></span> Michael Hottman LLC. — Michael Hottman is a Licensed Real Estate Broker in Virginia<br/>
-      Helping buyers find <strong style="font-weight:600;color:rgba(255,255,255,.55)">homes for sale in Ashland VA</strong>, Hanover County, Glen Allen &amp; Mechanicsville
+      Helping buyers find <strong style="font-weight:600;color:rgba(255,255,255,.55)">homes for sale in Ashland VA</strong>, Hanover County, Glen Allen, VA, Mechanicsville, VA and Surrounding areas
       <span itemscope itemtype="https://schema.org/RealEstateAgent" style="display:none">
         <span itemprop="name">Michael Hottman</span>
         <span itemprop="telephone">+18046424235</span>
