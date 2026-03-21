@@ -188,7 +188,12 @@
       0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:transparent;background:transparent}
       50%{box-shadow:0 0 0 5px rgba(218,41,28,.25);border-color:rgba(218,41,28,.6);background:rgba(218,41,28,.08)}
     }
+    @keyframes finger-bounce{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-4px)}
+    }
     .tool-btn.hint-pulse{animation:tool-pulse 1.4s ease-in-out infinite}
+    .tool-btn.hint-pulse .hint-finger{display:inline-block;animation:finger-bounce 0.8s ease-in-out infinite}
     #toolbar-tip{position:fixed;background:rgba(17,17,17,.92);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s}
     @keyframes ellipsis{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
     .anim-ellipsis::after{content:'.';animation:ellipsis 1.2s steps(1,end) infinite}
@@ -270,6 +275,7 @@
     .share-panel{background:var(--black);padding:20px 24px;border-top:1px solid rgba(255,255,255,.08)}
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
     .share-panel h3{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
+    .share-panel h2{font-family:'Barlow',sans-serif;font-weight:300;font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(255,255,255,.75);line-height:1.35;letter-spacing:.01em}
     .share-panel .share-cta{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.4rem,4vw,2rem);color:var(--white);text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
     .share-panel .share-cta span{color:var(--red)}
     .bounce-finger{display:block;font-size:1.8rem;line-height:1;animation:bounce-down .9s ease-in-out infinite}
@@ -277,6 +283,7 @@
       0%,100%{transform:translateY(0)}
       50%{transform:translateY(6px)}
     }
+    @keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
     .share-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:400px}
     .share-btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:2px solid transparent;transition:all .15s;text-decoration:none;flex-shrink:0;white-space:nowrap}
     .share-btn svg{flex-shrink:0;pointer-events:none}
@@ -349,6 +356,9 @@
     @media(max-width:768px){
       .leaflet-bottom{ padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px) !important; }
     }
+    /* Leaflet controls must sit below our fixed chrome (nav z-index:1000, pg-header:850, toolbar:800) */
+    .leaflet-top, .leaflet-bottom{ z-index:400 !important; }
+    .leaflet-control-attribution{ margin:0 !important; }
 
     @media(max-width:600px){
       .search-group{flex-wrap:nowrap}
@@ -511,8 +521,8 @@
 
     <!-- ③ Draw tools | Schools -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
-      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Freehand draw" aria-label="Freehand draw" style="font-size:1.2rem;line-height:1">
+        <span class="hint-finger" aria-hidden="true">☝️</span>
       </button>
       <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
@@ -606,7 +616,7 @@
 <!-- SHARE PANEL -->
 <div class="share-panel" id="share-panel">
   <div class="share-panel-in">
-    <h2>Done with your masterpiece? <span id="art-emoji">🎨</span></h2>
+    <h2><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span> <span id="art-emoji">🎨</span></h2>
     <div class="share-cta">📤 Send This Map to<br><span style="font-weight:500;color:rgba(255,255,255,.8);font-size:.85em"><span style="color:var(--red);font-weight:600">Michael Hottman</span></span></div>
     <span class="bounce-finger" aria-hidden="true">👇</span>
     <div class="share-btns" style="flex-direction:column;align-items:stretch">
@@ -1957,6 +1967,43 @@ function goToMyLocation() {
   var artEmojis = ['🎨','🖌️','🖍️','✏️','🖼️','🎭','🖊️'];
   var el = document.getElementById('art-emoji');
   if (el) el.textContent = artEmojis[Math.floor(Math.random() * artEmojis.length)];
+})();
+
+// ── Typing effect for masterpiece question ────────────────────────────────────
+(function() {
+  var el      = document.getElementById('masterpiece-text');
+  var cursor  = document.getElementById('masterpiece-cursor');
+  if (!el) return;
+  var msg     = 'Done with your masterpiece?';
+  var i       = 0;
+  var typing  = true;
+  var pauseMs = 3000;   // pause at end before restarting
+  var typeMs  = 60;     // ms per character typing
+  var eraseMs = 30;     // ms per character erasing
+
+  function tick() {
+    if (typing) {
+      el.textContent = msg.slice(0, i);
+      i++;
+      if (i > msg.length) {
+        typing = false;
+        setTimeout(tick, pauseMs);
+      } else {
+        setTimeout(tick, typeMs);
+      }
+    } else {
+      el.textContent = msg.slice(0, i);
+      i--;
+      if (i < 0) {
+        typing = true;
+        i = 0;
+        setTimeout(tick, typeMs);
+      } else {
+        setTimeout(tick, eraseMs);
+      }
+    }
+  }
+  tick();
 })();
 
 // ── Layout measurement: keeps --pgheader-h and --chrome-h accurate ──────────
