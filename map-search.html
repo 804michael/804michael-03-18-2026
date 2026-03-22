@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 10_00                                 ║
+  ║  MAP VERSION: 26.03.23 16_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -178,7 +178,7 @@
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.18);backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(30,30,30,.72);backdrop-filter:blur(14px) saturate(1.8);-webkit-backdrop-filter:blur(14px) saturate(1.8);border-bottom:1px solid rgba(255,255,255,.18);padding:6px 12px;box-shadow:0 2px 16px rgba(0,0,0,.18);overflow:visible}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.70);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
@@ -188,6 +188,8 @@
     .tool-btn:disabled:hover{background:transparent;border-color:transparent}
     /* thin vertical separator between toolbar groups */
     .tbsep{display:inline-block;width:1px;height:24px;background:rgba(0,0,0,.15);margin:0 3px;flex-shrink:0;align-self:center}
+    /* tool-group: buttons that always wrap together */
+    .tool-group{display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
@@ -270,7 +272,7 @@
     }
     .school-toast-msg{
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:clamp(.85rem,2.5vw,1rem);letter-spacing:.03em;
+      font-size:clamp(1.7rem,5vw,2rem);letter-spacing:.03em;
       color:white;text-align:center;line-height:1.3;
       transition:opacity .25s;
     }
@@ -572,10 +574,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(255,255,255,.18);
-      backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);
-      border-bottom:1px solid rgba(255,255,255,.25);
-      box-shadow:0 2px 12px rgba(0,0,0,.06);
+      background:rgba(30,30,30,.72);
+      backdrop-filter:blur(14px) saturate(1.8);-webkit-backdrop-filter:blur(14px) saturate(1.8);
+      border-bottom:1px solid rgba(255,255,255,.18);
+      box-shadow:0 2px 16px rgba(0,0,0,.18);
       padding:6px 12px 8px;
       z-index:798;
       transform:translateY(-110%);
@@ -596,47 +598,60 @@
     }
     .sfp-sep{width:1px;height:18px;background:rgba(255,255,255,.2);flex-shrink:0;margin:0 2px}
 
-    /* Level toggle — circular colored dot, solid=on outline=off */
+    /* Level toggle — styled like tool-btn: solid white bg, goes dark when off */
     .sfp-level{
       display:inline-flex;align-items:center;gap:5px;
-      background:rgba(255,255,255,.12);
-      border:2px solid transparent;
-      border-radius:20px;
+      background:rgba(255,255,255,.85);
+      border:1px solid rgba(0,0,0,.15);
+      border-radius:7px;
       padding:3px 9px 3px 5px;
       cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-      color:rgba(255,255,255,.9);
-      transition:background .15s,opacity .15s;
+      font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--black);
+      transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
+      height:32px;
     }
-    .sfp-level:hover{background:rgba(255,255,255,.22)}
-    .sfp-level.off{opacity:.45}
+    .sfp-level:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
+    .sfp-level.off{background:rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
     .sfp-dot{
-      width:14px;height:14px;border-radius:50%;flex-shrink:0;
-      border:2.5px solid rgba(255,255,255,.5);
+      width:13px;height:13px;border-radius:50%;flex-shrink:0;
+      border:2px solid rgba(0,0,0,.2);
       transition:background .15s,border-color .15s;
     }
-    .sfp-level:not(.off) .sfp-dot{border-color:transparent} /* solid fill shows color */
-    .sfp-level.off .sfp-dot{background:transparent !important} /* outline only */
+    .sfp-level.off .sfp-dot{background:transparent !important;border-color:rgba(255,255,255,.4)}
 
-    /* County chip */
+    /* County chip — same tool-btn style */
     .sfp-county{
       display:inline-flex;align-items:center;
-      background:rgba(255,255,255,.12);
-      border:1.5px solid rgba(255,255,255,.25);
-      border-radius:14px;
-      padding:2px 9px;
+      background:rgba(255,255,255,.85);
+      border:1px solid rgba(0,0,0,.15);
+      border-radius:7px;
+      padding:0 10px;
+      height:32px;
       cursor:pointer;
-      font-family:'Barlow Condensed',sans-serif;font-weight:600;
-      font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
-      color:rgba(255,255,255,.85);
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--black);
       transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
     }
-    .sfp-county:hover{background:rgba(255,255,255,.22)}
-    .sfp-county.off{opacity:.38;background:transparent}
-    .sfp-county:not(.off){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
+    .sfp-county:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
+    .sfp-county.off{background:rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
+    .sfp-county:not(.off){background:rgba(255,255,255,.85)}
+    .sfp-extra{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .sfp-extra[hidden]{display:none !important}
+    .sfp-more{
+      display:inline-flex;align-items:center;
+      background:rgba(255,255,255,.50);border:1px solid rgba(0,0,0,.15);
+      border-radius:7px;height:32px;padding:0 10px;
+      cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--black);transition:background .15s;
+      user-select:none;-webkit-user-select:none;
+    }
+    .sfp-more:hover{background:rgba(255,255,255,.85)}
   </style>
 </head>
 <body>
@@ -739,7 +754,7 @@
 <div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
-    <!-- ① Colors — always stay together as one flex unit -->
+    <!-- ① Colors — locked together -->
     <div class="color-swatches" style="flex-shrink:0">
       <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
@@ -749,20 +764,25 @@
     </div>
     <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ② Draw + pin + search tools — each button wraps individually -->
-    <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
-    </button>
+    <!-- ② Draw tools — pencil+circle wrap together as a pair -->
+    <div class="tool-group">
+      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center, or pinch with 2 fingers" aria-label="Circle — drag from center, or pinch with 2 fingers">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+      </button>
+    </div>
+    <span class="tbsep" aria-hidden="true"></span>
+
+    <!-- ③ Pin + Search + Move + Erase + Schools + Home — wrap individually -->
     <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
       <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
     </button>
     <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address — find and pin a location">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
-    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it" aria-label="Move — drag a shape to reposition it">
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move / Recolor — tap a shape to recolor, drag to move" aria-label="Move or recolor a shape">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
     </button>
     <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
@@ -770,47 +790,50 @@
     </button>
     <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
       <svg width="23" height="18" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <!-- apple body -->
         <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
-        <!-- dimple at bottom -->
-        <path d="M13.5 22.3 Q16 21 18.5 22.3" stroke-width="1.5" fill="none"/>
-        <!-- stem -->
+        <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M16 7C16 5 16 4 18 3"/>
-        <!-- leaf -->
         <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
       </svg>
     </button>
     <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="8"/>
-        <circle cx="12" cy="12" r="2.5"/>
-        <line x1="12" y1="1" x2="12" y2="5"/>
-        <line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="1" y1="12" x2="5" y2="12"/>
-        <line x1="19" y1="12" x2="23" y2="12"/>
+        <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>
+        <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
       </svg>
     </button>
     <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ③ Pan | Zoom | Undo | Redo | Trash — each wraps individually -->
+    <!-- ④ Pan alone -->
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
     </button>
-    <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo  ⌘Z / Ctrl+Z" aria-label="Undo" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo  ⌘⇧Z / Ctrl+Y" aria-label="Redo" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings" aria-label="Clear all drawings">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-    </button>
+    <span class="tbsep" aria-hidden="true"></span>
+
+    <!-- ⑤ Zoom +/- wrap together -->
+    <div class="tool-group">
+      <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </button>
+    </div>
+    <span class="tbsep" aria-hidden="true"></span>
+
+    <!-- ⑥ Undo + Redo + Clear wrap together -->
+    <div class="tool-group">
+      <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo  ⌘Z / Ctrl+Z" aria-label="Undo" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo  ⌘⇧Z / Ctrl+Y" aria-label="Redo" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings" aria-label="Clear all drawings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>
 
   </div>
 </div>
@@ -831,14 +854,18 @@
     </button>
     <span class="sfp-sep"></span>
     <span class="sfp-label">County</span>
-    <button class="sfp-county" data-county="hanover"     aria-pressed="true">Hanover</button>
-    <button class="sfp-county" data-county="henrico"     aria-pressed="true">Henrico</button>
-    <button class="sfp-county" data-county="richmond"    aria-pressed="true">Richmond</button>
-    <button class="sfp-county" data-county="chesterfield" aria-pressed="true">Chesterfield</button>
-    <button class="sfp-county" data-county="powhatan"    aria-pressed="true">Powhatan</button>
-    <button class="sfp-county" data-county="goochland"   aria-pressed="true">Goochland</button>
-    <button class="sfp-county" data-county="newkent"     aria-pressed="true">New Kent</button>
-    <button class="sfp-county" data-county="other"       aria-pressed="true">Other</button>
+    <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
+    <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
+    <button class="sfp-county"     data-county="richmond"     aria-pressed="false" class="sfp-county off">Richmond</button>
+    <button class="sfp-county"     data-county="chesterfield" aria-pressed="false" class="sfp-county off">Chesterfield</button>
+    <!-- More button reveals extra counties -->
+    <button class="sfp-more" id="sfp-more-btn" aria-expanded="false">More ▸</button>
+    <span class="sfp-extra" id="sfp-extra" hidden>
+      <button class="sfp-county off" data-county="powhatan"  aria-pressed="false">Powhatan</button>
+      <button class="sfp-county off" data-county="goochland" aria-pressed="false">Goochland</button>
+      <button class="sfp-county off" data-county="newkent"   aria-pressed="false">New Kent</button>
+      <button class="sfp-county off" data-county="other"     aria-pressed="false">Other</button>
+    </span>
   </div>
 </div>
 
@@ -865,7 +892,7 @@
   <div id="map">
     <div class="map-hint" id="map-hint">
       <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
-      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want —<br>maybe favs in 🟢<br>or 📍 pins for work</div>
+      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work<br><span id="hint-pinch" style="display:none">⭕ Two fingers = draw circle</span></div>
     </div>
     <!-- Draggable scale bar -->
     <div id="map-scale" class="map-scale" title="Drag to reposition">
@@ -948,7 +975,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 10_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 16_00</p>
   </div>
 </div>
 
@@ -1184,6 +1211,7 @@ let circleCenter    = null;
 let previewCircle   = null;
 let previewLine     = null;   // radius guide line during circle draw
 let distTooltip     = null;
+let pinchDrawing    = false;  // true while a two-finger pinch is drawing a circle
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Always show miles to 1 decimal place
@@ -1252,8 +1280,9 @@ function cancelInProgress() {
   if (previewCircle)   { map.removeLayer(previewCircle);   previewCircle   = null; }
   if (previewLine)     { map.removeLayer(previewLine);     previewLine     = null; }
   clearDistTooltip();
-  polyLatLngs  = [];
-  circleCenter = null;
+  polyLatLngs   = [];
+  circleCenter  = null;
+  pinchDrawing  = false;
   updateUndoRedo();
 }
 
@@ -1299,6 +1328,26 @@ window.setMode = function(m) {
     map.dragging.enable();
     map.scrollWheelZoom.enable();
     map.getContainer().style.cursor = m === 'pan' ? 'grab' : '';
+  } else if (m === 'circle' && !window._circleTipShown &&
+             ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+    // First activation of circle on a touch device — show a brief nudge
+    window._circleTipShown = true;
+    map.dragging.disable();
+    map.scrollWheelZoom.disable();
+    map.getContainer().style.cursor = 'crosshair';
+    var _tip = document.createElement('div');
+    _tip.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
+      + 'background:rgba(17,17,17,.88);color:#fff;border-radius:12px;padding:12px 20px;'
+      + 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.1rem;'
+      + 'letter-spacing:.05em;text-align:center;pointer-events:none;z-index:800;'
+      + 'line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+    _tip.innerHTML = '☝️ Drag from center to draw<br>🤏 Or <strong>pinch with 2 fingers</strong>';
+    document.getElementById('map').appendChild(_tip);
+    setTimeout(function() {
+      _tip.style.transition = 'opacity .5s';
+      _tip.style.opacity = '0';
+      setTimeout(function() { if (_tip.parentNode) _tip.parentNode.removeChild(_tip); }, 550);
+    }, 2800);
   } else if (m === 'move') {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
@@ -1532,27 +1581,41 @@ function selectShape(layer) {
   deselectShape(); // clear any previous selection
   selectedLayer = layer;
 
-  // Highlight
+  // Store current color before any style changes
+  var layerCol = '#188038';
+  if (layer instanceof L.Marker) {
+    // Try to read color from icon HTML
+    try {
+      var html = layer.options.icon.options.html || '';
+      var m = html.match(/fill="(#[0-9a-fA-F]{3,6})"/);
+      if (m) layerCol = m[1];
+    } catch(e) {}
+  } else if (layer.options && layer.options.color) {
+    layerCol = layer.options.color;
+  }
+  // Stash on options so deselectShape can restore it
+  if (!(layer instanceof L.Marker)) {
+    layer._selectedColor = layerCol;
+  }
+
+  // Highlight — preserve the color, only boost weight+fillOpacity
   try {
     if (layer instanceof L.Marker) {
-      layer.getElement() && layer.getElement().classList.add('shape-selected');
+      var el = layer.getElement();
+      if (el) el.classList.add('shape-selected');
     } else {
-      layer.setStyle({ weight: WEIGHT + 2, opacity: 1, fillOpacity: 0.22 });
+      layer.setStyle({ weight: WEIGHT + 2, opacity: 1,
+                       color: layerCol, fillColor: layerCol, fillOpacity: 0.28 });
     }
   } catch(e) {}
 
   var picker = getScpEl();
-  // Mark active swatch matching current layer color
-  var layerCol = (layer.options && layer.options.color) ||
-                 (layer instanceof L.Marker ? '#188038' : '#188038');
   picker.querySelectorAll('.scp-swatch').forEach(function(sw) {
     sw.classList.toggle('scp-active', sw.dataset.col === layerCol);
   });
   picker.classList.add('visible');
 
-  // Position at layer's geographic center
   _repositionPicker();
-  // Reposition when map pans/zooms
   _scpRepos = function() { _repositionPicker(); };
   map.on('move zoom moveend zoomend', _scpRepos);
 }
@@ -1578,10 +1641,11 @@ function deselectShape() {
       if (selectedLayer instanceof L.Marker) {
         selectedLayer.getElement() && selectedLayer.getElement().classList.remove('shape-selected');
       } else {
-        // Restore original style from stored color
-        var col = selectedLayer.options.color || strokeColor;
+        // Restore original style — use stashed _selectedColor to avoid losing it
+        var col = selectedLayer._selectedColor || selectedLayer.options.color || strokeColor;
         selectedLayer.setStyle({ color: col, weight: WEIGHT, opacity: 1,
                                   fillColor: col, fillOpacity: 0.12 });
+        delete selectedLayer._selectedColor;
       }
     } catch(e) {}
     selectedLayer = null;
@@ -1730,8 +1794,8 @@ var schoolData = [];
 // Filter state — all on by default
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
-  counties: { hanover: true, henrico: true, richmond: true, chesterfield: true,
-               powhatan: true, goochland: true, newkent: true, other: true }
+  counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
+               powhatan: false, goochland: false, newkent: false, other: false }
 };
 
 // Per-level colors  (Elementary=blue  Middle=orange  High=green)
@@ -1921,6 +1985,23 @@ window.toggleSchools = function() {
       if (schoolsLoaded && schoolsVisible) applySchoolFilter();
     });
   });
+  // More button — toggle extra counties panel
+  var moreBtn   = document.getElementById('sfp-more-btn');
+  var extraSpan = document.getElementById('sfp-extra');
+  if (moreBtn && extraSpan) {
+    moreBtn.addEventListener('click', function() {
+      var open = !extraSpan.hasAttribute('hidden');
+      if (open) {
+        extraSpan.setAttribute('hidden', '');
+        moreBtn.setAttribute('aria-expanded', 'false');
+        moreBtn.textContent = 'More ▸';
+      } else {
+        extraSpan.removeAttribute('hidden');
+        moreBtn.setAttribute('aria-expanded', 'true');
+        moreBtn.textContent = 'Less ▾';
+      }
+    });
+  }
 })();
 
 
@@ -1940,10 +2021,78 @@ mapEl.addEventListener('mouseleave', () => {
 });
 
 // Touch events — preventDefault stops the page scrolling while drawing
+
+// ── Pinch-to-draw circle helpers ─────────────────────────────────────────────
+// Returns the geographic midpoint between two touch events as a Leaflet LatLng
+function touchMidpointLL(t1, t2) {
+  var mx = (t1.clientX + t2.clientX) / 2;
+  var my = (t1.clientY + t2.clientY) / 2;
+  return containerPointToLL(mx, my);
+}
+
+// Returns the distance in meters between two touch points at the current zoom
+function touchSpreadMeters(t1, t2) {
+  var ll1 = containerPointToLL(t1.clientX, t1.clientY);
+  var ll2 = containerPointToLL(t2.clientX, t2.clientY);
+  return ll1.distanceTo(ll2) / 2; // radius = half the spread
+}
+
+// Start a pinch circle: midpoint → center, half-spread → initial radius
+function startPinchCircle(t1, t2) {
+  cancelInProgress(); // clear any single-touch in-progress state first
+  pinchDrawing = true;
+  circleCenter  = touchMidpointLL(t1, t2);
+  var r = touchSpreadMeters(t1, t2);
+  previewCircle = L.circle(circleCenter, { radius: Math.max(r, 1), ...shapeStyle() }).addTo(map);
+  previewLine   = L.polyline(
+    [circleCenter, containerPointToLL(t2.clientX, t2.clientY)],
+    { color: strokeColor, weight: 1.5, opacity: 0.7, dashArray: '5 4', interactive: false }
+  ).addTo(map);
+  showDistAt(circleCenter, fmtMiles(Math.max(r, 1)));
+}
+
+// Update pinch circle from current touch positions
+function updatePinchCircle(t1, t2) {
+  if (!pinchDrawing || !circleCenter || !previewCircle) return;
+  var r = touchSpreadMeters(t1, t2);
+  previewCircle.setRadius(Math.max(r, 1));
+  var edgeLL = containerPointToLL(t2.clientX, t2.clientY);
+  if (previewLine) previewLine.setLatLngs([circleCenter, edgeLL]);
+  showDistAt(circleCenter, fmtMiles(Math.max(r, 1)));
+}
+
+// Commit the pinch circle
+function commitPinchCircle() {
+  if (!pinchDrawing || !circleCenter || !previewCircle) return;
+  var r = previewCircle.getRadius();
+  map.removeLayer(previewCircle); previewCircle = null;
+  if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
+  clearDistTooltip();
+  pinchDrawing = false;
+  if (r > 50) {
+    commitLayer(L.circle(circleCenter, { radius: r, ...shapeStyle() }));
+  }
+  circleCenter = null;
+}
+
 mapEl.addEventListener('touchstart', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
-  // Two or more fingers = pinch/zoom — cancel any in-progress drawing and ignore
-  if (e.touches.length > 1) { cancelInProgress(); return; }
+
+  if (e.touches.length === 2) {
+    // ── Two-finger gesture ──────────────────────────────────────────────────
+    if (mode === 'circle') {
+      // Intercept pinch as circle draw — prevent Leaflet zoom
+      e.preventDefault();
+      startPinchCircle(e.touches[0], e.touches[1]);
+    } else {
+      // Any other mode: cancel current drawing, let Leaflet handle pinch-zoom
+      cancelInProgress();
+    }
+    return;
+  }
+
+  // Single finger — normal drawing
+  if (e.touches.length > 2) { cancelInProgress(); return; } // ignore 3+ fingers
   e.preventDefault();
   const t = e.touches[0];
   onPointerDown(t.clientX, t.clientY);
@@ -1951,8 +2100,19 @@ mapEl.addEventListener('touchstart', e => {
 
 mapEl.addEventListener('touchmove', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
-  // If a second finger joins mid-stroke, abort the drawing
-  if (e.touches.length > 1) { cancelInProgress(); return; }
+
+  if (pinchDrawing && e.touches.length >= 2) {
+    // Continue updating the pinch circle
+    e.preventDefault();
+    updatePinchCircle(e.touches[0], e.touches[1]);
+    return;
+  }
+
+  if (e.touches.length > 1) {
+    // Second finger joined mid-stroke (not pinch-draw) — abort drawing
+    cancelInProgress();
+    return;
+  }
   e.preventDefault();
   const t = e.touches[0];
   onPointerMove(t.clientX, t.clientY);
@@ -1961,6 +2121,13 @@ mapEl.addEventListener('touchmove', e => {
 mapEl.addEventListener('touchend', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   e.preventDefault();
+
+  if (pinchDrawing) {
+    // Commit as soon as either finger lifts
+    commitPinchCircle();
+    return;
+  }
+
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
 }, { passive: false });
@@ -1969,7 +2136,7 @@ mapEl.addEventListener('touchend', e => {
 // Without this the move tool gets stuck in a dragging state.
 mapEl.addEventListener('touchcancel', () => {
   if (mode === 'move') endMove();
-  cancelInProgress();
+  cancelInProgress(); // also resets pinchDrawing
 }, { passive: true });
 
 // Keyboard shortcuts
@@ -1994,10 +2161,11 @@ document.addEventListener('keydown', e => {
             + '<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
           selectedLayer.setIcon(L.divIcon({ html: pinSvg, className: '', iconSize: [28,36], iconAnchor: [14,36] }));
         } else {
-          selectedLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT, opacity: 1, fillOpacity: 0.12 });
-          // Persist the new color into options so undo/redo can reference it
+          selectedLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT + 2, opacity: 1, fillOpacity: 0.28 });
+          // Persist the new color into options and into our stash
           selectedLayer.options.color = col;
           selectedLayer.options.fillColor = col;
+          selectedLayer._selectedColor = col;
         }
       } catch(err) {}
       // Update active swatch highlight
@@ -2544,6 +2712,14 @@ function showCopied(btn) {
   document.getElementById('btn-circle').style.animationDelay = '-1.2s';
 })();
 
+// Show the two-finger pinch hint only on real touch devices
+(function() {
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    var el = document.getElementById('hint-pinch');
+    if (el) el.style.display = 'inline';
+  }
+})();
+
 // ── Go to my location (Home button) ───────────────────────────────────────────
 function goToMyLocation() {
   var btn = document.getElementById('btn-home');
@@ -2726,7 +2902,8 @@ window.addEventListener('resize', updateLayout);
     }
     if (bestPx < 1) bestPx = MIN_PX;
     barEl.style.width = Math.round(bestPx) + 'px';
-    labelEl.textContent = best < 1 ? Math.round(best * 5280) + ' ft' : best + ' mi';
+    // Always show miles or tenths of a mile — never feet
+    labelEl.textContent = best < 1 ? best.toFixed(2).replace(/\.?0+$/, '') + ' mi' : best + ' mi';
   }
 
   map.on('zoomend moveend zoom move', updateScale);
