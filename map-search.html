@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 10_00                                 ║
+  ║  MAP VERSION: 26.03.24 14_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -178,7 +178,7 @@
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.42);backdrop-filter:blur(18px) saturate(2.4);-webkit-backdrop-filter:blur(18px) saturate(2.4);border-bottom:1px solid rgba(255,255,255,.5);padding:6px 12px;box-shadow:0 2px 14px rgba(0,0,0,.1);overflow:visible}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.12);backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);-webkit-backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);border-bottom:1px solid rgba(255,255,255,.35);padding:6px 12px;box-shadow:0 2px 18px rgba(0,0,0,.08);overflow:visible}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.82);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
@@ -574,10 +574,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(255,255,255,.42);
-      backdrop-filter:blur(18px) saturate(2.4);-webkit-backdrop-filter:blur(18px) saturate(2.4);
-      border-bottom:1px solid rgba(255,255,255,.5);
-      box-shadow:0 2px 14px rgba(0,0,0,.1);
+      background:rgba(255,255,255,.12);
+      backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);-webkit-backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);
+      border-bottom:1px solid rgba(255,255,255,.35);
+      box-shadow:0 2px 18px rgba(0,0,0,.08);
       padding:3px 12px 4px;
       z-index:798;
       transform:translateY(-110%);
@@ -592,7 +592,7 @@
     }
     .sfp-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:2px 0}
     .sfp-label{display:none}
-    .sfp-sep{width:10px;height:1px;flex-shrink:0}
+    .sfp-sep{width:1px;height:20px;background:rgba(0,0,0,.15);flex-shrink:0;margin:0 6px;align-self:center}
 
     /* Level toggle — styled like tool-btn: solid white bg, goes dark when off */
     .sfp-level{
@@ -610,7 +610,7 @@
       height:26px;
     }
     .sfp-level:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
-    .sfp-level.off{background:rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
+    .sfp-level.off{background:rgba(255,255,255,.55);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.12)}
     .sfp-dot{
       width:11px;height:11px;border-radius:50%;flex-shrink:0;
       border:2.5px solid rgba(0,0,0,.15);
@@ -620,9 +620,9 @@
     /* OFF: outline only — color comes from the button's own border */
     .sfp-level.off .sfp-dot{
       background:transparent !important;
-      border-width:2.5px;
+      border-width:2px;
       border-style:solid;
-      /* border-color is set per-level below */
+      opacity:0.7;
     }
     #sfp-elem.off .sfp-dot{border-color:#4285f4}
     #sfp-mid.off  .sfp-dot{border-color:#f29900}
@@ -644,7 +644,7 @@
       user-select:none;-webkit-user-select:none;
     }
     .sfp-county:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
-    .sfp-county.off{background:rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
+    .sfp-county.off{background:rgba(255,255,255,.55);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.12)}
     .sfp-county:not(.off){background:rgba(255,255,255,.85)}
     .sfp-extra{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
     .sfp-extra[hidden]{display:none !important}
@@ -661,18 +661,20 @@
 
     /* Collapse handle button on the filter panel */
     #sfp-collapse-btn{
-      position:absolute;right:8px;top:50%;transform:translateY(-50%);
-      background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.15);
+      position:absolute;left:8px;top:50%;transform:translateY(-50%);
+      background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.15);
       border-radius:6px;width:22px;height:22px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;
       padding:0;transition:background .12s;flex-shrink:0;
     }
     #sfp-collapse-btn:hover{background:rgba(255,255,255,.95)}
-    /* Panel needs relative positioning for the absolute collapse btn */
-    #school-filter-panel{position:fixed;} /* already set, but ensure */
+    /* Panel needs position:relative for the absolute collapse btn */
+    #school-filter-panel{position:fixed;}
     /* Collapsed state: panel shows only the handle strip */
-    #school-filter-panel.sfp-collapsed{padding:2px 36px 2px 12px}
+    #school-filter-panel.sfp-collapsed{padding:2px 12px 2px 38px}
     #school-filter-panel.sfp-collapsed #sfp-filters-row{display:none}
+    /* Give the filter row left padding so it clears the collapse button */
+    #sfp-filters-row{padding-left:30px}
   </style>
 </head>
 <body>
@@ -867,7 +869,6 @@
     <svg id="sfp-collapse-chevron" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,8 6,4 10,8"/></svg>
   </button>
   <div class="sfp-row" id="sfp-filters-row">
-    <span class="sfp-label">Level</span>
     <!-- Level toggles: solid dot=on, outline=off -->
     <button class="sfp-level" id="sfp-elem" data-level="elementary" aria-pressed="true">
       <span class="sfp-dot" style="background:#4285f4"></span>Elementary
@@ -879,7 +880,6 @@
       <span class="sfp-dot" style="background:#188038"></span>High School
     </button>
     <span class="sfp-sep"></span>
-    <span class="sfp-label">County</span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
     <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
     <button class="sfp-county"     data-county="richmond"     aria-pressed="false" class="sfp-county off">Richmond</button>
@@ -890,7 +890,7 @@
       <button class="sfp-county off" data-county="powhatan"  aria-pressed="false">Powhatan</button>
       <button class="sfp-county off" data-county="goochland" aria-pressed="false">Goochland</button>
       <button class="sfp-county off" data-county="newkent"   aria-pressed="false">New Kent</button>
-      <button class="sfp-county off" data-county="other"     aria-pressed="false">Other</button>
+      <button class="sfp-county"     data-county="other"     aria-pressed="true">Other</button>
     </span>
   </div>
 </div>
@@ -1001,7 +1001,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 10_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 14_00</p>
   </div>
 </div>
 
@@ -1828,7 +1828,7 @@ var schoolData = [];
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
   counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
-               powhatan: false, goochland: false, newkent: false, other: false }
+               powhatan: false, goochland: false, newkent: false, other: true }
 };
 
 // Per-level colors  (Elementary=blue  Middle=orange  High=green)
