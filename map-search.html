@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 02_30                                 ║
+  ║  MAP VERSION: 26.03.22 15_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -184,8 +184,8 @@
       .map-wrap{margin-top:0}
     }
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
-    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.85);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .tool-btn:hover{background:rgba(255,255,255,1);border-color:rgba(0,0,0,.2)}
+    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.70);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 2px 8px rgba(218,41,28,.45)}
     .tool-btn svg{pointer-events:none}
     .tool-btn:disabled{opacity:.28;cursor:not-allowed}
@@ -245,31 +245,37 @@
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
 
-    /* School loading overlay — full-map, big text, spinning pencil */
+    /* School loading toast — compact floating card, centered in visible map */
     .school-toast{
-      position:absolute;inset:0;
-      background:rgba(17,17,17,.82);
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%, -50%);
+      background:rgba(17,17,17,.92);
+      border-radius:16px;
+      padding:18px 26px 16px;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:28px;pointer-events:none;z-index:600;
-      opacity:0;transition:opacity .4s;
+      gap:10px;pointer-events:none;z-index:700;
+      width:auto;max-width:min(88vw,360px);min-width:220px;
+      box-shadow:0 8px 36px rgba(0,0,0,.45);
+      opacity:0;transition:opacity .35s;
     }
     .school-toast.visible{opacity:1}
-    /* Spinning pencil emoji */
+    /* Spinning pencil emoji — compact size */
     .school-toast-pencil{
-      font-size:clamp(3rem,10vw,6rem);
+      font-size:2rem;
       animation:pencil-spin 1.2s linear infinite;
       display:block;line-height:1;
     }
     @keyframes pencil-spin{
       0%  {transform:rotate(0deg) scale(1)}
-      50% {transform:rotate(180deg) scale(1.15)}
+      50% {transform:rotate(180deg) scale(1.1)}
       100%{transform:rotate(360deg) scale(1)}
     }
     .school-toast-msg{
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:clamp(1.4rem,4vw,2.8rem);letter-spacing:.04em;
-      color:white;text-align:center;padding:0 24px;line-height:1.2;
-      max-width:800px;
+      font-size:clamp(.85rem,2.5vw,1rem);letter-spacing:.03em;
+      color:white;text-align:center;line-height:1.3;
+      transition:opacity .25s;
     }
     /* Pick-a-tool bar — slides down from under the toolbar on load */
     .map-hint{
@@ -653,11 +659,11 @@
       <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
       <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want —<br>maybe favs in 🟢<br>or 📍 pins for work</div>
     </div>
-  </div>
-  <div class="school-toast" id="school-toast">
-    <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
-    <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
-    <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:clamp(.85rem,2vw,1.1rem);color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase">Loading school locations<span class="anim-ellipsis"></span></span>
+    <div class="school-toast" id="school-toast">
+      <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
+      <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.72rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase">Loading school locations<span class="anim-ellipsis"></span></span>
+    </div>
   </div>
 </div>
 
@@ -720,7 +726,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 02_30</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 15_00</p>
   </div>
 </div>
 
@@ -1036,14 +1042,21 @@ function containerPointToLL(clientX, clientY) {
 // ── Mode switching ────────────────────────────────────────────────────────────
 const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
 
+// Shared helper: deactivate all tools, enable map drag, reset cursor
+function deactivateAllTools() {
+  cancelInProgress();
+  if (mode === 'move') detachMoveListeners();
+  mode = 'none';
+  ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.remove('active'); });
+  map.dragging.enable();
+  map.scrollWheelZoom.enable();
+  map.getContainer().style.cursor = '';
+}
+
 window.setMode = function(m) {
-  // Pan is a true on/off toggle — pressing it again turns it off with no tool selected
-  if (m === 'pan' && mode === 'pan') {
-    mode = 'freehand'; // internal default keeps pointer events working
-    ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.remove('active'); });
-    map.dragging.disable();
-    map.scrollWheelZoom.disable();
-    map.getContainer().style.cursor = 'crosshair';
+  // Any active tool can be toggled off by pressing it again — leaves no tool selected
+  if (m === mode) {
+    deactivateAllTools();
     return;
   }
   markDrawn(); // dismiss "Pick a tool" hint the moment any tool is selected
@@ -1143,7 +1156,7 @@ const mapEl = map.getContainer();
 let isErasing = false;
 
 function onPointerDown(clientX, clientY) {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand') {
     polyLatLngs     = [ll];
@@ -1158,7 +1171,7 @@ function onPointerDown(clientX, clientY) {
 }
 
 function onPointerMove(clientX, clientY) {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand' && drawingPolyline) {
     polyLatLngs.push(ll);
@@ -1167,14 +1180,15 @@ function onPointerMove(clientX, clientY) {
   if (mode === 'circle' && circleCenter && previewCircle) {
     const r = circleCenter.distanceTo(ll);
     previewCircle.setRadius(r);
-    showDistAt(ll, fmtMiles(r));
+    // Show measurement at center so it is never covered by finger/cursor
+    showDistAt(circleCenter, fmtMiles(r));
   }
   if (mode === 'erase' && isErasing) { eraseAt(ll); }
   if (mode === 'move')  { doMove(ll); }
 }
 
 function onPointerUp(clientX, clientY) {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   isErasing = false;
   if (mode === 'move') { endMove(); return; }
   if (mode === 'freehand' && drawingPolyline) {
@@ -1395,14 +1409,23 @@ let _schoolToastTimer = null;
 function showSchoolToast() {
   const toast = document.getElementById('school-toast');
   const msg   = document.getElementById('school-toast-msg');
-  // Pick one random message and show it for the full duration
-  const pick = SCHOOL_MSGS[Math.floor(Math.random() * SCHOOL_MSGS.length)];
-  msg.textContent = pick;
   toast.classList.add('visible');
+  // Start with a random message then cycle through all of them every 2.5 s
+  var _msgIdx = Math.floor(Math.random() * SCHOOL_MSGS.length);
+  msg.textContent = SCHOOL_MSGS[_msgIdx];
+  _schoolToastTimer = setInterval(function() {
+    _msgIdx = (_msgIdx + 1) % SCHOOL_MSGS.length;
+    msg.style.opacity = '0';
+    setTimeout(function() {
+      msg.textContent = SCHOOL_MSGS[_msgIdx];
+      msg.style.opacity = '1';
+    }, 250);
+  }, 2500);
 }
 
 function hideSchoolToast() {
-  clearTimeout(_schoolToastTimer);
+  clearInterval(_schoolToastTimer);
+  _schoolToastTimer = null;
   document.getElementById('school-toast').classList.remove('visible');
 }
 
@@ -1414,7 +1437,7 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
-  const bbox = '36.9,-78.3,38.3,-76.4';
+  const bbox = '37.2,-77.9,38.1,-77.0'; // tightened to Hanover/Henrico/Richmond area for faster mobile load
   const query = '[out:json][timeout:90];(' +
     // Explicitly tagged public schools
     'node["amenity"="school"]["school:type"="public"]('+bbox+');' +
@@ -1428,7 +1451,7 @@ function loadSchools() {
     // All remaining schools not explicitly private/fee
     'node["amenity"="school"]["school:type"!="private"]["fee"!="yes"]["access"!="private"]('+bbox+');' +
     'way["amenity"="school"]["school:type"!="private"]["fee"!="yes"]["access"!="private"]('+bbox+');' +
-    ');out center;';
+    ');out 300 center;'; // capped at 300 elements — keeps mobile load fast
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -1447,14 +1470,18 @@ function loadSchools() {
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
-      L.circleMarker([lat, lon], {
-        radius: 6, color: '#1a73e8', weight: 2,
+      var sm = L.circleMarker([lat, lon], {
+        radius: 7, color: '#1a73e8', weight: 2,
         fillColor: '#4285f4', fillOpacity: 0.9,
         interactive: true
       }).bindTooltip(name, {
-        permanent: false, direction: 'top', offset: [0, -8],
+        permanent: false, direction: 'top', offset: [0, -10],
         className: 'dist-tip'
-      }).addTo(schoolGroup);
+      });
+      // On desktop hover shows the tooltip automatically.
+      // On tablet/touch, hover never fires — use click/tap to open it explicitly.
+      sm.on('click', function() { this.openTooltip(); });
+      sm.addTo(schoolGroup);
     });
     hideSchoolToast();
     btn.setAttribute('data-tip', schoolsVisible ? 'Hide Schools' : 'Show Schools');
@@ -1489,6 +1516,7 @@ mapEl.addEventListener('mousedown', e => { if (e.button !== 0) return; onPointer
 mapEl.addEventListener('mousemove', e => { onPointerMove(e.clientX, e.clientY); });
 mapEl.addEventListener('mouseup',   e => { onPointerUp(e.clientX, e.clientY); });
 mapEl.addEventListener('mouseleave', () => {
+  if (mode === 'none') return;
   // Cancel any in-progress freehand on mouse leave; commit circle if large enough
   if (mode === 'freehand' && drawingPolyline) {
     const layer = drawingPolyline; drawingPolyline = null; polyLatLngs = [];
@@ -1500,7 +1528,7 @@ mapEl.addEventListener('mouseleave', () => {
 
 // Touch events — preventDefault stops the page scrolling while drawing
 mapEl.addEventListener('touchstart', e => {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   // Two or more fingers = pinch/zoom — cancel any in-progress drawing and ignore
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -1509,7 +1537,7 @@ mapEl.addEventListener('touchstart', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchmove', e => {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   // If a second finger joins mid-stroke, abort the drawing
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -1518,7 +1546,7 @@ mapEl.addEventListener('touchmove', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchend', e => {
-  if (mode === 'pan') return;
+  if (mode === 'pan' || mode === 'none') return;
   e.preventDefault();
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
@@ -2012,13 +2040,13 @@ function showCopied(btn) {
 })();
 
 // Init — start with no tool selected so the hint stays visible.
+// Map drag is enabled so users can pan/explore freely before picking a tool.
 // Pencil and circle pulse to invite the user to pick one.
-// Map dragging is disabled until a tool is chosen (same as draw modes).
 (function() {
-  mode = 'freehand'; // internal default so pointer events work on first tap
-  map.dragging.disable();
-  map.scrollWheelZoom.disable();
-  map.getContainer().style.cursor = 'crosshair';
+  mode = 'none'; // no tool active — all tools can be toggled on/off
+  map.dragging.enable();
+  map.scrollWheelZoom.enable();
+  map.getContainer().style.cursor = '';
   document.getElementById('btn-freehand').classList.add('hint-pulse');
   document.getElementById('btn-circle').classList.add('hint-pulse');
   // Offset circle by half the pulse cycle so they alternate
