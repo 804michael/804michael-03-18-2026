@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 23_30                                 ║
+  ║  MAP VERSION: 26.03.22 23_59                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -177,12 +177,8 @@
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
-    /* Toolbar — single row, sits snug below pg-header */
-    .toolbar{position:sticky;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));z-index:800;background:rgba(255,255,255,.18);backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible}
-    @media(max-width:768px){
-      .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;background:rgba(255,255,255,.18);backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2)}
-      .map-wrap{margin-top:0}
-    }
+    /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.18);backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.70);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
@@ -235,10 +231,9 @@
     }
     @media(max-width:768px){
       .map-wrap{
-        /* Push map content below the fixed pg-header + toolbar stack */
-        padding-top: var(--chrome-h, 172px);
-        /* Height must add it back so total stays 100dvh */
-        height: 100dvh;
+        /* Toolbar is position:fixed; map fills full height below chrome */
+        margin-top: var(--chrome-h, 172px);
+        height: calc(100dvh - var(--chrome-h, 172px));
         padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
       }
     }
@@ -333,7 +328,9 @@
        All font/color styling comes from the existing .share-panel h2 rule below. */
     @media(min-width:769px){
       .map-wrap{
-        height: calc(100dvh - 96px); /* 52px toolbar + 44px masterpiece bar */
+        /* toolbar is now fixed so use --chrome-h (JS-updated) + 44px masterpiece */
+        margin-top: var(--chrome-h, 192px);
+        height: calc(100dvh - var(--chrome-h, 192px) - 44px);
       }
       .share-panel{
         padding-top: 0;
@@ -853,7 +850,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 23_30</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 23_59</p>
   </div>
 </div>
 
@@ -2404,18 +2401,12 @@ function goToMyLocation() {
         // iOS-specific error: "This site can’t ask for your permission" usually means
         // a system dialog (call, notification) is blocking the geolocation prompt.
         // It can also occur in Private Browsing or an in-app browser (Instagram, etc.).
-        msg = 'Location access was denied.
-
-'
-            + 'If you see "This site can’t ask for your permission" on iPhone/iPad:
-'
-            + '• Dismiss any system alerts or overlays (call screens, notifications)
-'
-            + '• Avoid using Private Browsing mode
-'
-            + '• If inside an app (Instagram etc.), open this page in Safari instead
-'
-            + '• Check Settings → Safari → Location → Allow';
+        msg = 'Location access was denied.\n\n'
+            + 'If you see \u201cThis site can\u2019t ask for your permission\u201d on iPhone/iPad:\n'
+            + '\u2022 Dismiss any system alerts or overlays (call screens, notifications)\n'
+            + '\u2022 Avoid using Private Browsing mode\n'
+            + '\u2022 If inside an app (Instagram etc.), open this page in Safari instead\n'
+            + '\u2022 Check Settings \u2192 Safari \u2192 Location \u2192 Allow';
       } else if (err.code === err.TIMEOUT) {
         msg = 'Location request timed out. Make sure location services are enabled and try again.';
       } else if (err.code === err.POSITION_UNAVAILABLE) {
@@ -2490,19 +2481,15 @@ function updateLayout() {
   // --toolbar-h-actual drives map-hint top position
   document.documentElement.style.setProperty('--toolbar-h-actual', toolbarH + 'px');
 
-  // --chrome-h drives map height — only override on mobile where
-  // map-wrap uses padding-top instead of natural document flow.
-  // On desktop, map-wrap is in flow and the CSS calc handles it correctly.
-  if (window.innerWidth <= 768) {
-    var bannerH = (banner && banner.style.display !== 'none')
-                    ? banner.getBoundingClientRect().height
-                    : 0;
-    // Keep --banner-h accurate so nav top and pg-header top stay correct
-    document.documentElement.style.setProperty('--banner-h', bannerH + 'px');
-    var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 48;
-    var chromeH = bannerH + navH + pgH + toolbarH;
-    document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
-  }
+  // --chrome-h drives map height on ALL screen sizes now that toolbar is fixed everywhere
+  var bannerH = (banner && banner.style.display !== 'none')
+                  ? banner.getBoundingClientRect().height
+                  : 0;
+  // Keep --banner-h accurate so toolbar top and pg-header top stay correct
+  document.documentElement.style.setProperty('--banner-h', bannerH + 'px');
+  var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || (window.innerWidth <= 768 ? 48 : 68);
+  var chromeH = bannerH + navH + pgH + toolbarH;
+  document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
 
   setTimeout(function(){ map.invalidateSize(); }, 50);
 }
