@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 23_59                                 ║
+  ║  MAP VERSION: 26.03.23 10_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -566,6 +566,77 @@
     #shape-color-picker .scp-close:hover{ background:rgba(255,255,255,.3); }
     /* selected shape highlight ring */
     .shape-selected{ filter:drop-shadow(0 0 4px rgba(255,255,255,.95)); }
+
+    /* ── School filter panel — slides down from toolbar when schools active ── */
+    #school-filter-panel{
+      position:fixed;
+      top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
+      left:0;right:0;
+      background:rgba(255,255,255,.18);
+      backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);
+      border-bottom:1px solid rgba(255,255,255,.25);
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+      padding:6px 12px 8px;
+      z-index:798;
+      transform:translateY(-110%);
+      opacity:0;
+      transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .2s;
+      pointer-events:none;
+    }
+    #school-filter-panel.open{
+      transform:translateY(0);
+      opacity:1;
+      pointer-events:auto;
+    }
+    .sfp-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .sfp-label{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+      color:rgba(255,255,255,.7);flex-shrink:0;min-width:52px;
+    }
+    .sfp-sep{width:1px;height:18px;background:rgba(255,255,255,.2);flex-shrink:0;margin:0 2px}
+
+    /* Level toggle — circular colored dot, solid=on outline=off */
+    .sfp-level{
+      display:inline-flex;align-items:center;gap:5px;
+      background:rgba(255,255,255,.12);
+      border:2px solid transparent;
+      border-radius:20px;
+      padding:3px 9px 3px 5px;
+      cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+      color:rgba(255,255,255,.9);
+      transition:background .15s,opacity .15s;
+      user-select:none;-webkit-user-select:none;
+    }
+    .sfp-level:hover{background:rgba(255,255,255,.22)}
+    .sfp-level.off{opacity:.45}
+    .sfp-dot{
+      width:14px;height:14px;border-radius:50%;flex-shrink:0;
+      border:2.5px solid rgba(255,255,255,.5);
+      transition:background .15s,border-color .15s;
+    }
+    .sfp-level:not(.off) .sfp-dot{border-color:transparent} /* solid fill shows color */
+    .sfp-level.off .sfp-dot{background:transparent !important} /* outline only */
+
+    /* County chip */
+    .sfp-county{
+      display:inline-flex;align-items:center;
+      background:rgba(255,255,255,.12);
+      border:1.5px solid rgba(255,255,255,.25);
+      border-radius:14px;
+      padding:2px 9px;
+      cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-weight:600;
+      font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+      color:rgba(255,255,255,.85);
+      transition:background .15s,opacity .15s,border-color .15s;
+      user-select:none;-webkit-user-select:none;
+    }
+    .sfp-county:hover{background:rgba(255,255,255,.22)}
+    .sfp-county.off{opacity:.38;background:transparent}
+    .sfp-county:not(.off){background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
   </style>
 </head>
 <body>
@@ -744,6 +815,33 @@
   </div>
 </div>
 
+<!-- SCHOOL FILTER PANEL — slides down when schools are active -->
+<div id="school-filter-panel" aria-label="School filters">
+  <div class="sfp-row">
+    <span class="sfp-label">Level</span>
+    <!-- Level toggles: solid dot=on, outline=off -->
+    <button class="sfp-level" id="sfp-elem" data-level="elementary" aria-pressed="true">
+      <span class="sfp-dot" style="background:#4285f4"></span>Elementary
+    </button>
+    <button class="sfp-level" id="sfp-mid" data-level="middle" aria-pressed="true">
+      <span class="sfp-dot" style="background:#f29900"></span>Middle
+    </button>
+    <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
+      <span class="sfp-dot" style="background:#188038"></span>High School
+    </button>
+    <span class="sfp-sep"></span>
+    <span class="sfp-label">County</span>
+    <button class="sfp-county" data-county="hanover"     aria-pressed="true">Hanover</button>
+    <button class="sfp-county" data-county="henrico"     aria-pressed="true">Henrico</button>
+    <button class="sfp-county" data-county="richmond"    aria-pressed="true">Richmond</button>
+    <button class="sfp-county" data-county="chesterfield" aria-pressed="true">Chesterfield</button>
+    <button class="sfp-county" data-county="powhatan"    aria-pressed="true">Powhatan</button>
+    <button class="sfp-county" data-county="goochland"   aria-pressed="true">Goochland</button>
+    <button class="sfp-county" data-county="newkent"     aria-pressed="true">New Kent</button>
+    <button class="sfp-county" data-county="other"       aria-pressed="true">Other</button>
+  </div>
+</div>
+
 <!-- SEARCH PANEL — slides down from toolbar when search tool is active -->
 <div id="search-panel" role="search" aria-label="Address search">
   <div class="search-wrap" id="search-wrap">
@@ -850,7 +948,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 23_59</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 10_00</p>
   </div>
 </div>
 
@@ -1619,17 +1717,66 @@ function endMove() {
   map.getContainer().style.cursor = 'default';
 }
 // ── Schools — covers Hanover, Henrico, Richmond, Chesterfield, and surrounds ──
-// Create a custom pane so school markers always render above drawn shapes
+// Custom pane: school markers render above drawn shapes (overlayPane z-index 400)
 map.createPane('schoolPane');
-map.getPane('schoolPane').style.zIndex = 450; // above overlayPane (400)
-const schoolGroup  = L.featureGroup().addTo(map); // pane is set per-marker below
+map.getPane('schoolPane').style.zIndex = 450;
+const schoolGroup  = L.featureGroup().addTo(map);
 let schoolsLoaded  = false;
 let schoolsVisible = false;
 
-// Name-based private-school filter (fallback when OSM tags are absent)
+// All loaded school records: { marker, level, county }
+var schoolData = [];
+
+// Filter state — all on by default
+var schoolFilter = {
+  levels:   { elementary: true, middle: true, high: true },
+  counties: { hanover: true, henrico: true, richmond: true, chesterfield: true,
+               powhatan: true, goochland: true, newkent: true, other: true }
+};
+
+// Per-level colors  (Elementary=blue  Middle=orange  High=green)
+var LEVEL_COLORS = {
+  elementary: { fill: '#4285f4', stroke: '#1a73e8' },
+  middle:     { fill: '#f29900', stroke: '#e67e00' },
+  high:       { fill: '#188038', stroke: '#136b2d' }
+};
+
+// Name-based private-school filter
 const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep\s*school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary|private|religious/i;
-// School level keywords — only show schools that mention these in their name or tags
-const PUBLIC_LEVEL_RE = /elementary|middle\s*school|high\s*school|primary|intermediate|jr[\s.]?high/i;
+
+function detectSchoolLevel(name, isced, schoolLvl) {
+  var n = parseInt(isced) || 0;
+  var src = (name + ' ' + schoolLvl).toLowerCase();
+  if (n === 1 || /elementary|primary|intermediate/.test(src)) return 'elementary';
+  if (n === 2 || /middle school|jr\.?\s?high|junior high/.test(src)) return 'middle';
+  if (n === 3 || /high school/.test(src)) return 'high';
+  // looser fallback
+  if (/elementary|primary/.test(src)) return 'elementary';
+  if (/middle/.test(src)) return 'middle';
+  if (/\bhigh\b/.test(src)) return 'high';
+  return null;
+}
+
+function detectSchoolCounty(name, operator, addrCounty) {
+  var s = (operator + ' ' + addrCounty + ' ' + name).toLowerCase();
+  if (/hanover/.test(s))      return 'hanover';
+  if (/henrico/.test(s))      return 'henrico';
+  if (/richmond/.test(s))     return 'richmond';
+  if (/chesterfield/.test(s)) return 'chesterfield';
+  if (/powhatan/.test(s))     return 'powhatan';
+  if (/goochland/.test(s))    return 'goochland';
+  if (/new kent/.test(s))     return 'newkent';
+  return 'other';
+}
+
+function applySchoolFilter() {
+  schoolGroup.clearLayers();
+  schoolData.forEach(function(d) {
+    if (schoolFilter.levels[d.level] && schoolFilter.counties[d.county]) {
+      d.marker.addTo(schoolGroup);
+    }
+  });
+}
 
 // ── School loading toast ──────────────────────────────────────────────────────
 const SCHOOL_MSGS = [
@@ -1671,24 +1818,15 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
-  const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover / Henrico / Richmond / Chesterfield / Powhatan
+  const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover/Henrico/Richmond/Chesterfield/Powhatan/Goochland/NewKent
   const query = '[out:json][timeout:90];(' +
-    // Elementary (ISCED level 1)
-    'node["amenity"="school"]["isced:level"~"1"]('+bbox+');' +
-    'way["amenity"="school"]["isced:level"~"1"]('+bbox+');' +
-    // Middle / lower-secondary (ISCED level 2)
-    'node["amenity"="school"]["isced:level"~"2"]('+bbox+');' +
-    'way["amenity"="school"]["isced:level"~"2"]('+bbox+');' +
-    // High / upper-secondary (ISCED level 3)
-    'node["amenity"="school"]["isced:level"~"3"]('+bbox+');' +
-    'way["amenity"="school"]["isced:level"~"3"]('+bbox+');' +
-    // Government-operated schools (highly reliable — includes most VA county schools)
+    'node["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
+    'way["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
     'node["amenity"="school"]["operator:type"="government"]('+bbox+');' +
     'way["amenity"="school"]["operator:type"="government"]('+bbox+');' +
-    // County/City public school operators
     'node["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
     'way["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
-    ');out 400 center;'; // up from 300 — broader bbox needs more headroom
+    ');out 500 center;';
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -1702,33 +1840,38 @@ function loadSchools() {
       var lon  = el.lon  || (el.center && el.center.lon);
       var tags = el.tags || {};
       var name = tags.name || '';
-      var isced = tags['isced:level'] || '';       // OSM education level tag
-      var schoolLvl = tags['school:level'] || '';
       if (!lat || !lon || !name) return;
-      // Skip private-looking names
       if (PRIVATE_RE.test(name)) return;
-      // Only show if name OR OSM level tag clearly indicates K-12 level
-      // isced:level 1=primary, 2=lower-secondary, 3=upper-secondary
-      var hasLevelTag = /^[123]/.test(isced) || /elementary|primary|middle|secondary|high/i.test(schoolLvl);
-      if (!hasLevelTag && !PUBLIC_LEVEL_RE.test(name)) return;
+
+      var isced    = tags['isced:level']  || '';
+      var schoolLv = tags['school:level'] || '';
+      var operator = tags['operator']     || '';
+      var addrCty  = tags['addr:county']  || '';
+
+      var level = detectSchoolLevel(name, isced, schoolLv);
+      if (!level) return;
+
+      var county = detectSchoolCounty(name, operator, addrCty);
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
+
+      var col = LEVEL_COLORS[level];
+      var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
       var sm = L.circleMarker([lat, lon], {
-        radius: 7, color: '#1a73e8', weight: 2,
-        fillColor: '#4285f4', fillOpacity: 0.9,
+        radius: 7, color: col.stroke, weight: 2,
+        fillColor: col.fill, fillOpacity: 0.9,
         interactive: true, pane: 'schoolPane'
-      }).bindTooltip(name, {
+      }).bindTooltip(name + ' \u2022 ' + lvLabel, {
         permanent: false, direction: 'top', offset: [0, -10],
         className: 'dist-tip'
       });
-      // On desktop hover shows the tooltip automatically.
-      // On tablet/touch, hover never fires — use click/tap to open it explicitly.
       sm.on('click', function() { this.openTooltip(); });
-      sm.addTo(schoolGroup);
+      schoolData.push({ marker: sm, level: level, county: county });
     });
+    applySchoolFilter();
     hideSchoolToast();
-    btn.setAttribute('data-tip', schoolsVisible ? 'Hide Schools' : 'Show Schools');
+    btn.setAttribute('data-tip', 'Schools \u2014 tap to hide');
   })
   .catch(function() {
     schoolsLoaded = false;
@@ -1740,20 +1883,46 @@ function loadSchools() {
 
 window.toggleSchools = function() {
   schoolsVisible = !schoolsVisible;
-  var btn = document.getElementById('btn-schools');
+  var btn    = document.getElementById('btn-schools');
+  var panel  = document.getElementById('school-filter-panel');
   if (schoolsVisible) {
     loadSchools();
     schoolGroup.addTo(map);
     btn.classList.add('active');
-    btn.setAttribute('data-tip', 'Hide Schools 🍎');
+    panel.classList.add('open');
+    btn.setAttribute('data-tip', 'Hide Schools \uD83C\uDF4E');
     btn.setAttribute('aria-label', 'Hide Schools');
   } else {
     map.removeLayer(schoolGroup);
     btn.classList.remove('active');
-    btn.setAttribute('data-tip', 'Show Schools 🍎');
+    panel.classList.remove('open');
+    btn.setAttribute('data-tip', 'Show Schools \uD83C\uDF4E');
     btn.setAttribute('aria-label', 'Show Schools');
   }
 };
+
+// ── School filter panel interactions ─────────────────────────────────────────
+(function() {
+  document.querySelectorAll('.sfp-level').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var lv = this.dataset.level;
+      schoolFilter.levels[lv] = !schoolFilter.levels[lv];
+      this.classList.toggle('off', !schoolFilter.levels[lv]);
+      this.setAttribute('aria-pressed', schoolFilter.levels[lv] ? 'true' : 'false');
+      if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+    });
+  });
+  document.querySelectorAll('.sfp-county').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var co = this.dataset.county;
+      schoolFilter.counties[co] = !schoolFilter.counties[co];
+      this.classList.toggle('off', !schoolFilter.counties[co]);
+      this.setAttribute('aria-pressed', schoolFilter.counties[co] ? 'true' : 'false');
+      if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+    });
+  });
+})();
+
 
 // Mouse events
 mapEl.addEventListener('mousedown', e => { if (e.button !== 0) return; onPointerDown(e.clientX, e.clientY); });
