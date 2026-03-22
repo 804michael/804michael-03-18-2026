@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 22_00                                 ║
+  ║  MAP VERSION: 26.03.22 23_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -853,7 +853,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 22_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 23_30</p>
   </div>
 </div>
 
@@ -1625,11 +1625,14 @@ function endMove() {
 // Create a custom pane so school markers always render above drawn shapes
 map.createPane('schoolPane');
 map.getPane('schoolPane').style.zIndex = 450; // above overlayPane (400)
-const schoolGroup  = L.featureGroup({ pane: 'schoolPane' }).addTo(map);
+const schoolGroup  = L.featureGroup().addTo(map); // pane is set per-marker below
 let schoolsLoaded  = false;
 let schoolsVisible = false;
 
+// Name-based private-school filter (fallback when OSM tags are absent)
 const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep\s*school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary|private|religious/i;
+// School level keywords — only show schools that mention these in their name or tags
+const PUBLIC_LEVEL_RE = /elementary|middle\s*school|high\s*school|primary|intermediate|jr[\s.]?high/i;
 
 // ── School loading toast ──────────────────────────────────────────────────────
 const SCHOOL_MSGS = [
@@ -1671,21 +1674,24 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
-  const bbox = '37.2,-77.9,38.1,-77.0'; // tightened to Hanover/Henrico/Richmond area for faster mobile load
+  const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover / Henrico / Richmond / Chesterfield / Powhatan
   const query = '[out:json][timeout:90];(' +
-    // Explicitly tagged public schools
-    'node["amenity"="school"]["school:type"="public"]('+bbox+');' +
-    'way["amenity"="school"]["school:type"="public"]('+bbox+');' +
-    // Government operated
+    // Elementary (ISCED level 1)
+    'node["amenity"="school"]["isced:level"~"1"]('+bbox+');' +
+    'way["amenity"="school"]["isced:level"~"1"]('+bbox+');' +
+    // Middle / lower-secondary (ISCED level 2)
+    'node["amenity"="school"]["isced:level"~"2"]('+bbox+');' +
+    'way["amenity"="school"]["isced:level"~"2"]('+bbox+');' +
+    // High / upper-secondary (ISCED level 3)
+    'node["amenity"="school"]["isced:level"~"3"]('+bbox+');' +
+    'way["amenity"="school"]["isced:level"~"3"]('+bbox+');' +
+    // Government-operated schools (highly reliable — includes most VA county schools)
     'node["amenity"="school"]["operator:type"="government"]('+bbox+');' +
     'way["amenity"="school"]["operator:type"="government"]('+bbox+');' +
-    // County/city schools (operator contains "County" or "City" — very reliable)
+    // County/City public school operators
     'node["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
     'way["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
-    // All remaining schools not explicitly private/fee
-    'node["amenity"="school"]["school:type"!="private"]["fee"!="yes"]["access"!="private"]('+bbox+');' +
-    'way["amenity"="school"]["school:type"!="private"]["fee"!="yes"]["access"!="private"]('+bbox+');' +
-    ');out 300 center;'; // capped at 300 elements — keeps mobile load fast
+    ');out 400 center;'; // up from 300 — broader bbox needs more headroom
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -1699,8 +1705,15 @@ function loadSchools() {
       var lon  = el.lon  || (el.center && el.center.lon);
       var tags = el.tags || {};
       var name = tags.name || '';
+      var isced = tags['isced:level'] || '';       // OSM education level tag
+      var schoolLvl = tags['school:level'] || '';
       if (!lat || !lon || !name) return;
+      // Skip private-looking names
       if (PRIVATE_RE.test(name)) return;
+      // Only show if name OR OSM level tag clearly indicates K-12 level
+      // isced:level 1=primary, 2=lower-secondary, 3=upper-secondary
+      var hasLevelTag = /^[123]/.test(isced) || /elementary|primary|middle|secondary|high/i.test(schoolLvl);
+      if (!hasLevelTag && !PUBLIC_LEVEL_RE.test(name)) return;
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
