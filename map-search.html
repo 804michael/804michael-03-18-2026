@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 00_00                                 ║
+  ║  MAP VERSION: 26.03.22 01_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -244,9 +244,6 @@
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
-    @media(max-width:768px){
-      #map{ top:var(--chrome-h, 172px); }
-    }
 
     /* School loading overlay — full-map, big text, spinning pencil */
     .school-toast{
@@ -723,7 +720,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 00_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 01_00</p>
   </div>
 </div>
 
@@ -1038,10 +1035,33 @@ function containerPointToLL(clientX, clientY) {
 
 // ── Mode switching ────────────────────────────────────────────────────────────
 const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
+let prevDrawMode = null; // remembers last draw mode so pan toggle can restore it
 
 window.setMode = function(m) {
-  // Pan toggles: pressing it again while active reverts to freehand draw
-  if (m === 'pan' && mode === 'pan') { m = 'freehand'; }
+  // Pan is a true toggle: pressing it while active restores the previous draw mode
+  // (or clears all if there was none), rather than forcing freehand.
+  if (m === 'pan' && mode === 'pan') {
+    // Turn pan off — restore previous draw mode or go to no-tool state
+    const restore = prevDrawMode || null;
+    prevDrawMode  = null;
+    ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.remove('active'); });
+    if (restore) {
+      // Re-enter the previous mode silently (skip the pan-toggle check)
+      mode = restore;
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor = restore === 'erase' ? 'cell' : 'crosshair';
+      document.getElementById('btn-' + restore) && document.getElementById('btn-' + restore).classList.add('active');
+    } else {
+      mode = 'freehand';
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+      map.getContainer().style.cursor = 'crosshair';
+    }
+    return;
+  }
+  // Entering pan — remember what we're leaving
+  if (m === 'pan') { prevDrawMode = (mode !== 'pan') ? mode : prevDrawMode; }
   markDrawn(); // dismiss "Pick a tool" hint the moment any tool is selected
   // Remove glow from pencil + circle once user has made a choice
   document.getElementById('btn-freehand').classList.remove('hint-pulse');
