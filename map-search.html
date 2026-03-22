@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 15_00                                 ║
+  ║  MAP VERSION: 26.03.22 18_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -459,6 +459,79 @@
     .modal-status.success{color:#188038}
     .modal-status.error{color:#e53935}
     .btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+    /* ── Search panel — slides down from toolbar when search tool is active ── */
+    #search-panel{
+      position:fixed;
+      top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
+      left:0;right:0;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(0,0,0,.1);
+      padding:6px 12px;
+      display:flex;align-items:center;gap:8px;
+      z-index:799;
+      transform:translateY(-110%);
+      opacity:0;
+      transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .2s;
+      pointer-events:none;
+      box-shadow:0 4px 16px rgba(0,0,0,.08);
+    }
+    #search-panel.open{
+      transform:translateY(0);
+      opacity:1;
+      pointer-events:auto;
+    }
+    #search-panel .search-wrap{flex:1;max-width:480px}
+    .search-panel-close{
+      width:32px;height:32px;flex-shrink:0;
+      background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.1);
+      border-radius:7px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      color:var(--gray-muted);transition:background .12s,color .12s;
+    }
+    .search-panel-close:hover{background:rgba(0,0,0,.12);color:var(--black)}
+
+    /* ── Floating draggable scale bar ── */
+    .map-scale{
+      position:absolute;
+      bottom:36px;right:14px;
+      z-index:490;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+      border-radius:8px;
+      padding:5px 10px 5px;
+      cursor:grab;
+      user-select:none;-webkit-user-select:none;
+      touch-action:none;
+      box-shadow:0 2px 10px rgba(0,0,0,.15);
+      border:1px solid rgba(0,0,0,.12);
+      min-width:80px;max-width:160px;
+      transition:box-shadow .12s;
+    }
+    .map-scale:active{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+    .map-scale-bar{
+      height:4px;
+      background:var(--black);
+      border-radius:1px;
+      border-left:2.5px solid var(--black);
+      border-right:2.5px solid var(--black);
+      margin-bottom:3px;
+      transition:width .2s ease;
+    }
+    .map-scale-label{
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;
+      font-size:.68rem;
+      letter-spacing:.08em;
+      text-align:center;
+      color:var(--black);
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    @media(max-width:768px){
+      .map-scale{bottom:52px;right:10px;}
+    }
   </style>
 </head>
 <body>
@@ -561,25 +634,7 @@
 <div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
-    <!-- ① Search — leftmost so dropdown doesn't get buried by mobile keyboard -->
-    <div class="search-group">
-      <div class="search-wrap" id="search-wrap">
-        <input type="text" class="search-input" id="search-input"
-               placeholder="Search address or place…"
-               autocomplete="off" autocorrect="off" spellcheck="false"
-               aria-label="Search address — drop a pin on an important location" />
-        <button class="search-clear" id="search-clear" aria-label="Clear" tabindex="-1">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="search-results" id="search-results" role="listbox"></div>
-      </div>
-      <div class="search-spinner" id="search-spinner"></div>
-      <button class="search-btn" id="search-btn" aria-label="Search address" data-tip="Search Location to Pin">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-    </div>
-
-    <!-- ② Colors | Pan | Move map -->
+    <!-- ① Colors -->
     <div class="color-swatches" style="flex-shrink:0">
       <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
@@ -588,13 +643,19 @@
       <div class="color-swatch"        style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue"   onclick="setColor(this)"></div>
     </div>
 
-    <!-- ③ Draw tools | Schools -->
+    <!-- ② Draw tools | Pin | Search | Schools | Home -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
       <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
       </button>
       <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
+        <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address — find and pin a location">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it" aria-label="Move — drag a shape to reposition it">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
@@ -627,7 +688,7 @@
       </button>
     </div>
 
-    <!-- ④ Pan | Zoom | Undo | Redo | Trash -->
+    <!-- ③ Pan | Zoom | Undo | Redo | Trash -->
     <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
       <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
@@ -652,6 +713,24 @@
   </div>
 </div>
 
+<!-- SEARCH PANEL — slides down from toolbar when search tool is active -->
+<div id="search-panel" role="search" aria-label="Address search">
+  <div class="search-wrap" id="search-wrap">
+    <input type="text" class="search-input" id="search-input"
+           placeholder="Search address or place…"
+           autocomplete="off" autocorrect="off" spellcheck="false"
+           aria-label="Search address — drop a pin on an important location" />
+    <button class="search-clear" id="search-clear" aria-label="Clear search" tabindex="-1">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="search-results" id="search-results" role="listbox"></div>
+  </div>
+  <div class="search-spinner" id="search-spinner"></div>
+  <button class="search-panel-close" id="search-panel-close" aria-label="Close search" data-tip="Close search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
 <!-- MAP -->
 <div class="map-wrap" id="map-wrap">
   <div id="map">
@@ -659,9 +738,14 @@
       <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
       <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want —<br>maybe favs in 🟢<br>or 📍 pins for work</div>
     </div>
+    <!-- Draggable scale bar -->
+    <div id="map-scale" class="map-scale" title="Drag to reposition">
+      <div class="map-scale-bar"></div>
+      <div class="map-scale-label">…</div>
+    </div>
     <div class="school-toast" id="school-toast">
       <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
-      <span class="school-toast-msg" id="school-toast-msg">One moment, loading schools with smiling students&#x2026;</span>
+      <span class="school-toast-msg" id="school-toast-msg">One moment, finding schools with smiling students&#x2026;</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.72rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase">Loading school locations<span class="anim-ellipsis"></span></span>
     </div>
   </div>
@@ -726,7 +810,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 15_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 18_00</p>
   </div>
 </div>
 
@@ -1040,7 +1124,7 @@ function containerPointToLL(clientX, clientY) {
 }
 
 // ── Mode switching ────────────────────────────────────────────────────────────
-const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move'];
+const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move', 'pin', 'search'];
 
 // Shared helper: deactivate all tools, enable map drag, reset cursor
 function deactivateAllTools() {
@@ -1051,6 +1135,7 @@ function deactivateAllTools() {
   map.dragging.enable();
   map.scrollWheelZoom.enable();
   map.getContainer().style.cursor = '';
+  hideSearchPanel();
 }
 
 window.setMode = function(m) {
@@ -1069,18 +1154,25 @@ window.setMode = function(m) {
   if (mode === 'move') detachMoveListeners();
   mode = m;
   ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.toggle('active', t === m); });
-  if (m === 'pan') {
+  if (m === 'pan' || m === 'search') {
     map.dragging.enable();
     map.scrollWheelZoom.enable();
-    map.getContainer().style.cursor = 'grab';
+    map.getContainer().style.cursor = m === 'pan' ? 'grab' : '';
   } else if (m === 'move') {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
     map.getContainer().style.cursor = 'default';
   } else {
+    // freehand, circle, erase, pin
     map.dragging.disable();
     map.scrollWheelZoom.disable();
     map.getContainer().style.cursor = m === 'erase' ? 'cell' : 'crosshair';
+  }
+  // Show or hide the search panel depending on mode
+  if (m === 'search') {
+    showSearchPanel();
+  } else {
+    hideSearchPanel();
   }
 };
 
@@ -1156,8 +1248,13 @@ const mapEl = map.getContainer();
 let isErasing = false;
 
 function onPointerDown(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   const ll = containerPointToLL(clientX, clientY);
+  if (mode === 'pin') {
+    // Drop a pin where user taps — open label sheet
+    dropPin(ll.lat, ll.lng, '');
+    return;
+  }
   if (mode === 'freehand') {
     polyLatLngs     = [ll];
     drawingPolyline = L.polyline([ll], { ...shapeStyle(), fill: false }).addTo(map);
@@ -1171,7 +1268,7 @@ function onPointerDown(clientX, clientY) {
 }
 
 function onPointerMove(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand' && drawingPolyline) {
     polyLatLngs.push(ll);
@@ -1188,7 +1285,7 @@ function onPointerMove(clientX, clientY) {
 }
 
 function onPointerUp(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   isErasing = false;
   if (mode === 'move') { endMove(); return; }
   if (mode === 'freehand' && drawingPolyline) {
@@ -1398,11 +1495,21 @@ const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|prep
 
 // ── School loading toast ──────────────────────────────────────────────────────
 const SCHOOL_MSGS = [
-  'One moment, loading schools with smiling students\u2026',
-  'Bribing the school bus driver for GPS coordinates\u2026',
+  'One moment, finding schools with smiling students\u2026',
   'Checking if the principal is in a good mood today\u2026',
   'Convincing the lunch lady to give us a larger dessert\u2026',
   'Making sure recess is over before we count heads\u2026',
+  'Making sure the coast is clear of administrators\u2026',
+  'Rounding up all the missing crayons before we proceed\u2026',
+  'Waiting for the Wi-Fi to finish its multiplication tables\u2026',
+  'Sharpening every #2 pencil in the class jar\u2026',
+  'Checking the milk crates to make sure chocolate is still available\u2026',
+  'Looking to see what\u2019s on the lunch menu today\u2026',
+  'Hiding the red pens so the teacher can\u2019t grade us yet\u2026',
+  'Making sure everyone\u2019s phone is turned off & in their backpack\u2026',
+  'Waking up the sleeping class pet for moral support\u2026',
+  'Double-checking all field trip permission slips are signed\u2026',
+  'Convincing the clock that it\u2019s not time for the bell\u2026 yet\u2026',
 ];
 let _schoolToastTimer = null;
 
@@ -1528,7 +1635,7 @@ mapEl.addEventListener('mouseleave', () => {
 
 // Touch events — preventDefault stops the page scrolling while drawing
 mapEl.addEventListener('touchstart', e => {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   // Two or more fingers = pinch/zoom — cancel any in-progress drawing and ignore
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -1537,7 +1644,7 @@ mapEl.addEventListener('touchstart', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchmove', e => {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   // If a second finger joins mid-stroke, abort the drawing
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -1546,7 +1653,7 @@ mapEl.addEventListener('touchmove', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchend', e => {
-  if (mode === 'pan' || mode === 'none') return;
+  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   e.preventDefault();
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
@@ -1563,12 +1670,12 @@ mapEl.addEventListener('touchcancel', () => {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoLast(); }
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); redoLast(); }
-  if (e.key === 'Escape') { cancelInProgress(); closeSendModal(); }
+  if (e.key === 'Escape') { cancelInProgress(); closeSendModal(); if (mode === 'search') deactivateAllTools(); }
 });
 
 // ── Address search (Nominatim / OpenStreetMap) ────────────────────────────────
 const searchInput   = document.getElementById('search-input');
-const searchBtn     = document.getElementById('search-btn');
+// search-btn replaced by tool-btn btn-search (searchPanel close wired below)
 const searchResults = document.getElementById('search-results');
 const searchClear   = document.getElementById('search-clear');
 const searchSpinner = document.getElementById('search-spinner');
@@ -1634,7 +1741,9 @@ async function doSearch(query) {
     // Build viewbox from current map bounds so results are biased to what's visible
     var b = map.getBounds();
     var vb = b.getWest()+','+b.getNorth()+','+b.getEast()+','+b.getSouth();
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=8&addressdetails=1&countrycodes=us&q=' + encodeURIComponent(query) + '&viewbox=' + vb + '&bounded=0';
+    // Bound results to the visible map when zoomed in tightly; open worldwide at low zoom
+    var bounded = map.getZoom() >= 12 ? '1' : '0';
+    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=10&addressdetails=1&countrycodes=us&q=' + encodeURIComponent(query) + '&viewbox=' + vb + '&bounded=' + bounded;
     const res  = await fetch(url, { headers: { 'Accept-Language': 'en-US,en', 'User-Agent': '804Michael-MapSearch/1.0' } });
     const data = await res.json();
     const places = data.map(r => {
@@ -1664,7 +1773,13 @@ function selectResult(i) {
   searchInput.value = p.name;
   searchClear.classList.add('visible');
   map.setView([p.lat, p.lng], 14, { animate: true });
-  setTimeout(function() { dropPin(p.lat, p.lng, p.name); }, 350);
+  setTimeout(function() {
+    dropPin(p.lat, p.lng, p.name);
+    // Deactivate search tool after pin is placed so the map is immediately usable
+    deactivateAllTools();
+    // Clear the input ready for next search
+    setTimeout(function() { searchInput.value = ''; searchClear.classList.remove('visible'); }, 400);
+  }, 350);
 }
 
 function dropPin(lat, lng, suggestedLabel) {
@@ -1764,12 +1879,28 @@ function dropPin(lat, lng, suggestedLabel) {
   backdrop.onclick = function() { applyLabel(inp.value); };
 }
 
+// ── Search panel show/hide ────────────────────────────────────────────────────
+function showSearchPanel() {
+  var panel = document.getElementById('search-panel');
+  panel.classList.add('open');
+  setTimeout(function() {
+    document.getElementById('search-input').focus();
+  }, 220); // wait for slide-in animation
+}
+
+function hideSearchPanel() {
+  var panel = document.getElementById('search-panel');
+  panel.classList.remove('open');
+  closeResults();
+}
+
 searchInput.addEventListener('input', function() {
   var q = searchInput.value.trim();
   searchClear.classList.toggle('visible', q.length > 0);
   clearTimeout(searchDebounce);
-  if (q.length < 3) { closeResults(); return; }
-  searchDebounce = setTimeout(function() { doSearch(q); }, 400);
+  if (q.length < 2) { closeResults(); return; }
+  // Shorter debounce for partial entry feel; longer URL means more API calls so keep reasonable
+  searchDebounce = setTimeout(function() { doSearch(q); }, 300);
 });
 
 searchInput.addEventListener('keydown', function(e) {
@@ -1785,10 +1916,11 @@ searchInput.addEventListener('keydown', function(e) {
     else { doSearch(searchInput.value); }
   } else if (e.key === 'Escape') {
     closeResults();
+    deactivateAllTools();
   }
 });
 
-searchBtn.addEventListener('click', function() { doSearch(searchInput.value); });
+document.getElementById('search-panel-close').addEventListener('click', function() { deactivateAllTools(); });
 
 searchClear.addEventListener('click', function() {
   searchInput.value = '';
@@ -2203,6 +2335,74 @@ if (window.innerWidth <= 768) {
 // Run layout measurement on load and whenever anything might shift
 window.addEventListener('load', function() { setTimeout(updateLayout, 100); });
 window.addEventListener('resize', updateLayout);
+
+// ── Draggable floating scale bar ──────────────────────────────────────────────
+(function() {
+  var scaleEl  = document.getElementById('map-scale');
+  var barEl    = scaleEl.querySelector('.map-scale-bar');
+  var labelEl  = scaleEl.querySelector('.map-scale-label');
+
+  // Nice scale steps in miles: try to hit a round number
+  var STEPS_MI = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 25, 50, 100];
+  var MAX_PX = 120, MIN_PX = 50;
+
+  function updateScale() {
+    var center = map.getCenter();
+    // How many meters per pixel at this zoom & latitude
+    var metersPerPx = (156543.03392 * Math.cos(center.lat * Math.PI / 180)) / Math.pow(2, map.getZoom());
+    // Find the nicest step that fits between MIN_PX and MAX_PX pixels
+    var best = STEPS_MI[0], bestPx = 0;
+    for (var i = 0; i < STEPS_MI.length; i++) {
+      var mi  = STEPS_MI[i];
+      var m   = mi * 1609.344;
+      var px  = m / metersPerPx;
+      if (px >= MIN_PX && px <= MAX_PX) { best = mi; bestPx = px; }
+      else if (px > MAX_PX) break;
+    }
+    if (bestPx < 1) bestPx = MIN_PX;
+    barEl.style.width = Math.round(bestPx) + 'px';
+    labelEl.textContent = best < 1 ? Math.round(best * 5280) + ' ft' : best + ' mi';
+  }
+
+  map.on('zoomend moveend zoom move', updateScale);
+  updateScale();
+
+  // Drag support (mouse + touch)
+  var dragging = false, startX, startY, origLeft, origBottom;
+
+  function dragStart(x, y) {
+    dragging = true;
+    startX = x; startY = y;
+    var r = scaleEl.getBoundingClientRect();
+    var pr = scaleEl.parentElement.getBoundingClientRect();
+    origLeft   = r.left - pr.left;
+    origBottom = pr.bottom - r.bottom;
+    scaleEl.style.right  = 'auto';
+    scaleEl.style.left   = origLeft + 'px';
+    scaleEl.style.bottom = origBottom + 'px';
+    scaleEl.style.top    = 'auto';
+  }
+
+  function dragMove(x, y) {
+    if (!dragging) return;
+    var dx = x - startX, dy = y - startY;
+    var pr = scaleEl.parentElement.getBoundingClientRect();
+    var newLeft   = Math.max(4, Math.min(origLeft + dx, pr.width - scaleEl.offsetWidth - 4));
+    var newBottom = Math.max(4, Math.min(origBottom - dy, pr.height - scaleEl.offsetHeight - 4));
+    scaleEl.style.left   = newLeft + 'px';
+    scaleEl.style.bottom = newBottom + 'px';
+  }
+
+  function dragEnd() { dragging = false; }
+
+  scaleEl.addEventListener('mousedown',  function(e) { e.preventDefault(); dragStart(e.clientX, e.clientY); });
+  window.addEventListener('mousemove',   function(e) { dragMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup',     dragEnd);
+
+  scaleEl.addEventListener('touchstart', function(e) { var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: true });
+  window.addEventListener('touchmove',   function(e) { if (!dragging) return; var t = e.touches[0]; dragMove(t.clientX, t.clientY); }, { passive: true });
+  window.addEventListener('touchend',    dragEnd);
+})();
 </script>
 <!-- PIN BOTTOM SHEET -->
 <div id="pin-sheet-backdrop"></div>
