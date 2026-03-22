@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 22_00                                 ║
+  ║  MAP VERSION: 26.03.24 10_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -658,6 +658,21 @@
       user-select:none;-webkit-user-select:none;
     }
     .sfp-more:hover{background:rgba(255,255,255,.85)}
+
+    /* Collapse handle button on the filter panel */
+    #sfp-collapse-btn{
+      position:absolute;right:8px;top:50%;transform:translateY(-50%);
+      background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.15);
+      border-radius:6px;width:22px;height:22px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      padding:0;transition:background .12s;flex-shrink:0;
+    }
+    #sfp-collapse-btn:hover{background:rgba(255,255,255,.95)}
+    /* Panel needs relative positioning for the absolute collapse btn */
+    #school-filter-panel{position:fixed;} /* already set, but ensure */
+    /* Collapsed state: panel shows only the handle strip */
+    #school-filter-panel.sfp-collapsed{padding:2px 36px 2px 12px}
+    #school-filter-panel.sfp-collapsed #sfp-filters-row{display:none}
   </style>
 </head>
 <body>
@@ -847,7 +862,11 @@
 
 <!-- SCHOOL FILTER PANEL — slides down when schools are active -->
 <div id="school-filter-panel" aria-label="School filters">
-  <div class="sfp-row">
+  <!-- Collapse handle — hides filter row without turning off schools -->
+  <button id="sfp-collapse-btn" aria-label="Collapse school filters" title="Collapse filters" onclick="toggleSfpCollapse()">
+    <svg id="sfp-collapse-chevron" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,8 6,4 10,8"/></svg>
+  </button>
+  <div class="sfp-row" id="sfp-filters-row">
     <span class="sfp-label">Level</span>
     <!-- Level toggles: solid dot=on, outline=off -->
     <button class="sfp-level" id="sfp-elem" data-level="elementary" aria-pressed="true">
@@ -982,7 +1001,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 22_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 10_00</p>
   </div>
 </div>
 
@@ -1889,7 +1908,12 @@ function hideSchoolToast() {
 }
 
 function loadSchools() {
-  if (schoolsLoaded) return;
+  if (schoolsLoaded) {
+    // Already loaded — open the filter panel immediately
+    document.getElementById('school-filter-panel').classList.add('open');
+    document.getElementById('btn-schools').setAttribute('data-tip', 'Schools — tap to hide');
+    return;
+  }
   schoolsLoaded = true;
 
   var btn = document.getElementById('btn-schools');
@@ -1897,23 +1921,9 @@ function loadSchools() {
   showSchoolToast();
 
   const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover/Henrico/Richmond/Chesterfield/Powhatan/Goochland/NewKent
-  // Broad query — client-side JS does all the filtering.
-  // We cast a wide net (any school in bbox without "fee=yes" or "access=private")
-  // then rely on detectSchoolLevel()+PRIVATE_RE to accept only public K-12 schools.
-  const query = '[out:json][timeout:120];(' +
-    // ISCED-tagged (most reliable)
-    'node["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
-    'way["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
-    // Government-operated
-    'node["amenity"="school"]["operator:type"="government"]('+bbox+');' +
-    'way["amenity"="school"]["operator:type"="government"]('+bbox+');' +
-    // County/City/Public operator string
-    'node["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
-    'way["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
-    // Broad fallback: name contains Elementary/Middle/High — catches untagged VA county schools
-    'node["amenity"="school"]["name"~"Elementary|Middle School|High School",i]('+bbox+');' +
-    'way["amenity"="school"]["name"~"Elementary|Middle School|High School",i]('+bbox+');' +
-    ');out 800 center;'; // generous cap — duplicates removed by seen-key dedup
+  // Fetch ALL amenity=school in bbox — client-side JS handles all filtering.
+  // Simpler query = faster, more reliable, no regex URL-encoding issues.
+  const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -1974,13 +1984,13 @@ window.toggleSchools = function() {
   var panel    = document.getElementById('school-filter-panel');
   var chevron  = document.getElementById('schools-chevron');
   if (schoolsVisible) {
-    loadSchools();
     schoolGroup.addTo(map);
     btn.classList.add('active');
-    panel.classList.add('open');
+    // Filter panel opens after loadSchools completes (not immediately)
     if (chevron) chevron.style.transform = 'rotate(180deg)';
-    btn.setAttribute('data-tip', 'Hide Schools \uD83C\uDF4E');
+    btn.setAttribute('data-tip', 'Loading schools\u2026');
     btn.setAttribute('aria-label', 'Hide Schools');
+    loadSchools(); // panel.open() called inside loadSchools on completion
   } else {
     map.removeLayer(schoolGroup);
     btn.classList.remove('active');
@@ -1991,6 +2001,16 @@ window.toggleSchools = function() {
   }
 };
 
+
+
+// ── School filter panel collapse toggle ──────────────────────────────────────
+window.toggleSfpCollapse = function() {
+  var panel   = document.getElementById('school-filter-panel');
+  var chevron = document.getElementById('sfp-collapse-chevron');
+  var collapsed = panel.classList.toggle('sfp-collapsed');
+  // Point up when expanded, down when collapsed
+  if (chevron) chevron.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+};
 
 // ── School filter panel interactions ─────────────────────────────────────────
 (function() {
@@ -2988,4 +3008,51 @@ window.addEventListener('resize', updateLayout);
 </div>
 
 </body>
+
+<!--
+  ════════════════════════════════════════════════════════════════
+  🤏 PINCH-TO-DRAW CIRCLE — Reference Note
+  ════════════════════════════════════════════════════════════════
+
+  WHAT IT IS:
+  When the Circle tool is selected on a phone or tablet, placing
+  two fingers on the map and spreading them apart draws a circle.
+  The center is the midpoint between the two fingers.
+  The radius is half the distance between them.
+  Lift either finger to commit the circle.
+
+  WHY IT'S BETTER ON TOUCH:
+  One-finger drag-from-center works fine with a stylus/mouse but
+  on mobile your finger covers the center point the whole time.
+  Two-finger pinch naturally shows you center + radius simultaneously.
+
+  DOES IT BREAK NORMAL PINCH-ZOOM?
+  No. The two-finger intercept ONLY fires when mode === 'circle'.
+  In all other modes, two fingers fall through to Leaflet's native
+  pinch-zoom — completely untouched.
+
+  IMPLEMENTATION SUMMARY:
+  - State variable:   let pinchDrawing = false;
+  - Helpers:          touchMidpointLL(t1, t2)   → center LatLng
+                      touchSpreadMeters(t1, t2)  → radius in meters
+  - Draw lifecycle:   startPinchCircle(t1, t2)   → creates preview
+                      updatePinchCircle(t1, t2)  → live radius update
+                      commitPinchCircle()        → commits on finger-lift
+  - touchstart gate:  if (mode==='circle' && touches.length===2)
+                        → preventDefault, startPinchCircle
+                      else → cancelInProgress, let Leaflet zoom
+  - touchmove gate:   if (pinchDrawing && touches >= 2)
+                        → preventDefault, updatePinchCircle
+  - touchend:         if (pinchDrawing) → commitPinchCircle
+  - touchcancel:      cancelInProgress() also resets pinchDrawing
+
+  FIRST-USE HINT:
+  On first activation of circle tool on a touch device, a brief
+  overlay appears for 2.8s: "☝️ Drag from center / 🤏 Pinch 2 fingers"
+  Controlled by window._circleTipShown flag (once per session).
+
+  CIRCLE BUTTON TOOLTIP:
+  "Circle — drag from center, or pinch with 2 fingers"
+  ════════════════════════════════════════════════════════════════
+-->
 </html>
