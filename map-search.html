@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 16_00                                 ║
+  ║  MAP VERSION: 26.03.23 20_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -617,10 +617,20 @@
     .sfp-level.off{background:rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
     .sfp-dot{
       width:13px;height:13px;border-radius:50%;flex-shrink:0;
-      border:2px solid rgba(0,0,0,.2);
+      border:2.5px solid rgba(0,0,0,.15);
       transition:background .15s,border-color .15s;
+      /* inline style="background:#COLOR" provides fill when ON */
     }
-    .sfp-level.off .sfp-dot{background:transparent !important;border-color:rgba(255,255,255,.4)}
+    /* OFF: outline only — color comes from the button's own border */
+    .sfp-level.off .sfp-dot{
+      background:transparent !important;
+      border-width:2.5px;
+      border-style:solid;
+      /* border-color is set per-level below */
+    }
+    #sfp-elem.off .sfp-dot{border-color:#4285f4}
+    #sfp-mid.off  .sfp-dot{border-color:#f29900}
+    #sfp-high.off .sfp-dot{border-color:#188038}
 
     /* County chip — same tool-btn style */
     .sfp-county{
@@ -788,13 +798,14 @@
     <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
-    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
-      <svg width="23" height="18" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tool-btn tool-btn--schools" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="width:auto;padding:0 8px;gap:3px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">
+      <svg width="20" height="16" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
         <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M16 7C16 5 16 4 18 3"/>
         <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
       </svg>
+      <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
     </button>
     <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -975,7 +986,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 16_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 20_00</p>
   </div>
 </div>
 
@@ -1782,8 +1793,15 @@ function endMove() {
 }
 // ── Schools — covers Hanover, Henrico, Richmond, Chesterfield, and surrounds ──
 // Custom pane: school markers render above drawn shapes (overlayPane z-index 400)
-map.createPane('schoolPane');
-map.getPane('schoolPane').style.zIndex = 450;
+// Three sub-panes for level-based stacking: elementary < middle < high
+map.createPane('schoolPaneElem'); map.getPane('schoolPaneElem').style.zIndex = 451;
+map.createPane('schoolPaneMid');  map.getPane('schoolPaneMid').style.zIndex  = 452;
+map.createPane('schoolPaneHigh'); map.getPane('schoolPaneHigh').style.zIndex = 453;
+// Pointer events must be enabled on each sub-pane
+['schoolPaneElem','schoolPaneMid','schoolPaneHigh'].forEach(function(p) {
+  map.getPane(p).style.pointerEvents = 'auto';
+});
+var SCHOOL_PANES = { elementary:'schoolPaneElem', middle:'schoolPaneMid', high:'schoolPaneHigh' };
 const schoolGroup  = L.featureGroup().addTo(map);
 let schoolsLoaded  = false;
 let schoolsVisible = false;
@@ -1883,14 +1901,23 @@ function loadSchools() {
   showSchoolToast();
 
   const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover/Henrico/Richmond/Chesterfield/Powhatan/Goochland/NewKent
-  const query = '[out:json][timeout:90];(' +
+  // Broad query — client-side JS does all the filtering.
+  // We cast a wide net (any school in bbox without "fee=yes" or "access=private")
+  // then rely on detectSchoolLevel()+PRIVATE_RE to accept only public K-12 schools.
+  const query = '[out:json][timeout:120];(' +
+    // ISCED-tagged (most reliable)
     'node["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
     'way["amenity"="school"]["isced:level"~"1|2|3"]('+bbox+');' +
+    // Government-operated
     'node["amenity"="school"]["operator:type"="government"]('+bbox+');' +
     'way["amenity"="school"]["operator:type"="government"]('+bbox+');' +
+    // County/City/Public operator string
     'node["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
     'way["amenity"="school"]["operator"~"County|City|Public",i]('+bbox+');' +
-    ');out 500 center;';
+    // Broad fallback: name contains Elementary/Middle/High — catches untagged VA county schools
+    'node["amenity"="school"]["name"~"Elementary|Middle School|High School",i]('+bbox+');' +
+    'way["amenity"="school"]["name"~"Elementary|Middle School|High School",i]('+bbox+');' +
+    ');out 800 center;'; // generous cap — duplicates removed by seen-key dedup
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -1925,7 +1952,7 @@ function loadSchools() {
       var sm = L.circleMarker([lat, lon], {
         radius: 7, color: col.stroke, weight: 2,
         fillColor: col.fill, fillOpacity: 0.9,
-        interactive: true, pane: 'schoolPane'
+        interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
       }).bindTooltip(name + ' \u2022 ' + lvLabel, {
         permanent: false, direction: 'top', offset: [0, -10],
         className: 'dist-tip'
@@ -1947,23 +1974,27 @@ function loadSchools() {
 
 window.toggleSchools = function() {
   schoolsVisible = !schoolsVisible;
-  var btn    = document.getElementById('btn-schools');
-  var panel  = document.getElementById('school-filter-panel');
+  var btn      = document.getElementById('btn-schools');
+  var panel    = document.getElementById('school-filter-panel');
+  var chevron  = document.getElementById('schools-chevron');
   if (schoolsVisible) {
     loadSchools();
     schoolGroup.addTo(map);
     btn.classList.add('active');
     panel.classList.add('open');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
     btn.setAttribute('data-tip', 'Hide Schools \uD83C\uDF4E');
     btn.setAttribute('aria-label', 'Hide Schools');
   } else {
     map.removeLayer(schoolGroup);
     btn.classList.remove('active');
     panel.classList.remove('open');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
     btn.setAttribute('data-tip', 'Show Schools \uD83C\uDF4E');
     btn.setAttribute('aria-label', 'Show Schools');
   }
 };
+
 
 // ── School filter panel interactions ─────────────────────────────────────────
 (function() {
