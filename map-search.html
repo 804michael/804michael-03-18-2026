@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 18_00                                 ║
+  ║  MAP VERSION: 26.03.22 22_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -190,6 +190,8 @@
     .tool-btn svg{pointer-events:none}
     .tool-btn:disabled{opacity:.28;cursor:not-allowed}
     .tool-btn:disabled:hover{background:transparent;border-color:transparent}
+    /* thin vertical separator between toolbar groups */
+    .tbsep{display:inline-block;width:1px;height:24px;background:rgba(0,0,0,.15);margin:0 3px;flex-shrink:0;align-self:center}
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
@@ -395,7 +397,7 @@
     .search-btn svg{pointer-events:none}
     .search-results{position:fixed;background:var(--white);border:2px solid var(--gray-mid);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden;z-index:9001;display:none}
     .search-results.open{display:block}
-    .search-result-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--gray-light);font-size:.86rem;line-height:1.35;transition:background .12s}
+    .search-result-item{padding:14px 14px;cursor:pointer;border-bottom:1px solid var(--gray-light);font-size:.86rem;line-height:1.35;transition:background .12s}
     .search-result-item:last-child{border-bottom:none}
     .search-result-item:hover,.search-result-item.focused{background:var(--gray-light)}
     .search-result-name{font-weight:600;color:var(--black)}
@@ -465,9 +467,9 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(255,255,255,.96);
-      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-      border-bottom:1px solid rgba(0,0,0,.1);
+      background:rgba(255,255,255,.18);
+      backdrop-filter:blur(6px) saturate(2.2);-webkit-backdrop-filter:blur(6px) saturate(2.2);
+      border-bottom:1px solid rgba(255,255,255,.25);
       padding:6px 12px;
       display:flex;align-items:center;gap:8px;
       z-index:799;
@@ -475,7 +477,7 @@
       opacity:0;
       transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .2s;
       pointer-events:none;
-      box-shadow:0 4px 16px rgba(0,0,0,.08);
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
     }
     #search-panel.open{
       transform:translateY(0);
@@ -532,6 +534,41 @@
     @media(max-width:768px){
       .map-scale{bottom:52px;right:10px;}
     }
+
+    /* ── Shape color picker — floats over map when a shape is selected ── */
+    #shape-color-picker{
+      position:absolute;
+      z-index:700;
+      background:rgba(17,17,17,.92);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      border-radius:12px;
+      padding:8px 10px;
+      display:none;
+      align-items:center;
+      gap:6px;
+      pointer-events:auto;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
+      transform:translate(-50%, -110%);
+      white-space:nowrap;
+    }
+    #shape-color-picker.visible{ display:flex; }
+    #shape-color-picker .scp-swatch{
+      width:24px;height:24px;border-radius:50%;cursor:pointer;
+      border:2.5px solid transparent;flex-shrink:0;
+      transition:transform .12s,border-color .12s;
+    }
+    #shape-color-picker .scp-swatch:hover{ transform:scale(1.25); }
+    #shape-color-picker .scp-swatch.scp-active{ border-color:rgba(255,255,255,.9); transform:scale(1.2); }
+    #shape-color-picker .scp-swatch[data-col="#111111"].scp-active{ border-color:#aaa; }
+    #shape-color-picker .scp-close{
+      width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.15);
+      border:none;cursor:pointer;color:rgba(255,255,255,.7);
+      display:flex;align-items:center;justify-content:center;font-size:.8rem;
+      flex-shrink:0;margin-left:2px;transition:background .12s;
+    }
+    #shape-color-picker .scp-close:hover{ background:rgba(255,255,255,.3); }
+    /* selected shape highlight ring */
+    .shape-selected{ filter:drop-shadow(0 0 4px rgba(255,255,255,.95)); }
   </style>
 </head>
 <body>
@@ -634,7 +671,7 @@
 <div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
-    <!-- ① Colors -->
+    <!-- ① Colors — always stay together as one flex unit -->
     <div class="color-swatches" style="flex-shrink:0">
       <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
@@ -642,73 +679,70 @@
       <div class="color-swatch"        style="background:#111111" data-color="#111111" data-tip="Black"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#1a73e8" data-color="#1a73e8" data-tip="Blue"   onclick="setColor(this)"></div>
     </div>
+    <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ② Draw tools | Pin | Search | Schools | Home -->
-    <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
-      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
-        <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address — find and pin a location">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it" aria-label="Move — drag a shape to reposition it">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
-        <svg width="23" height="18" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- apple body: wider, rounder -->
-          <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
-          <!-- stem -->
-          <path d="M16 7C16 5 16 4 18 3"/>
-          <!-- leaf -->
-          <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
-        </svg>
-      </button>
-      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- outer ring -->
-          <circle cx="12" cy="12" r="8"/>
-          <!-- inner dot -->
-          <circle cx="12" cy="12" r="2.5"/>
-          <!-- crosshair lines extending beyond outer ring -->
-          <line x1="12" y1="1" x2="12" y2="5"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="1" y1="12" x2="5" y2="12"/>
-          <line x1="19" y1="12" x2="23" y2="12"/>
-        </svg>
-      </button>
-    </div>
+    <!-- ② Draw + pin + search tools — each button wraps individually -->
+    <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
+      <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address — find and pin a location">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move — drag a shape to reposition it" aria-label="Move — drag a shape to reposition it">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools">
+      <svg width="23" height="18" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- apple body -->
+        <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
+        <!-- dimple at bottom -->
+        <path d="M13.5 22.3 Q16 21 18.5 22.3" stroke-width="1.5" fill="none"/>
+        <!-- stem -->
+        <path d="M16 7C16 5 16 4 18 3"/>
+        <!-- leaf -->
+        <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
+      </svg>
+    </button>
+    <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8"/>
+        <circle cx="12" cy="12" r="2.5"/>
+        <line x1="12" y1="1" x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="1" y1="12" x2="5" y2="12"/>
+        <line x1="19" y1="12" x2="23" y2="12"/>
+      </svg>
+    </button>
+    <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ③ Pan | Zoom | Undo | Redo | Trash -->
-    <div style="display:flex;align-items:center;gap:3px;flex-shrink:0">
-      <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo" aria-label="Undo" disabled>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo" aria-label="Redo" disabled>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings" aria-label="Clear all drawings">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
-    </div>
+    <!-- ③ Pan | Zoom | Undo | Redo | Trash — each wraps individually -->
+    <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo  ⌘Z / Ctrl+Z" aria-label="Undo" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-redo" onclick="redoLast()" data-tip="Redo  ⌘⇧Z / Ctrl+Y" aria-label="Redo" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+    </button>
+    <button class="tool-btn" id="btn-clear" onclick="confirmClearAll()" data-tip="Clear all drawings" aria-label="Clear all drawings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    </button>
 
   </div>
 </div>
@@ -742,6 +776,15 @@
     <div id="map-scale" class="map-scale" title="Drag to reposition">
       <div class="map-scale-bar"></div>
       <div class="map-scale-label">…</div>
+    </div>
+    <!-- Floating color picker for selected shape (Move tool tap) -->
+    <div id="shape-color-picker" role="toolbar" aria-label="Change shape color">
+      <div class="scp-swatch scp-active" data-col="#188038" style="background:#188038" title="Green"></div>
+      <div class="scp-swatch" data-col="#f29900" style="background:#f29900" title="Yellow"></div>
+      <div class="scp-swatch" data-col="#DA291C" style="background:#DA291C" title="Red"></div>
+      <div class="scp-swatch" data-col="#111111" style="background:#111111" title="Black"></div>
+      <div class="scp-swatch" data-col="#1a73e8" style="background:#1a73e8" title="Blue"></div>
+      <button class="scp-close" id="scp-close" aria-label="Close">✕</button>
     </div>
     <div class="school-toast" id="school-toast">
       <span class="school-toast-pencil" aria-hidden="true">&#x270F;&#xFE0F;</span>
@@ -810,7 +853,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 18_00</p>
+    <p style="font-size:.975rem;color:rgba(0,0,0,.80);letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif;margin-top:6px">map version 26.03.22 22_00</p>
   </div>
 </div>
 
@@ -1044,6 +1087,7 @@ let drawingPolyline = null;
 let polyLatLngs     = [];
 let circleCenter    = null;
 let previewCircle   = null;
+let previewLine     = null;   // radius guide line during circle draw
 let distTooltip     = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -1111,6 +1155,7 @@ function clearDistTooltip() { if (distTooltip) { map.removeLayer(distTooltip); d
 function cancelInProgress() {
   if (drawingPolyline) { map.removeLayer(drawingPolyline); drawingPolyline = null; }
   if (previewCircle)   { map.removeLayer(previewCircle);   previewCircle   = null; }
+  if (previewLine)     { map.removeLayer(previewLine);     previewLine     = null; }
   clearDistTooltip();
   polyLatLngs  = [];
   circleCenter = null;
@@ -1136,6 +1181,7 @@ function deactivateAllTools() {
   map.scrollWheelZoom.enable();
   map.getContainer().style.cursor = '';
   hideSearchPanel();
+  deselectShape();
 }
 
 window.setMode = function(m) {
@@ -1262,6 +1308,11 @@ function onPointerDown(clientX, clientY) {
   if (mode === 'circle') {
     circleCenter  = ll;
     previewCircle = L.circle(ll, { radius: 1, ...shapeStyle() }).addTo(map);
+    // Dashed radius guide line from center outward
+    previewLine = L.polyline([ll, ll], {
+      color: strokeColor, weight: 1.5, opacity: 0.7,
+      dashArray: '5 4', interactive: false
+    }).addTo(map);
   }
   if (mode === 'erase') { eraseAt(ll); }
   if (mode === 'move')  { startMove(ll); }
@@ -1277,7 +1328,9 @@ function onPointerMove(clientX, clientY) {
   if (mode === 'circle' && circleCenter && previewCircle) {
     const r = circleCenter.distanceTo(ll);
     previewCircle.setRadius(r);
-    // Show measurement at center so it is never covered by finger/cursor
+    // Update radius guide line
+    if (previewLine) previewLine.setLatLngs([circleCenter, ll]);
+    // Measurement label at center, never covered by finger
     showDistAt(circleCenter, fmtMiles(r));
   }
   if (mode === 'erase' && isErasing) { eraseAt(ll); }
@@ -1303,6 +1356,7 @@ function onPointerUp(clientX, clientY) {
     const ll = containerPointToLL(clientX, clientY);
     const r  = circleCenter.distanceTo(ll);
     map.removeLayer(previewCircle); previewCircle = null;
+    if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
     if (r > 50) {
       commitLayer(L.circle(circleCenter, { radius: r, ...shapeStyle() }));
     }
@@ -1366,8 +1420,81 @@ let moveLayer       = null;   // layer currently being dragged
 let moveDragStart   = null;   // latlng where the drag began
 let moveOrigCenter  = null;   // saved center for Marker / Circle (L.LatLng)
 let moveOrigLatLngs = null;   // saved latlngs for Polyline / Polygon (deep array of L.LatLng)
+let selectedLayer   = null;   // shape currently selected for color change
 
-function detachMoveListeners() { _resetMoveState(); }
+function detachMoveListeners() { _resetMoveState(); deselectShape(); }
+
+// ── Shape selection & colour picker ──────────────────────────────────────────
+var _scpEl    = null; // cache, set on first use
+var _scpRepos = null; // reposition handler
+
+function getScpEl() {
+  if (!_scpEl) _scpEl = document.getElementById('shape-color-picker');
+  return _scpEl;
+}
+
+function selectShape(layer) {
+  deselectShape(); // clear any previous selection
+  selectedLayer = layer;
+
+  // Highlight
+  try {
+    if (layer instanceof L.Marker) {
+      layer.getElement() && layer.getElement().classList.add('shape-selected');
+    } else {
+      layer.setStyle({ weight: WEIGHT + 2, opacity: 1, fillOpacity: 0.22 });
+    }
+  } catch(e) {}
+
+  var picker = getScpEl();
+  // Mark active swatch matching current layer color
+  var layerCol = (layer.options && layer.options.color) ||
+                 (layer instanceof L.Marker ? '#188038' : '#188038');
+  picker.querySelectorAll('.scp-swatch').forEach(function(sw) {
+    sw.classList.toggle('scp-active', sw.dataset.col === layerCol);
+  });
+  picker.classList.add('visible');
+
+  // Position at layer's geographic center
+  _repositionPicker();
+  // Reposition when map pans/zooms
+  _scpRepos = function() { _repositionPicker(); };
+  map.on('move zoom moveend zoomend', _scpRepos);
+}
+
+function _repositionPicker() {
+  if (!selectedLayer) return;
+  var picker = getScpEl();
+  var ll;
+  if (selectedLayer instanceof L.Circle || selectedLayer instanceof L.Marker) {
+    ll = selectedLayer.getLatLng();
+  } else {
+    ll = selectedLayer.getBounds().getCenter();
+  }
+  var pt = map.latLngToContainerPoint(ll);
+  // pt is relative to mapEl (position:absolute inside map-wrap)
+  picker.style.left = pt.x + 'px';
+  picker.style.top  = pt.y + 'px';
+}
+
+function deselectShape() {
+  if (selectedLayer) {
+    try {
+      if (selectedLayer instanceof L.Marker) {
+        selectedLayer.getElement() && selectedLayer.getElement().classList.remove('shape-selected');
+      } else {
+        // Restore original style from stored color
+        var col = selectedLayer.options.color || strokeColor;
+        selectedLayer.setStyle({ color: col, weight: WEIGHT, opacity: 1,
+                                  fillColor: col, fillOpacity: 0.12 });
+      }
+    } catch(e) {}
+    selectedLayer = null;
+  }
+  var picker = getScpEl();
+  if (picker) picker.classList.remove('visible');
+  if (_scpRepos) { map.off('move zoom moveend zoomend', _scpRepos); _scpRepos = null; }
+}
 
 function _resetMoveState() {
   moveLayer = null; moveDragStart = null;
@@ -1481,13 +1608,24 @@ function endMove() {
   var moved = origC ? origC.distanceTo(newC) > 0.5 : (origL !== null);
   if (moved) {
     pushUndo({ type:'move', layer:layer, origC:origC, newC:newC, origL:origL, newL:newL });
+  } else {
+    // Tap (no drag) = select the shape and show color picker
+    // If same layer tapped again, toggle it off
+    if (selectedLayer === layer) {
+      deselectShape();
+    } else {
+      selectShape(layer);
+    }
   }
 
   _resetMoveState();
   map.getContainer().style.cursor = 'default';
 }
 // ── Schools — covers Hanover, Henrico, Richmond, Chesterfield, and surrounds ──
-const schoolGroup  = L.featureGroup().addTo(map);
+// Create a custom pane so school markers always render above drawn shapes
+map.createPane('schoolPane');
+map.getPane('schoolPane').style.zIndex = 450; // above overlayPane (400)
+const schoolGroup  = L.featureGroup({ pane: 'schoolPane' }).addTo(map);
 let schoolsLoaded  = false;
 let schoolsVisible = false;
 
@@ -1516,23 +1654,12 @@ let _schoolToastTimer = null;
 function showSchoolToast() {
   const toast = document.getElementById('school-toast');
   const msg   = document.getElementById('school-toast-msg');
+  // Pick one random message per load — no cycling mid-load
+  msg.textContent = SCHOOL_MSGS[Math.floor(Math.random() * SCHOOL_MSGS.length)];
   toast.classList.add('visible');
-  // Start with a random message then cycle through all of them every 2.5 s
-  var _msgIdx = Math.floor(Math.random() * SCHOOL_MSGS.length);
-  msg.textContent = SCHOOL_MSGS[_msgIdx];
-  _schoolToastTimer = setInterval(function() {
-    _msgIdx = (_msgIdx + 1) % SCHOOL_MSGS.length;
-    msg.style.opacity = '0';
-    setTimeout(function() {
-      msg.textContent = SCHOOL_MSGS[_msgIdx];
-      msg.style.opacity = '1';
-    }, 250);
-  }, 2500);
 }
 
 function hideSchoolToast() {
-  clearInterval(_schoolToastTimer);
-  _schoolToastTimer = null;
   document.getElementById('school-toast').classList.remove('visible');
 }
 
@@ -1580,7 +1707,7 @@ function loadSchools() {
       var sm = L.circleMarker([lat, lon], {
         radius: 7, color: '#1a73e8', weight: 2,
         fillColor: '#4285f4', fillOpacity: 0.9,
-        interactive: true
+        interactive: true, pane: 'schoolPane'
       }).bindTooltip(name, {
         permanent: false, direction: 'top', offset: [0, -10],
         className: 'dist-tip'
@@ -1673,6 +1800,50 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { cancelInProgress(); closeSendModal(); if (mode === 'search') deactivateAllTools(); }
 });
 
+// ── Shape color picker interactions ──────────────────────────────────────────
+(function() {
+  document.getElementById('shape-color-picker').addEventListener('click', function(e) {
+    var sw = e.target.closest('.scp-swatch');
+    if (sw && selectedLayer) {
+      var col = sw.dataset.col;
+      // Update the layer's style
+      try {
+        if (selectedLayer instanceof L.Marker) {
+          // Re-make the icon in the new color
+          var pinSvg = '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">'
+            + '<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + col + '"/>'
+            + '<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+          selectedLayer.setIcon(L.divIcon({ html: pinSvg, className: '', iconSize: [28,36], iconAnchor: [14,36] }));
+        } else {
+          selectedLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT, opacity: 1, fillOpacity: 0.12 });
+          // Persist the new color into options so undo/redo can reference it
+          selectedLayer.options.color = col;
+          selectedLayer.options.fillColor = col;
+        }
+      } catch(err) {}
+      // Update active swatch highlight
+      document.querySelectorAll('#shape-color-picker .scp-swatch').forEach(function(s) {
+        s.classList.toggle('scp-active', s.dataset.col === col);
+      });
+    }
+  });
+  document.getElementById('scp-close').addEventListener('click', function(e) {
+    e.stopPropagation();
+    deselectShape();
+  });
+  // Click anywhere on map not on a shape dismisses picker
+  document.getElementById('map').addEventListener('mousedown', function(e) {
+    if (!e.target.closest('#shape-color-picker') && !e.target.closest('.leaflet-interactive')) {
+      deselectShape();
+    }
+  }, true);
+  document.getElementById('map').addEventListener('touchstart', function(e) {
+    if (!e.target.closest('#shape-color-picker') && !e.target.closest('.leaflet-interactive')) {
+      deselectShape();
+    }
+  }, { passive: true, capture: true });
+})();
+
 // ── Address search (Nominatim / OpenStreetMap) ────────────────────────────────
 const searchInput   = document.getElementById('search-input');
 // search-btn replaced by tool-btn btn-search (searchPanel close wired below)
@@ -1741,9 +1912,18 @@ async function doSearch(query) {
     // Build viewbox from current map bounds so results are biased to what's visible
     var b = map.getBounds();
     var vb = b.getWest()+','+b.getNorth()+','+b.getEast()+','+b.getSouth();
-    // Bound results to the visible map when zoomed in tightly; open worldwide at low zoom
-    var bounded = map.getZoom() >= 12 ? '1' : '0';
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=10&addressdetails=1&countrycodes=us&q=' + encodeURIComponent(query) + '&viewbox=' + vb + '&bounded=' + bounded;
+    // Zoomed in (>=12): bound strictly to visible map. Zoomed out: statewide Virginia viewbox
+    var zoom = map.getZoom();
+    var searchVb, bounded;
+    if (zoom >= 12) {
+      searchVb = vb;
+      bounded = '1';
+    } else {
+      // Virginia state bounding box — keeps results relevant even when zoomed to full state view
+      searchVb = '-83.7,36.5,-75.1,39.5';
+      bounded = '1';
+    }
+    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=10&addressdetails=1&countrycodes=us&q=' + encodeURIComponent(query) + '&viewbox=' + searchVb + '&bounded=' + bounded;
     const res  = await fetch(url, { headers: { 'Accept-Language': 'en-US,en', 'User-Agent': '804Michael-MapSearch/1.0' } });
     const data = await res.json();
     const places = data.map(r => {
@@ -2208,9 +2388,25 @@ function goToMyLocation() {
       btn.disabled = false;
       var msg = 'Unable to get your location.';
       if (err.code === err.PERMISSION_DENIED) {
-        msg = 'Location access was denied. Please allow location access in your browser settings and try again.';
+        // iOS-specific error: "This site can’t ask for your permission" usually means
+        // a system dialog (call, notification) is blocking the geolocation prompt.
+        // It can also occur in Private Browsing or an in-app browser (Instagram, etc.).
+        msg = 'Location access was denied.
+
+'
+            + 'If you see "This site can’t ask for your permission" on iPhone/iPad:
+'
+            + '• Dismiss any system alerts or overlays (call screens, notifications)
+'
+            + '• Avoid using Private Browsing mode
+'
+            + '• If inside an app (Instagram etc.), open this page in Safari instead
+'
+            + '• Check Settings → Safari → Location → Allow';
       } else if (err.code === err.TIMEOUT) {
-        msg = 'Location request timed out. Please try again.';
+        msg = 'Location request timed out. Make sure location services are enabled and try again.';
+      } else if (err.code === err.POSITION_UNAVAILABLE) {
+        msg = 'Your location is currently unavailable. Make sure location services are on in Settings.';
       }
       alert(msg);
     },
@@ -2395,11 +2591,11 @@ window.addEventListener('resize', updateLayout);
 
   function dragEnd() { dragging = false; }
 
-  scaleEl.addEventListener('mousedown',  function(e) { e.preventDefault(); dragStart(e.clientX, e.clientY); });
+  scaleEl.addEventListener('mousedown',  function(e) { e.preventDefault(); e.stopPropagation(); dragStart(e.clientX, e.clientY); });
   window.addEventListener('mousemove',   function(e) { dragMove(e.clientX, e.clientY); });
   window.addEventListener('mouseup',     dragEnd);
 
-  scaleEl.addEventListener('touchstart', function(e) { var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: true });
+  scaleEl.addEventListener('touchstart', function(e) { e.stopPropagation(); var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: true });
   window.addEventListener('touchmove',   function(e) { if (!dragging) return; var t = e.touches[0]; dragMove(t.clientX, t.clientY); }, { passive: true });
   window.addEventListener('touchend',    dragEnd);
 })();
