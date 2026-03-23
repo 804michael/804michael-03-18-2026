@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 18_00                                 ║
+  ║  MAP VERSION: 26.03.24 22_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -172,7 +172,7 @@
     /* ── FROSTED PG-HEADER: to revert to solid black, replace the background/backdrop lines
        with just: background:var(--black);  and remove the two backdrop-filter lines. ── */
     .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease}
-    .pg-header.compact{padding:2px 16px}
+    .pg-header.compact{padding:0 16px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.375rem,2.75vw,1.75rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
@@ -493,37 +493,50 @@
     }
     .search-panel-close:hover{background:rgba(0,0,0,.12);color:var(--black)}
 
-    /* ── Floating draggable scale bar ── */
+    /* ── Floating draggable scale bar / ruler ── */
     .map-scale{
       position:absolute;
       bottom:36px;right:14px;
       z-index:490;
-      background:rgba(255,255,255,.88);
-      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-      border-radius:8px;
-      padding:5px 10px 5px;
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border-radius:6px;
+      padding:6px 10px 5px;
       cursor:grab;
       user-select:none;-webkit-user-select:none;
       touch-action:none;
-      box-shadow:0 2px 10px rgba(0,0,0,.15);
-      border:1px solid rgba(0,0,0,.12);
-      min-width:80px;max-width:160px;
+      box-shadow:0 2px 10px rgba(0,0,0,.12);
+      border:1px solid rgba(255,255,255,.3);
+      min-width:80px;max-width:220px;
       transition:box-shadow .12s;
     }
-    .map-scale:active{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+    .map-scale:active{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+    /* Ruler wrapper: bar + tick marks at each end */
+    .map-scale-ruler{
+      display:flex;align-items:center;gap:0;margin-bottom:3px;
+    }
+    .map-scale-tick{
+      width:2px;background:var(--black);flex-shrink:0;
+      height:12px;border-radius:1px;
+    }
     .map-scale-bar{
-      height:4px;
+      flex:1;height:3px;
       background:var(--black);
-      border-radius:1px;
-      border-left:2.5px solid var(--black);
-      border-right:2.5px solid var(--black);
-      margin-bottom:3px;
-      transition:width .2s ease;
+      margin:0;
+      transition:none; /* ruler width set by JS directly */
+    }
+    /* Draggable resize handle at right end */
+    .map-scale-handle{
+      width:10px;height:22px;flex-shrink:0;
+      cursor:ew-resize;
+      display:flex;align-items:center;justify-content:center;
+      margin-left:2px;
+      color:rgba(0,0,0,.35);font-size:.55rem;line-height:1;
     }
     .map-scale-label{
       font-family:'Barlow Condensed',sans-serif;
       font-weight:700;
-      font-size:.68rem;
+      font-size:.65rem;
       letter-spacing:.08em;
       text-align:center;
       color:var(--black);
@@ -777,7 +790,7 @@
 <div class="toolbar" id="toolbar">
   <div class="toolbar-in">
 
-    <!-- ① Colors — locked together -->
+    <!-- Colors — always locked together -->
     <div class="color-swatches" style="flex-shrink:0">
       <div class="color-swatch active" style="background:#188038" data-color="#188038" data-tip="Green"  onclick="setColor(this)"></div>
       <div class="color-swatch"        style="background:#f29900" data-color="#f29900" data-tip="Yellow" onclick="setColor(this)"></div>
@@ -787,66 +800,57 @@
     </div>
     <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ② Draw tools — pencil+circle wrap together as a pair -->
+    <!-- Draw: Pencil + Circle + Eraser wrap as a group -->
     <div class="tool-group">
-      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
+      <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — tap points for polygon, tap+drag to freehand" aria-label="Pencil — draw">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
       </button>
       <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
       </button>
+      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
+      </button>
     </div>
     <span class="tbsep" aria-hidden="true"></span>
 
-    <!-- ③ Pin + Search + Move + Erase + Schools + Home — wrap individually -->
-    <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
-      <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address — find and pin a location">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </button>
+    <!-- Location + Utility: Drop Pin, Search, Schools, Go to Location -->
+    <div class="tool-group">
+      <button class="tool-btn" id="btn-pin" onclick="setMode('pin')" data-tip="Drop Pin — tap map to place a pin" aria-label="Drop Pin — tap map to place a pin">
+        <svg width="16" height="18" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7.582 2 4 5.582 4 10c0 6.5 8 16 8 16s8-9.5 8-16c0-4.418-3.582-8-8-8z"/><circle cx="12" cy="10" r="2.8" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-search" onclick="setMode('search')" data-tip="Search Address — find & pin a location" aria-label="Search Address">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
+        <svg width="17" height="14" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
+          <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M16 7C16 5 16 4 18 3"/>
+          <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
+        </svg>
+        <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
+      </button>
+      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>
+          <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <span class="tbsep" aria-hidden="true"></span>
+
+    <!-- Other tools: Move, Pan, Undo, Redo, Clear (zoom hidden per request) -->
     <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move / Recolor — tap a shape to recolor, drag to move" aria-label="Move or recolor a shape">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
     </button>
-    <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
-    </button>
-    <button class="tool-btn tool-btn--schools" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
-      <svg width="17" height="14" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
-        <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M16 7C16 5 16 4 18 3"/>
-        <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
-      </svg>
-      <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
-    </button>
-    <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>
-        <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
-      </svg>
-    </button>
-    <span class="tbsep" aria-hidden="true"></span>
-
-    <!-- ④ Pan alone -->
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
     </button>
-    <span class="tbsep" aria-hidden="true"></span>
-
-    <!-- ⑤ Zoom +/- wrap together -->
-    <div class="tool-group">
-      <button class="tool-btn" id="btn-zoom-in" onclick="map.zoomIn()" data-tip="Zoom in" aria-label="Zoom in">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-      <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" data-tip="Zoom out" aria-label="Zoom out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-    </div>
-    <span class="tbsep" aria-hidden="true"></span>
-
-    <!-- ⑥ Undo + Redo + Clear wrap together -->
+    <!-- Zoom buttons hidden per request (map.zoomIn/Out still callable via keyboard/gesture) -->
+    <button class="tool-btn" id="btn-zoom-in"  onclick="map.zoomIn()"  style="display:none" aria-hidden="true"></button>
+    <button class="tool-btn" id="btn-zoom-out" onclick="map.zoomOut()" style="display:none" aria-hidden="true"></button>
     <div class="tool-group">
       <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo  ⌘Z / Ctrl+Z" aria-label="Undo" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
@@ -859,7 +863,7 @@
       </button>
     </div>
 
-  </div>
+    </div>
 </div>
 
 <!-- SCHOOL FILTER PANEL — slides down when schools are active -->
@@ -885,12 +889,13 @@
     <button class="sfp-county"     data-county="richmond"     aria-pressed="false" class="sfp-county off">Richmond</button>
     <button class="sfp-county"     data-county="chesterfield" aria-pressed="false" class="sfp-county off">Chesterfield</button>
     <!-- More button reveals extra counties -->
-    <button class="sfp-more" id="sfp-more-btn" aria-expanded="false">More ▸</button>
+    <button class="sfp-more" id="sfp-more-btn" aria-expanded="false" title="More counties">
+      <svg id="sfp-more-chevron" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="3,2 9,6 3,10"/></svg>
+    </button>
     <span class="sfp-extra" id="sfp-extra" hidden>
       <button class="sfp-county off" data-county="powhatan"  aria-pressed="false">Powhatan</button>
       <button class="sfp-county off" data-county="goochland" aria-pressed="false">Goochland</button>
       <button class="sfp-county off" data-county="newkent"   aria-pressed="false">New Kent</button>
-      <button class="sfp-county"     data-county="other"     aria-pressed="true" title="Schools whose county couldn't be detected — includes some Hanover schools">Untagged</button>
     </span>
   </div>
 </div>
@@ -920,10 +925,15 @@
       <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
       <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work<br><span id="hint-pinch" style="display:none">⭕ Two fingers = draw circle</span></div>
     </div>
-    <!-- Draggable scale bar -->
-    <div id="map-scale" class="map-scale" title="Drag to reposition">
-      <div class="map-scale-bar"></div>
-      <div class="map-scale-label">…</div>
+    <!-- Draggable scale bar / ruler -->
+    <div id="map-scale" class="map-scale" title="Drag body to move • Drag right edge to resize">
+      <div class="map-scale-ruler">
+        <div class="map-scale-tick"></div>
+        <div class="map-scale-bar" id="map-scale-bar"></div>
+        <div class="map-scale-tick"></div>
+        <div class="map-scale-handle" id="map-scale-handle" title="Drag to resize">⠿</div>
+      </div>
+      <div class="map-scale-label" id="map-scale-label">…</div>
     </div>
     <!-- Floating color picker for selected shape (Move tool tap) -->
     <div id="shape-color-picker" role="toolbar" aria-label="Change shape color">
@@ -1001,7 +1011,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 18_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 22_00</p>
   </div>
 </div>
 
@@ -1237,6 +1247,12 @@ let circleCenter    = null;
 let previewCircle   = null;
 let previewLine     = null;   // radius guide line during circle draw
 let distTooltip     = null;
+// ── Polygon-tap mode state ────────────────────────────────────────────────────
+let polyTapPoints   = [];    // accumulated tap points for polygon mode
+let polyTapPreview  = null;  // live preview polyline
+let polyTapTimer    = null;  // timer for auto-close after inactivity
+let polyTapDragging = false; // true once pointer moved enough to be a drag
+let polyTapDownAt   = null;  // {x,y} of pointerdown for drag detection
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Always show miles to 1 decimal place
 function fmtMiles(meters) {
@@ -1299,10 +1315,23 @@ function showDistAt(latlng, text) {
 
 function clearDistTooltip() { if (distTooltip) { map.removeLayer(distTooltip); distTooltip = null; } }
 
+// Close the tap-polygon and commit it
+function closeTapPolygon() {
+  clearTimeout(polyTapTimer); polyTapTimer = null;
+  if (polyTapPreview) { map.removeLayer(polyTapPreview); polyTapPreview = null; }
+  if (polyTapPoints.length >= 3) {
+    commitLayer(L.polygon(polyTapPoints, shapeStyle()));
+  }
+  polyTapPoints = [];
+}
+
 function cancelInProgress() {
   if (drawingPolyline) { map.removeLayer(drawingPolyline); drawingPolyline = null; }
   if (previewCircle)   { map.removeLayer(previewCircle);   previewCircle   = null; }
   if (previewLine)     { map.removeLayer(previewLine);     previewLine     = null; }
+  if (polyTapPreview)  { map.removeLayer(polyTapPreview);  polyTapPreview  = null; }
+  clearTimeout(polyTapTimer); polyTapTimer = null;
+  polyTapPoints = []; polyTapDragging = false; polyTapDownAt = null;
   clearDistTooltip();
   polyLatLngs   = [];
   circleCenter  = null;
@@ -1469,6 +1498,10 @@ function onPointerDown(clientX, clientY) {
     return;
   }
   if (mode === 'freehand') {
+    // Record pointer-down position for drag detection (> 8px = drag, else = tap)
+    polyTapDragging = false;
+    polyTapDownAt   = { x: clientX, y: clientY };
+    // Start freehand immediately so drawing feels responsive (may convert to tap on up)
     polyLatLngs     = [ll];
     drawingPolyline = L.polyline([ll], { ...shapeStyle(), fill: false }).addTo(map);
   }
@@ -1489,6 +1522,11 @@ function onPointerMove(clientX, clientY) {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand' && drawingPolyline) {
+    // Mark as drag if pointer moved > 8px from down position
+    if (!polyTapDragging && polyTapDownAt) {
+      const dx = clientX - polyTapDownAt.x, dy = clientY - polyTapDownAt.y;
+      if (Math.sqrt(dx*dx + dy*dy) > 8) polyTapDragging = true;
+    }
     polyLatLngs.push(ll);
     drawingPolyline.setLatLngs(polyLatLngs);
   }
@@ -1509,14 +1547,33 @@ function onPointerUp(clientX, clientY) {
   isErasing = false;
   if (mode === 'move') { endMove(); return; }
   if (mode === 'freehand' && drawingPolyline) {
-    // Auto-close: if stroke is long enough, close back to the start point
-    // and convert to a filled polygon for a cleaner look
-    const lls = polyLatLngs;
-    map.removeLayer(drawingPolyline);
-    drawingPolyline = null; polyLatLngs = [];
-    if (lls.length >= 4) {
-      const layer = L.polygon(lls, shapeStyle());
-      commitLayer(layer);
+    if (!polyTapDragging && polyTapPoints.length === 0 && polyLatLngs.length < 4) {
+      // TAP (not drag): enter polygon-tap mode — add this point, show preview
+      map.removeLayer(drawingPolyline); drawingPolyline = null;
+      polyLatLngs = [];
+      const ll = containerPointToLL(clientX, clientY);
+      polyTapPoints.push(ll);
+      polyTapPreview = L.polyline([ll], { ...shapeStyle(), fill: false,
+        dashArray: '6 4', weight: 2 }).addTo(map);
+      // Auto-close polygon if no new tap within 2.5 seconds and >= 3 points
+      clearTimeout(polyTapTimer);
+      polyTapTimer = setTimeout(closeTapPolygon, 2500);
+    } else if (!polyTapDragging && polyTapPoints.length > 0) {
+      // Another TAP while in polygon-tap mode — add point
+      map.removeLayer(drawingPolyline); drawingPolyline = null; polyLatLngs = [];
+      const ll = containerPointToLL(clientX, clientY);
+      polyTapPoints.push(ll);
+      polyTapPreview.setLatLngs(polyTapPoints);
+      clearTimeout(polyTapTimer);
+      if (polyTapPoints.length >= 3) {
+        polyTapTimer = setTimeout(closeTapPolygon, 2500);
+      }
+    } else {
+      // DRAG: commit as freehand polygon (existing behavior)
+      polyTapPoints = []; polyTapDragging = false;
+      const lls = polyLatLngs;
+      map.removeLayer(drawingPolyline); drawingPolyline = null; polyLatLngs = [];
+      if (lls.length >= 4) { commitLayer(L.polygon(lls, shapeStyle())); }
     }
   }
   if (mode === 'circle' && circleCenter && previewCircle) {
@@ -1825,7 +1882,7 @@ var schoolData = [];
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
   counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
-               powhatan: false, goochland: false, newkent: false, other: true }
+               powhatan: false, goochland: false, newkent: false }
 };
 
 // Per-level colors  (Elementary=blue  Middle=orange  High=green)
@@ -1851,7 +1908,28 @@ function detectSchoolLevel(name, isced, schoolLvl) {
   return null;
 }
 
-function detectSchoolCounty(name, operator, addrCounty) {
+// County bounding boxes — [south, west, north, east]
+// Approximate but accurate enough for the VA counties we serve.
+var COUNTY_BOXES = [
+  { id: 'hanover',      box: [37.62,-77.73,38.02,-77.05] },
+  { id: 'henrico',      box: [37.42,-77.67,37.78,-77.07] },
+  { id: 'richmond',     box: [37.44,-77.52,37.62,-77.37] },  // City of Richmond
+  { id: 'chesterfield', box: [37.10,-77.74,37.57,-77.30] },
+  { id: 'powhatan',     box: [37.38,-78.07,37.64,-77.68] },
+  { id: 'goochland',    box: [37.55,-78.05,37.85,-77.66] },
+  { id: 'newkent',      box: [37.38,-77.19,37.66,-76.83] },
+];
+
+function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
+  // 1. Try bounding-box geolocation (most accurate — no name-matching needed)
+  if (lat && lon) {
+    for (var i = 0; i < COUNTY_BOXES.length; i++) {
+      var cb = COUNTY_BOXES[i], b = cb.box;
+      if (lat >= b[0] && lon >= b[1] && lat <= b[2] && lon <= b[3]) return cb.id;
+    }
+    // Falls through if outside all boxes (uncommon)
+  }
+  // 2. Fallback: name/operator text matching
   var s = (operator + ' ' + addrCounty + ' ' + name).toLowerCase();
   if (/hanover/.test(s))      return 'hanover';
   if (/henrico/.test(s))      return 'henrico';
@@ -1860,7 +1938,7 @@ function detectSchoolCounty(name, operator, addrCounty) {
   if (/powhatan/.test(s))     return 'powhatan';
   if (/goochland/.test(s))    return 'goochland';
   if (/new kent/.test(s))     return 'newkent';
-  return 'other';
+  return null; // outside our region — skip entirely
 }
 
 function applySchoolFilter() {
@@ -1948,7 +2026,8 @@ function loadSchools() {
       var level = detectSchoolLevel(name, isced, schoolLv);
       if (!level) return;
 
-      var county = detectSchoolCounty(name, operator, addrCty);
+      var county = detectSchoolCounty(name, operator, addrCty, lat, lon);
+      if (!county) return; // outside our serving area — skip
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
@@ -2045,11 +2124,11 @@ window.toggleSfpCollapse = function() {
       if (open) {
         extraSpan.setAttribute('hidden', '');
         moreBtn.setAttribute('aria-expanded', 'false');
-        moreBtn.textContent = 'More ▸';
+        document.getElementById('sfp-more-chevron').style.transform = 'rotate(0deg)';
       } else {
         extraSpan.removeAttribute('hidden');
         moreBtn.setAttribute('aria-expanded', 'true');
-        moreBtn.textContent = 'Less ▾';
+        document.getElementById('sfp-more-chevron').style.transform = 'rotate(180deg)';
       }
     });
   }
@@ -2845,8 +2924,9 @@ window.addEventListener('resize', updateLayout);
 // ── Draggable floating scale bar ──────────────────────────────────────────────
 (function() {
   var scaleEl  = document.getElementById('map-scale');
-  var barEl    = scaleEl.querySelector('.map-scale-bar');
-  var labelEl  = scaleEl.querySelector('.map-scale-label');
+  var barEl    = document.getElementById('map-scale-bar');
+  var labelEl  = document.getElementById('map-scale-label');
+  var handleEl = document.getElementById('map-scale-handle');
 
   // Nice scale steps in miles: try to hit a round number
   var STEPS_MI = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 25, 50, 100];
@@ -2909,6 +2989,40 @@ window.addEventListener('resize', updateLayout);
   scaleEl.addEventListener('touchstart', function(e) { e.stopPropagation(); var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: true });
   window.addEventListener('touchmove',   function(e) { if (!dragging) return; var t = e.touches[0]; dragMove(t.clientX, t.clientY); }, { passive: true });
   window.addEventListener('touchend',    dragEnd);
+
+  // ── Resize handle: drag right end to stretch the ruler ────────────────────
+  var resizing = false, resizeStartX = 0, resizeStartW = 0;
+  var MIN_RULER_W = 60, MAX_RULER_W = 200;
+
+  function resizeStart(x) {
+    resizing = true; resizeStartX = x;
+    resizeStartW = barEl.offsetWidth || 80;
+  }
+  function resizeMove(x) {
+    if (!resizing) return;
+    var newW = Math.max(MIN_RULER_W, Math.min(MAX_RULER_W, resizeStartW + (x - resizeStartX)));
+    // Compute what distance that width represents and snap to a clean label
+    var metersPerPx = (156543.03392 * Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, map.getZoom());
+    var distMi = newW * metersPerPx * 0.000621371;
+    // Snap to nearest step
+    var steps = [0.05,0.1,0.25,0.5,1,2,5,10,25,50,100];
+    var best = steps[0], bestDiff = Infinity;
+    steps.forEach(function(s){ var d = Math.abs(s - distMi); if(d < bestDiff){ bestDiff=d; best=s; } });
+    var snapPx = Math.round((best / 0.000621371) / metersPerPx);
+    snapPx = Math.max(MIN_RULER_W, Math.min(MAX_RULER_W, snapPx));
+    barEl.style.width = snapPx + 'px';
+    labelEl.textContent = best < 1 ? best.toFixed(2).replace(/\.?0+$/,'') + ' mi' : best + ' mi';
+  }
+  function resizeEnd() { resizing = false; }
+
+  if (handleEl) {
+    handleEl.addEventListener('mousedown',  function(e){ e.preventDefault(); e.stopPropagation(); resizeStart(e.clientX); });
+    handleEl.addEventListener('touchstart', function(e){ e.stopPropagation(); resizeStart(e.touches[0].clientX); }, { passive:true });
+  }
+  window.addEventListener('mousemove', function(e){ resizeMove(e.clientX); });
+  window.addEventListener('mouseup',   resizeEnd);
+  window.addEventListener('touchmove', function(e){ if(resizing) resizeMove(e.touches[0].clientX); }, { passive:true });
+  window.addEventListener('touchend',  resizeEnd);
 })();
 </script>
 <!-- PIN BOTTOM SHEET -->
