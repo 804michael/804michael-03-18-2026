@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 11_00                                 ║
+  ║  MAP VERSION: 26.03.23 15_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -174,32 +174,31 @@
     .pg-header.compact{padding:3px 16px 3px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.15rem,2.2vw,1.45rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
-    .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;max-height:60px;transition:opacity .4s ease,max-height .4s ease,margin .4s ease}
-    .pg-header p.hide{opacity:0;max-height:0 !important;margin:0 !important;pointer-events:none}
+    .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(0,0,0,.18);backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);border-bottom:1px solid rgba(255,255,255,.15);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
-    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap;row-gap:3px}
-    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.25);color:rgba(255,255,255,.95);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .tool-btn:hover{background:rgba(255,255,255,.38);border-color:rgba(255,255,255,.75)}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(0,0,0,.08);backdrop-filter:blur(24px) saturate(2) brightness(1.05);-webkit-backdrop-filter:blur(24px) saturate(2) brightness(1.05);border-bottom:1px solid rgba(255,255,255,.12);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:5px}
+    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .tool-btn:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 2px 8px rgba(218,41,28,.45)}
     .tool-btn svg{pointer-events:none}
-    .tool-btn:disabled{opacity:.3;cursor:not-allowed}
-    .tool-btn:disabled:hover{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5)}
+    .tool-btn:disabled{opacity:.35;cursor:not-allowed}
+    .tool-btn:disabled:hover{background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.15)}
     /* thin vertical separator between toolbar groups */
     .tbsep{display:none}
     /* tool-group: buttons that always wrap together */
-    .tool-group{display:inline-flex;align-items:center;gap:2px;flex-shrink:0}
+    .tool-group{display:inline-flex;align-items:center;gap:5px;flex-shrink:0}
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .color-swatch.active{border-color:rgba(255,255,255,.9);transform:scale(1.3)}
-    .color-swatch[data-color="#111111"].active{border-color:rgba(255,255,255,.7)}
+    .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
+    .color-swatch[data-color="#111111"].active{border-color:#777}
     /* pin sheet black swatch selected ring also lighter */
     #pin-sheet-colors button[style*="#111111"][style*="borderColor: rgb(17"]{border-color:#777 !important}
     /* Pulsing hint on tool buttons before first selection */
     @keyframes tool-pulse{
-      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.25);transform:scale(1)}
-      50%{box-shadow:0 0 0 8px rgba(218,41,28,.35),0 0 16px rgba(218,41,28,.5);border-color:rgba(218,41,28,.9);background:rgba(218,41,28,.22);transform:scale(1.12)}
+      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(0,0,0,.15);background:rgba(255,255,255,.88);transform:scale(1)}
+      50%{box-shadow:0 0 0 7px rgba(218,41,28,.3),0 0 14px rgba(218,41,28,.4);border-color:rgba(218,41,28,.8);background:rgba(255,220,218,.9);transform:scale(1.1)}
     }
     .tool-btn.hint-pulse{animation:tool-pulse 2.0s ease-in-out infinite;z-index:1}
     @keyframes finger-bounce{
@@ -234,8 +233,8 @@
     @media(max-width:768px){
       /* Mobile fallback: if backdrop-filter unsupported, show semi-solid bg */
       @supports not (backdrop-filter: blur(1px)) {
-        .toolbar{ background:rgba(248,248,248,.88) !important; }
-        #school-filter-panel{ background:rgba(248,248,248,.88) !important; }
+        .toolbar{ background:rgba(245,245,245,.95) !important; }
+        #school-filter-panel{ background:rgba(245,245,245,.95) !important; }
       }
       /* Force GPU compositing on mobile for frosted glass */
       .toolbar, #school-filter-panel{
@@ -796,10 +795,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(0,0,0,.18);
-      backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);
-      border-bottom:1px solid rgba(255,255,255,.15);
-      box-shadow:0 2px 12px rgba(0,0,0,.08);
+      background:rgba(0,0,0,.08);
+      backdrop-filter:blur(24px) saturate(2) brightness(1.05);-webkit-backdrop-filter:blur(24px) saturate(2) brightness(1.05);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
       padding:3px 12px 4px;
       z-index:798;
       transform:translateY(-110%);
@@ -814,80 +813,76 @@
     }
     .sfp-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:2px 0}
     .sfp-label{display:none}
-    .sfp-sep{width:1px;height:20px;background:rgba(255,255,255,.25);flex-shrink:0;margin:0 6px;align-self:center}
+    .sfp-sep{width:1px;height:20px;background:rgba(0,0,0,.18);flex-shrink:0;margin:0 4px;align-self:center}
 
-    /* Level toggle — styled like tool-btn: semi-transparent, goes dimmer when off */
+    /* Level toggle — white bg, black text like toolbar buttons */
     .sfp-level{
       display:inline-flex;align-items:center;gap:5px;
-      background:rgba(255,255,255,.25);
-      border:1.5px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.88);
+      border:1.5px solid rgba(0,0,0,.15);
       border-radius:6px;
       padding:1px 8px 1px 5px;
       cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;
-      color:var(--white);
+      color:var(--black);
       transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
       height:26px;
     }
-    .sfp-level:hover{background:rgba(255,255,255,.42);border-color:rgba(255,255,255,.75)}
-    .sfp-level.off{background:rgba(255,255,255,.10);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.2)}
+    .sfp-level:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.3)}
+    .sfp-level.off{background:rgba(255,255,255,.45);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.1)}
     .sfp-dot{
       width:11px;height:11px;border-radius:50%;flex-shrink:0;
-      border:2.5px solid rgba(0,0,0,.15);
+      border:2.5px solid rgba(0,0,0,.2);
       transition:background .15s,border-color .15s;
-      /* inline style="background:#COLOR" provides fill when ON */
     }
-    /* OFF: outline only — color comes from the button's own border */
     .sfp-level.off .sfp-dot{
       background:transparent !important;
-      border-width:2px;
-      border-style:solid;
-      opacity:0.7;
+      border-width:2px;border-style:solid;opacity:0.7;
     }
     #sfp-elem.off .sfp-dot{border-color:#4285f4}
     #sfp-mid.off  .sfp-dot{border-color:#f29900}
-    #sfp-high.off .sfp-dot{border-color:#188038}
+    #sfp-high.off .sfp-dot{border-color:#DA291C}
 
-    /* County chip — semi-transparent to match toolbar */
+    /* County chip — white bg, black text */
     .sfp-county{
       display:inline-flex;align-items:center;
-      background:rgba(255,255,255,.25);
-      border:1.5px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.88);
+      border:1.5px solid rgba(0,0,0,.15);
       border-radius:6px;
       padding:0 9px;
       height:26px;
       cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-      color:var(--white);
+      color:var(--black);
       transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
     }
-    .sfp-county:hover{background:rgba(255,255,255,.42);border-color:rgba(255,255,255,.75)}
-    .sfp-county.off{background:rgba(255,255,255,.10);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.2)}
-    .sfp-county:not(.off){background:rgba(255,255,255,.25)}
-    .sfp-extra{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .sfp-county:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.3)}
+    .sfp-county.off{background:rgba(255,255,255,.45);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.1)}
+    .sfp-county:not(.off){background:rgba(255,255,255,.88)}
+    .sfp-extra{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
     .sfp-extra[hidden]{display:none !important}
     .sfp-more{
       display:inline-flex;align-items:center;
-      background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.15);
       border-radius:7px;height:26px;padding:0 8px;
       cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-      color:rgba(255,255,255,.7);transition:background .15s;
+      color:var(--black);transition:background .15s;
       user-select:none;-webkit-user-select:none;
     }
-    .sfp-more:hover{background:rgba(255,255,255,.35)}
+    .sfp-more:hover{background:rgba(255,255,255,.98)}
 
     /* Collapse handle button on the filter panel */
     #sfp-collapse-btn{
       position:absolute;left:8px;top:50%;transform:translateY(-50%);
-      background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);
+      background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.15);
       border-radius:6px;width:22px;height:22px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;
-      padding:0;transition:background .12s;flex-shrink:0;color:rgba(255,255,255,.8);
+      padding:0;transition:background .12s;flex-shrink:0;color:var(--black);
     }
     #sfp-collapse-btn:hover{background:rgba(255,255,255,.38)}
     /* Panel needs position:relative for the absolute collapse btn */
@@ -1146,7 +1141,7 @@
       <span class="sfp-dot" style="background:#f29900"></span>Middle
     </button>
     <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
-      <span class="sfp-dot" style="background:#188038"></span>High School
+      <span class="sfp-dot" style="background:#DA291C"></span>High School
     </button>
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
@@ -1316,9 +1311,26 @@
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem)">
       <span style="font-weight:500;color:rgba(255,255,255,.9);font-size:.9em">with <span style="color:white;font-weight:700">804-</span><span style="color:var(--red);font-weight:700">Michael</span> <span style="display:inline-block;animation:bounce-down 0.9s ease-in-out infinite">👇</span></span>
     </div>
-    <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;background:var(--black);color:white;border-color:white;max-width:320px;margin:0 auto;width:100%">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      Click here to Send to 804-Michael
+    <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;align-items:center;background:var(--black);color:white;border-color:white;max-width:360px;margin:0 auto;width:100%;height:50px;gap:8px;padding:0 20px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;white-space:nowrap">Send My Map to</span>
+      <svg viewBox="0 0 786.329 175" xmlns="http://www.w3.org/2000/svg" style="height:24px;width:auto;flex-shrink:0;display:block" aria-label="804Michael">
+        <!-- 804 numerals: original fill is black, shown white on dark button -->
+        <g fill="white">
+          <path d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+          <path d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+          <path d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+          <path d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        </g>
+        <!-- Michael script: red, kept as original -->
+        <g fill="#ED1C24">
+          <path d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+          <path d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
+          <path d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z"/>
+          <path d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
+          <path d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z"/>
+          <path d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z"/>
+        </g>
+      </svg>
     </button>
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem);margin-bottom:-6px">
       <span style="font-weight:400;color:rgba(255,255,255,.9);font-size:.8em">or Anyone Else</span>
@@ -1344,7 +1356,7 @@
       </button>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 11_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 15_00</p>
   </div>
 </div>
 
@@ -2361,11 +2373,11 @@ var schoolFilter = {
                powhatan: false, goochland: false, newkent: false }
 };
 
-// Per-level colors  (Elementary=blue  Middle=orange  High=green)
+// Per-level colors  (Elementary=blue  Middle=orange  High=red)
 var LEVEL_COLORS = {
   elementary: { fill: '#4285f4', stroke: '#1a73e8' },
   middle:     { fill: '#f29900', stroke: '#e67e00' },
-  high:       { fill: '#188038', stroke: '#136b2d' }
+  high:       { fill: '#DA291C', stroke: '#b01f15' }
 };
 
 // Name-based private-school filter
@@ -2688,8 +2700,13 @@ window.togglePublix = function() {
   }
 };
 
-// Mouse events
-mapEl.addEventListener('mousedown', e => { if (e.button !== 0) return; onPointerDown(e.clientX, e.clientY); });
+// Mouse events — ignore clicks on the scale bar (it has its own handlers)
+var _scaleBarEl = document.getElementById('map-scale');
+mapEl.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  if (_scaleBarEl && _scaleBarEl.contains(e.target)) return;
+  onPointerDown(e.clientX, e.clientY);
+});
 mapEl.addEventListener('mousemove', e => { onPointerMove(e.clientX, e.clientY); });
 mapEl.addEventListener('mouseup',   e => { onPointerUp(e.clientX, e.clientY); });
 mapEl.addEventListener('mouseleave', () => {
@@ -3748,27 +3765,17 @@ function restoreLayers(layers) {
   }
 })();
 
-// Init — pre-select freehand so the very first tap draws immediately.
-// We activate the tool directly (bypassing markDrawn) so the hint stays visible.
-// Only btn-circle pulses — btn-freehand is already visually selected (red/active).
+// Init — mode starts as 'none' so the first click on any tool activates it immediately.
+// (Pre-selecting freehand caused the first pencil click to toggle it OFF, requiring 2 clicks.)
+// Both pencil and circle pulse to invite the user to pick one.
 (function() {
-  // Activate freehand directly, same as setMode but skip markDrawn
-  document.getElementById('btn-freehand').classList.remove('hint-pulse');
-  document.getElementById('btn-circle').classList.remove('hint-pulse');
-  cancelInProgress();
-  mode = 'freehand';
-  ALL_MODES.forEach(function(t) {
-    var el = document.getElementById('btn-' + t);
-    if (el) el.classList.toggle('active', t === 'freehand');
-  });
-  map.dragging.disable();
-  map.scrollWheelZoom.disable();
-  map.getContainer().style.cursor = 'crosshair';
-  hideSearchPanel();
-  // Pulse only circle to invite users to try it as alternative
+  mode = 'none';
+  map.dragging.enable();
+  map.scrollWheelZoom.enable();
+  map.getContainer().style.cursor = '';
+  document.getElementById('btn-freehand').classList.add('hint-pulse');
   document.getElementById('btn-circle').classList.add('hint-pulse');
-  document.getElementById('btn-circle').style.animationDelay = '0s';
-  // Show the "pick a tool" hint for 7 seconds
+  document.getElementById('btn-circle').style.animationDelay = '-1.0s';
   showHintTimed(7000);
 })();
 
@@ -3984,48 +3991,40 @@ function updateLayout() {
   setTimeout(function(){ map.invalidateSize(); }, 50);
 }
 
+// ── Header description collapse — JS-controlled for reliable layout measurement ──
+// Fades out the description <p>, then removes it from layout flow so updateLayout
+// measures the correct reduced header height immediately.
+function collapsePgHeader() {
+  var pgP = document.querySelector('.pg-header p');
+  var pgH = document.querySelector('.pg-header');
+  if (!pgP) return;
+  // 1. Fade out
+  pgP.style.transition = 'opacity 0.35s ease';
+  pgP.style.opacity = '0';
+  if (pgH) pgH.classList.add('compact');
+  // 2. After fade, remove from flow — ResizeObserver fires → updateLayout runs
+  setTimeout(function() {
+    pgP.style.display = 'none';
+    // Belt-and-suspenders: also call updateLayout directly
+    updateLayout();
+  }, 370);
+}
+
 // ── A+B: On mobile, banner hide AND pg-header description collapse fire together ─
 if (window.innerWidth <= 768) {
   setTimeout(function() {
     var banner = document.getElementById('banner');
-    var pgP    = document.querySelector('.pg-header p');
-    var pgH    = document.querySelector('.pg-header');
-
-    // Collapse description and compact header simultaneously
-    if (pgP) pgP.classList.add('hide');
-    if (pgH) pgH.classList.add('compact');
-
-    // Hide banner
+    collapsePgHeader();
     banner.classList.add('hide');
     setTimeout(function() {
       banner.style.display = 'none';
       document.documentElement.style.setProperty('--banner-h', '0px');
-    }, 450);
-
-    // Poll updateLayout every 50ms for 700ms to track the transition in real-time
-    var _pollCount = 0;
-    var _pollInterval = setInterval(function() {
       updateLayout();
-      _pollCount++;
-      if (_pollCount >= 14) clearInterval(_pollInterval);
-    }, 50);
+    }, 450);
   }, 5000);
 } else {
-  // Desktop: collapse the description on its own timer
-  setTimeout(function() {
-    var pgP = document.querySelector('.pg-header p');
-    if (pgP) pgP.classList.add('hide');
-    var pgH = document.querySelector('.pg-header');
-    if (pgH) pgH.classList.add('compact');
-
-    // Poll updateLayout throughout the CSS transition
-    var _pollCount = 0;
-    var _pollInterval = setInterval(function() {
-      updateLayout();
-      _pollCount++;
-      if (_pollCount >= 14) clearInterval(_pollInterval);
-    }, 50);
-  }, 6000);
+  // Desktop: collapse after 6 seconds
+  setTimeout(collapsePgHeader, 6000);
 }
 
 // Run layout measurement early (DOMContentLoaded + rAF) and on load/resize
@@ -4112,8 +4111,10 @@ window.addEventListener('resize', updateLayout);
   window.addEventListener('mousemove',   function(e) { dragMove(e.clientX, e.clientY); });
   window.addEventListener('mouseup',     dragEnd);
 
-  scaleEl.addEventListener('touchstart', function(e) { e.stopPropagation(); var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: true });
-  window.addEventListener('touchmove',   function(e) { if (!dragging) return; var t = e.touches[0]; dragMove(t.clientX, t.clientY); }, { passive: true });
+  // Touch: must be non-passive so stopPropagation prevents map drawing handlers
+  scaleEl.addEventListener('touchstart', function(e) { e.stopPropagation(); var t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive: false });
+  // Also intercept touchmove on the scale element to prevent map drawing mode from swallowing it
+  scaleEl.addEventListener('touchmove',  function(e) { if (!dragging) return; e.stopPropagation(); var t = e.touches[0]; dragMove(t.clientX, t.clientY); }, { passive: false });
   window.addEventListener('touchend',    dragEnd);
 
   // ── Resize handle: drag right end to stretch the ruler ────────────────────
@@ -4143,7 +4144,8 @@ window.addEventListener('resize', updateLayout);
 
   if (handleEl) {
     handleEl.addEventListener('mousedown',  function(e){ e.preventDefault(); e.stopPropagation(); resizeStart(e.clientX); });
-    handleEl.addEventListener('touchstart', function(e){ e.stopPropagation(); resizeStart(e.touches[0].clientX); }, { passive:true });
+    handleEl.addEventListener('touchstart', function(e){ e.stopPropagation(); resizeStart(e.touches[0].clientX); }, { passive: false });
+    handleEl.addEventListener('touchmove',  function(e){ if(!resizing) return; e.stopPropagation(); resizeMove(e.touches[0].clientX); }, { passive: false });
   }
   window.addEventListener('mousemove', function(e){ resizeMove(e.clientX); });
   window.addEventListener('mouseup',   resizeEnd);
