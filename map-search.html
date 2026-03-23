@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 22_00                                 ║
+  ║  MAP VERSION: 26.03.25 10_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -332,7 +332,7 @@
       .map-wrap{
         /* toolbar is now fixed so use --chrome-h (JS-updated) + 44px masterpiece */
         margin-top: var(--chrome-h, 192px);
-        height: calc(100dvh - var(--chrome-h, 192px) - 44px);
+        height: calc(100dvh - var(--chrome-h, 192px) - 28px);
       }
       .share-panel{
         padding-top: 0;
@@ -341,12 +341,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 44px;
+        height: 28px;
         background: var(--black);
         cursor: pointer;
         margin: 0;
         padding: 0 24px;
         width: 100%;
+        font-size: clamp(.8rem,1.8vw,1rem); /* smaller text fits slim bar */
       }
     }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
@@ -369,9 +370,9 @@
     .share-btn-copy:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .share-btn-copy.copied{border-color:#188038;color:#5ab87a;background:rgba(24,128,56,.12)}
     /* Footer */
-    footer{background:var(--black);padding:22px 24px;border-top:1px solid rgba(255,255,255,.07)}
-    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+    footer{background:var(--black);padding:14px 24px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+    .ft-copy{font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.45}
 
     /* The footer logo link needs the same treatment */
     .ft-logo{display:inline-flex;line-height:0;outline:none}
@@ -956,8 +957,25 @@
 <div id="send-modal-backdrop">
   <div id="send-modal" role="dialog" aria-modal="true" aria-labelledby="send-modal-title">
     <button id="send-modal-close" aria-label="Close" onclick="closeSendModal()">&#x2715;</button>
-    <h2 id="send-modal-title">Send My Map to<br><span>804-Michael</span></h2>
-    <p class="modal-sub">We'll get a link to your exact map — no account, no signup.</p>
+    <!-- 804Michael logo mark: 804 black + Michael red -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 786.329 238.272" style="height:28px;width:auto" fill="none" aria-hidden="true">
+        <path fill="#111111" fill-rule="evenodd" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="#111111" fill-rule="evenodd" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z"/>
+        <path fill="#111111" fill-rule="evenodd" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="#ED1C24" fill-rule="evenodd" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+        <path fill="#ED1C24" fill-rule="evenodd" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z"/>
+      </svg>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:.02em;text-transform:uppercase;line-height:1">
+          Send My Map to
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;letter-spacing:.02em;text-transform:uppercase;line-height:1">
+          <span style="color:var(--black)">804-</span><span style="color:var(--red)">Michael</span>
+        </div>
+      </div>
+    </div>
+    <p class="modal-sub">He'll get a link to your exact map<br>— no account, no signup.</p>
     <div class="modal-field">
       <label for="modal-name">Your Name</label>
       <input type="text" id="modal-name" placeholder="e.g. A Really Smart Home Buyer" autocomplete="name" />
@@ -1011,7 +1029,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 22_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.25 10_00</p>
   </div>
 </div>
 
@@ -1300,6 +1318,7 @@ function commitLayer(layer) {
   activeGroup.addLayer(layer);
   pushUndo({ type: 'add', layer });
   markDrawn();
+  saveDrawingsToStorage(); // persist after every commit
 }
 
 function updateUndoRedo() {
@@ -2675,10 +2694,107 @@ function showCopied(btn) {
   }, 2500);
 }
 
+// ── localStorage drawing persistence ────────────────────────────────────────
+var STORAGE_KEY = '804michael-map-drawings';
+var STORAGE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+function saveDrawingsToStorage() {
+  try {
+    var obj = serializeDrawings();
+    var payload = { ts: Date.now(), data: obj };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch(e) { /* storage full or unavailable */ }
+}
+
+function loadDrawingsFromStorage() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    var payload = JSON.parse(raw);
+    if (!payload || !payload.ts || !payload.data) return null;
+    if (Date.now() - payload.ts > STORAGE_TTL) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return payload.data;
+  } catch(e) { return null; }
+}
+
+function clearStoredDrawings() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+// Also save on undo/redo/clear
+var _origClearAll_persist = window.clearAll;
+window.clearAll = function() { _origClearAll_persist(); clearStoredDrawings(); };
+
 // ── Restore drawings from URL hash on load ────────────────────────────────────
+// ── restoreLayers: shared by URL restore and localStorage restore ─────────────
+function restoreLayers(layers) {
+  layers.forEach(function(layer) {
+    var col   = layer.col || '#188038';
+    var style = { color:col, weight:WEIGHT, opacity:1, fillColor:col, fillOpacity:0.12, fill:true };
+    if (layer.t === 'c') {
+      var cl = L.circle([layer.ll[0], layer.ll[1]], Object.assign({}, style, { radius: layer.r }));
+      activeGroup.addLayer(cl);
+      pushUndo({ type:'add', layer:cl });
+    } else if (layer.t === 'g') {
+      var lls = layer.lls.map(function(p){ return L.latLng(p[0],p[1]); });
+      var gl  = L.polygon(lls, style);
+      activeGroup.addLayer(gl);
+      pushUndo({ type:'add', layer:gl });
+    } else if (layer.t === 'p') {
+      var lls2 = layer.lls.map(function(p){ return L.latLng(p[0],p[1]); });
+      var pl   = L.polyline(lls2, Object.assign({}, style, { fill:false }));
+      activeGroup.addLayer(pl);
+      pushUndo({ type:'add', layer:pl });
+    } else if (layer.t === 'm') {
+      var pinColor = col || '#188038';
+      var pinSvg = '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">'
+        + '<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + pinColor + '"/>'
+        + '<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+      var icon = L.divIcon({ html:pinSvg, className:'', iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-38] });
+      var mk = L.marker([layer.ll[0], layer.ll[1]], { icon:icon });
+      if (layer.lbl) {
+        mk.bindTooltip(layer.lbl, { permanent:true, direction:'top', offset:[0,-38], className:'custom-pin-label' });
+      }
+      pinGroup.addLayer(mk);
+      pushUndo({ type:'add', layer:mk });
+    }
+  });
+}
+
 (function restoreFromURL() {
   var hash = window.location.hash;
-  if (!hash || hash.indexOf('#d=') !== 0) return;
+
+  // If no URL hash, try restoring from localStorage (24h persistence)
+  if (!hash || hash.indexOf('#d=') !== 0) {
+    var stored = loadDrawingsFromStorage();
+    if (stored && stored.layers && stored.layers.length > 0) {
+      // Show a subtle toast so user knows drawings were restored
+      setTimeout(function() {
+        var t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+          + 'background:rgba(17,17,17,.88);color:white;border-radius:10px;padding:8px 18px;'
+          + 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.85rem;'
+          + 'letter-spacing:.05em;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none';
+        t.textContent = '↺ Restored your previous drawings';
+        document.body.appendChild(t);
+        setTimeout(function(){ t.style.opacity='1'; }, 50);
+        setTimeout(function(){ t.style.opacity='0';
+          setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 350); }, 3500);
+      }, 1200);
+      // Restore using same logic as URL restore
+      try {
+        if (stored.z && stored.lat && stored.lng) {
+          map.setView([stored.lat, stored.lng], stored.z, { animate: false });
+        }
+        restoreLayers(stored.layers);
+        if (stored.layers.length > 0) { markDrawn(); updateUndoRedo(); }
+      } catch(e) { console.warn('Could not restore stored drawings:', e); }
+    }
+    return;
+  }
   try {
     var b64 = hash.slice(3).replace(/-/g,'+').replace(/_/g,'/');
     // Pad base64
@@ -2694,42 +2810,9 @@ function showCopied(btn) {
       map.setView([obj.lat, obj.lng], obj.z, { animate: false });
     }
 
-    obj.layers.forEach(function(layer) {
-      var col  = layer.col || '#188038';
-      var style = { color:col, weight:WEIGHT, opacity:1, fillColor:col, fillOpacity:0.12, fill:true };
-
-      if (layer.t === 'c') {
-        var cl = L.circle([layer.ll[0], layer.ll[1]], Object.assign({}, style, { radius: layer.r }));
-        activeGroup.addLayer(cl);
-        pushUndo({ type:'add', layer:cl });
-      } else if (layer.t === 'g') {
-        var lls = layer.lls.map(function(p){ return L.latLng(p[0],p[1]); });
-        var gl  = L.polygon(lls, style);
-        activeGroup.addLayer(gl);
-        pushUndo({ type:'add', layer:gl });
-      } else if (layer.t === 'p') {
-        var lls2 = layer.lls.map(function(p){ return L.latLng(p[0],p[1]); });
-        var pl   = L.polyline(lls2, Object.assign({}, style, { fill:false }));
-        activeGroup.addLayer(pl);
-        pushUndo({ type:'add', layer:pl });
-      } else if (layer.t === 'm') {
-        // Re-drop pin (without opening the label popup)
-        var pinColor = col || '#188038';
-        var pinSvg = [
-          '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">',
-          '<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + pinColor + '"/>',
-          '<circle cx="14" cy="14" r="5.5" fill="white"/>',
-          '</svg>'
-        ].join('');
-        var icon = L.divIcon({ html:pinSvg, className:'', iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-38] });
-        var mk = L.marker([layer.ll[0], layer.ll[1]], { icon:icon });
-        if (layer.lbl) {
-          mk.bindTooltip(layer.lbl, { permanent:true, direction:'top', offset:[0,-38], className:'custom-pin-label' });
-        }
-        pinGroup.addLayer(mk);
-        pushUndo({ type:'add', layer:mk });
-      }
-    });
+    restoreLayers(obj.layers);
+    /* layer restoration now in restoreLayers() above */
+    ;
 
     if (obj.layers.length > 0) {
       markDrawn();
@@ -2778,9 +2861,42 @@ function goToMyLocation() {
     function(pos) {
       var lat = pos.coords.latitude;
       var lng = pos.coords.longitude;
-      map.setView([lat, lng], 12, { animate: true });
+      map.setView([lat, lng], 15, { animate: true });
       btn.classList.remove('active');
       btn.disabled = false;
+
+      // ── You Are Here — animated pulsing bullseye, fades after 6s ────────────
+      var youHereGroup = L.layerGroup().addTo(map);
+      // Outer pulse ring
+      var pulse = L.circle([lat, lng], {
+        radius: 80, color: '#1a73e8', weight: 2,
+        fillColor: '#1a73e8', fillOpacity: 0.1,
+        className: 'you-here-pulse', interactive: false
+      }).addTo(youHereGroup);
+      // Inner solid dot
+      var dot = L.circleMarker([lat, lng], {
+        radius: 9, color: '#fff', weight: 2.5,
+        fillColor: '#1a73e8', fillOpacity: 1, interactive: false
+      }).addTo(youHereGroup);
+      // Accuracy ring (if available)
+      if (pos.coords.accuracy > 0) {
+        L.circle([lat, lng], {
+          radius: pos.coords.accuracy, color: '#1a73e8', weight: 1,
+          fillColor: '#1a73e8', fillOpacity: 0.04, interactive: false,
+          dashArray: '4 4'
+        }).addTo(youHereGroup);
+      }
+      // Fade and remove after 8 seconds
+      setTimeout(function() {
+        var opacity = 1;
+        var fade = setInterval(function() {
+          opacity -= 0.08;
+          if (opacity <= 0) { clearInterval(fade); map.removeLayer(youHereGroup); }
+          else { youHereGroup.eachLayer(function(l) {
+            try { l.setStyle({ opacity: opacity, fillOpacity: Math.max(0, opacity * (l.options.fillOpacity || 0.1) / 1) }); } catch(e){}
+          }); }
+        }, 80);
+      }, 6000);
     },
     function(err) {
       btn.classList.remove('active');
