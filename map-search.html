@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 15_00                                 ║
+  ║  MAP VERSION: 26.03.23 17_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -587,52 +587,7 @@
     /* selected shape highlight ring */
     .shape-selected{ filter:drop-shadow(0 0 4px rgba(255,255,255,.95)); }
 
-    /* ── Shape properties bottom sheet ── */
-    #props-backdrop{display:none;position:fixed;inset:0;z-index:9990;background:transparent}
-    #props-backdrop.open{display:block}
-    #props-sheet{
-      position:fixed;left:0;right:0;bottom:0;z-index:9991;
-      background:var(--white);border-radius:16px 16px 0 0;
-      box-shadow:0 -6px 32px rgba(0,0,0,.22);
-      padding:8px 16px 20px;
-      transform:translateY(100%);
-      transition:transform .28s cubic-bezier(.4,0,.2,1);
-      max-height:85dvh;overflow-y:auto;
-    }
-    #props-sheet.open{transform:translateY(0)}
-    #props-handle{width:32px;height:3px;background:var(--gray-mid);border-radius:2px;margin:0 auto 10px}
-    #props-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;
-      letter-spacing:.08em;text-transform:uppercase;color:var(--black);margin-bottom:12px}
-    /* Color row */
-    .props-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-    .props-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;
-      letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);min-width:52px}
-    .props-swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;
-      flex-shrink:0;transition:transform .12s,border-color .12s;-webkit-tap-highlight-color:transparent}
-    .props-swatch:hover,.props-swatch:focus{transform:scale(1.15);outline:none}
-    .props-swatch.active{border-color:var(--black);transform:scale(1.2)}
-    .props-swatch[data-col="#111111"].active{border-color:#777}
-    /* Opacity slider */
-    #props-opacity{width:100%;accent-color:var(--red);cursor:pointer;height:24px}
-    /* Stroke weight */
-    .props-weight-btn{height:34px;padding:0 12px;border:1.5px solid var(--gray-mid);
-      border-radius:7px;background:transparent;cursor:pointer;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;
-      letter-spacing:.05em;color:var(--black);transition:all .12s}
-    .props-weight-btn.active{background:var(--black);color:white;border-color:var(--black)}
-    /* Action buttons */
-    .props-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-    .props-btn{height:42px;padding:0 16px;border-radius:9px;cursor:pointer;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;
-      letter-spacing:.06em;text-transform:uppercase;border:1.5px solid transparent;
-      display:inline-flex;align-items:center;gap:6px;transition:all .15s;flex-shrink:0}
-    .props-btn-edit{background:var(--black);color:white;border-color:var(--black)}
-    .props-btn-edit:hover{background:#333}
-    .props-btn-edit.editing{background:var(--red);border-color:var(--red)}
-    .props-btn-done{background:#188038;color:white;border-color:#188038}
-    .props-btn-done:hover{background:#136b2d}
-    .props-btn-delete{background:transparent;color:#e53935;border-color:#e53935}
-    .props-btn-delete:hover{background:#e53935;color:white}
+    /* ── Shape Properties Panel (SPP) — see #shape-props rules below ── */
 
     /* Leaflet.Editable: bigger touch targets for vertex handles on mobile */
     .leaflet-editable-vertex{
@@ -886,8 +841,7 @@
       padding:0;transition:background .12s;flex-shrink:0;color:var(--black);
     }
     #sfp-collapse-btn:hover{background:rgba(255,255,255,.38)}
-    /* Panel needs position:relative for the absolute collapse btn */
-    #school-filter-panel{position:fixed;}
+    /* Panel needs position:fixed (also establishes containing block for absolute collapse btn) */
     /* Collapsed state: panel shows only the handle strip */
     #school-filter-panel.sfp-collapsed{padding:2px 12px 2px 38px}
     #school-filter-panel.sfp-collapsed #sfp-filters-row{display:none}
@@ -1231,11 +1185,22 @@
       </div>
       <!-- Action row -->
       <div class="spp-actions">
+        <button class="spp-action spp-edit" id="spp-edit-btn" aria-label="Edit shape vertices">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
+          Edit
+        </button>
         <button class="spp-action spp-delete" id="spp-delete-btn" aria-label="Delete shape">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           Delete
         </button>
       </div>
+    </div>
+
+    <!-- Edit-mode confirmation bar — appears at bottom while vertex editing is active -->
+    <div id="edit-mode-bar">
+      <span>Drag vertices to reshape</span>
+      <button id="edit-done-btn" class="done">✓ Done</button>
+      <button id="edit-cancel-btn">Cancel</button>
     </div>
 
     <div class="school-toast" id="school-toast">
@@ -2963,87 +2928,7 @@ window.redoLast = function() {
   _origRedoLast();
 };
 
-// ── Shape properties sheet interactions ──────────────────────────────────────
-(function() {
-  // Color swatches
-  document.getElementById('props-colors').addEventListener('click', function(e) {
-    var sw = e.target.closest('.props-swatch');
-    if (!sw || !selectedLayer) return;
-    var col = sw.dataset.col;
-    try {
-      if (selectedLayer instanceof L.Marker) {
-        var pinSvg='<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">'
-          +'<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="'+col+'"/>'
-          +'<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
-        selectedLayer.setIcon(L.divIcon({html:pinSvg,className:'',iconSize:[28,36],iconAnchor:[14,36]}));
-      } else {
-        var curOpac=selectedLayer._propsOpacity!=null?selectedLayer._propsOpacity:0.12;
-        var curWt=selectedLayer._propsWeight!=null?selectedLayer._propsWeight:WEIGHT;
-        selectedLayer.setStyle({color:col,fillColor:col,weight:curWt+2,opacity:1,fillOpacity:Math.max(curOpac,0.28)});
-        selectedLayer.options.color=col; selectedLayer.options.fillColor=col;
-        selectedLayer._selectedColor=col;
-      }
-    } catch(err){}
-    document.querySelectorAll('.props-swatch').forEach(function(s){s.classList.toggle('active',s.dataset.col===col);});
-    saveDrawingsToStorage();
-  });
-
-  // Opacity slider (live preview)
-  document.getElementById('props-opacity').addEventListener('input', function() {
-    var pct=parseInt(this.value);
-    document.getElementById('props-opacity-val').textContent=pct+'%';
-    if (!selectedLayer||selectedLayer instanceof L.Marker) return;
-    var opac=pct/100;
-    selectedLayer._propsOpacity=opac;
-    try { selectedLayer.setStyle({fillOpacity:opac}); } catch(e){}
-  });
-  document.getElementById('props-opacity').addEventListener('change', function() {
-    saveDrawingsToStorage();
-  });
-
-  // Stroke weight buttons
-  document.getElementById('props-weight-row').addEventListener('click', function(e) {
-    var b=e.target.closest('.props-weight-btn');
-    if (!b||!selectedLayer||selectedLayer instanceof L.Marker) return;
-    var w=parseInt(b.dataset.w);
-    selectedLayer._propsWeight=w;
-    try { selectedLayer.setStyle({weight:w}); } catch(e){}
-    document.querySelectorAll('.props-weight-btn').forEach(function(x){x.classList.toggle('active',x===b);});
-    saveDrawingsToStorage();
-  });
-
-  // Edit vertices button
-  document.getElementById('props-edit-btn').addEventListener('click', function() {
-    if (selectedLayer && !(selectedLayer instanceof L.Marker)) startVertexEdit(selectedLayer);
-  });
-
-  // Done editing button
-  document.getElementById('props-done-btn').addEventListener('click', function() {
-    stopVertexEdit(true);
-  });
-
-  // Delete button
-  document.getElementById('props-delete-btn').addEventListener('click', function() {
-    if (!selectedLayer) return;
-    var layer=selectedLayer;
-    closePropsSheet();
-    // Remove from whichever group it's in
-    if (activeGroup.hasLayer(layer)) {
-      activeGroup.removeLayer(layer);
-      pushUndo({type:'remove',layer:layer});
-    } else if (pinGroup.hasLayer(layer)) {
-      pinGroup.removeLayer(layer);
-      pushUndo({type:'remove',layer:layer});
-    }
-    saveDrawingsToStorage();
-  });
-
-  // Backdrop tap closes sheet
-  document.getElementById('props-backdrop').addEventListener('click', closePropsSheet);
-  document.getElementById('props-backdrop').addEventListener('touchstart', function(e){
-    if (e.target===this) closePropsSheet();
-  }, {passive:true});
-})();
+// (Old props-sheet wiring removed — superseded by SPP panel wiring above)
 
 // ── Address search (Nominatim / OpenStreetMap) ────────────────────────────────
 const searchInput   = document.getElementById('search-input');
@@ -3395,7 +3280,9 @@ function serializeDrawings() {
       var p = layer.getLatLng();
       var label = '';
       try { label = layer.getTooltip() ? layer.getTooltip().getContent() : ''; } catch(e){}
-      layers.push({ t:'m', ll:[+p.lat.toFixed(6), +p.lng.toFixed(6)], lbl:label });
+      var col = '';
+      try { var m=(layer.options.icon.options.html||'').match(/fill="(#[0-9a-fA-F]{3,6})"/); if(m) col=m[1]; } catch(e){}
+      layers.push({ t:'m', ll:[+p.lat.toFixed(6), +p.lng.toFixed(6)], lbl:label, col:col });
     }
   });
   // Also encode map center + zoom
