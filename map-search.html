@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.25 10_00                                 ║
+  ║  MAP VERSION: 26.03.25 12_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -178,7 +178,7 @@
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.08);backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);-webkit-backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 18px rgba(0,0,0,.06);overflow:visible}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.08);backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);-webkit-backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 18px rgba(0,0,0,.06);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.82);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
@@ -230,6 +230,19 @@
       height: calc(100dvh - var(--chrome-h));
       min-height: 400px;
       padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media(max-width:768px){
+      /* Mobile fallback: if backdrop-filter unsupported, show semi-solid bg */
+      @supports not (backdrop-filter: blur(1px)) {
+        .toolbar{ background:rgba(248,248,248,.96) !important; }
+        #school-filter-panel{ background:rgba(248,248,248,.96) !important; }
+      }
+      /* Force GPU compositing on mobile for frosted glass */
+      .toolbar, #school-filter-panel{
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: backdrop-filter;
+      }
     }
     @media(max-width:768px){
       .map-wrap{
@@ -924,7 +937,7 @@
   <div id="map">
     <div class="map-hint" id="map-hint">
       <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
-      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work<br><span id="hint-pinch" style="display:none">⭕ Two fingers = draw circle</span></div>
+      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work</div>
     </div>
     <!-- Draggable scale bar / ruler -->
     <div id="map-scale" class="map-scale" title="Drag body to move • Drag right edge to resize">
@@ -1029,7 +1042,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.25 10_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.25 12_00</p>
   </div>
 </div>
 
@@ -1228,7 +1241,6 @@ const map = L.map('map', {
   dragging:         true
 }).setView([37.755, -77.477], 11);
 
-L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -1399,26 +1411,6 @@ window.setMode = function(m) {
     map.dragging.enable();
     map.scrollWheelZoom.enable();
     map.getContainer().style.cursor = m === 'pan' ? 'grab' : '';
-  } else if (m === 'circle' && !window._circleTipShown &&
-             ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
-    // First activation of circle on a touch device — show a brief nudge
-    window._circleTipShown = true;
-    map.dragging.disable();
-    map.scrollWheelZoom.disable();
-    map.getContainer().style.cursor = 'crosshair';
-    var _tip = document.createElement('div');
-    _tip.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
-      + 'background:rgba(17,17,17,.88);color:#fff;border-radius:12px;padding:12px 20px;'
-      + 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:1.1rem;'
-      + 'letter-spacing:.05em;text-align:center;pointer-events:none;z-index:800;'
-      + 'line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,.4)';
-    _tip.innerHTML = '☝️ Drag from center to draw<br>🤏 Or <strong>pinch with 2 fingers</strong>';
-    document.getElementById('map').appendChild(_tip);
-    setTimeout(function() {
-      _tip.style.transition = 'opacity .5s';
-      _tip.style.opacity = '0';
-      setTimeout(function() { if (_tip.parentNode) _tip.parentNode.removeChild(_tip); }, 550);
-    }, 2800);
   } else if (m === 'move') {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
@@ -2839,14 +2831,6 @@ function restoreLayers(layers) {
   document.getElementById('btn-circle').style.animationDelay = '-1.2s';
 })();
 
-// Show the two-finger pinch hint only on real touch devices
-(function() {
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    var el = document.getElementById('hint-pinch');
-    if (el) el.style.display = 'inline';
-  }
-})();
-
 // ── Go to my location (Home button) ───────────────────────────────────────────
 function goToMyLocation() {
   var btn = document.getElementById('btn-home');
@@ -2861,7 +2845,7 @@ function goToMyLocation() {
     function(pos) {
       var lat = pos.coords.latitude;
       var lng = pos.coords.longitude;
-      map.setView([lat, lng], 15, { animate: true });
+      map.setView([lat, lng], 13, { animate: true });
       btn.classList.remove('active');
       btn.disabled = false;
 
@@ -2869,7 +2853,7 @@ function goToMyLocation() {
       var youHereGroup = L.layerGroup().addTo(map);
       // Outer pulse ring
       var pulse = L.circle([lat, lng], {
-        radius: 80, color: '#1a73e8', weight: 2,
+        radius: 150, color: '#1a73e8', weight: 2,
         fillColor: '#1a73e8', fillOpacity: 0.1,
         className: 'you-here-pulse', interactive: false
       }).addTo(youHereGroup);
