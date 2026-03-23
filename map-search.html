@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 15_00                                 ║
+  ║  MAP VERSION: 26.03.23 11_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -105,9 +105,6 @@
     /* Banner hide transition */
     #banner{transition:transform .5s ease,opacity .5s ease}
     #banner.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
-    /* pg-header description fade */
-    .pg-header p{transition:opacity .4s ease,max-height .4s ease,margin .4s ease,padding .4s ease,line-height .4s ease;overflow:hidden;max-height:60px;line-height:1.25}
-    .pg-header p.hide{opacity:0;max-height:0 !important;margin:0 !important;padding:0 !important;line-height:0 !important;pointer-events:none}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -173,37 +170,38 @@
     /* Page header — fixed, sits between nav and toolbar */
     /* ── FROSTED PG-HEADER: to revert to solid black, replace the background/backdrop lines
        with just: background:var(--black);  and remove the two backdrop-filter lines. ── */
-    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .4s ease}
-    .pg-header.compact{padding:3px 16px}
-    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.375rem,2.75vw,1.75rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
+    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px 5px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;transition:padding .4s ease}
+    .pg-header.compact{padding:3px 16px 3px}
+    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.15rem,2.2vw,1.45rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
-    .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
+    .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;max-height:60px;transition:opacity .4s ease,max-height .4s ease,margin .4s ease}
+    .pg-header p.hide{opacity:0;max-height:0 !important;margin:0 !important;pointer-events:none}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
     .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(0,0,0,.18);backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);border-bottom:1px solid rgba(255,255,255,.15);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
-    .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:4px}
-    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.25);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .tool-btn:hover{background:rgba(255,255,255,.48);border-color:rgba(255,255,255,.75)}
+    .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap;row-gap:3px}
+    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.25);color:rgba(255,255,255,.95);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .tool-btn:hover{background:rgba(255,255,255,.38);border-color:rgba(255,255,255,.75)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 2px 8px rgba(218,41,28,.45)}
     .tool-btn svg{pointer-events:none}
-    .tool-btn:disabled{opacity:.28;cursor:not-allowed}
-    .tool-btn:disabled:hover{background:transparent;border-color:transparent}
+    .tool-btn:disabled{opacity:.3;cursor:not-allowed}
+    .tool-btn:disabled:hover{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5)}
     /* thin vertical separator between toolbar groups */
     .tbsep{display:none}
     /* tool-group: buttons that always wrap together */
     .tool-group{display:inline-flex;align-items:center;gap:2px;flex-shrink:0}
     .color-swatches{display:flex;gap:6px;align-items:center}
     .color-swatch{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .color-swatch.active{border-color:var(--black);transform:scale(1.3)}
-    .color-swatch[data-color="#111111"].active{border-color:#777}
+    .color-swatch.active{border-color:rgba(255,255,255,.9);transform:scale(1.3)}
+    .color-swatch[data-color="#111111"].active{border-color:rgba(255,255,255,.7)}
     /* pin sheet black swatch selected ring also lighter */
     #pin-sheet-colors button[style*="#111111"][style*="borderColor: rgb(17"]{border-color:#777 !important}
     /* Pulsing hint on tool buttons before first selection */
     @keyframes tool-pulse{
-      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.25)}
-      50%{box-shadow:0 0 0 6px rgba(218,41,28,.30);border-color:rgba(218,41,28,.65);background:rgba(218,41,28,.10)}
+      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.25);transform:scale(1)}
+      50%{box-shadow:0 0 0 8px rgba(218,41,28,.35),0 0 16px rgba(218,41,28,.5);border-color:rgba(218,41,28,.9);background:rgba(218,41,28,.22);transform:scale(1.12)}
     }
-    .tool-btn.hint-pulse{animation:tool-pulse 2.4s ease-in-out infinite}
+    .tool-btn.hint-pulse{animation:tool-pulse 2.0s ease-in-out infinite;z-index:1}
     @keyframes finger-bounce{
       0%,100%{transform:rotate(-35deg) translateY(0)}
       50%{transform:rotate(-35deg) translateY(-5px)}
@@ -886,12 +884,12 @@
     /* Collapse handle button on the filter panel */
     #sfp-collapse-btn{
       position:absolute;left:8px;top:50%;transform:translateY(-50%);
-      background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.15);
+      background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);
       border-radius:6px;width:22px;height:22px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;
-      padding:0;transition:background .12s;flex-shrink:0;
+      padding:0;transition:background .12s;flex-shrink:0;color:rgba(255,255,255,.8);
     }
-    #sfp-collapse-btn:hover{background:rgba(255,255,255,.95)}
+    #sfp-collapse-btn:hover{background:rgba(255,255,255,.38)}
     /* Panel needs position:relative for the absolute collapse btn */
     #school-filter-panel{position:fixed;}
     /* Collapsed state: panel shows only the handle strip */
@@ -1346,7 +1344,7 @@
       </button>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 15_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 11_00</p>
   </div>
 </div>
 
@@ -1857,7 +1855,11 @@ function onPointerMove(clientX, clientY) {
 function onPointerUp(clientX, clientY) {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   isErasing = false;
-  if (mode === 'move') { endMove(); return; }
+  if (mode === 'move') {
+    _lastMoveUpLL = containerPointToLL(clientX, clientY);
+    endMove();
+    return;
+  }
   if (mode === 'freehand' && drawingPolyline) {
     if (!polyTapDragging) {
       // TAP: polygon-tap mode — use polyTapDragging as sole discriminator
@@ -1959,6 +1961,7 @@ let moveOrigCenter  = null;   // saved center for Marker / Circle (L.LatLng)
 let moveOrigLatLngs = null;   // saved latlngs for Polyline / Polygon (deep array of L.LatLng)
 let selectedLayer   = null;   // shape currently selected for color change
 let _moveDidDrag    = false;  // true only when doMove actually translates the shape
+let _lastMoveUpLL   = null;   // latlng of last pointerUp in move mode
 
 function detachMoveListeners() { _resetMoveState(); deselectShape(); }
 
@@ -2088,7 +2091,7 @@ function stopVertexEdit(commit) {
 function _resetMoveState() {
   moveLayer = null; moveDragStart = null;
   moveOrigCenter = null; moveOrigLatLngs = null;
-  _moveDidDrag = false;
+  _moveDidDrag = false; _lastMoveUpLL = null;
 }
 
 // Deep-copy a (possibly nested) latlng array into plain L.LatLng objects.
@@ -2122,10 +2125,10 @@ function startMove(ll) {
   pinGroup.eachLayer(function(l)    { allLayers.push({ layer: l, group: pinGroup }); });
   if (!allLayers.length) return;
 
-  // Threshold: ~48 CSS pixels → meters at current zoom
+  // Threshold: ~60 CSS pixels → meters at current zoom (generous for mobile taps)
   var cpx = map.latLngToContainerPoint(map.getCenter());
   var threshold = map.getCenter().distanceTo(
-    map.containerPointToLatLng(L.point(cpx.x + 48, cpx.y))
+    map.containerPointToLatLng(L.point(cpx.x + 60, cpx.y))
   );
 
   var best = null, bestDist = Infinity;
@@ -2138,21 +2141,18 @@ function startMove(ll) {
       d = ll.distanceTo(layer.getLatLng());
 
     } else if (layer instanceof L.Circle) {
-      // Inside the circle? d = 0. Outside? d = distance past the edge.
       var toCenter = ll.distanceTo(layer.getLatLng());
+      // Inside circle = 0 distance; outside = distance past edge
       d = Math.max(0, toCenter - layer.getRadius());
 
     } else {
-      // Polyline or Polygon — check every vertex
       _flatLLs(layer.getLatLngs()).forEach(function(p) {
         var dd = ll.distanceTo(p);
         if (dd < d) d = dd;
       });
-      // For polygons also check if the tap is inside the bounds (catches
-      // taps on the interior that are far from any vertex)
       if (layer instanceof L.Polygon) {
         var b = layer.getBounds();
-        if (b.contains(ll)) d = 0;
+        if (b.contains(ll)) d = 0; // tap inside polygon interior
       }
     }
 
@@ -2174,6 +2174,36 @@ function startMove(ll) {
   map.getContainer().style.cursor = 'grabbing';
 }
 
+// Helper: find nearest layer to ll within pixelRadius CSS pixels (returns layer or null)
+function _findNearestLayer(ll, pixelRadius) {
+  var allLayers = [];
+  activeGroup.eachLayer(function(l) { allLayers.push(l); });
+  pinGroup.eachLayer(function(l)    { allLayers.push(l); });
+  if (!allLayers.length) return null;
+
+  var cpx = map.latLngToContainerPoint(map.getCenter());
+  var threshold = map.getCenter().distanceTo(
+    map.containerPointToLatLng(L.point(cpx.x + pixelRadius, cpx.y))
+  );
+
+  var best = null, bestDist = Infinity;
+  allLayers.forEach(function(layer) {
+    var d = Infinity;
+    if (layer instanceof L.Marker) {
+      d = ll.distanceTo(layer.getLatLng());
+    } else if (layer instanceof L.Circle) {
+      d = Math.max(0, ll.distanceTo(layer.getLatLng()) - layer.getRadius());
+    } else {
+      _flatLLs(layer.getLatLngs()).forEach(function(p) {
+        var dd = ll.distanceTo(p); if (dd < d) d = dd;
+      });
+      if (layer instanceof L.Polygon && layer.getBounds().contains(ll)) d = 0;
+    }
+    if (d < bestDist) { bestDist = d; best = layer; }
+  });
+  return (best && bestDist <= threshold) ? best : null;
+}
+
 function doMove(ll) {
   if (!moveLayer || !moveDragStart) return;
   var dlat = ll.lat - moveDragStart.lat;
@@ -2188,27 +2218,38 @@ function doMove(ll) {
 }
 
 function endMove() {
-  if (!moveLayer) return;
+  // If startMove never found a layer (tap landed on empty map), do a
+  // final search at the up-position with a wider radius and select it.
+  if (!moveLayer) {
+    // This case happens when the tap was not near any layer at pointerdown.
+    // _lastMoveUpLL is set by onPointerUp before calling endMove.
+    if (_lastMoveUpLL) {
+      var hit = _findNearestLayer(_lastMoveUpLL, 72);
+      if (hit) {
+        if (selectedLayer === hit) { deselectShape(); }
+        else { selectShape(hit); }
+      }
+    }
+    _resetMoveState();
+    map.getContainer().style.cursor = 'default';
+    return;
+  }
+
   var layer  = moveLayer;
   var origC  = moveOrigCenter  ? L.latLng(moveOrigCenter.lat, moveOrigCenter.lng) : null;
   var origL  = moveOrigLatLngs ? _deepCopyLLs(moveOrigLatLngs) : null;
   var newC   = (origC  !== null) ? layer.getLatLng() : null;
   var newL   = (origL  !== null) ? _deepCopyLLs(layer.getLatLngs()) : null;
 
-  // Push to undo only if the shape genuinely moved
-  // For polygons: origL is always non-null, so use _moveDidDrag flag instead
   var moved = origC ? origC.distanceTo(newC) > 0.5 : _moveDidDrag;
   _moveDidDrag = false;
   if (moved) {
     pushUndo({ type:'move', layer:layer, origC:origC, newC:newC, origL:origL, newL:newL });
+    saveDrawingsToStorage();
   } else {
-    // Tap (no drag) = select the shape and show color picker
-    // If same layer tapped again, toggle it off
-    if (selectedLayer === layer) {
-      deselectShape();
-    } else {
-      selectShape(layer);
-    }
+    // Pure tap on a shape — select / deselect it
+    if (selectedLayer === layer) { deselectShape(); }
+    else { selectShape(layer); }
   }
 
   _resetMoveState();
@@ -3707,18 +3748,28 @@ function restoreLayers(layers) {
   }
 })();
 
-// Init — start with no tool selected so the hint stays visible.
-// Map drag is enabled so users can pan/explore freely before picking a tool.
-// Pencil and circle pulse to invite the user to pick one.
+// Init — pre-select freehand so the very first tap draws immediately.
+// We activate the tool directly (bypassing markDrawn) so the hint stays visible.
+// Only btn-circle pulses — btn-freehand is already visually selected (red/active).
 (function() {
-  mode = 'none'; // no tool active — all tools can be toggled on/off
-  map.dragging.enable();
-  map.scrollWheelZoom.enable();
-  map.getContainer().style.cursor = '';
-  document.getElementById('btn-freehand').classList.add('hint-pulse');
+  // Activate freehand directly, same as setMode but skip markDrawn
+  document.getElementById('btn-freehand').classList.remove('hint-pulse');
+  document.getElementById('btn-circle').classList.remove('hint-pulse');
+  cancelInProgress();
+  mode = 'freehand';
+  ALL_MODES.forEach(function(t) {
+    var el = document.getElementById('btn-' + t);
+    if (el) el.classList.toggle('active', t === 'freehand');
+  });
+  map.dragging.disable();
+  map.scrollWheelZoom.disable();
+  map.getContainer().style.cursor = 'crosshair';
+  hideSearchPanel();
+  // Pulse only circle to invite users to try it as alternative
   document.getElementById('btn-circle').classList.add('hint-pulse');
-  // Offset circle by half the pulse cycle so they alternate
-  document.getElementById('btn-circle').style.animationDelay = '-1.2s';
+  document.getElementById('btn-circle').style.animationDelay = '0s';
+  // Show the "pick a tool" hint for 7 seconds
+  showHintTimed(7000);
 })();
 
 // ── Go to my location (Home button) ───────────────────────────────────────────
@@ -3977,8 +4028,11 @@ if (window.innerWidth <= 768) {
   }, 6000);
 }
 
-// Run layout measurement on load and whenever anything might shift
-window.addEventListener('load', function() { setTimeout(updateLayout, 100); setTimeout(updateLayout, 600); });
+// Run layout measurement early (DOMContentLoaded + rAF) and on load/resize
+document.addEventListener('DOMContentLoaded', function() {
+  requestAnimationFrame(function() { updateLayout(); });
+});
+window.addEventListener('load', function() { updateLayout(); setTimeout(updateLayout, 400); });
 window.addEventListener('resize', updateLayout);
 // ResizeObserver keeps toolbar height accurate when it wraps to 2 rows
 (function() {
