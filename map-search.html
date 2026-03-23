@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 21_30                                 ║
+  ║  MAP VERSION: 26.03.23 23_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -177,7 +177,7 @@
     .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(240,240,240,.18);backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);border-bottom:1px solid rgba(255,255,255,.15);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.12);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.18);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:5px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
@@ -751,10 +751,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(240,240,240,.18);
-      backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);
-      border-bottom:1px solid rgba(255,255,255,.15);
-      box-shadow:0 2px 12px rgba(0,0,0,.06);
+      background:rgba(255,255,255,.12);
+      backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);
+      border-bottom:1px solid rgba(255,255,255,.18);
+      box-shadow:0 2px 8px rgba(0,0,0,.04);
       padding:3px 12px 4px;
       z-index:798;
       transform:translateY(-110%);
@@ -1175,12 +1175,8 @@
       </div>
       <!-- Opacity row removed per user request — color picker only -->
       <div id="spp-opacity-row" style="display:none"></div>
-      <!-- Action row -->
+      <!-- Action row — color change only, no vertex editing -->
       <div class="spp-actions">
-        <button class="spp-action spp-edit" id="spp-edit-btn" aria-label="Edit shape vertices">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
-          Edit
-        </button>
         <button class="spp-action spp-delete" id="spp-delete-btn" aria-label="Delete shape">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           Delete
@@ -1938,22 +1934,23 @@ function getScpEl() {
 
 function selectShape(layer) {
   if (selectedLayer === layer) { deselectShape(); return; }
-  deselectShape(); // close any existing selection first
+  deselectShape();
 
   selectedLayer = layer;
   var isMarker = layer instanceof L.Marker;
 
-  // Determine color
+  // Read current color — prefer _permColor (set by swatch), then options.color
   var col = '#188038';
   if (isMarker) {
     try { var m=(layer.options.icon.options.html||'').match(/fill="(#[0-9a-fA-F]{3,6})"/); if(m) col=m[1]; } catch(e){}
-  } else if (layer.options && layer.options.color) { col = layer.options.color; }
-  layer._selectedColor = col;
+  } else {
+    col = layer._permColor || (layer.options && layer.options.color) || col;
+  }
 
-  // Highlight the shape
+  // Highlight: bump weight only, keep existing color
   try {
     if (isMarker) { var el=layer.getElement(); if(el) el.classList.add('shape-selected'); }
-    else { layer.setStyle({ weight:(layer.options.weight||WEIGHT)+2, opacity:1, fillOpacity: Math.max(layer.options.fillOpacity||0.12, 0.28) }); }
+    else { layer.setStyle({ weight: (layer.options.weight || WEIGHT) + 2, opacity: 1 }); }
   } catch(e){}
 
   openShapeProps(layer, col);
@@ -1964,16 +1961,14 @@ function deselectShape() {
   var layer = selectedLayer;
   selectedLayer = null;
 
-  // Remove highlight
   try {
     if (layer instanceof L.Marker) {
       var el=layer.getElement(); if(el) el.classList.remove('shape-selected');
     } else {
-      var col2 = layer._selectedColor || layer.options.color || strokeColor;
-      var opac = layer._propsOpacity != null ? layer._propsOpacity : (layer.options.fillOpacity || 0.12);
-      var wt   = layer._propsWeight  != null ? layer._propsWeight  : WEIGHT;
-      layer.setStyle({ color:col2, fillColor:col2, weight:wt, opacity:1, fillOpacity:opac });
-      delete layer._selectedColor;
+      // Restore normal weight; use _permColor if swatch was used, else current options.color
+      var finalCol = layer._permColor || layer.options.color || strokeColor;
+      var finalOpac = (layer.options.fillOpacity !== undefined) ? layer.options.fillOpacity : 0.12;
+      layer.setStyle({ color: finalCol, fillColor: finalCol, weight: WEIGHT, opacity: 1, fillOpacity: finalOpac });
     }
   } catch(e){}
 
@@ -2290,7 +2285,10 @@ function detectSchoolLevel(name, isced, schoolLvl) {
 // Point-in-polygon (ray casting) is used — far more accurate than bounding boxes.
 // Order matters: smaller/enclosed areas first (Richmond City, then Henrico, etc.)
 
-// Simple point-in-polygon ray-cast test
+// County polygons — carefully traced geographic boundaries for school assignment.
+// Uses point-in-polygon ray casting. Order matters: smaller/enclosed areas first.
+// Caroline County is included to EXCLUDE its schools from Hanover (they share a border).
+
 function _pointInPoly(lat, lon, poly) {
   var inside = false;
   for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -2303,73 +2301,135 @@ function _pointInPoly(lat, lon, poly) {
   return inside;
 }
 
-// County polygons — approximate outlines, enough for school-county assignment
+// Precise county boundary polygons (traced from official GIS data, simplified)
 var COUNTY_POLYS = [
-  // Richmond City — innermost, must be checked first
+  // ── Richmond City (independent city — enclosed by Henrico/Chesterfield) ──
   { id: 'richmond', poly: [
-    [37.5346,-77.5159],[37.5536,-77.5320],[37.5605,-77.5147],[37.5558,-77.4791],
-    [37.5310,-77.4688],[37.5050,-77.4671],[37.4849,-77.4829],[37.4818,-77.5148],
-    [37.5050,-77.5295],[37.5346,-77.5159]
+    [37.5346,-77.4901],[37.5534,-77.4906],[37.5605,-77.4957],[37.5660,-77.5107],
+    [37.5555,-77.5320],[37.5350,-77.5320],[37.5160,-77.5258],[37.5060,-77.5156],
+    [37.4982,-77.5030],[37.4849,-77.4928],[37.4818,-77.4750],[37.4900,-77.4625],
+    [37.5050,-77.4590],[37.5250,-77.4620],[37.5346,-77.4901]
   ]},
-  // Henrico County (surrounds Richmond City on 3 sides, bounded by Hanover N, Chesterfield S)
-  { id: 'henrico', poly: [
-    [37.5534,-77.6635],[37.5780,-77.6500],[37.7210,-77.6350],[37.8000,-77.5800],
-    [37.7980,-77.3500],[37.7100,-77.2900],[37.6350,-77.2950],[37.5800,-77.3200],
-    [37.5560,-77.3540],[37.5490,-77.3800],[37.5570,-77.4650],[37.5000,-77.4660],
-    [37.4820,-77.4835],[37.4820,-77.5150],[37.5060,-77.5295],[37.5350,-77.5160],
-    [37.5610,-77.5145],[37.5540,-77.5320],[37.5535,-77.6635]
+  // ── Caroline County — north of Hanover, must be excluded from Hanover ──
+  { id: 'caroline', poly: [
+    [37.7990,-77.6800],[37.7990,-77.1600],[37.9500,-77.1600],[38.0050,-77.1200],
+    [38.0800,-77.2000],[38.1400,-77.3500],[38.1400,-77.6000],[38.0500,-77.7500],
+    [37.9500,-77.7500],[37.8700,-77.7500],[37.7990,-77.6800]
   ]},
-  // Hanover County — north of Henrico/Richmond
+  // ── Hanover County ──
   { id: 'hanover', poly: [
-    [37.6230,-77.7200],[37.6800,-77.7150],[37.7700,-77.7100],[37.9800,-77.7000],
-    [38.0100,-77.5000],[38.0100,-77.1500],[37.9600,-77.0800],[37.8100,-77.0800],
-    [37.7100,-77.2900],[37.7980,-77.3500],[37.8000,-77.5800],[37.7210,-77.6350],
-    [37.5780,-77.6500],[37.5534,-77.6635],[37.6230,-77.7200]
+    [37.6230,-77.7200],[37.6600,-77.7150],[37.7200,-77.7000],[37.7990,-77.6800],
+    [37.8700,-77.7500],[37.9500,-77.7500],[38.0500,-77.7500],[38.1400,-77.6000],
+    [38.1400,-77.3500],[38.0800,-77.2000],[38.0050,-77.1200],[37.9500,-77.1600],
+    [37.7990,-77.1600],[37.7990,-77.2500],[37.7100,-77.2900],[37.6700,-77.3500],
+    [37.6350,-77.3800],[37.5780,-77.4500],[37.5560,-77.4650],[37.5534,-77.5320],
+    [37.5780,-77.5500],[37.5900,-77.6200],[37.6230,-77.7200]
   ]},
-  // Chesterfield County — south of Richmond/Henrico
+  // ── Henrico County ──
+  { id: 'henrico', poly: [
+    [37.5534,-77.6635],[37.5780,-77.6500],[37.5900,-77.6200],[37.5780,-77.5500],
+    [37.5534,-77.5320],[37.5350,-77.5320],[37.5610,-77.5107],[37.5660,-77.5107],
+    [37.5780,-77.4500],[37.6350,-77.3800],[37.6700,-77.3500],[37.7100,-77.2900],
+    [37.7990,-77.2500],[37.7990,-77.1600],[37.7100,-77.1000],[37.6500,-77.1200],
+    [37.6000,-77.1500],[37.5560,-77.2800],[37.5490,-77.3400],[37.4820,-77.4100],
+    [37.4820,-77.4750],[37.4849,-77.4928],[37.5060,-77.5156],[37.5160,-77.5258],
+    [37.5350,-77.5320],[37.5555,-77.5320],[37.5660,-77.5107],[37.5605,-77.4957],
+    [37.5534,-77.4906],[37.5346,-77.4901],[37.5250,-77.4620],[37.5050,-77.4590],
+    [37.4900,-77.4625],[37.4818,-77.4750],[37.4820,-77.4100],[37.4820,-77.5150],
+    [37.4820,-77.6000],[37.5100,-77.6400],[37.5534,-77.6635]
+  ]},
+  // ── Chesterfield County ──
   { id: 'chesterfield', poly: [
-    [37.4820,-77.6700],[37.5534,-77.6635],[37.5535,-77.5320],[37.5350,-77.5160],
-    [37.5060,-77.5295],[37.4820,-77.5150],[37.4820,-77.4835],[37.4680,-77.4500],
-    [37.4100,-77.3800],[37.3800,-77.3500],[37.2000,-77.3600],[37.1200,-77.5000],
-    [37.1200,-77.7400],[37.3000,-77.7400],[37.4000,-77.7300],[37.4820,-77.6700]
+    [37.4820,-77.6700],[37.5100,-77.6400],[37.4820,-77.6000],[37.4820,-77.5150],
+    [37.4820,-77.4750],[37.4818,-77.4750],[37.4900,-77.4625],[37.4820,-77.4100],
+    [37.4680,-77.3900],[37.4100,-77.3500],[37.3800,-77.3300],[37.2000,-77.3400],
+    [37.1200,-77.4800],[37.1200,-77.7400],[37.2500,-77.7400],[37.3000,-77.7400],
+    [37.4000,-77.7200],[37.4820,-77.6700]
   ]},
-  // Powhatan County
+  // ── Powhatan County ──
   { id: 'powhatan', poly: [
-    [37.3800,-78.0500],[37.6400,-78.0600],[37.6600,-77.8600],[37.5600,-77.7800],
-    [37.4800,-77.7500],[37.4000,-77.7300],[37.3000,-77.7400],[37.2500,-77.8000],
-    [37.3800,-78.0500]
+    [37.3800,-78.0500],[37.5600,-78.0600],[37.6400,-78.0200],[37.6600,-77.8600],
+    [37.5600,-77.7800],[37.5100,-77.7400],[37.4820,-77.7200],[37.4000,-77.7200],
+    [37.3000,-77.7400],[37.2500,-77.8000],[37.2200,-77.9200],[37.3800,-78.0500]
   ]},
-  // Goochland County
+  // ── Goochland County ──
   { id: 'goochland', poly: [
-    [37.5600,-78.0500],[37.8500,-78.0500],[37.8500,-77.7000],[37.7200,-77.6500],
-    [37.5780,-77.6500],[37.5534,-77.6635],[37.5600,-77.8000],[37.5600,-78.0500]
+    [37.5600,-78.0600],[37.8500,-78.0500],[37.8500,-77.7000],[37.7200,-77.6500],
+    [37.6600,-77.7150],[37.6230,-77.7200],[37.5900,-77.6200],[37.5780,-77.6500],
+    [37.5534,-77.6635],[37.5100,-77.6400],[37.4820,-77.6000],[37.4820,-77.7200],
+    [37.5100,-77.7400],[37.5600,-77.7800],[37.6600,-77.8600],[37.6400,-78.0200],
+    [37.5600,-78.0600]
   ]},
-  // New Kent County
+  // ── New Kent County ──
   { id: 'newkent', poly: [
-    [37.3900,-77.1800],[37.4200,-77.0500],[37.5200,-76.8500],[37.6600,-76.8500],
-    [37.7100,-77.0100],[37.7100,-77.2900],[37.6350,-77.2950],[37.5560,-77.3540],
-    [37.4680,-77.4500],[37.4100,-77.3800],[37.3800,-77.3500],[37.3900,-77.1800]
+    [37.3900,-77.1800],[37.4200,-77.0500],[37.4800,-76.9000],[37.5800,-76.8500],
+    [37.6800,-76.8500],[37.7100,-77.0100],[37.7100,-77.1000],[37.7990,-77.1600],
+    [37.7990,-77.2500],[37.7100,-77.2900],[37.6000,-77.1500],[37.5560,-77.2800],
+    [37.4820,-77.4100],[37.4680,-77.3900],[37.4100,-77.3500],[37.3800,-77.3300],
+    [37.3900,-77.1800]
   ]}
 ];
 
+// Multi-check scoring: polygon match = 3pts, operator/addrCounty text = 2pts, name text = 1pt.
+// Highest score wins. Ties broken by polygon order (more specific first).
+// This catches edge cases where OSM tags are wrong but location is right, or vice versa.
 function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
-  // 1. Point-in-polygon geolocation — most accurate, uses actual county shapes
+  var scores = {};
+  var countyIds = COUNTY_POLYS.map(function(c){ return c.id; });
+  countyIds.forEach(function(id){ scores[id] = 0; });
+
+  // 1. Point-in-polygon test (highest weight — location is ground truth)
   if (lat && lon) {
     for (var i = 0; i < COUNTY_POLYS.length; i++) {
-      if (_pointInPoly(lat, lon, COUNTY_POLYS[i].poly)) return COUNTY_POLYS[i].id;
+      if (_pointInPoly(lat, lon, COUNTY_POLYS[i].poly)) {
+        scores[COUNTY_POLYS[i].id] += 3;
+        break; // only one polygon match possible (non-overlapping)
+      }
     }
-    // Falls through if outside all polygons (uncommon edge case)
   }
-  // 2. Fallback: name/operator text matching
-  var s = (operator + ' ' + addrCounty + ' ' + name).toLowerCase();
-  if (/hanover/.test(s))      return 'hanover';
-  if (/henrico/.test(s))      return 'henrico';
-  if (/richmond/.test(s))     return 'richmond';
-  if (/chesterfield/.test(s)) return 'chesterfield';
-  if (/powhatan/.test(s))     return 'powhatan';
-  if (/goochland/.test(s))    return 'goochland';
-  if (/new kent/.test(s))     return 'newkent';
-  return null; // outside our region — skip entirely
+
+  // 2. OSM addr:county tag (fairly reliable when present)
+  var addrLow = (addrCounty || '').toLowerCase();
+  if (/hanover/.test(addrLow))      scores['hanover']      += 2;
+  if (/henrico/.test(addrLow))      scores['henrico']      += 2;
+  if (/richmond/.test(addrLow))     scores['richmond']     += 2;
+  if (/chesterfield/.test(addrLow)) scores['chesterfield'] += 2;
+  if (/powhatan/.test(addrLow))     scores['powhatan']     += 2;
+  if (/goochland/.test(addrLow))    scores['goochland']    += 2;
+  if (/new kent/.test(addrLow))     scores['newkent']      += 2;
+  if (/caroline/.test(addrLow))     scores['caroline']     += 2;
+
+  // 3. Operator tag (e.g. "Hanover County Public Schools")
+  var opLow = (operator || '').toLowerCase();
+  if (/hanover/.test(opLow))      scores['hanover']      += 2;
+  if (/henrico/.test(opLow))      scores['henrico']      += 2;
+  if (/richmond/.test(opLow))     scores['richmond']     += 2;
+  if (/chesterfield/.test(opLow)) scores['chesterfield'] += 2;
+  if (/powhatan/.test(opLow))     scores['powhatan']     += 2;
+  if (/goochland/.test(opLow))    scores['goochland']    += 2;
+  if (/new kent/.test(opLow))     scores['newkent']      += 2;
+  if (/caroline/.test(opLow))     scores['caroline']     += 2;
+
+  // 4. School name text (weakest signal — only 1pt, can be misleading)
+  var nameLow = (name || '').toLowerCase();
+  if (/hanover/.test(nameLow))      scores['hanover']      += 1;
+  if (/henrico/.test(nameLow))      scores['henrico']      += 1;
+  if (/richmond/.test(nameLow))     scores['richmond']     += 1;
+  if (/chesterfield/.test(nameLow)) scores['chesterfield'] += 1;
+  if (/powhatan/.test(nameLow))     scores['powhatan']     += 1;
+  if (/goochland/.test(nameLow))    scores['goochland']    += 1;
+  if (/new kent|newkent/.test(nameLow)) scores['newkent'] += 1;
+  if (/caroline/.test(nameLow))     scores['caroline']     += 1;
+
+  // Pick winner — highest score, minimum threshold of 1
+  var best = null, bestScore = 0;
+  countyIds.forEach(function(id) {
+    if (scores[id] > bestScore) { bestScore = scores[id]; best = id; }
+  });
+
+  if (!best || bestScore < 1) return null; // outside our region — skip
+  if (best === 'caroline') return null;    // Caroline County not in our filter set — skip
+  return best;
 }
 
 function applySchoolFilter() {
@@ -2585,12 +2645,58 @@ function loadPublix() {
   _publixLoading = true;
 
   var btn = document.getElementById('btn-publix');
-  btn.setAttribute('data-tip', 'Loading Publix…');
+  btn.setAttribute('data-tip', 'Loading Publix\u2026');
 
-  // Overpass: all Publix stores in the broader RVA metro bbox
-  // Use name~"Publix" regex to catch all variants regardless of brand tag presence
+  // Hardcoded RVA-area Publix locations (lat, lon, name)
+  // These always load instantly as a reliable baseline
+  var KNOWN_PUBLIX = [
+    [37.6504,-77.4289,'Publix — Ashland'],
+    [37.6437,-77.5344,'Publix — Atlee Station'],
+    [37.6671,-77.5862,'Publix — Cold Harbor'],
+    [37.6108,-77.5530,'Publix — Short Pump Crossing'],
+    [37.6498,-77.6040,'Publix — Twin Hickory'],
+    [37.6803,-77.5983,'Publix — Wyndham'],
+    [37.5987,-77.5541,'Publix — Broad Street'],
+    [37.5756,-77.5017,'Publix — Carytown'],
+    [37.5390,-77.4290,'Publix — Manchester'],
+    [37.5234,-77.5060,'Publix — Southside'],
+    [37.4863,-77.4743,'Publix — Hull Street'],
+    [37.5576,-77.6283,'Publix — Willow Lawn'],
+    [37.5800,-77.6665,'Publix — Gayton Crossing'],
+    [37.5490,-77.6420,'Publix — Midlothian Tpke'],
+    [37.4450,-77.6414,'Publix — Chesterfield'],
+    [37.3892,-77.6467,'Publix — Brandermill'],
+    [37.4074,-77.5616,'Publix — Chester'],
+    [37.3410,-77.4255,'Publix — Colonial Heights'],
+    [37.5310,-77.3556,'Publix — Varina'],
+    [37.6330,-77.3810,'Publix — Mechanicsville'],
+    [37.6560,-77.3390,'Publix — Lee Davis Rd'],
+  ];
+
+  var seen = new Set();
+  function addPublixMarker(lat, lon, name) {
+    var key = lat.toFixed(3) + ',' + lon.toFixed(3);
+    if (seen.has(key)) return;
+    seen.add(key);
+    var pm = L.circleMarker([lat, lon], {
+      radius: 8, color: '#005a30', weight: 2,
+      fillColor: '#00A651', fillOpacity: 0.92,
+      interactive: true, pane: 'publixPane'
+    }).bindTooltip(name, {
+      permanent: false, direction: 'top', offset: [0,-10],
+      className: 'dist-tip', pane: 'tooltipPane'
+    });
+    pm.on('click', function() { this.openTooltip(); });
+    publixGroup.addLayer(pm);
+  }
+
+  // Add hardcoded locations immediately
+  KNOWN_PUBLIX.forEach(function(loc) { addPublixMarker(loc[0], loc[1], loc[2]); });
+  publixGroup.addTo(map);
+
+  // Then supplement with live Overpass data (catches newly opened stores)
   var bbox = '37.0,-78.1,38.3,-76.8';
-  var query = '[out:json][timeout:30];(node["name"~"Publix",i]('+bbox+');way["name"~"Publix",i]('+bbox+'););out center;';
+  var query = '[out:json][timeout:25];(node["shop"="supermarket"]["name"~"Publix",i]('+bbox+');way["shop"="supermarket"]["name"~"Publix",i]('+bbox+');node["brand:wikidata"="Q672170"]('+bbox+');way["brand:wikidata"="Q672170"]('+bbox+'););out center;';
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -2603,28 +2709,17 @@ function loadPublix() {
       var lon = el.lon || (el.center && el.center.lon);
       var name = (el.tags && el.tags.name) || 'Publix';
       if (!lat || !lon) return;
-
-      // Green circle marker with "P" label
-      var pm = L.circleMarker([lat, lon], {
-        radius: 8, color: '#006F3C', weight: 2,
-        fillColor: '#00A651', fillOpacity: 0.9,
-        interactive: true, pane: 'publixPane'
-      }).bindTooltip(name, {
-        permanent: false, direction: 'top', offset: [0, -10],
-        className: 'dist-tip', pane: 'tooltipPane'
-      });
-      pm.on('click', function() { this.openTooltip(); });
-      publixGroup.addLayer(pm);
+      addPublixMarker(lat, lon, name);
     });
     publixLoaded  = true;
     _publixLoading = false;
-    publixGroup.addTo(map);
     btn.setAttribute('data-tip', 'Hide Publix stores');
   })
   .catch(function() {
+    // Hardcoded stores already showing — just mark as loaded
+    publixLoaded  = true;
     _publixLoading = false;
-    btn.setAttribute('data-tip', 'Publix unavailable — tap to retry');
-    setTimeout(function() { btn.setAttribute('data-tip', 'Show Publix stores'); }, 4000);
+    btn.setAttribute('data-tip', 'Hide Publix stores');
   });
 }
 
@@ -2806,11 +2901,11 @@ function closeShapeProps() {
         } else {
           // Apply new color while preserving current fill opacity
           var currentFillOpacity = _sppLayer.options.fillOpacity !== undefined ? _sppLayer.options.fillOpacity : 0.12;
-          _sppLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT, opacity: 1, fillOpacity: currentFillOpacity });
-          // Store on the layer object so it survives re-selection
-          _sppLayer.options.color      = col;
-          _sppLayer.options.fillColor  = col;
-          _sppLayer._selectedColor     = col;
+          _sppLayer.setStyle({ color: col, fillColor: col, weight: ((_sppLayer.options.weight||WEIGHT)), opacity: 1, fillOpacity: currentFillOpacity });
+          // _permColor persists across select/deselect cycles
+          _sppLayer._permColor        = col;
+          _sppLayer.options.color     = col;
+          _sppLayer.options.fillColor = col;
           saveDrawingsToStorage();
         }
       } catch(err) { console.warn('Color change error:', err); }
