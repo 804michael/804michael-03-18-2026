@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.22 14_00                                 ║
+  ║  MAP VERSION: 26.03.22 15_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -106,8 +106,8 @@
     #banner{transition:transform .5s ease,opacity .5s ease}
     #banner.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
     /* pg-header description fade */
-    .pg-header p{transition:opacity .5s ease,max-height .5s ease,margin .5s ease,padding .5s ease;overflow:hidden;max-height:80px}
-    .pg-header p.hide{opacity:0;max-height:0;margin:0;padding:0;pointer-events:none;font-size:0}
+    .pg-header p{transition:opacity .4s ease,max-height .4s ease,margin .4s ease,padding .4s ease,line-height .4s ease;overflow:hidden;max-height:60px;line-height:1.25}
+    .pg-header p.hide{opacity:0;max-height:0 !important;margin:0 !important;padding:0 !important;line-height:0 !important;pointer-events:none}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -173,17 +173,17 @@
     /* Page header — fixed, sits between nav and toolbar */
     /* ── FROSTED PG-HEADER: to revert to solid black, replace the background/backdrop lines
        with just: background:var(--black);  and remove the two backdrop-filter lines. ── */
-    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .5s ease,height .5s ease}
-    .pg-header.compact{padding:2px 16px 2px}
+    .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;transition:padding .4s ease}
+    .pg-header.compact{padding:3px 16px}
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.375rem,2.75vw,1.75rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.04);backdrop-filter:blur(22px) saturate(2.8) brightness(1.08);-webkit-backdrop-filter:blur(22px) saturate(2.8) brightness(1.08);border-bottom:1px solid rgba(255,255,255,.18);padding:6px 12px;box-shadow:0 2px 14px rgba(0,0,0,.04);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(0,0,0,.18);backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);border-bottom:1px solid rgba(255,255,255,.15);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:4px}
-    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.82);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-    .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
+    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.25);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .tool-btn:hover{background:rgba(255,255,255,.48);border-color:rgba(255,255,255,.75)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 2px 8px rgba(218,41,28,.45)}
     .tool-btn svg{pointer-events:none}
     .tool-btn:disabled{opacity:.28;cursor:not-allowed}
@@ -200,7 +200,7 @@
     #pin-sheet-colors button[style*="#111111"][style*="borderColor: rgb(17"]{border-color:#777 !important}
     /* Pulsing hint on tool buttons before first selection */
     @keyframes tool-pulse{
-      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(0,0,0,.18);background:rgba(255,255,255,.82)}
+      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.25)}
       50%{box-shadow:0 0 0 6px rgba(218,41,28,.30);border-color:rgba(218,41,28,.65);background:rgba(218,41,28,.10)}
     }
     .tool-btn.hint-pulse{animation:tool-pulse 2.4s ease-in-out infinite}
@@ -654,7 +654,7 @@
     }
 
     /* ── County boundary labels ── */
-    .county-outline-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.38);white-space:nowrap;pointer-events:none;text-shadow:0 0 4px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.7)}
+    .county-outline-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(180,28,18,.85);white-space:nowrap;pointer-events:none;text-shadow:0 0 3px rgba(255,255,255,1),0 0 6px rgba(255,255,255,.9),0 0 12px rgba(255,255,255,.8)}
 
     /* ── Shape Properties Panel ────────────────────────────────────────────── */
     #shape-props{
@@ -798,10 +798,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(255,255,255,.04);
-      backdrop-filter:blur(22px) saturate(2.8) brightness(1.08);-webkit-backdrop-filter:blur(22px) saturate(2.8) brightness(1.08);
-      border-bottom:1px solid rgba(255,255,255,.18);
-      box-shadow:0 2px 14px rgba(0,0,0,.04);
+      background:rgba(0,0,0,.18);
+      backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.8) brightness(1.1);
+      border-bottom:1px solid rgba(255,255,255,.15);
+      box-shadow:0 2px 12px rgba(0,0,0,.08);
       padding:3px 12px 4px;
       z-index:798;
       transform:translateY(-110%);
@@ -816,25 +816,25 @@
     }
     .sfp-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:2px 0}
     .sfp-label{display:none}
-    .sfp-sep{width:1px;height:20px;background:rgba(0,0,0,.15);flex-shrink:0;margin:0 6px;align-self:center}
+    .sfp-sep{width:1px;height:20px;background:rgba(255,255,255,.25);flex-shrink:0;margin:0 6px;align-self:center}
 
-    /* Level toggle — styled like tool-btn: solid white bg, goes dark when off */
+    /* Level toggle — styled like tool-btn: semi-transparent, goes dimmer when off */
     .sfp-level{
       display:inline-flex;align-items:center;gap:5px;
-      background:rgba(255,255,255,.85);
-      border:1.5px solid rgba(0,0,0,.2);
+      background:rgba(255,255,255,.25);
+      border:1.5px solid rgba(255,255,255,.5);
       border-radius:6px;
       padding:1px 8px 1px 5px;
       cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;
-      color:var(--black);
+      color:var(--white);
       transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
       height:26px;
     }
-    .sfp-level:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
-    .sfp-level.off{background:rgba(255,255,255,.55);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.12)}
+    .sfp-level:hover{background:rgba(255,255,255,.42);border-color:rgba(255,255,255,.75)}
+    .sfp-level.off{background:rgba(255,255,255,.10);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.2)}
     .sfp-dot{
       width:11px;height:11px;border-radius:50%;flex-shrink:0;
       border:2.5px solid rgba(0,0,0,.15);
@@ -852,36 +852,36 @@
     #sfp-mid.off  .sfp-dot{border-color:#f29900}
     #sfp-high.off .sfp-dot{border-color:#188038}
 
-    /* County chip — same tool-btn style */
+    /* County chip — semi-transparent to match toolbar */
     .sfp-county{
       display:inline-flex;align-items:center;
-      background:rgba(255,255,255,.85);
-      border:1.5px solid rgba(0,0,0,.2);
+      background:rgba(255,255,255,.25);
+      border:1.5px solid rgba(255,255,255,.5);
       border-radius:6px;
       padding:0 9px;
       height:26px;
       cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-      color:var(--black);
+      color:var(--white);
       transition:background .15s,opacity .15s,border-color .15s;
       user-select:none;-webkit-user-select:none;
     }
-    .sfp-county:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
-    .sfp-county.off{background:rgba(255,255,255,.55);color:rgba(0,0,0,.38);border-color:rgba(0,0,0,.12)}
-    .sfp-county:not(.off){background:rgba(255,255,255,.85)}
+    .sfp-county:hover{background:rgba(255,255,255,.42);border-color:rgba(255,255,255,.75)}
+    .sfp-county.off{background:rgba(255,255,255,.10);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.2)}
+    .sfp-county:not(.off){background:rgba(255,255,255,.25)}
     .sfp-extra{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
     .sfp-extra[hidden]{display:none !important}
     .sfp-more{
       display:inline-flex;align-items:center;
-      background:rgba(255,255,255,.50);border:1px solid rgba(0,0,0,.15);
+      background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);
       border-radius:7px;height:26px;padding:0 8px;
       cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
-      color:var(--black);transition:background .15s;
+      color:rgba(255,255,255,.7);transition:background .15s;
       user-select:none;-webkit-user-select:none;
     }
-    .sfp-more:hover{background:rgba(255,255,255,.85)}
+    .sfp-more:hover{background:rgba(255,255,255,.35)}
 
     /* Collapse handle button on the filter panel */
     #sfp-collapse-btn{
@@ -1153,8 +1153,8 @@
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
     <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
-    <button class="sfp-county"     data-county="chesterfield" aria-pressed="true">Chesterfield</button>
-    <button class="sfp-county"     data-county="richmond"     aria-pressed="true">Richmond City</button>
+    <button class="sfp-county off" data-county="chesterfield" aria-pressed="false">Chesterfield</button>
+    <button class="sfp-county off" data-county="richmond"     aria-pressed="false">Richmond City</button>
     <!-- More button reveals extra counties -->
     <button class="sfp-more" id="sfp-more-btn" aria-expanded="false" title="More counties">
       <svg id="sfp-more-chevron" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="3,2 9,6 3,10"/></svg>
@@ -1346,7 +1346,7 @@
       </button>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 14_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.22 15_00</p>
   </div>
 </div>
 
@@ -2232,18 +2232,10 @@ function endMove() {
   var ids = COUNTY_RELATIONS.map(function(r){ return 'relation(' + r.id + ');'; }).join('');
   var query = '[out:json][timeout:30];(' + ids + ');out geom;';
 
-  // Create a dedicated pane below everything else
+  // Create a dedicated pane ABOVE the tile layer (tiles are ~200, we go to 225)
   var countyPane = map.createPane('countyPane');
-  countyPane.style.zIndex = 180;
+  countyPane.style.zIndex = 225;
   countyPane.style.pointerEvents = 'none';
-
-  // Add CSS for county labels if not already present
-  if (!document.getElementById('county-label-style')) {
-    var s = document.createElement('style');
-    s.id = 'county-label-style';
-    s.textContent = '.county-outline-label{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.38);white-space:nowrap;pointer-events:none;text-shadow:0 0 4px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.7)}';
-    document.head.appendChild(s);
-  }
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -2267,14 +2259,14 @@ function endMove() {
 
       if (rings.length === 0) return;
 
-      // Draw county outline
+      // Draw county outline — bold solid stroke so it's clearly visible on the map
       L.polygon(rings, {
-        color: 'rgba(0,0,0,0.32)',
-        weight: 2,
+        color: '#DA291C',
+        weight: 2.5,
+        opacity: 0.55,
         fill: false,
         interactive: false,
-        pane: 'countyPane',
-        dashArray: '6 4'
+        pane: 'countyPane'
       }).addTo(map);
 
       // Approximate centroid: average all ring points from first ring
@@ -2321,10 +2313,10 @@ let schoolsVisible = false;
 // All loaded school records: { marker, level, county }
 var schoolData = [];
 
-// Filter state — Hanover, Henrico, Chesterfield, Richmond on by default
+// Filter state — Hanover + Henrico on by default; others off
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
-  counties: { hanover: true, henrico: true, richmond: true, chesterfield: true,
+  counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
                powhatan: false, goochland: false, newkent: false }
 };
 
@@ -2352,15 +2344,17 @@ function detectSchoolLevel(name, isced, schoolLvl) {
 }
 
 // County bounding boxes — [south, west, north, east]
-// Approximate but accurate enough for the VA counties we serve.
+// Order matters: more specific (smaller) counties listed before larger overlapping ones.
+// Richmond City sits inside Henrico's bbox so it MUST come first.
+// Henrico south edge raised to 37.575 to prevent overlap with Chesterfield.
 var COUNTY_BOXES = [
-  { id: 'hanover',      box: [37.62,-77.73,38.02,-77.05] },
-  { id: 'richmond',     box: [37.44,-77.52,37.62,-77.37] },  // City of Richmond — MUST be before Henrico (it's contained inside Henrico bbox)
-  { id: 'henrico',      box: [37.42,-77.67,37.78,-77.07] },  // Excludes Richmond city (checked above)
-  { id: 'chesterfield', box: [37.10,-77.74,37.57,-77.30] },
-  { id: 'powhatan',     box: [37.38,-78.07,37.64,-77.68] },
-  { id: 'goochland',    box: [37.55,-78.05,37.85,-77.66] },
-  { id: 'newkent',      box: [37.38,-77.19,37.66,-76.83] },
+  { id: 'hanover',      box: [37.62, -77.73, 38.02, -77.05] },
+  { id: 'richmond',     box: [37.44, -77.52, 37.62, -77.37] }, // City — inside Henrico bbox, must be first
+  { id: 'henrico',      box: [37.575,-77.67, 37.80, -77.07] }, // South edge raised above Chesterfield overlap
+  { id: 'chesterfield', box: [37.10, -77.74, 37.575,-77.30] }, // North edge matches Henrico south
+  { id: 'powhatan',     box: [37.38, -78.07, 37.64, -77.68] },
+  { id: 'goochland',    box: [37.55, -78.05, 37.85, -77.66] },
+  { id: 'newkent',      box: [37.38, -77.19, 37.66, -76.83] },
 ];
 
 function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
@@ -3942,12 +3936,11 @@ function updateLayout() {
 // ── A+B: On mobile, banner hide AND pg-header description collapse fire together ─
 if (window.innerWidth <= 768) {
   setTimeout(function() {
-    // Fire both at exactly the same moment
     var banner = document.getElementById('banner');
     var pgP    = document.querySelector('.pg-header p');
     var pgH    = document.querySelector('.pg-header');
 
-    // Collapse description
+    // Collapse description and compact header simultaneously
     if (pgP) pgP.classList.add('hide');
     if (pgH) pgH.classList.add('compact');
 
@@ -3956,20 +3949,31 @@ if (window.innerWidth <= 768) {
     setTimeout(function() {
       banner.style.display = 'none';
       document.documentElement.style.setProperty('--banner-h', '0px');
-      updateLayout();
-    }, 520);
+    }, 450);
 
-    // Re-measure after description transition too
-    setTimeout(updateLayout, 520);
+    // Poll updateLayout every 50ms for 700ms to track the transition in real-time
+    var _pollCount = 0;
+    var _pollInterval = setInterval(function() {
+      updateLayout();
+      _pollCount++;
+      if (_pollCount >= 14) clearInterval(_pollInterval);
+    }, 50);
   }, 5000);
 } else {
-  // Desktop: just collapse the description on its own timer
+  // Desktop: collapse the description on its own timer
   setTimeout(function() {
     var pgP = document.querySelector('.pg-header p');
     if (pgP) pgP.classList.add('hide');
     var pgH = document.querySelector('.pg-header');
     if (pgH) pgH.classList.add('compact');
-    setTimeout(updateLayout, 520);
+
+    // Poll updateLayout throughout the CSS transition
+    var _pollCount = 0;
+    var _pollInterval = setInterval(function() {
+      updateLayout();
+      _pollCount++;
+      if (_pollCount >= 14) clearInterval(_pollInterval);
+    }, 50);
   }, 6000);
 }
 
@@ -3981,6 +3985,12 @@ window.addEventListener('resize', updateLayout);
   var toolbar = document.getElementById('toolbar');
   if (!toolbar || !window.ResizeObserver) return;
   new ResizeObserver(function() { updateLayout(); }).observe(toolbar);
+})();
+// ResizeObserver on pg-header so collapsing description triggers layout update in real-time
+(function() {
+  var pgHeader = document.querySelector('.pg-header');
+  if (!pgHeader || !window.ResizeObserver) return;
+  new ResizeObserver(function() { updateLayout(); }).observe(pgHeader);
 })();
 
 // ── Draggable floating scale bar ──────────────────────────────────────────────
