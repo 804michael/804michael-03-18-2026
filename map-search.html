@@ -344,7 +344,8 @@
     @media(min-width:600px){
       .map-wrap{
         margin-top: var(--chrome-h, 192px);
-        height: calc(100dvh - var(--chrome-h, 192px) - 28px);
+        height: calc(100dvh - var(--chrome-h, 192px) - 44px);
+        min-height: 0; /* override base min-height so map never pushes share-panel below fold */
       }
       .share-panel{
         padding-top: 0;
@@ -353,13 +354,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 28px;
+        height: 44px;
         background: var(--black);
         cursor: pointer;
         margin: 0;
         padding: 0 24px;
         width: 100%;
-        font-size: clamp(.8rem,1.8vw,1rem);
+        font-size: clamp(.85rem,1.8vw,1.05rem);
       }
     }
     .share-panel-in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
@@ -1230,22 +1231,11 @@
       </div>
       <!-- Action row -->
       <div class="spp-actions">
-        <button class="spp-action spp-edit" id="spp-edit-btn" aria-label="Edit vertices">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
-          Edit
-        </button>
         <button class="spp-action spp-delete" id="spp-delete-btn" aria-label="Delete shape">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           Delete
         </button>
       </div>
-    </div>
-
-    <!-- Edit mode bar — bottom bar while vertex editing is active -->
-    <div id="edit-mode-bar">
-      <span>Drag vertices to edit</span>
-      <button class="done" id="edit-done-btn">Done</button>
-      <button id="edit-cancel-btn">Cancel</button>
     </div>
 
     <div class="school-toast" id="school-toast">
@@ -1378,9 +1368,7 @@
       </svg>
     </a>
     <p class="ft-copy">
-      &copy; <span class="yr"></span> Michael Hottman LLC. is a Licensed Real Estate Firm in Virginia — Michael Hottman is a Licensed Real Estate Broker in Virginia<br/>
-      Affiliated with Malcolm Real Estate, Inc.<br/>
-      Helping buyers find <strong style="font-weight:600;color:rgba(255,255,255,.55)">homes for sale in Ashland VA</strong>, Hanover County, Glen Allen, VA, Mechanicsville, VA while also helping sellers get the most value and money out of their home at the right time in Ashland VA, Hanover County, Glen Allen, VA, Mechanicsville, VA and Surrounding areas
+      &copy; <span class="yr"></span> Michael Hottman LLC. is a Licensed Real Estate Firm in Virginia — Michael Hottman is a Licensed Real Estate Broker in Virginia. Affiliated with Malcolm Real Estate, Inc. Helping buyers find <strong style="font-weight:600;color:rgba(255,255,255,.55)">homes for sale in Ashland VA</strong>, Hanover County, Glen Allen, VA, Mechanicsville, VA while also helping sellers get the most value and money out of their home at the right time in Ashland VA, Hanover County, Glen Allen, VA, Mechanicsville, VA and Surrounding areas
       <span itemscope itemtype="https://schema.org/RealEstateAgent" style="display:none">
         <span itemprop="name">Michael Hottman</span>
         <span itemprop="telephone">+18046424235</span>
@@ -1703,7 +1691,7 @@ function deactivateAllTools() {
   map.scrollWheelZoom.enable();
   map.getContainer().style.cursor = '';
   hideSearchPanel();
-  closePropsSheet(); // also calls deselectShape internally
+  deselectShape(); // close SPP panel and remove highlight
 }
 
 window.setMode = function(m) {
@@ -1986,118 +1974,62 @@ function getScpEl() {
   return _scpEl;
 }
 
-// ── Properties sheet state ───────────────────────────────────────────────────
-var _propsEditing = false;
-var _propsPreEditLatLngs = null;
-var _propsPreEditCenter  = null;
-var _propsPreEditRadius  = null;
+// ── Simple shape selection — uses SPP panel only, no backdrop ────────────────
+// Tap a shape in Move mode → this opens the SPP floating panel.
+// Tap the same shape again (or tap empty area) → deselects.
+// No vertex editing, no backdrop blocking the map.
 
-function openPropsSheet(layer) {
-  if (selectedLayer) closePropsSheet();
+function selectShape(layer) {
+  if (selectedLayer === layer) { deselectShape(); return; }
+  deselectShape(); // close any existing selection first
+
   selectedLayer = layer;
   var isMarker = layer instanceof L.Marker;
-  var isCircle = layer instanceof L.Circle && !(layer instanceof L.CircleMarker);
 
+  // Determine color
   var col = '#188038';
   if (isMarker) {
     try { var m=(layer.options.icon.options.html||'').match(/fill="(#[0-9a-fA-F]{3,6})"/); if(m) col=m[1]; } catch(e){}
   } else if (layer.options && layer.options.color) { col = layer.options.color; }
   layer._selectedColor = col;
 
+  // Highlight the shape
   try {
     if (isMarker) { var el=layer.getElement(); if(el) el.classList.add('shape-selected'); }
-    else { layer.setStyle({ weight:(layer.options.weight||WEIGHT)+2, opacity:1, color:col, fillColor:col, fillOpacity:layer._propsOpacity!=null?layer._propsOpacity:0.28 }); }
+    else { layer.setStyle({ weight:(layer.options.weight||WEIGHT)+2, opacity:1, fillOpacity: Math.max(layer.options.fillOpacity||0.12, 0.28) }); }
   } catch(e){}
 
-  var sheet   = document.getElementById('props-sheet');
-  var opRow   = document.getElementById('props-opacity-row');
-  var wtRow   = document.getElementById('props-weight-row');
-  var editBtn = document.getElementById('props-edit-btn');
-  var doneBtn = document.getElementById('props-done-btn');
-
-  document.querySelectorAll('.props-swatch').forEach(function(sw){ sw.classList.toggle('active', sw.dataset.col===col); });
-
-  var fillOpacity = isMarker ? null : (layer._propsOpacity!=null ? layer._propsOpacity : (layer.options.fillOpacity||0.12));
-  if (isMarker) { opRow.style.display='none'; wtRow.style.display='none'; editBtn.style.display='none'; }
-  else {
-    opRow.style.display=''; wtRow.style.display=''; editBtn.style.display='';
-    var pct=Math.round(fillOpacity*100);
-    document.getElementById('props-opacity').value=pct;
-    document.getElementById('props-opacity-val').textContent=pct+'%';
-  }
-
-  var curW = isMarker ? null : (layer.options.weight||WEIGHT);
-  document.querySelectorAll('.props-weight-btn').forEach(function(b){
-    var bw=parseInt(b.dataset.w);
-    b.classList.toggle('active', curW!=null && (bw===curW || (curW<=2&&bw===2)));
-  });
-
-  editBtn.classList.remove('editing'); doneBtn.style.display='none'; _propsEditing=false;
-  document.getElementById('props-title').textContent = (isMarker?'Pin':isCircle?'Circle':'Shape')+' Properties';
-
-  var vv=window.visualViewport;
-  if(vv) sheet.style.bottom=Math.max(0,window.innerHeight-vv.height-vv.offsetTop)+'px';
-  document.getElementById('props-backdrop').classList.add('open');
-  sheet.classList.add('open');
+  openShapeProps(layer, col);
 }
 
-function closePropsSheet() {
-  if (_propsEditing) stopVertexEdit(false);
-  if (selectedLayer) {
-    try {
-      if (selectedLayer instanceof L.Marker) {
-        var el=selectedLayer.getElement(); if(el) el.classList.remove('shape-selected');
-      } else {
-        var col2=selectedLayer._selectedColor||selectedLayer.options.color||strokeColor;
-        var opac=selectedLayer._propsOpacity!=null?selectedLayer._propsOpacity:0.12;
-        var wt=selectedLayer._propsWeight!=null?selectedLayer._propsWeight:WEIGHT;
-        selectedLayer.setStyle({ color:col2,fillColor:col2,weight:wt,opacity:1,fillOpacity:opac });
-        delete selectedLayer._selectedColor;
-      }
-    } catch(e){}
-    selectedLayer = null;
-  }
-  document.getElementById('props-sheet').classList.remove('open');
-  document.getElementById('props-backdrop').classList.remove('open');
-  document.getElementById('props-sheet').style.bottom='';
-  _propsEditing=false; _propsPreEditLatLngs=null; _propsPreEditCenter=null; _propsPreEditRadius=null;
-}
+function deselectShape() {
+  if (!selectedLayer) return;
+  var layer = selectedLayer;
+  selectedLayer = null;
 
-function selectShape(layer)  { openPropsSheet(layer); }
-function deselectShape()     { closePropsSheet(); }
-function _repositionPicker() {} // no-op
-
-function startVertexEdit(layer) {
-  if (_propsEditing) return;
-  _propsEditing = true;
-  if (layer instanceof L.Circle) {
-    _propsPreEditCenter = L.latLng(layer.getLatLng().lat,layer.getLatLng().lng);
-    _propsPreEditRadius = layer.getRadius();
-  } else {
-    _propsPreEditLatLngs = _deepCopyLLs(layer.getLatLngs());
-  }
-  layer.enableEdit();
-  document.getElementById('props-edit-btn').style.display='none';
-  document.getElementById('props-done-btn').style.display='';
-}
-
-function stopVertexEdit(commit) {
-  if (!_propsEditing||!selectedLayer) return;
-  _propsEditing=false;
-  selectedLayer.disableEdit();
-  document.getElementById('props-edit-btn').style.display='';
-  document.getElementById('props-done-btn').style.display='none';
-  if (commit && (_propsPreEditCenter||_propsPreEditLatLngs)) {
-    var layer=selectedLayer;
-    if (_propsPreEditCenter) {
-      pushUndo({type:'move',layer:layer,origC:_propsPreEditCenter,newC:L.latLng(layer.getLatLng().lat,layer.getLatLng().lng),origR:_propsPreEditRadius,newR:layer.getRadius()});
+  // Remove highlight
+  try {
+    if (layer instanceof L.Marker) {
+      var el=layer.getElement(); if(el) el.classList.remove('shape-selected');
     } else {
-      pushUndo({type:'move',layer:layer,origL:_propsPreEditLatLngs,newL:_deepCopyLLs(layer.getLatLngs())});
+      var col2 = layer._selectedColor || layer.options.color || strokeColor;
+      var opac = layer._propsOpacity != null ? layer._propsOpacity : (layer.options.fillOpacity || 0.12);
+      var wt   = layer._propsWeight  != null ? layer._propsWeight  : WEIGHT;
+      layer.setStyle({ color:col2, fillColor:col2, weight:wt, opacity:1, fillOpacity:opac });
+      delete layer._selectedColor;
     }
-    saveDrawingsToStorage();
-  }
-  _propsPreEditLatLngs=null; _propsPreEditCenter=null; _propsPreEditRadius=null;
+  } catch(e){}
+
+  closeShapeProps();
 }
+
+// Stub — no longer used (kept so nothing breaks if called)
+function openPropsSheet(layer)  { selectShape(layer); }
+function closePropsSheet()      { deselectShape(); }
+function _repositionPicker()    {}
+function startVertexEdit()      {}
+function stopVertexEdit()       {}
+function commitEditSession()    {}
 
 
 function _resetMoveState() {
@@ -4168,58 +4100,6 @@ window.addEventListener('resize', updateLayout);
       <button onclick="submitLoadMap()" style="flex:1;height:44px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Load Map</button>
     </div>
     <div id="load-map-status" style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.04em;text-align:center;min-height:1.2em;color:#e53935"></div>
-  </div>
-</div>
-
-<!-- SHAPE PROPERTIES SHEET -->
-<div id="props-backdrop"></div>
-<div id="props-sheet" role="dialog" aria-modal="true" aria-label="Shape properties">
-  <div id="props-handle"></div>
-  <div id="props-title">Shape Properties</div>
-
-  <!-- Color -->
-  <div class="props-row">
-    <span class="props-label">Color</span>
-    <div id="props-colors" style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="props-swatch active" data-col="#188038" style="background:#188038" aria-label="Green"></button>
-      <button class="props-swatch" data-col="#f29900" style="background:#f29900" aria-label="Yellow"></button>
-      <button class="props-swatch" data-col="#DA291C" style="background:#DA291C" aria-label="Red"></button>
-      <button class="props-swatch" data-col="#111111" style="background:#111111" aria-label="Black"></button>
-      <button class="props-swatch" data-col="#1a73e8" style="background:#1a73e8" aria-label="Blue"></button>
-    </div>
-  </div>
-
-  <!-- Fill opacity (shapes only, not pins) -->
-  <div class="props-row" id="props-opacity-row">
-    <span class="props-label">Fill</span>
-    <input type="range" id="props-opacity" min="0" max="100" value="12"
-           aria-label="Fill opacity" style="flex:1"/>
-    <span id="props-opacity-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:.8rem;letter-spacing:.04em;color:var(--black);min-width:32px;text-align:right">12%</span>
-  </div>
-
-  <!-- Stroke weight -->
-  <div class="props-row" id="props-weight-row">
-    <span class="props-label">Stroke</span>
-    <button class="props-weight-btn active" data-w="2">Thin</button>
-    <button class="props-weight-btn" data-w="4">Medium</button>
-    <button class="props-weight-btn" data-w="7">Thick</button>
-  </div>
-
-  <!-- Actions -->
-  <div class="props-actions">
-    <button class="props-btn props-btn-edit" id="props-edit-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit Vertices
-    </button>
-    <button class="props-btn props-btn-done" id="props-done-btn" style="display:none">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      Done Editing
-    </button>
-    <button class="props-btn props-btn-delete" id="props-delete-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-      Delete
-    </button>
   </div>
 </div>
 
