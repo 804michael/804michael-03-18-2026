@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 14_00                                 ║
+  ║  MAP VERSION: 26.03.24 18_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -178,7 +178,7 @@
     .pg-header p{color:rgba(255,255,255,.92);font-size:clamp(1.125rem,1.8vw,1.5rem);line-height:1.25;margin:0}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.12);backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);-webkit-backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);border-bottom:1px solid rgba(255,255,255,.35);padding:6px 12px;box-shadow:0 2px 18px rgba(0,0,0,.08);overflow:visible}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.08);backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);-webkit-backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);border-bottom:1px solid rgba(255,255,255,.25);padding:6px 12px;box-shadow:0 2px 18px rgba(0,0,0,.06);overflow:visible}
     .toolbar-in{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.82);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.25)}
@@ -574,10 +574,10 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(255,255,255,.12);
-      backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);-webkit-backdrop-filter:blur(24px) saturate(3.2) brightness(1.1);
-      border-bottom:1px solid rgba(255,255,255,.35);
-      box-shadow:0 2px 18px rgba(0,0,0,.08);
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);-webkit-backdrop-filter:blur(28px) saturate(3.5) brightness(1.15);
+      border-bottom:1px solid rgba(255,255,255,.25);
+      box-shadow:0 2px 18px rgba(0,0,0,.06);
       padding:3px 12px 4px;
       z-index:798;
       transform:translateY(-110%);
@@ -792,7 +792,7 @@
       <button class="tool-btn" id="btn-freehand" onclick="setMode('freehand')" data-tip="Pencil — freehand draw" aria-label="Pencil — freehand draw">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
       </button>
-      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center, or pinch with 2 fingers" aria-label="Circle — drag from center, or pinch with 2 fingers">
+      <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
       </button>
     </div>
@@ -811,8 +811,8 @@
     <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l13-13 6 6-5 5"/><path d="M6 17l3 3"/></svg>
     </button>
-    <button class="tool-btn tool-btn--schools" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="width:auto;padding:0 8px;gap:3px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">
-      <svg width="20" height="16" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tool-btn tool-btn--schools" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
+      <svg width="17" height="14" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
         <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M16 7C16 5 16 4 18 3"/>
@@ -890,7 +890,7 @@
       <button class="sfp-county off" data-county="powhatan"  aria-pressed="false">Powhatan</button>
       <button class="sfp-county off" data-county="goochland" aria-pressed="false">Goochland</button>
       <button class="sfp-county off" data-county="newkent"   aria-pressed="false">New Kent</button>
-      <button class="sfp-county"     data-county="other"     aria-pressed="true">Other</button>
+      <button class="sfp-county"     data-county="other"     aria-pressed="true" title="Schools whose county couldn't be detected — includes some Hanover schools">Untagged</button>
     </span>
   </div>
 </div>
@@ -1001,7 +1001,7 @@
       </div>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 14_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 18_00</p>
   </div>
 </div>
 
@@ -1237,8 +1237,6 @@ let circleCenter    = null;
 let previewCircle   = null;
 let previewLine     = null;   // radius guide line during circle draw
 let distTooltip     = null;
-let pinchDrawing    = false;  // true while a two-finger pinch is drawing a circle
-
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Always show miles to 1 decimal place
 function fmtMiles(meters) {
@@ -1308,7 +1306,6 @@ function cancelInProgress() {
   clearDistTooltip();
   polyLatLngs   = [];
   circleCenter  = null;
-  pinchDrawing  = false;
   updateUndoRedo();
 }
 
@@ -1907,6 +1904,8 @@ function hideSchoolToast() {
   document.getElementById('school-toast').classList.remove('visible');
 }
 
+var _schoolsLoading = false; // true while fetch is in-flight
+
 function loadSchools() {
   if (schoolsLoaded) {
     // Already loaded — open the filter panel immediately
@@ -1914,7 +1913,8 @@ function loadSchools() {
     document.getElementById('btn-schools').setAttribute('data-tip', 'Schools — tap to hide');
     return;
   }
-  schoolsLoaded = true;
+  if (_schoolsLoading) return; // fetch already in-flight, don't double-fire
+  _schoolsLoading = true;
 
   var btn = document.getElementById('btn-schools');
   btn.setAttribute('data-tip', 'Loading\u2026');
@@ -1959,19 +1959,23 @@ function loadSchools() {
         radius: 7, color: col.stroke, weight: 2,
         fillColor: col.fill, fillOpacity: 0.9,
         interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-      }).bindTooltip(name + ' \u2022 ' + lvLabel, {
+      }).bindTooltip(name + ' • ' + lvLabel, {
         permanent: false, direction: 'top', offset: [0, -10],
-        className: 'dist-tip'
+        className: 'dist-tip', pane: 'tooltipPane'
       });
       sm.on('click', function() { this.openTooltip(); });
       schoolData.push({ marker: sm, level: level, county: county });
     });
+    schoolsLoaded  = true;
+    _schoolsLoading = false;
     applySchoolFilter();
     hideSchoolToast();
-    btn.setAttribute('data-tip', 'Schools \u2014 tap to hide');
+    if (schoolsVisible) { document.getElementById('school-filter-panel').classList.add('open'); }
+    btn.setAttribute('data-tip', 'Schools — tap to hide');
   })
   .catch(function() {
-    schoolsLoaded = false;
+    schoolsLoaded  = false;
+    _schoolsLoading = false;
     hideSchoolToast();
     btn.setAttribute('data-tip', 'Schools unavailable \u2014 tap to retry');
     setTimeout(function() { btn.setAttribute('data-tip', 'Show Schools'); }, 4000);
@@ -2068,78 +2072,10 @@ mapEl.addEventListener('mouseleave', () => {
 });
 
 // Touch events — preventDefault stops the page scrolling while drawing
-
-// ── Pinch-to-draw circle helpers ─────────────────────────────────────────────
-// Returns the geographic midpoint between two touch events as a Leaflet LatLng
-function touchMidpointLL(t1, t2) {
-  var mx = (t1.clientX + t2.clientX) / 2;
-  var my = (t1.clientY + t2.clientY) / 2;
-  return containerPointToLL(mx, my);
-}
-
-// Returns the distance in meters between two touch points at the current zoom
-function touchSpreadMeters(t1, t2) {
-  var ll1 = containerPointToLL(t1.clientX, t1.clientY);
-  var ll2 = containerPointToLL(t2.clientX, t2.clientY);
-  return ll1.distanceTo(ll2) / 2; // radius = half the spread
-}
-
-// Start a pinch circle: midpoint → center, half-spread → initial radius
-function startPinchCircle(t1, t2) {
-  cancelInProgress(); // clear any single-touch in-progress state first
-  pinchDrawing = true;
-  circleCenter  = touchMidpointLL(t1, t2);
-  var r = touchSpreadMeters(t1, t2);
-  previewCircle = L.circle(circleCenter, { radius: Math.max(r, 1), ...shapeStyle() }).addTo(map);
-  previewLine   = L.polyline(
-    [circleCenter, containerPointToLL(t2.clientX, t2.clientY)],
-    { color: strokeColor, weight: 1.5, opacity: 0.7, dashArray: '5 4', interactive: false }
-  ).addTo(map);
-  showDistAt(circleCenter, fmtMiles(Math.max(r, 1)));
-}
-
-// Update pinch circle from current touch positions
-function updatePinchCircle(t1, t2) {
-  if (!pinchDrawing || !circleCenter || !previewCircle) return;
-  var r = touchSpreadMeters(t1, t2);
-  previewCircle.setRadius(Math.max(r, 1));
-  var edgeLL = containerPointToLL(t2.clientX, t2.clientY);
-  if (previewLine) previewLine.setLatLngs([circleCenter, edgeLL]);
-  showDistAt(circleCenter, fmtMiles(Math.max(r, 1)));
-}
-
-// Commit the pinch circle
-function commitPinchCircle() {
-  if (!pinchDrawing || !circleCenter || !previewCircle) return;
-  var r = previewCircle.getRadius();
-  map.removeLayer(previewCircle); previewCircle = null;
-  if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
-  clearDistTooltip();
-  pinchDrawing = false;
-  if (r > 50) {
-    commitLayer(L.circle(circleCenter, { radius: r, ...shapeStyle() }));
-  }
-  circleCenter = null;
-}
-
 mapEl.addEventListener('touchstart', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
-
-  if (e.touches.length === 2) {
-    // ── Two-finger gesture ──────────────────────────────────────────────────
-    if (mode === 'circle') {
-      // Intercept pinch as circle draw — prevent Leaflet zoom
-      e.preventDefault();
-      startPinchCircle(e.touches[0], e.touches[1]);
-    } else {
-      // Any other mode: cancel current drawing, let Leaflet handle pinch-zoom
-      cancelInProgress();
-    }
-    return;
-  }
-
-  // Single finger — normal drawing
-  if (e.touches.length > 2) { cancelInProgress(); return; } // ignore 3+ fingers
+  // Two or more fingers = pinch/zoom — cancel any in-progress drawing, let Leaflet handle
+  if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
   const t = e.touches[0];
   onPointerDown(t.clientX, t.clientY);
@@ -2147,19 +2083,8 @@ mapEl.addEventListener('touchstart', e => {
 
 mapEl.addEventListener('touchmove', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
-
-  if (pinchDrawing && e.touches.length >= 2) {
-    // Continue updating the pinch circle
-    e.preventDefault();
-    updatePinchCircle(e.touches[0], e.touches[1]);
-    return;
-  }
-
-  if (e.touches.length > 1) {
-    // Second finger joined mid-stroke (not pinch-draw) — abort drawing
-    cancelInProgress();
-    return;
-  }
+  // Second finger joined mid-stroke — abort drawing, let Leaflet zoom
+  if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
   const t = e.touches[0];
   onPointerMove(t.clientX, t.clientY);
@@ -2168,13 +2093,6 @@ mapEl.addEventListener('touchmove', e => {
 mapEl.addEventListener('touchend', e => {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
   e.preventDefault();
-
-  if (pinchDrawing) {
-    // Commit as soon as either finger lifts
-    commitPinchCircle();
-    return;
-  }
-
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
 }, { passive: false });
@@ -2183,7 +2101,7 @@ mapEl.addEventListener('touchend', e => {
 // Without this the move tool gets stuck in a dragging state.
 mapEl.addEventListener('touchcancel', () => {
   if (mode === 'move') endMove();
-  cancelInProgress(); // also resets pinchDrawing
+  cancelInProgress();
 }, { passive: true });
 
 // Keyboard shortcuts
@@ -3011,10 +2929,14 @@ window.addEventListener('resize', updateLayout);
 
 <!--
   ════════════════════════════════════════════════════════════════
-  🤏 PINCH-TO-DRAW CIRCLE — Reference Note
+  🤏 PINCH-TO-DRAW CIRCLE — REMOVED (interfered with pinch-zoom)
   ════════════════════════════════════════════════════════════════
 
-  WHAT IT IS:
+  STATUS: Removed per user request. Native Leaflet pinch-zoom
+  fully restored. The feature intercepted two-finger gestures when
+  the circle tool was active, which was too confusing on tablet.
+
+  ORIGINAL WHAT IT WAS:
   When the Circle tool is selected on a phone or tablet, placing
   two fingers on the map and spreading them apart draws a circle.
   The center is the midpoint between the two fingers.
@@ -3052,7 +2974,7 @@ window.addEventListener('resize', updateLayout);
   Controlled by window._circleTipShown flag (once per session).
 
   CIRCLE BUTTON TOOLTIP:
-  "Circle — drag from center, or pinch with 2 fingers"
+  "Circle — drag from center outward"
   ════════════════════════════════════════════════════════════════
 -->
 </html>
