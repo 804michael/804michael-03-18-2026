@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.25 12_00                                 ║
+  ║  MAP VERSION: 26.03.25 16_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -439,13 +439,34 @@
     .custom-pin-label{background:var(--black);color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.05em;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
     /* Push Leaflet zoom above phone home bar on mobile */
-    @media(max-width:768px){
-      .leaflet-bottom{ padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px) !important; }
-      /* Attribution stays at bottom-right on mobile */
-    }
-    /* Leaflet controls must sit below our fixed chrome */
+
+    /* Leaflet controls sit below our fixed chrome */
     .leaflet-top, .leaflet-bottom{ z-index:400 !important; }
-    .leaflet-control-attribution{ margin:0 !important; }
+    /* Attribution: frosted pill, flush bottom-right */
+    .leaflet-control-attribution{
+      margin:0 !important;
+      background:rgba(255,255,255,.08) !important;
+      backdrop-filter:blur(12px) saturate(2) !important;
+      -webkit-backdrop-filter:blur(12px) saturate(2) !important;
+      border-radius:8px 0 0 0 !important;
+      padding:3px 8px !important;
+      font-size:.6rem !important;
+      letter-spacing:.02em !important;
+      color:rgba(0,0,0,.55) !important;
+      border-top:1px solid rgba(255,255,255,.25) !important;
+      border-left:1px solid rgba(255,255,255,.25) !important;
+      line-height:1.4 !important;
+    }
+    .leaflet-control-attribution a{ color:rgba(0,0,0,.5) !important; }
+    /* Pin right to corner on desktop */
+    .leaflet-bottom.leaflet-right{ bottom:0 !important; right:0 !important; }
+    /* Mobile: respect safe area */
+    @media(max-width:768px){
+      .leaflet-bottom.leaflet-right{
+        bottom:max(env(safe-area-inset-bottom,0px),0px) !important;
+        right:0 !important;
+      }
+    }
 
     @media(max-width:600px){
       .search-group{flex-wrap:nowrap}
@@ -702,6 +723,14 @@
     #school-filter-panel.sfp-collapsed #sfp-filters-row{display:none}
     /* Give the filter row left padding so it clears the collapse button */
     #sfp-filters-row{padding-left:30px}
+
+    /* ── County boundary overlays ── */
+    .county-outline-label{
+      background:transparent;border:none;box-shadow:none;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+      color:rgba(0,0,0,.35);pointer-events:none;
+    }
   </style>
 </head>
 <body>
@@ -851,6 +880,10 @@
           <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
           <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
         </svg>
+      </button>
+      <!-- Publix toggle — same pattern as schools -->
+      <button class="tool-btn" id="btn-publix" onclick="togglePublix()" data-tip="Show Publix stores" aria-label="Show Publix stores" style="gap:2px;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:800;letter-spacing:-.01em;color:var(--black)">
+        <span style="line-height:1;font-size:.78rem" aria-hidden="true">P</span>
       </button>
     </div>
     <span class="tbsep" aria-hidden="true"></span>
@@ -1041,8 +1074,15 @@
         </button>
       </div>
     </div>
+    <!-- Load a shared map -->
+    <div style="max-width:420px;width:100%;margin:12px auto 0;border-top:1px solid rgba(255,255,255,.12);padding-top:12px">
+      <button onclick="openLoadMapModal()" style="width:100%;height:38px;background:transparent;border:1.5px solid rgba(255,255,255,.25);border-radius:8px;color:rgba(255,255,255,.65);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        Load a Shared Map
+      </button>
+    </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.25 12_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.25 16_00</p>
   </div>
 </div>
 
@@ -1871,6 +1911,92 @@ function endMove() {
   _resetMoveState();
   map.getContainer().style.cursor = 'default';
 }
+// ── County boundary outlines ─────────────────────────────────────────────────
+// Always-on faint polygons showing county lines for geographic reference.
+// Uses Overpass to fetch OSM admin boundary relations.
+(function loadCountyOutlines() {
+  var COUNTY_RELATIONS = [
+    { name: 'Hanover',      id: 469231 },
+    { name: 'Henrico',      id: 469230 },
+    { name: 'Richmond',     id: 224045 },
+    { name: 'Chesterfield', id: 469232 }
+  ];
+
+  // Overpass: fetch ways that make up each relation, return geometry
+  var ids = COUNTY_RELATIONS.map(function(r){ return 'relation(' + r.id + ');'; }).join('');
+  var query = '[out:json][timeout:30];(' + ids + ');(._;>;);out geom;';
+
+  // Create a dedicated pane below everything (z-index 200, below tile layer tiles at 200 but above)
+  var countyPane = map.createPane('countyPane');
+  countyPane.style.zIndex = 180;
+  countyPane.style.pointerEvents = 'none';
+
+  fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(query)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    // Build a node lookup
+    var nodes = {};
+    data.elements.forEach(function(el) {
+      if (el.type === 'node') nodes[el.id] = [el.lat, el.lon];
+    });
+
+    // For each relation, collect its outer ways and draw
+    COUNTY_RELATIONS.forEach(function(county) {
+      var rel = data.elements.find(function(el) {
+        return el.type === 'relation' && el.id === county.id;
+      });
+      if (!rel) return;
+
+      // Gather all way geometries for this relation
+      var rings = [];
+      rel.members.forEach(function(member) {
+        if (member.type !== 'way' || member.role === 'inner') return;
+        var way = data.elements.find(function(el) {
+          return el.type === 'way' && el.id === member.ref;
+        });
+        if (!way || !way.nodes) return;
+        var ring = way.nodes.map(function(nid) { return nodes[nid]; }).filter(Boolean);
+        if (ring.length > 1) rings.push(ring);
+      });
+
+      if (rings.length === 0) return;
+
+      // Draw as polygon outline
+      L.polygon(rings, {
+        color: 'rgba(0,0,0,0.22)',
+        weight: 1.5,
+        fill: false,
+        interactive: false,
+        pane: 'countyPane',
+        dashArray: null
+      }).addTo(map);
+
+      // Label at centroid (approximate — use first ring midpoint)
+      var allPts = rings[0];
+      var midIdx = Math.floor(allPts.length / 2);
+      if (allPts[midIdx]) {
+        L.marker(allPts[midIdx], {
+          icon: L.divIcon({
+            html: county.name,
+            className: 'county-outline-label',
+            iconAnchor: [30, 8],
+            iconSize: null
+          }),
+          pane: 'countyPane',
+          interactive: false
+        }).addTo(map);
+      }
+    });
+  })
+  .catch(function(e) {
+    // County outlines are non-critical — fail silently
+    console.debug('County outlines unavailable:', e);
+  });
+})();
+
 // ── Schools — covers Hanover, Henrico, Richmond, Chesterfield, and surrounds ──
 // Custom pane: school markers render above drawn shapes (overlayPane z-index 400)
 // Three sub-panes for level-based stacking: elementary < middle < high
@@ -2146,6 +2272,81 @@ window.toggleSfpCollapse = function() {
 })();
 
 
+// ── Publix store overlay ─────────────────────────────────────────────────────
+map.createPane('publixPane');
+map.getPane('publixPane').style.zIndex = 454; // above school panes
+map.getPane('publixPane').style.pointerEvents = 'auto';
+
+var publixGroup   = L.featureGroup().addTo(map);
+var publixLoaded  = false;
+var publixVisible = false;
+var _publixLoading = false;
+
+function loadPublix() {
+  if (publixLoaded) {
+    publixGroup.addTo(map);
+    return;
+  }
+  if (_publixLoading) return;
+  _publixLoading = true;
+
+  var btn = document.getElementById('btn-publix');
+  btn.setAttribute('data-tip', 'Loading Publix…');
+
+  // Overpass: all Publix stores in the broader RVA metro bbox
+  var bbox = '37.0,-78.1,38.3,-76.8';
+  var query = '[out:json][timeout:30];(node["brand"="Publix"]('+bbox+');way["brand"="Publix"]('+bbox+'););out center;';
+
+  fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(query)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    data.elements.forEach(function(el) {
+      var lat = el.lat || (el.center && el.center.lat);
+      var lon = el.lon || (el.center && el.center.lon);
+      var name = (el.tags && el.tags.name) || 'Publix';
+      if (!lat || !lon) return;
+
+      // Green circle marker with "P" label
+      var pm = L.circleMarker([lat, lon], {
+        radius: 8, color: '#006F3C', weight: 2,
+        fillColor: '#00A651', fillOpacity: 0.9,
+        interactive: true, pane: 'publixPane'
+      }).bindTooltip(name, {
+        permanent: false, direction: 'top', offset: [0, -10],
+        className: 'dist-tip', pane: 'tooltipPane'
+      });
+      pm.on('click', function() { this.openTooltip(); });
+      publixGroup.addLayer(pm);
+    });
+    publixLoaded  = true;
+    _publixLoading = false;
+    publixGroup.addTo(map);
+    btn.setAttribute('data-tip', 'Hide Publix stores');
+  })
+  .catch(function() {
+    _publixLoading = false;
+    btn.setAttribute('data-tip', 'Publix unavailable — tap to retry');
+    setTimeout(function() { btn.setAttribute('data-tip', 'Show Publix stores'); }, 4000);
+  });
+}
+
+window.togglePublix = function() {
+  publixVisible = !publixVisible;
+  var btn = document.getElementById('btn-publix');
+  if (publixVisible) {
+    btn.classList.add('active');
+    btn.setAttribute('data-tip', 'Loading Publix…');
+    loadPublix();
+  } else {
+    map.removeLayer(publixGroup);
+    btn.classList.remove('active');
+    btn.setAttribute('data-tip', 'Show Publix stores');
+  }
+};
+
 // Mouse events
 mapEl.addEventListener('mousedown', e => { if (e.button !== 0) return; onPointerDown(e.clientX, e.clientY); });
 mapEl.addEventListener('mousemove', e => { onPointerMove(e.clientX, e.clientY); });
@@ -2392,11 +2593,16 @@ function dropPin(lat, lng, suggestedLabel) {
     var sw = document.createElement('button');
     sw.style.cssText = 'width:26px;height:26px;border-radius:50%;background:' + col + ';border:3px solid transparent;cursor:pointer;flex-shrink:0;padding:0;transition:border-color .12s,transform .12s';
     if (col === pinColor) { sw.style.borderColor = col === '#111111' ? '#777' : '#111'; sw.style.transform = 'scale(1.2)'; }
+    // Prevent mousedown/touchstart from blurring the text input (keeps keyboard open)
+    sw.addEventListener('mousedown',  function(e) { e.preventDefault(); });
+    sw.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
     sw.addEventListener('click', function() {
       pinColor = col;
       marker.setIcon(makeIcon(col));
       colorsDiv.querySelectorAll('button').forEach(function(s) { s.style.borderColor = 'transparent'; s.style.transform = 'scale(1)'; });
       sw.style.borderColor = col === '#111111' ? '#777' : '#111'; sw.style.transform = 'scale(1.2)';
+      // Re-focus input after color pick so keyboard stays up
+      inp.focus();
     });
     colorsDiv.appendChild(sw);
   });
@@ -2665,6 +2871,82 @@ function copyMapLink() {
       }
     });
 }
+
+window.openLoadMapModal = function() {
+  var el = document.getElementById('load-map-backdrop');
+  document.getElementById('load-map-inp').value = '';
+  document.getElementById('load-map-status').textContent = '';
+  el.style.display = 'flex';
+};
+
+window.closeLoadMapModal = function() {
+  document.getElementById('load-map-backdrop').style.display = 'none';
+};
+
+window.submitLoadMap = function() {
+  var inp    = document.getElementById('load-map-inp');
+  var status = document.getElementById('load-map-status');
+  var url    = inp.value.trim();
+  status.textContent = '';
+
+  if (!url) { status.textContent = 'Please paste a map link.'; return; }
+
+  // Extract the #d= hash from the URL
+  var hashMatch = url.match(/#d=([A-Za-z0-9+/=_-]+)/);
+  if (!hashMatch) {
+    status.textContent = 'That doesn’t look like a valid map link. Copy the full URL from a shared map.';
+    return;
+  }
+
+  try {
+    var b64  = hashMatch[1].replace(/-/g,'+').replace(/_/g,'/');
+    while (b64.length % 4) b64 += '=';
+    var json = decodeURIComponent(atob(b64).split('').map(function(ch) {
+      return '%' + ('00' + ch.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    var obj = JSON.parse(json);
+    if (!obj || !obj.layers) throw new Error('No layers');
+
+    // Clear current drawings
+    cancelInProgress();
+    activeGroup.clearLayers();
+    pinGroup.clearLayers();
+    undoStack.length = 0; redoStack.length = 0;
+    clearStoredDrawings();
+
+    // Restore map view
+    if (obj.z && obj.lat && obj.lng) {
+      map.setView([obj.lat, obj.lng], obj.z, { animate: false });
+    }
+
+    // Restore layers
+    restoreLayers(obj.layers);
+    if (obj.layers.length > 0) { markDrawn(); updateUndoRedo(); saveDrawingsToStorage(); }
+
+    closeLoadMapModal();
+
+    // Brief success toast
+    var t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+      + 'background:rgba(24,128,56,.92);color:white;border-radius:10px;padding:8px 18px;'
+      + 'font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:.85rem;'
+      + 'letter-spacing:.05em;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none';
+    t.textContent = '✔ Map loaded — ' + obj.layers.length + ' shape' + (obj.layers.length !== 1 ? 's' : '') + ' restored';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.style.opacity='1'; }, 50);
+    setTimeout(function(){ t.style.opacity='0';
+      setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 350); }, 3500);
+
+  } catch(e) {
+    status.textContent = 'Could not load that map. Make sure you copied the full link.';
+  }
+};
+
+// Allow Enter key in load-map input
+document.addEventListener('DOMContentLoaded', function() {
+  var li = document.getElementById('load-map-inp');
+  if (li) li.addEventListener('keydown', function(e){ if(e.key==='Enter') window.submitLoadMap(); });
+});
 
 function fallbackCopy(text, btn) {
   var ta = document.createElement('textarea');
@@ -3125,6 +3407,24 @@ window.addEventListener('resize', updateLayout);
   window.addEventListener('touchend',  resizeEnd);
 })();
 </script>
+<!-- LOAD MAP MODAL -->
+<div id="load-map-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10002;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center">
+  <div id="load-map-modal" role="dialog" aria-modal="true" aria-labelledby="load-map-title" style="background:var(--white);border-radius:16px;padding:28px 24px 22px;width:min(420px,92vw);box-shadow:0 24px 60px rgba(0,0,0,.25);position:relative">
+    <button onclick="closeLoadMapModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--gray-muted);line-height:1;padding:4px" aria-label="Close">&#x2715;</button>
+    <h2 id="load-map-title" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;letter-spacing:.02em;color:var(--black);margin-bottom:6px">Load a Shared Map</h2>
+    <p style="font-size:.85rem;color:var(--gray-muted);margin-bottom:18px;line-height:1.4">Paste a map link to load someone's drawings.<br>Your current drawings will be replaced.</p>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px">
+      <label for="load-map-inp" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black)">Map Link</label>
+      <input id="load-map-inp" type="url" placeholder="Paste map link here…" autocomplete="off" style="height:42px;border:2px solid var(--gray-mid);border-radius:8px;padding:0 12px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;width:100%;box-sizing:border-box" />
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button onclick="closeLoadMapModal()" style="height:44px;padding:0 20px;background:transparent;color:var(--gray-muted);border:2px solid var(--gray-mid);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Cancel</button>
+      <button onclick="submitLoadMap()" style="flex:1;height:44px;background:var(--red);color:white;border:none;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Load Map</button>
+    </div>
+    <div id="load-map-status" style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.04em;text-align:center;min-height:1.2em;color:#e53935"></div>
+  </div>
+</div>
+
 <!-- PIN BOTTOM SHEET -->
 <div id="pin-sheet-backdrop"></div>
 <div id="pin-sheet" role="dialog" aria-modal="true" aria-label="Name this pin">
