@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.26 14_00                                 ║
+  ║  MAP VERSION: 26.03.26 18_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -200,8 +200,8 @@
     #pin-sheet-colors button[style*="#111111"][style*="borderColor: rgb(17"]{border-color:#777 !important}
     /* Pulsing hint on tool buttons before first selection */
     @keyframes tool-pulse{
-      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:transparent;background:transparent}
-      50%{box-shadow:0 0 0 5px rgba(218,41,28,.25);border-color:rgba(218,41,28,.6);background:rgba(218,41,28,.08)}
+      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,0);border-color:rgba(0,0,0,.18);background:rgba(255,255,255,.82)}
+      50%{box-shadow:0 0 0 6px rgba(218,41,28,.30);border-color:rgba(218,41,28,.65);background:rgba(218,41,28,.10)}
     }
     .tool-btn.hint-pulse{animation:tool-pulse 2.4s ease-in-out infinite}
     @keyframes finger-bounce{
@@ -924,6 +924,11 @@
       #map-zoom-ctrl{bottom:58px;left:8px;}
     }
 
+    /* Radar lines for You Are Here */
+    .radar-line{
+      stroke-dasharray: 8 6;
+      stroke-dashoffset: 0;
+    }
     /* ── County boundary overlays ── */
     .county-outline-label{
       background:transparent;border:none;box-shadow:none;
@@ -1338,7 +1343,7 @@
       </button>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.26 14_00</p>
+    <p style="font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.26 18_00</p>
   </div>
 </div>
 
@@ -1685,7 +1690,7 @@ function deactivateAllTools() {
   map.scrollWheelZoom.enable();
   map.getContainer().style.cursor = '';
   hideSearchPanel();
-  deselectShape();
+  closePropsSheet(); // also calls deselectShape internally
 }
 
 window.setMode = function(m) {
@@ -1745,12 +1750,10 @@ window.undoLast = function() {
     g.addLayer(action.layer);
     redoStack.push({ type: 'redo-remove', layer: action.layer });
   } else if (action.type === 'move') {
-    // Restore to original position
-    if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
-      action.layer.setLatLng(action.origC);
-    } else {
-      action.layer.setLatLngs(_deepCopyLLs(action.origL));
-    }
+    // Restore to original position/shape
+    if (action.origC) { action.layer.setLatLng(action.origC); }
+    if (action.origR != null && action.layer instanceof L.Circle) { action.layer.setRadius(action.origR); }
+    if (action.origL) { action.layer.setLatLngs(_deepCopyLLs(action.origL)); }
     redoStack.push(action);
   }
   updateUndoRedo();
@@ -1768,12 +1771,9 @@ window.redoLast = function() {
     g.removeLayer(action.layer);
     undoStack.push({ type: 'remove', layer: action.layer });
   } else if (action.type === 'move') {
-    // Re-apply the move
-    if (action.layer instanceof L.Marker || action.layer instanceof L.Circle) {
-      action.layer.setLatLng(action.newC);
-    } else {
-      action.layer.setLatLngs(_deepCopyLLs(action.newL));
-    }
+    if (action.newC) { action.layer.setLatLng(action.newC); }
+    if (action.newR != null && action.layer instanceof L.Circle) { action.layer.setRadius(action.newR); }
+    if (action.newL) { action.layer.setLatLngs(_deepCopyLLs(action.newL)); }
     undoStack.push(action);
   }
   updateUndoRedo();
@@ -1856,29 +1856,30 @@ function onPointerUp(clientX, clientY) {
   isErasing = false;
   if (mode === 'move') { endMove(); return; }
   if (mode === 'freehand' && drawingPolyline) {
-    if (!polyTapDragging && polyTapPoints.length === 0 && polyLatLngs.length < 4) {
-      // TAP (not drag): enter polygon-tap mode — add this point, show preview
+    if (!polyTapDragging) {
+      // TAP: polygon-tap mode — use polyTapDragging as sole discriminator
+      // Clear any noise points from touchmove before handling the tap
       map.removeLayer(drawingPolyline); drawingPolyline = null;
       polyLatLngs = [];
       const ll = containerPointToLL(clientX, clientY);
-      polyTapPoints.push(ll);
-      polyTapPreview = L.polyline([ll], { ...shapeStyle(), fill: false,
-        dashArray: '6 4', weight: 2 }).addTo(map);
-      // Auto-close polygon if no new tap within 1.5 seconds and >= 3 points
-      clearTimeout(polyTapTimer);
-      polyTapTimer = setTimeout(closeTapPolygon, 1500);
-    } else if (!polyTapDragging && polyTapPoints.length > 0) {
-      // Another TAP while in polygon-tap mode — add point
-      map.removeLayer(drawingPolyline); drawingPolyline = null; polyLatLngs = [];
-      const ll = containerPointToLL(clientX, clientY);
-      polyTapPoints.push(ll);
-      polyTapPreview.setLatLngs(polyTapPoints);
-      clearTimeout(polyTapTimer);
-      if (polyTapPoints.length >= 3) {
-        polyTapTimer = setTimeout(closeTapPolygon, 1500);
+      if (polyTapPoints.length === 0) {
+        // First tap — start preview
+        polyTapPoints.push(ll);
+        polyTapPreview = L.polyline([ll], { ...shapeStyle(), fill: false,
+          dashArray: '6 4', weight: 2 }).addTo(map);
+        clearTimeout(polyTapTimer);
+        polyTapTimer = setTimeout(closeTapPolygon, 1200);
+      } else {
+        // Additional tap — extend polygon
+        polyTapPoints.push(ll);
+        polyTapPreview.setLatLngs(polyTapPoints);
+        clearTimeout(polyTapTimer);
+        if (polyTapPoints.length >= 3) {
+          polyTapTimer = setTimeout(closeTapPolygon, 1200);
+        }
       }
     } else {
-      // DRAG: commit as freehand polygon (existing behavior)
+      // DRAG: freehand — polyTapDragging was set by onPointerMove threshold
       polyTapPoints = []; polyTapDragging = false;
       const lls = polyLatLngs;
       map.removeLayer(drawingPolyline); drawingPolyline = null; polyLatLngs = [];
@@ -1954,6 +1955,7 @@ let moveDragStart   = null;   // latlng where the drag began
 let moveOrigCenter  = null;   // saved center for Marker / Circle (L.LatLng)
 let moveOrigLatLngs = null;   // saved latlngs for Polyline / Polygon (deep array of L.LatLng)
 let selectedLayer   = null;   // shape currently selected for color change
+let _moveDidDrag    = false;  // true only when doMove actually translates the shape
 
 function detachMoveListeners() { _resetMoveState(); deselectShape(); }
 
@@ -1966,87 +1968,124 @@ function getScpEl() {
   return _scpEl;
 }
 
-function selectShape(layer) {
-  deselectShape(); // clear any previous selection
+// ── Properties sheet state ───────────────────────────────────────────────────
+var _propsEditing = false;
+var _propsPreEditLatLngs = null;
+var _propsPreEditCenter  = null;
+var _propsPreEditRadius  = null;
+
+function openPropsSheet(layer) {
+  if (selectedLayer) closePropsSheet();
   selectedLayer = layer;
+  var isMarker = layer instanceof L.Marker;
+  var isCircle = layer instanceof L.Circle && !(layer instanceof L.CircleMarker);
 
-  // Read current color
-  var layerCol = '#188038';
-  if (layer instanceof L.Marker) {
-    try {
-      var html = layer.options.icon.options.html || '';
-      var m = html.match(/fill="(#[0-9a-fA-F]{3,6})"/);
-      if (m) layerCol = m[1];
-    } catch(e) {}
-  } else if (layer.options && layer.options.color) {
-    layerCol = layer.options.color;
-  }
-  if (!(layer instanceof L.Marker)) layer._selectedColor = layerCol;
+  var col = '#188038';
+  if (isMarker) {
+    try { var m=(layer.options.icon.options.html||'').match(/fill="(#[0-9a-fA-F]{3,6})"/); if(m) col=m[1]; } catch(e){}
+  } else if (layer.options && layer.options.color) { col = layer.options.color; }
+  layer._selectedColor = col;
 
-  // Highlight
   try {
-    if (layer instanceof L.Marker) {
-      var el = layer.getElement();
-      if (el) el.classList.add('shape-selected');
-    } else {
-      layer.setStyle({ weight: WEIGHT + 2, opacity: 1,
-                       color: layerCol, fillColor: layerCol, fillOpacity: 0.28 });
-    }
-  } catch(e) {}
+    if (isMarker) { var el=layer.getElement(); if(el) el.classList.add('shape-selected'); }
+    else { layer.setStyle({ weight:(layer.options.weight||WEIGHT)+2, opacity:1, color:col, fillColor:col, fillOpacity:layer._propsOpacity!=null?layer._propsOpacity:0.28 }); }
+  } catch(e){}
 
-  // Also keep old small picker visible (fallback / desktop quick-pick)
-  var picker = getScpEl();
-  picker.querySelectorAll('.scp-swatch').forEach(function(sw) {
-    sw.classList.toggle('scp-active', sw.dataset.col === layerCol);
-  });
-  picker.classList.add('visible');
-  _repositionPicker();
-  _scpRepos = function() { _repositionPicker(); };
-  map.on('move zoom moveend zoomend', _scpRepos);
+  var sheet   = document.getElementById('props-sheet');
+  var opRow   = document.getElementById('props-opacity-row');
+  var wtRow   = document.getElementById('props-weight-row');
+  var editBtn = document.getElementById('props-edit-btn');
+  var doneBtn = document.getElementById('props-done-btn');
 
-  // Open the properties panel
-  openShapeProps(layer, layerCol);
-}
+  document.querySelectorAll('.props-swatch').forEach(function(sw){ sw.classList.toggle('active', sw.dataset.col===col); });
 
-function _repositionPicker() {
-  if (!selectedLayer) return;
-  var picker = getScpEl();
-  var ll;
-  if (selectedLayer instanceof L.Circle || selectedLayer instanceof L.Marker) {
-    ll = selectedLayer.getLatLng();
-  } else {
-    ll = selectedLayer.getBounds().getCenter();
+  var fillOpacity = isMarker ? null : (layer._propsOpacity!=null ? layer._propsOpacity : (layer.options.fillOpacity||0.12));
+  if (isMarker) { opRow.style.display='none'; wtRow.style.display='none'; editBtn.style.display='none'; }
+  else {
+    opRow.style.display=''; wtRow.style.display=''; editBtn.style.display='';
+    var pct=Math.round(fillOpacity*100);
+    document.getElementById('props-opacity').value=pct;
+    document.getElementById('props-opacity-val').textContent=pct+'%';
   }
-  var pt = map.latLngToContainerPoint(ll);
-  // pt is relative to mapEl (position:absolute inside map-wrap)
-  picker.style.left = pt.x + 'px';
-  picker.style.top  = pt.y + 'px';
+
+  var curW = isMarker ? null : (layer.options.weight||WEIGHT);
+  document.querySelectorAll('.props-weight-btn').forEach(function(b){
+    var bw=parseInt(b.dataset.w);
+    b.classList.toggle('active', curW!=null && (bw===curW || (curW<=2&&bw===2)));
+  });
+
+  editBtn.classList.remove('editing'); doneBtn.style.display='none'; _propsEditing=false;
+  document.getElementById('props-title').textContent = (isMarker?'Pin':isCircle?'Circle':'Shape')+' Properties';
+
+  var vv=window.visualViewport;
+  if(vv) sheet.style.bottom=Math.max(0,window.innerHeight-vv.height-vv.offsetTop)+'px';
+  document.getElementById('props-backdrop').classList.add('open');
+  sheet.classList.add('open');
 }
 
-function deselectShape() {
+function closePropsSheet() {
+  if (_propsEditing) stopVertexEdit(false);
   if (selectedLayer) {
     try {
       if (selectedLayer instanceof L.Marker) {
-        selectedLayer.getElement() && selectedLayer.getElement().classList.remove('shape-selected');
+        var el=selectedLayer.getElement(); if(el) el.classList.remove('shape-selected');
       } else {
-        // Restore original style — use stashed _selectedColor to avoid losing it
-        var col = selectedLayer._selectedColor || selectedLayer.options.color || strokeColor;
-        selectedLayer.setStyle({ color: col, weight: WEIGHT, opacity: 1,
-                                  fillColor: col, fillOpacity: 0.12 });
+        var col2=selectedLayer._selectedColor||selectedLayer.options.color||strokeColor;
+        var opac=selectedLayer._propsOpacity!=null?selectedLayer._propsOpacity:0.12;
+        var wt=selectedLayer._propsWeight!=null?selectedLayer._propsWeight:WEIGHT;
+        selectedLayer.setStyle({ color:col2,fillColor:col2,weight:wt,opacity:1,fillOpacity:opac });
         delete selectedLayer._selectedColor;
       }
-    } catch(e) {}
+    } catch(e){}
     selectedLayer = null;
   }
-  var picker = getScpEl();
-  if (picker) picker.classList.remove('visible');
-  if (_scpRepos) { map.off('move zoom moveend zoomend', _scpRepos); _scpRepos = null; }
-  closeShapeProps();
+  document.getElementById('props-sheet').classList.remove('open');
+  document.getElementById('props-backdrop').classList.remove('open');
+  document.getElementById('props-sheet').style.bottom='';
+  _propsEditing=false; _propsPreEditLatLngs=null; _propsPreEditCenter=null; _propsPreEditRadius=null;
 }
+
+function selectShape(layer)  { openPropsSheet(layer); }
+function deselectShape()     { closePropsSheet(); }
+function _repositionPicker() {} // no-op
+
+function startVertexEdit(layer) {
+  if (_propsEditing) return;
+  _propsEditing = true;
+  if (layer instanceof L.Circle) {
+    _propsPreEditCenter = L.latLng(layer.getLatLng().lat,layer.getLatLng().lng);
+    _propsPreEditRadius = layer.getRadius();
+  } else {
+    _propsPreEditLatLngs = _deepCopyLLs(layer.getLatLngs());
+  }
+  layer.enableEdit();
+  document.getElementById('props-edit-btn').style.display='none';
+  document.getElementById('props-done-btn').style.display='';
+}
+
+function stopVertexEdit(commit) {
+  if (!_propsEditing||!selectedLayer) return;
+  _propsEditing=false;
+  selectedLayer.disableEdit();
+  document.getElementById('props-edit-btn').style.display='';
+  document.getElementById('props-done-btn').style.display='none';
+  if (commit && (_propsPreEditCenter||_propsPreEditLatLngs)) {
+    var layer=selectedLayer;
+    if (_propsPreEditCenter) {
+      pushUndo({type:'move',layer:layer,origC:_propsPreEditCenter,newC:L.latLng(layer.getLatLng().lat,layer.getLatLng().lng),origR:_propsPreEditRadius,newR:layer.getRadius()});
+    } else {
+      pushUndo({type:'move',layer:layer,origL:_propsPreEditLatLngs,newL:_deepCopyLLs(layer.getLatLngs())});
+    }
+    saveDrawingsToStorage();
+  }
+  _propsPreEditLatLngs=null; _propsPreEditCenter=null; _propsPreEditRadius=null;
+}
+
 
 function _resetMoveState() {
   moveLayer = null; moveDragStart = null;
   moveOrigCenter = null; moveOrigLatLngs = null;
+  _moveDidDrag = false;
 }
 
 // Deep-copy a (possibly nested) latlng array into plain L.LatLng objects.
@@ -2136,7 +2175,8 @@ function doMove(ll) {
   if (!moveLayer || !moveDragStart) return;
   var dlat = ll.lat - moveDragStart.lat;
   var dlng = ll.lng - moveDragStart.lng;
-
+  if (Math.abs(dlat) < 1e-9 && Math.abs(dlng) < 1e-9) return; // no real movement
+  _moveDidDrag = true;
   if (moveLayer instanceof L.Marker || moveLayer instanceof L.Circle) {
     moveLayer.setLatLng(L.latLng(moveOrigCenter.lat + dlat, moveOrigCenter.lng + dlng));
   } else {
@@ -2153,7 +2193,9 @@ function endMove() {
   var newL   = (origL  !== null) ? _deepCopyLLs(layer.getLatLngs()) : null;
 
   // Push to undo only if the shape genuinely moved
-  var moved = origC ? origC.distanceTo(newC) > 0.5 : (origL !== null);
+  // For polygons: origL is always non-null, so use _moveDidDrag flag instead
+  var moved = origC ? origC.distanceTo(newC) > 0.5 : _moveDidDrag;
+  _moveDidDrag = false;
   if (moved) {
     pushUndo({ type:'move', layer:layer, origC:origC, newC:newC, origL:origL, newL:newL });
   } else {
@@ -2931,49 +2973,86 @@ window.redoLast = function() {
   _origRedoLast();
 };
 
-// ── Shape color picker interactions ──────────────────────────────────────────
+// ── Shape properties sheet interactions ──────────────────────────────────────
 (function() {
-  document.getElementById('shape-color-picker').addEventListener('click', function(e) {
-    var sw = e.target.closest('.scp-swatch');
-    if (sw && selectedLayer) {
-      var col = sw.dataset.col;
-      // Update the layer's style
-      try {
-        if (selectedLayer instanceof L.Marker) {
-          // Re-make the icon in the new color
-          var pinSvg = '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">'
-            + '<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + col + '"/>'
-            + '<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
-          selectedLayer.setIcon(L.divIcon({ html: pinSvg, className: '', iconSize: [28,36], iconAnchor: [14,36] }));
-        } else {
-          selectedLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT + 2, opacity: 1, fillOpacity: 0.28 });
-          // Persist the new color into options and into our stash
-          selectedLayer.options.color = col;
-          selectedLayer.options.fillColor = col;
-          selectedLayer._selectedColor = col;
-        }
-      } catch(err) {}
-      // Update active swatch highlight
-      document.querySelectorAll('#shape-color-picker .scp-swatch').forEach(function(s) {
-        s.classList.toggle('scp-active', s.dataset.col === col);
-      });
-    }
+  // Color swatches
+  document.getElementById('props-colors').addEventListener('click', function(e) {
+    var sw = e.target.closest('.props-swatch');
+    if (!sw || !selectedLayer) return;
+    var col = sw.dataset.col;
+    try {
+      if (selectedLayer instanceof L.Marker) {
+        var pinSvg='<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px">'
+          +'<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="'+col+'"/>'
+          +'<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
+        selectedLayer.setIcon(L.divIcon({html:pinSvg,className:'',iconSize:[28,36],iconAnchor:[14,36]}));
+      } else {
+        var curOpac=selectedLayer._propsOpacity!=null?selectedLayer._propsOpacity:0.12;
+        var curWt=selectedLayer._propsWeight!=null?selectedLayer._propsWeight:WEIGHT;
+        selectedLayer.setStyle({color:col,fillColor:col,weight:curWt+2,opacity:1,fillOpacity:Math.max(curOpac,0.28)});
+        selectedLayer.options.color=col; selectedLayer.options.fillColor=col;
+        selectedLayer._selectedColor=col;
+      }
+    } catch(err){}
+    document.querySelectorAll('.props-swatch').forEach(function(s){s.classList.toggle('active',s.dataset.col===col);});
+    saveDrawingsToStorage();
   });
-  document.getElementById('scp-close').addEventListener('click', function(e) {
-    e.stopPropagation();
-    deselectShape();
+
+  // Opacity slider (live preview)
+  document.getElementById('props-opacity').addEventListener('input', function() {
+    var pct=parseInt(this.value);
+    document.getElementById('props-opacity-val').textContent=pct+'%';
+    if (!selectedLayer||selectedLayer instanceof L.Marker) return;
+    var opac=pct/100;
+    selectedLayer._propsOpacity=opac;
+    try { selectedLayer.setStyle({fillOpacity:opac}); } catch(e){}
   });
-  // Click anywhere on map not on a shape dismisses picker
-  document.getElementById('map').addEventListener('mousedown', function(e) {
-    if (!e.target.closest('#shape-color-picker') && !e.target.closest('.leaflet-interactive')) {
-      deselectShape();
+  document.getElementById('props-opacity').addEventListener('change', function() {
+    saveDrawingsToStorage();
+  });
+
+  // Stroke weight buttons
+  document.getElementById('props-weight-row').addEventListener('click', function(e) {
+    var b=e.target.closest('.props-weight-btn');
+    if (!b||!selectedLayer||selectedLayer instanceof L.Marker) return;
+    var w=parseInt(b.dataset.w);
+    selectedLayer._propsWeight=w;
+    try { selectedLayer.setStyle({weight:w}); } catch(e){}
+    document.querySelectorAll('.props-weight-btn').forEach(function(x){x.classList.toggle('active',x===b);});
+    saveDrawingsToStorage();
+  });
+
+  // Edit vertices button
+  document.getElementById('props-edit-btn').addEventListener('click', function() {
+    if (selectedLayer && !(selectedLayer instanceof L.Marker)) startVertexEdit(selectedLayer);
+  });
+
+  // Done editing button
+  document.getElementById('props-done-btn').addEventListener('click', function() {
+    stopVertexEdit(true);
+  });
+
+  // Delete button
+  document.getElementById('props-delete-btn').addEventListener('click', function() {
+    if (!selectedLayer) return;
+    var layer=selectedLayer;
+    closePropsSheet();
+    // Remove from whichever group it's in
+    if (activeGroup.hasLayer(layer)) {
+      activeGroup.removeLayer(layer);
+      pushUndo({type:'remove',layer:layer});
+    } else if (pinGroup.hasLayer(layer)) {
+      pinGroup.removeLayer(layer);
+      pushUndo({type:'remove',layer:layer});
     }
-  }, true);
-  document.getElementById('map').addEventListener('touchstart', function(e) {
-    if (!e.target.closest('#shape-color-picker') && !e.target.closest('.leaflet-interactive')) {
-      deselectShape();
-    }
-  }, { passive: true, capture: true });
+    saveDrawingsToStorage();
+  });
+
+  // Backdrop tap closes sheet
+  document.getElementById('props-backdrop').addEventListener('click', closePropsSheet);
+  document.getElementById('props-backdrop').addEventListener('touchstart', function(e){
+    if (e.target===this) closePropsSheet();
+  }, {passive:true});
 })();
 
 // ── Address search (Nominatim / OpenStreetMap) ────────────────────────────────
@@ -3678,18 +3757,45 @@ function goToMyLocation() {
         L.latLng(lat, lng).distanceTo(mapBounds.getSouthEast())
       ) * 1.2;
 
-      // Draw lines from edges converging toward center point
+      // Draw animated arrow-lines converging toward the pin
       angles.forEach(function(angle) {
         var rad = angle * Math.PI / 180;
         var edgeLat = lat + (maxDist / 111320) * Math.cos(rad);
         var edgeLng = lng + (maxDist / (111320 * Math.cos(lat * Math.PI / 180))) * Math.sin(rad);
         var line = L.polyline(
           [[edgeLat, edgeLng], [lat, lng]],
-          { color: '#1a73e8', weight: 1.2, opacity: 0.55, interactive: false,
-            dashArray: '6 5' }
+          { color: '#1a73e8', weight: 1.5, opacity: 0.0, interactive: false,
+            dashArray: '8 6', className: 'radar-line' }
         ).addTo(youHereGroup);
         radarLines.push(line);
       });
+
+      // Animate lines: fade in, then animate dash-offset to march toward center
+      // We do this by manipulating the SVG path elements Leaflet creates
+      var lineEls = [];
+      setTimeout(function() {
+        radarLines.forEach(function(line) {
+          var el = line.getElement ? line.getElement() : null;
+          if (!el) return;
+          lineEls.push(el);
+          el.style.opacity = '0.6';
+          el.style.transition = 'opacity 0.4s';
+          // Set dashoffset and animate it — march dashes toward center (positive direction)
+          var len = el.getTotalLength ? el.getTotalLength() : 300;
+          el.style.strokeDasharray = '8 6';
+          el.style.strokeDashoffset = len + '';
+          el.style.animation = 'none';
+          // rAF-based march animation
+          var start = null;
+          var duration = 1800; // ms for dashes to march from edge to center
+          (function march(ts) {
+            if (!start) start = ts;
+            var prog = Math.min((ts - start) / duration, 1);
+            el.style.strokeDashoffset = ((1 - prog) * (len + 14)) + '';
+            if (prog < 1) requestAnimationFrame(march);
+          })(performance.now());
+        });
+      }, 100);
 
       // Pulse ring
       L.circle([lat, lng], {
