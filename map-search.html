@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.23 17_00                                 ║
+  ║  MAP VERSION: 26.03.23 21_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -177,7 +177,7 @@
     .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(0,0,0,.08);backdrop-filter:blur(24px) saturate(2) brightness(1.05);-webkit-backdrop-filter:blur(24px) saturate(2) brightness(1.05);border-bottom:1px solid rgba(255,255,255,.12);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(240,240,240,.18);backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);border-bottom:1px solid rgba(255,255,255,.15);padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:5px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
@@ -751,9 +751,9 @@
       position:fixed;
       top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h,34px) + var(--toolbar-h-actual,52px));
       left:0;right:0;
-      background:rgba(0,0,0,.08);
-      backdrop-filter:blur(24px) saturate(2) brightness(1.05);-webkit-backdrop-filter:blur(24px) saturate(2) brightness(1.05);
-      border-bottom:1px solid rgba(255,255,255,.12);
+      background:rgba(240,240,240,.18);
+      backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);
+      border-bottom:1px solid rgba(255,255,255,.15);
       box-shadow:0 2px 12px rgba(0,0,0,.06);
       padding:3px 12px 4px;
       z-index:798;
@@ -1173,16 +1173,8 @@
         <div class="spp-swatch" data-col="#111111" style="background:#111111" title="Black"></div>
         <div class="spp-swatch" data-col="#1a73e8" style="background:#1a73e8" title="Blue"></div>
       </div>
-      <!-- Opacity row (not shown for markers) -->
-      <div class="spp-opacity-row" id="spp-opacity-row">
-        <span class="spp-opacity-label">Fill</span>
-        <div class="spp-opacity-btns">
-          <button class="spp-opbtn" data-fill="0.05" title="Ghost">Ghost</button>
-          <button class="spp-opbtn active" data-fill="0.12" title="Normal">Normal</button>
-          <button class="spp-opbtn" data-fill="0.35" title="Solid">Solid</button>
-          <button class="spp-opbtn" data-fill="0.65" title="Heavy">Heavy</button>
-        </div>
-      </div>
+      <!-- Opacity row removed per user request — color picker only -->
+      <div id="spp-opacity-row" style="display:none"></div>
       <!-- Action row -->
       <div class="spp-actions">
         <button class="spp-action spp-edit" id="spp-edit-btn" aria-label="Edit shape vertices">
@@ -2293,28 +2285,80 @@ function detectSchoolLevel(name, isced, schoolLvl) {
   return null;
 }
 
-// County bounding boxes — [south, west, north, east]
-// Order matters: more specific (smaller) counties listed before larger overlapping ones.
-// Richmond City sits inside Henrico's bbox so it MUST come first.
-// Henrico south edge raised to 37.575 to prevent overlap with Chesterfield.
-var COUNTY_BOXES = [
-  { id: 'hanover',      box: [37.62, -77.73, 38.02, -77.05] },
-  { id: 'richmond',     box: [37.44, -77.52, 37.62, -77.37] }, // City — inside Henrico bbox, must be first
-  { id: 'henrico',      box: [37.575,-77.67, 37.80, -77.07] }, // South edge raised above Chesterfield overlap
-  { id: 'chesterfield', box: [37.10, -77.74, 37.575,-77.30] }, // North edge matches Henrico south
-  { id: 'powhatan',     box: [37.38, -78.07, 37.64, -77.68] },
-  { id: 'goochland',    box: [37.55, -78.05, 37.85, -77.66] },
-  { id: 'newkent',      box: [37.38, -77.19, 37.66, -76.83] },
+// County polygons — approximate geographic boundaries (lat/lon pairs, CCW)
+// Each polygon is an array of [lat, lon] vertices representing the county outline.
+// Point-in-polygon (ray casting) is used — far more accurate than bounding boxes.
+// Order matters: smaller/enclosed areas first (Richmond City, then Henrico, etc.)
+
+// Simple point-in-polygon ray-cast test
+function _pointInPoly(lat, lon, poly) {
+  var inside = false;
+  for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    var xi = poly[i][1], yi = poly[i][0];
+    var xj = poly[j][1], yj = poly[j][0];
+    var intersect = ((yi > lat) !== (yj > lat)) &&
+                    (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+// County polygons — approximate outlines, enough for school-county assignment
+var COUNTY_POLYS = [
+  // Richmond City — innermost, must be checked first
+  { id: 'richmond', poly: [
+    [37.5346,-77.5159],[37.5536,-77.5320],[37.5605,-77.5147],[37.5558,-77.4791],
+    [37.5310,-77.4688],[37.5050,-77.4671],[37.4849,-77.4829],[37.4818,-77.5148],
+    [37.5050,-77.5295],[37.5346,-77.5159]
+  ]},
+  // Henrico County (surrounds Richmond City on 3 sides, bounded by Hanover N, Chesterfield S)
+  { id: 'henrico', poly: [
+    [37.5534,-77.6635],[37.5780,-77.6500],[37.7210,-77.6350],[37.8000,-77.5800],
+    [37.7980,-77.3500],[37.7100,-77.2900],[37.6350,-77.2950],[37.5800,-77.3200],
+    [37.5560,-77.3540],[37.5490,-77.3800],[37.5570,-77.4650],[37.5000,-77.4660],
+    [37.4820,-77.4835],[37.4820,-77.5150],[37.5060,-77.5295],[37.5350,-77.5160],
+    [37.5610,-77.5145],[37.5540,-77.5320],[37.5535,-77.6635]
+  ]},
+  // Hanover County — north of Henrico/Richmond
+  { id: 'hanover', poly: [
+    [37.6230,-77.7200],[37.6800,-77.7150],[37.7700,-77.7100],[37.9800,-77.7000],
+    [38.0100,-77.5000],[38.0100,-77.1500],[37.9600,-77.0800],[37.8100,-77.0800],
+    [37.7100,-77.2900],[37.7980,-77.3500],[37.8000,-77.5800],[37.7210,-77.6350],
+    [37.5780,-77.6500],[37.5534,-77.6635],[37.6230,-77.7200]
+  ]},
+  // Chesterfield County — south of Richmond/Henrico
+  { id: 'chesterfield', poly: [
+    [37.4820,-77.6700],[37.5534,-77.6635],[37.5535,-77.5320],[37.5350,-77.5160],
+    [37.5060,-77.5295],[37.4820,-77.5150],[37.4820,-77.4835],[37.4680,-77.4500],
+    [37.4100,-77.3800],[37.3800,-77.3500],[37.2000,-77.3600],[37.1200,-77.5000],
+    [37.1200,-77.7400],[37.3000,-77.7400],[37.4000,-77.7300],[37.4820,-77.6700]
+  ]},
+  // Powhatan County
+  { id: 'powhatan', poly: [
+    [37.3800,-78.0500],[37.6400,-78.0600],[37.6600,-77.8600],[37.5600,-77.7800],
+    [37.4800,-77.7500],[37.4000,-77.7300],[37.3000,-77.7400],[37.2500,-77.8000],
+    [37.3800,-78.0500]
+  ]},
+  // Goochland County
+  { id: 'goochland', poly: [
+    [37.5600,-78.0500],[37.8500,-78.0500],[37.8500,-77.7000],[37.7200,-77.6500],
+    [37.5780,-77.6500],[37.5534,-77.6635],[37.5600,-77.8000],[37.5600,-78.0500]
+  ]},
+  // New Kent County
+  { id: 'newkent', poly: [
+    [37.3900,-77.1800],[37.4200,-77.0500],[37.5200,-76.8500],[37.6600,-76.8500],
+    [37.7100,-77.0100],[37.7100,-77.2900],[37.6350,-77.2950],[37.5560,-77.3540],
+    [37.4680,-77.4500],[37.4100,-77.3800],[37.3800,-77.3500],[37.3900,-77.1800]
+  ]}
 ];
 
 function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
-  // 1. Try bounding-box geolocation (most accurate — no name-matching needed)
+  // 1. Point-in-polygon geolocation — most accurate, uses actual county shapes
   if (lat && lon) {
-    for (var i = 0; i < COUNTY_BOXES.length; i++) {
-      var cb = COUNTY_BOXES[i], b = cb.box;
-      if (lat >= b[0] && lon >= b[1] && lat <= b[2] && lon <= b[3]) return cb.id;
+    for (var i = 0; i < COUNTY_POLYS.length; i++) {
+      if (_pointInPoly(lat, lon, COUNTY_POLYS[i].poly)) return COUNTY_POLYS[i].id;
     }
-    // Falls through if outside all boxes (uncommon)
+    // Falls through if outside all polygons (uncommon edge case)
   }
   // 2. Fallback: name/operator text matching
   var s = (operator + ' ' + addrCounty + ' ' + name).toLowerCase();
@@ -2544,8 +2588,9 @@ function loadPublix() {
   btn.setAttribute('data-tip', 'Loading Publix…');
 
   // Overpass: all Publix stores in the broader RVA metro bbox
+  // Use name~"Publix" regex to catch all variants regardless of brand tag presence
   var bbox = '37.0,-78.1,38.3,-76.8';
-  var query = '[out:json][timeout:30];(node["brand"="Publix"]('+bbox+');way["brand"="Publix"]('+bbox+'););out center;';
+  var query = '[out:json][timeout:30];(node["name"~"Publix",i]('+bbox+');way["name"~"Publix",i]('+bbox+'););out center;';
 
   fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -2759,21 +2804,19 @@ function closeShapeProps() {
             + '<circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
           _sppLayer.setIcon(L.divIcon({ html:pinSvg, className:'', iconSize:[28,36], iconAnchor:[14,36] }));
         } else {
-          var currentFill = _sppLayer.options.fillOpacity || 0.12;
-          _sppLayer.setStyle({ color:col, fillColor:col, weight:WEIGHT+2, opacity:1, fillOpacity:Math.max(currentFill, 0.22) });
-          _sppLayer.options.color     = col;
-          _sppLayer.options.fillColor = col;
-          _sppLayer._selectedColor    = col;
+          // Apply new color while preserving current fill opacity
+          var currentFillOpacity = _sppLayer.options.fillOpacity !== undefined ? _sppLayer.options.fillOpacity : 0.12;
+          _sppLayer.setStyle({ color: col, fillColor: col, weight: WEIGHT, opacity: 1, fillOpacity: currentFillOpacity });
+          // Store on the layer object so it survives re-selection
+          _sppLayer.options.color      = col;
+          _sppLayer.options.fillColor  = col;
+          _sppLayer._selectedColor     = col;
+          saveDrawingsToStorage();
         }
-      } catch(err) {}
-      // Update active state
+      } catch(err) { console.warn('Color change error:', err); }
+      // Update active state in panel
       panel.querySelectorAll('.spp-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.col === col);
-      });
-      // Keep small picker in sync
-      var picker = getScpEl();
-      if (picker) picker.querySelectorAll('.scp-swatch').forEach(function(s) {
-        s.classList.toggle('scp-active', s.dataset.col === col);
       });
     });
   });
@@ -2814,8 +2857,7 @@ function closeShapeProps() {
         document.getElementById('edit-mode-bar').classList.add('active');
         // Disable map drag while editing vertices
         map.dragging.disable();
-        // Close the panel temporarily — it re-appears on Done
-        panel.classList.remove('open');
+        // Keep panel open so user can see Done button (don't close it)
       } catch(e) { console.warn('Edit failed:', e); }
     }
   });
