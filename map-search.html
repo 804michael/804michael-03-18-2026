@@ -2208,126 +2208,13 @@ var LEVEL_COLORS = {
   high:       { fill: '#DA291C', stroke: '#b01f15' }
 };
 
-// Name-based private-school filter
-const PRIVATE_RE = /academy|christian|baptist|catholic|episcopal|montessori|preparatory|prep\s*school|waldorf|hebrew|islamic|muslim|jewish|lutheran|methodist|presbyterian|seminary|private|religious/i;
+// ── School data — CSV is the sole source of truth ────────────────────────────
+// schools.csv provides name, county, and level for every school.
+// Overpass is used only to look up lat/lon coordinates by school name.
+// Any school not in schools.csv is ignored entirely — no polygon math, no OSM tag guessing.
 
-function detectSchoolLevel(name, isced, schoolLvl) {
-  var n = parseInt(isced) || 0;
-  var src = (name + ' ' + schoolLvl).toLowerCase();
-  if (n === 1 || /elementary|primary|intermediate/.test(src)) return 'elementary';
-  if (n === 2 || /middle school|jr\.?\s?high|junior high/.test(src)) return 'middle';
-  if (n === 3 || /high school/.test(src)) return 'high';
-  // looser fallback
-  if (/elementary|primary/.test(src)) return 'elementary';
-  if (/middle/.test(src)) return 'middle';
-  if (/\bhigh\b/.test(src)) return 'high';
-  return null;
-}
-
-// County polygons — approximate geographic boundaries (lat/lon pairs, CCW)
-// Each polygon is an array of [lat, lon] vertices representing the county outline.
-// Point-in-polygon (ray casting) is used — far more accurate than bounding boxes.
-// Order matters: smaller/enclosed areas first (Richmond City, then Henrico, etc.)
-
-// County polygons — carefully traced geographic boundaries for school assignment.
-// Uses point-in-polygon ray casting. Order matters: smaller/enclosed areas first.
-// Caroline County is included to EXCLUDE its schools from Hanover (they share a border).
-
-function _pointInPoly(lat, lon, poly) {
-  var inside = false;
-  for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    var xi = poly[i][1], yi = poly[i][0];
-    var xj = poly[j][1], yj = poly[j][0];
-    var intersect = ((yi > lat) !== (yj > lat)) &&
-                    (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
-
-// Precise county boundary polygons (traced from official GIS data, simplified)
-var COUNTY_POLYS = [
-  // ── Richmond City (independent city — enclosed by Henrico/Chesterfield) ──
-  { id: 'richmond', poly: [
-    [37.5346,-77.4901],[37.5534,-77.4906],[37.5605,-77.4957],[37.5660,-77.5107],
-    [37.5555,-77.5320],[37.5350,-77.5320],[37.5160,-77.5258],[37.5060,-77.5156],
-    [37.4982,-77.5030],[37.4849,-77.4928],[37.4818,-77.4750],[37.4900,-77.4625],
-    [37.5050,-77.4590],[37.5250,-77.4620],[37.5346,-77.4901]
-  ]},
-  // ── Caroline County — north of Hanover, must be excluded from Hanover ──
-  { id: 'caroline', poly: [
-    [37.7990,-77.6800],[37.7990,-77.1600],[37.9500,-77.1600],[38.0050,-77.1200],
-    [38.0800,-77.2000],[38.1400,-77.3500],[38.1400,-77.6000],[38.0500,-77.7500],
-    [37.9500,-77.7500],[37.8700,-77.7500],[37.7990,-77.6800]
-  ]},
-  // ── Hanover County ──
-  { id: 'hanover', poly: [
-    [37.6230,-77.7200],[37.6600,-77.7150],[37.7200,-77.7000],[37.7990,-77.6800],
-    [37.8700,-77.7500],[37.9500,-77.7500],[38.0500,-77.7500],[38.1400,-77.6000],
-    [38.1400,-77.3500],[38.0800,-77.2000],[38.0050,-77.1200],[37.9500,-77.1600],
-    [37.7990,-77.1600],[37.7990,-77.2500],[37.7100,-77.2900],[37.6700,-77.3500],
-    [37.6350,-77.3800],[37.5780,-77.4500],[37.5560,-77.4650],[37.5534,-77.5320],
-    [37.5780,-77.5500],[37.5900,-77.6200],[37.6230,-77.7200]
-  ]},
-  // ── Henrico County ──
-  { id: 'henrico', poly: [
-    [37.5534,-77.6635],[37.5780,-77.6500],[37.5900,-77.6200],[37.5780,-77.5500],
-    [37.5534,-77.5320],[37.5350,-77.5320],[37.5610,-77.5107],[37.5660,-77.5107],
-    [37.5780,-77.4500],[37.6350,-77.3800],[37.6700,-77.3500],[37.7100,-77.2900],
-    [37.7990,-77.2500],[37.7990,-77.1600],[37.7100,-77.1000],[37.6500,-77.1200],
-    [37.6000,-77.1500],[37.5560,-77.2800],[37.5490,-77.3400],[37.4820,-77.4100],
-    [37.4820,-77.4750],[37.4849,-77.4928],[37.5060,-77.5156],[37.5160,-77.5258],
-    [37.5350,-77.5320],[37.5555,-77.5320],[37.5660,-77.5107],[37.5605,-77.4957],
-    [37.5534,-77.4906],[37.5346,-77.4901],[37.5250,-77.4620],[37.5050,-77.4590],
-    [37.4900,-77.4625],[37.4818,-77.4750],[37.4820,-77.4100],[37.4820,-77.5150],
-    [37.4820,-77.6000],[37.5100,-77.6400],[37.5534,-77.6635]
-  ]},
-  // ── Chesterfield County ──
-  { id: 'chesterfield', poly: [
-    [37.4820,-77.6700],[37.5100,-77.6400],[37.4820,-77.6000],[37.4820,-77.5150],
-    [37.4820,-77.4750],[37.4818,-77.4750],[37.4900,-77.4625],[37.4820,-77.4100],
-    [37.4680,-77.3900],[37.4100,-77.3500],[37.3800,-77.3300],[37.2000,-77.3400],
-    [37.1200,-77.4800],[37.1200,-77.7400],[37.2500,-77.7400],[37.3000,-77.7400],
-    [37.4000,-77.7200],[37.4820,-77.6700]
-  ]},
-  // ── Powhatan County ──
-  { id: 'powhatan', poly: [
-    [37.3800,-78.0500],[37.5600,-78.0600],[37.6400,-78.0200],[37.6600,-77.8600],
-    [37.5600,-77.7800],[37.5100,-77.7400],[37.4820,-77.7200],[37.4000,-77.7200],
-    [37.3000,-77.7400],[37.2500,-77.8000],[37.2200,-77.9200],[37.3800,-78.0500]
-  ]},
-  // ── Goochland County ──
-  { id: 'goochland', poly: [
-    [37.5600,-78.0600],[37.8500,-78.0500],[37.8500,-77.7000],[37.7200,-77.6500],
-    [37.6600,-77.7150],[37.6230,-77.7200],[37.5900,-77.6200],[37.5780,-77.6500],
-    [37.5534,-77.6635],[37.5100,-77.6400],[37.4820,-77.6000],[37.4820,-77.7200],
-    [37.5100,-77.7400],[37.5600,-77.7800],[37.6600,-77.8600],[37.6400,-78.0200],
-    [37.5600,-78.0600]
-  ]},
-  // ── New Kent County ──
-  { id: 'newkent', poly: [
-    [37.3900,-77.1800],[37.4200,-77.0500],[37.4800,-76.9000],[37.5800,-76.8500],
-    [37.6800,-76.8500],[37.7100,-77.0100],[37.7100,-77.1000],[37.7990,-77.1600],
-    [37.7990,-77.2500],[37.7100,-77.2900],[37.6000,-77.1500],[37.5560,-77.2800],
-    [37.4820,-77.4100],[37.4680,-77.3900],[37.4100,-77.3500],[37.3800,-77.3300],
-    [37.3900,-77.1800]
-  ]}
-];
-
-// ── CSV school→county lookup (authoritative override) ────────────────────────
-// Loaded from schools.csv in the same directory as this page.
-// Format: two columns, no header required —  School Name, county_id
-// county_id must match the keys used in scoring: hanover, henrico, richmond,
-// chesterfield, powhatan, goochland, newkent
-// Example rows:
-//   Hanover High School,hanover
-//   Deep Run High School,henrico
-//   Tucker High School,henrico
-// To update the list edit schools.csv only — no HTML changes needed.
-// SCHOOL_CSV_MAP: keyed by normalised lowercase name → { county, level }
-// Both county and level come directly from schools.csv — no OSM tag guessing needed.
-var SCHOOL_CSV_MAP = {};
-var _csvLoaded = false;
+var SCHOOL_CSV_MAP = {}; // key: normalised name → { county, level }
+var _csvLoaded     = false;
 
 (function loadSchoolsCsv() {
   fetch('schools.csv')
@@ -2336,110 +2223,37 @@ var _csvLoaded = false;
       return r.text();
     })
     .then(function(text) {
-      var lines = text.split(/\r?\n/);
-      lines.forEach(function(line) {
+      text.split(/\r?\n/).forEach(function(line) {
         line = line.trim();
         if (!line || line.charAt(0) === '#') return;
-        // Support quoted name: "School Name",county,level  or  School Name,county,level
-        var match = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
-                    line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
-        if (!match) return;
-        var key    = match[1].trim().toLowerCase().replace(/['']/g,"'").replace(/\s+/g,' ');
-        var county = match[2].trim().toLowerCase();
-        var level  = match[3].trim().toLowerCase();
+        var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
+                line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
+        if (!m) return;
+        var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
+        var county = m[2].trim().toLowerCase();
+        var level  = m[3].trim().toLowerCase();
         SCHOOL_CSV_MAP[key] = { county: county, level: level };
       });
       _csvLoaded = true;
       console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
     })
     .catch(function(err) {
-      console.info('[schools.csv] not loaded — using OSM scoring only. (' + err.message + ')');
+      console.warn('[schools.csv] failed to load:', err.message);
     });
 })();
 
-// Normalise a school name to match CSV keys.
 function _normaliseName(name) {
-  return (name || '').toLowerCase()
-    .replace(/['']/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
+  return (name || '').toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ').trim();
 }
 
-// Returns { county, level } from CSV if found, else null.
-// 'caroline' is suppressed entirely (wrong region).
-// 'regional' is allowed through — applySchoolFilter handles the display logic.
+// Returns CSV entry { county, level } if the school is in our list and should be shown.
+// 'caroline' is never shown (out of region). 'regional' passes through for applySchoolFilter.
 function _csvLookup(name) {
   if (!_csvLoaded || !name) return null;
   var entry = SCHOOL_CSV_MAP[_normaliseName(name)];
   if (!entry) return null;
   if (entry.county === 'caroline') return null;
   return entry;
-}
-
-// Multi-check scoring: polygon match = 10pts, operator/addrCounty text = 2pts, name text = 1pt.
-// Highest score wins. Ties broken by polygon order (more specific first).
-// CSV lookup (schools.csv) is checked first — exact name match returns immediately,
-// bypassing all OSM scoring. Scoring is the fallback for schools not in the CSV.
-function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
-  // 0. CSV authoritative lookup — instant return, no scoring needed
-  var csv = _csvLookup(name);
-  if (csv) return csv.county;
-  var scores = {};
-  var countyIds = COUNTY_POLYS.map(function(c){ return c.id; });
-  countyIds.forEach(function(id){ scores[id] = 0; });
-
-  // 1. Point-in-polygon test (highest weight — location is ground truth)
-  if (lat && lon) {
-    for (var i = 0; i < COUNTY_POLYS.length; i++) {
-      if (_pointInPoly(lat, lon, COUNTY_POLYS[i].poly)) {
-        scores[COUNTY_POLYS[i].id] += 10;
-        break; // only one polygon match possible (non-overlapping)
-      }
-    }
-  }
-
-  // 2. OSM addr:county tag (fairly reliable when present)
-  var addrLow = (addrCounty || '').toLowerCase();
-  if (/hanover/.test(addrLow))      scores['hanover']      += 2;
-  if (/henrico/.test(addrLow))      scores['henrico']      += 2;
-  if (/richmond/.test(addrLow))     scores['richmond']     += 2;
-  if (/chesterfield/.test(addrLow)) scores['chesterfield'] += 2;
-  if (/powhatan/.test(addrLow))     scores['powhatan']     += 2;
-  if (/goochland/.test(addrLow))    scores['goochland']    += 2;
-  if (/new kent/.test(addrLow))     scores['newkent']      += 2;
-  if (/caroline/.test(addrLow))     scores['caroline']     += 2;
-
-  // 3. Operator tag (e.g. "Hanover County Public Schools")
-  var opLow = (operator || '').toLowerCase();
-  if (/hanover/.test(opLow))      scores['hanover']      += 2;
-  if (/henrico/.test(opLow))      scores['henrico']      += 2;
-  if (/richmond/.test(opLow))     scores['richmond']     += 2;
-  if (/chesterfield/.test(opLow)) scores['chesterfield'] += 2;
-  if (/powhatan/.test(opLow))     scores['powhatan']     += 2;
-  if (/goochland/.test(opLow))    scores['goochland']    += 2;
-  if (/new kent/.test(opLow))     scores['newkent']      += 2;
-  if (/caroline/.test(opLow))     scores['caroline']     += 2;
-
-  // 4. School name text (weakest signal — only 1pt, can be misleading)
-  var nameLow = (name || '').toLowerCase();
-  if (/hanover/.test(nameLow))      scores['hanover']      += 1;
-  if (/henrico/.test(nameLow))      scores['henrico']      += 1;
-  if (/richmond/.test(nameLow))     scores['richmond']     += 1;
-  if (/chesterfield/.test(nameLow)) scores['chesterfield'] += 1;
-  if (/powhatan/.test(nameLow))     scores['powhatan']     += 1;
-  if (/goochland/.test(nameLow))    scores['goochland']    += 1;
-  if (/new kent|newkent/.test(nameLow)) scores['newkent'] += 1;
-  if (/caroline/.test(nameLow))     scores['caroline']     += 1;
-
-  // Pick winner — highest score, minimum threshold of 1
-  var best = null, bestScore = 0;
-  countyIds.forEach(function(id) {
-    if (scores[id] > bestScore) { bestScore = scores[id]; best = id; }
-  });
-
-  if (!best || bestScore < 1) return null; // outside our region — skip
-  if (best === 'caroline') return null;    // Caroline County not in our filter set — skip
-  return best;
 }
 
 function applySchoolFilter() {
@@ -2506,9 +2320,9 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
-  const bbox = '37.1,-78.0,38.2,-76.9'; // Hanover/Henrico/Richmond/Chesterfield/Powhatan/Goochland/NewKent
-  // Fetch ALL amenity=school in bbox — client-side JS handles all filtering.
-  // Simpler query = faster, more reliable, no regex URL-encoding issues.
+  const bbox = '37.1,-78.0,38.2,-76.9';
+  // Overpass provides coordinates only. County and level come entirely from schools.csv.
+  // Any school whose name does not match a CSV entry is ignored.
   const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
 
   fetch('https://overpass-api.de/api/interpreter', {
@@ -2521,23 +2335,16 @@ function loadSchools() {
     data.elements.forEach(function(el) {
       var lat  = el.lat  || (el.center && el.center.lat);
       var lon  = el.lon  || (el.center && el.center.lon);
-      var tags = el.tags || {};
-      var name = tags.name || '';
+      var name = (el.tags || {}).name || '';
       if (!lat || !lon || !name) return;
-      if (PRIVATE_RE.test(name)) return;
 
-      var isced    = tags['isced:level']  || '';
-      var schoolLv = tags['school:level'] || '';
-      var operator = tags['operator']     || '';
-      var addrCty  = tags['addr:county']  || '';
-
-      // Use CSV as authoritative source for both county and level.
-      // Fall back to OSM-based detection only for schools not in the CSV.
+      // CSV is the sole authority — skip anything not listed
       var csvEntry = _csvLookup(name);
-      var level  = csvEntry ? csvEntry.level  : detectSchoolLevel(name, isced, schoolLv);
-      var county = csvEntry ? csvEntry.county : detectSchoolCounty(name, operator, addrCty, lat, lon);
-      if (!level || level === 'other') return;
-      if (!county) return;
+      if (!csvEntry) return;
+      var level  = csvEntry.level;
+      var county = csvEntry.county;
+      if (level === 'other') return;
+
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
@@ -2548,7 +2355,7 @@ function loadSchools() {
         radius: 7, color: col.stroke, weight: 2,
         fillColor: col.fill, fillOpacity: 0.9,
         interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-      }).bindTooltip(name + ' • ' + lvLabel, {
+      }).bindTooltip(name + ' \u2022 ' + lvLabel, {
         permanent: false, direction: 'top', offset: [0, -10],
         className: 'dist-tip', pane: 'tooltipPane'
       });
