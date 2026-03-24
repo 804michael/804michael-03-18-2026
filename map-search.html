@@ -179,7 +179,7 @@
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
     .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.12);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.18);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:5px}
-    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,1);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
     .tool-btn.active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 2px 8px rgba(218,41,28,.45)}
     .tool-btn svg{pointer-events:none}
@@ -883,9 +883,6 @@
     /* ── County boundary overlays ── */
     .county-outline-label{
       background:transparent;border:none;box-shadow:none;
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;
-      font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
-      color:rgba(0,0,0,.35);pointer-events:none;
     }
   </style>
 </head>
@@ -1134,12 +1131,12 @@
 </div>
 
 <!-- MAP -->
+<div class="map-hint" id="map-hint">
+  <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
+  <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work</div>
+</div>
 <div class="map-wrap" id="map-wrap">
   <div id="map">
-    <div class="map-hint" id="map-hint">
-      <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
-      <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work</div>
-    </div>
     <!-- Styled zoom buttons (bottom-left, matches tool-btn style) -->
     <div id="map-zoom-ctrl">
       <button class="zoom-btn" id="map-zoom-in-btn"  onclick="map.zoomIn()"  aria-label="Zoom in"  title="Zoom in">+</button>
@@ -1565,9 +1562,6 @@ function showHintTimed(ms) {
     _hintHideTimer = setTimeout(function() { hint.classList.add('hidden'); }, 1600);
   }, ms);
 }
-
-// Show on load for 4 seconds
-showHintTimed(7000);
 
 function markDrawn() {
   if (!hasDrawn) {
@@ -2382,7 +2376,7 @@ function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
   if (lat && lon) {
     for (var i = 0; i < COUNTY_POLYS.length; i++) {
       if (_pointInPoly(lat, lon, COUNTY_POLYS[i].poly)) {
-        scores[COUNTY_POLYS[i].id] += 3;
+        scores[COUNTY_POLYS[i].id] += 10;
         break; // only one polygon match possible (non-overlapping)
       }
     }
@@ -2744,7 +2738,12 @@ mapEl.addEventListener('mousedown', e => {
   if (_scaleBarEl && _scaleBarEl.contains(e.target)) return;
   onPointerDown(e.clientX, e.clientY);
 });
-mapEl.addEventListener('mousemove', e => { onPointerMove(e.clientX, e.clientY); });
+mapEl.addEventListener('mousemove', e => {
+  if (e.buttons === 0 && (drawingPolyline || previewCircle || circleCenter)) {
+    cancelInProgress(); // button released outside map — clean up stale draw state
+  }
+  onPointerMove(e.clientX, e.clientY);
+});
 mapEl.addEventListener('mouseup',   e => { onPointerUp(e.clientX, e.clientY); });
 mapEl.addEventListener('mouseleave', () => {
   if (mode === 'none') return;
@@ -2931,7 +2930,8 @@ function closeShapeProps() {
   });
 
   // Edit button — enable Leaflet.Editable vertex handles
-  document.getElementById('spp-edit-btn').addEventListener('click', function() {
+  var _editBtnEl = document.getElementById('spp-edit-btn');
+  if (_editBtnEl) _editBtnEl.addEventListener('click', function() {
     if (!_sppLayer || _sppLayer instanceof L.Marker) return;
     var isEditing = this.classList.contains('editing');
     if (isEditing) {
