@@ -2375,7 +2375,9 @@ var COUNTY_POLYS = [
 //   Deep Run High School,henrico
 //   Tucker High School,henrico
 // To update the list edit schools.csv only — no HTML changes needed.
-var SCHOOL_COUNTY_MAP = {}; // keyed by normalised lowercase name
+// SCHOOL_CSV_MAP: keyed by normalised lowercase name → { county, level }
+// Both county and level come directly from schools.csv — no OSM tag guessing needed.
+var SCHOOL_CSV_MAP = {};
 var _csvLoaded = false;
 
 (function loadSchoolsCsv() {
@@ -2388,41 +2390,51 @@ var _csvLoaded = false;
       var lines = text.split(/\r?\n/);
       lines.forEach(function(line) {
         line = line.trim();
-        if (!line) return;
-        // Support quoted fields: "School Name",county  or  School Name,county
-        var match = line.match(/^"([^"]+)"\s*,\s*(\S+)$/) ||
-                    line.match(/^([^,]+?)\s*,\s*(\S+)$/);
+        if (!line || line.charAt(0) === '#') return;
+        // Support quoted name: "School Name",county,level  or  School Name,county,level
+        var match = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
+                    line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
         if (!match) return;
-        var schoolName = match[1].trim().toLowerCase();
-        var countyId   = match[2].trim().toLowerCase();
-        SCHOOL_COUNTY_MAP[schoolName] = countyId;
+        var key    = match[1].trim().toLowerCase().replace(/['']/g,"'").replace(/\s+/g,' ');
+        var county = match[2].trim().toLowerCase();
+        var level  = match[3].trim().toLowerCase();
+        SCHOOL_CSV_MAP[key] = { county: county, level: level };
       });
       _csvLoaded = true;
-      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_COUNTY_MAP).length + ' entries');
+      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
     })
     .catch(function(err) {
       console.info('[schools.csv] not loaded — using OSM scoring only. (' + err.message + ')');
     });
 })();
 
-// Normalise a school name the same way the CSV keys are normalised,
-// so minor punctuation/spacing differences don't cause misses.
+// Normalise a school name to match CSV keys.
 function _normaliseName(name) {
   return (name || '').toLowerCase()
-    .replace(/['']/g, "'")   // curly apostrophes → straight
-    .replace(/\s+/g, ' ')    // collapse whitespace
+    .replace(/['']/g, "'")
+    .replace(/\s+/g, ' ')
     .trim();
+}
+
+// Returns { county, level } from CSV if found, else null.
+// 'caroline' is suppressed entirely (wrong region).
+// 'regional' is allowed through — applySchoolFilter handles the display logic.
+function _csvLookup(name) {
+  if (!_csvLoaded || !name) return null;
+  var entry = SCHOOL_CSV_MAP[_normaliseName(name)];
+  if (!entry) return null;
+  if (entry.county === 'caroline') return null;
+  return entry;
 }
 
 // Multi-check scoring: polygon match = 10pts, operator/addrCounty text = 2pts, name text = 1pt.
 // Highest score wins. Ties broken by polygon order (more specific first).
-// CSV lookup is checked first — if a match is found it is returned immediately.
+// CSV lookup (schools.csv) is checked first — exact name match returns immediately,
+// bypassing all OSM scoring. Scoring is the fallback for schools not in the CSV.
 function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
   // 0. CSV authoritative lookup — instant return, no scoring needed
-  if (_csvLoaded && name) {
-    var csvMatch = SCHOOL_COUNTY_MAP[_normaliseName(name)];
-    if (csvMatch) return csvMatch === 'caroline' ? null : csvMatch;
-  }
+  var csv = _csvLookup(name);
+  if (csv) return csv.county;
   var scores = {};
   var countyIds = COUNTY_POLYS.map(function(c){ return c.id; });
   countyIds.forEach(function(id){ scores[id] = 0; });
@@ -2483,10 +2495,17 @@ function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
 
 function applySchoolFilter() {
   schoolGroup.clearLayers();
+  // Regional schools show when high school level is on AND at least one county is on.
+  var anyCountyOn = Object.keys(schoolFilter.counties).some(function(k) { return schoolFilter.counties[k]; });
+  var highOn = schoolFilter.levels['high'];
   schoolData.forEach(function(d) {
-    if (schoolFilter.levels[d.level] && schoolFilter.counties[d.county]) {
-      d.marker.addTo(schoolGroup);
+    var show;
+    if (d.county === 'regional') {
+      show = highOn && anyCountyOn;
+    } else {
+      show = schoolFilter.levels[d.level] && schoolFilter.counties[d.county];
     }
+    if (show) d.marker.addTo(schoolGroup);
   });
 }
 
@@ -2563,11 +2582,13 @@ function loadSchools() {
       var operator = tags['operator']     || '';
       var addrCty  = tags['addr:county']  || '';
 
-      var level = detectSchoolLevel(name, isced, schoolLv);
-      if (!level) return;
-
-      var county = detectSchoolCounty(name, operator, addrCty, lat, lon);
-      if (!county) return; // outside our serving area — skip
+      // Use CSV as authoritative source for both county and level.
+      // Fall back to OSM-based detection only for schools not in the CSV.
+      var csvEntry = _csvLookup(name);
+      var level  = csvEntry ? csvEntry.level  : detectSchoolLevel(name, isced, schoolLv);
+      var county = csvEntry ? csvEntry.county : detectSchoolCounty(name, operator, addrCty, lat, lon);
+      if (!level || level === 'other') return;
+      if (!county) return;
       var key = lat.toFixed(3) + ',' + lon.toFixed(3);
       if (seen.has(key)) return;
       seen.add(key);
