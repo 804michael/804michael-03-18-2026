@@ -626,8 +626,9 @@
     }
     @media(min-width:600px){
       /* On desktop/tablet: float above shape instead of bottom sheet */
+      /* position:fixed (not absolute) so overflow:hidden on #map never clips it */
       #shape-props{
-        position:absolute;
+        position:fixed;
         bottom:auto; left:auto; right:auto;
         width:260px;
         border-radius:14px;
@@ -636,7 +637,7 @@
         opacity:0;
         box-shadow:0 8px 32px rgba(0,0,0,.22);
         padding:12px 14px 14px;
-        z-index:750;
+        z-index:9500;
       }
     }
     #shape-props.open{
@@ -1056,7 +1057,7 @@
     </div>
 
     <!-- Other tools: Move, Pan, Undo, Redo, Clear (zoom hidden per request) -->
-    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move / Recolor — tap a shape to recolor, drag to move" aria-label="Move or recolor a shape">
+    <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move / Recolor — drag to move a shape, tap to recolor" aria-label="Move or recolor a shape">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
     </button>
     <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
@@ -2364,10 +2365,64 @@ var COUNTY_POLYS = [
   ]}
 ];
 
-// Multi-check scoring: polygon match = 3pts, operator/addrCounty text = 2pts, name text = 1pt.
+// ── CSV school→county lookup (authoritative override) ────────────────────────
+// Loaded from schools.csv in the same directory as this page.
+// Format: two columns, no header required —  School Name, county_id
+// county_id must match the keys used in scoring: hanover, henrico, richmond,
+// chesterfield, powhatan, goochland, newkent
+// Example rows:
+//   Hanover High School,hanover
+//   Deep Run High School,henrico
+//   Tucker High School,henrico
+// To update the list edit schools.csv only — no HTML changes needed.
+var SCHOOL_COUNTY_MAP = {}; // keyed by normalised lowercase name
+var _csvLoaded = false;
+
+(function loadSchoolsCsv() {
+  fetch('schools.csv')
+    .then(function(r) {
+      if (!r.ok) throw new Error('schools.csv not found');
+      return r.text();
+    })
+    .then(function(text) {
+      var lines = text.split(/\r?\n/);
+      lines.forEach(function(line) {
+        line = line.trim();
+        if (!line) return;
+        // Support quoted fields: "School Name",county  or  School Name,county
+        var match = line.match(/^"([^"]+)"\s*,\s*(\S+)$/) ||
+                    line.match(/^([^,]+?)\s*,\s*(\S+)$/);
+        if (!match) return;
+        var schoolName = match[1].trim().toLowerCase();
+        var countyId   = match[2].trim().toLowerCase();
+        SCHOOL_COUNTY_MAP[schoolName] = countyId;
+      });
+      _csvLoaded = true;
+      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_COUNTY_MAP).length + ' entries');
+    })
+    .catch(function(err) {
+      console.info('[schools.csv] not loaded — using OSM scoring only. (' + err.message + ')');
+    });
+})();
+
+// Normalise a school name the same way the CSV keys are normalised,
+// so minor punctuation/spacing differences don't cause misses.
+function _normaliseName(name) {
+  return (name || '').toLowerCase()
+    .replace(/['']/g, "'")   // curly apostrophes → straight
+    .replace(/\s+/g, ' ')    // collapse whitespace
+    .trim();
+}
+
+// Multi-check scoring: polygon match = 10pts, operator/addrCounty text = 2pts, name text = 1pt.
 // Highest score wins. Ties broken by polygon order (more specific first).
-// This catches edge cases where OSM tags are wrong but location is right, or vice versa.
+// CSV lookup is checked first — if a match is found it is returned immediately.
 function detectSchoolCounty(name, operator, addrCounty, lat, lon) {
+  // 0. CSV authoritative lookup — instant return, no scoring needed
+  if (_csvLoaded && name) {
+    var csvMatch = SCHOOL_COUNTY_MAP[_normaliseName(name)];
+    if (csvMatch) return csvMatch === 'caroline' ? null : csvMatch;
+  }
   var scores = {};
   var countyIds = COUNTY_POLYS.map(function(c){ return c.id; });
   countyIds.forEach(function(id){ scores[id] = 0; });

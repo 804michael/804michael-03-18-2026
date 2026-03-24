@@ -1,0 +1,165 @@
+# schools.csv — authoritative school-to-county lookup for map-search.html
+# Place in the same directory as map-search.html. Fetched automatically at load.
+# FORMAT: School Name,county_id
+# county_id options: hanover, henrico, richmond, chesterfield, powhatan, goochland, newkent, caroline, regional
+# Lines starting with # are comments and ignored.
+# Matching is case-insensitive. To update: edit this file only — no HTML changes needed.
+#
+# NOTE: caroline and regional schools are loaded but filtered out of the map display.
+# They are included here so the page can correctly exclude them from nearby counties.
+
+# ── HANOVER ────────────────────────────────────────────────
+Ashland Elementary School,hanover
+Battlefield Park Elementary School,hanover
+Beaverdam Elementary School,hanover
+Cold Harbor Elementary School,hanover
+Cool Spring Elementary School,hanover
+Elmont Elementary School,hanover
+Kersey Creek Elementary School,hanover
+Laurel Meadow Elementary School,hanover
+Mechanicsville Elementary School,hanover
+Pearson's Corner Elementary School,hanover
+Pole Green Elementary School,hanover
+Rural Point Elementary School,hanover
+South Anna Elementary School,hanover
+Washington-Henry Elementary School,hanover
+Bell Creek Middle School,hanover
+Chickahominy Middle School,hanover
+Liberty Middle School,hanover
+Oak Knoll Middle School,hanover
+Atlee High School,hanover
+Hanover High School,hanover
+Mechanicsville High School,hanover
+Patrick Henry High School,hanover
+
+# ── HENRICO ────────────────────────────────────────────────
+Anthony P. Mehfoud Elementary School,henrico
+Arthur Ashe Jr. Elementary School,henrico
+Cashell Donahoe Elementary School,henrico
+Chamberlayne Elementary School,henrico
+Charles M. Johnson Elementary School,henrico
+Colonial Trail Elementary School,henrico
+Crestview Elementary School,henrico
+David A. Kaechele Elementary School,henrico
+Dumbarton Elementary School,henrico
+Echo Lake Elementary School,henrico
+Elizabeth Holladay Elementary School,henrico
+Fair Oaks Elementary School,henrico
+Gayton Elementary School,henrico
+George F. Baker Elementary School,henrico
+Glen Allen Elementary School,henrico
+Glen Lea Elementary School,henrico
+Greenwood Elementary School,henrico
+Harold Macon Ratcliffe Elementary School,henrico
+Harvie Elementary School,henrico
+Henry D. Ward Elementary School,henrico
+Highland Springs Elementary School,henrico
+Jackson Davis Elementary School,henrico
+Jacob L. Adams Elementary School,henrico
+Laburnum Elementary School,henrico
+Lakeside Elementary School,henrico
+Longdale Elementary School,henrico
+Maude Trevvett Elementary School,henrico
+Maybeury Elementary School,henrico
+Montrose Elementary School,henrico
+Nuckols Farm Elementary School,henrico
+Pemberton Elementary School,henrico
+Pinchbeck Elementary School,henrico
+R.C. Longan Elementary School,henrico
+Ridge Elementary School,henrico
+Rivers Edge Elementary School,henrico
+Ruby F. Carver Elementary School,henrico
+Sandston Elementary School,henrico
+Seven Pines Elementary School,henrico
+Shady Grove Elementary School,henrico
+Short Pump Elementary School,henrico
+Skipwith Elementary School,henrico
+Springfield Park Elementary School,henrico
+Three Chopt Elementary School,henrico
+Tuckahoe Elementary School,henrico
+Twin Hickory Elementary School,henrico
+Varina Elementary School,henrico
+Brookland Middle School,henrico
+Elko Middle School,henrico
+Fairfield Middle School,henrico
+George H. Moody Middle School,henrico
+Holman Middle School,henrico
+Hungary Creek Middle School,henrico
+John Rolfe Middle School,henrico
+L. Douglas Wilder Middle School,henrico
+Pocahontas Middle School,henrico
+Quioccasin Middle School,henrico
+Short Pump Middle School,henrico
+Tuckahoe Middle School,henrico
+Deep Run High School,henrico
+Douglas S. Freeman High School,henrico
+Glen Allen High School,henrico
+Henrico High School,henrico
+Hermitage High School,henrico
+Highland Springs High School,henrico
+John Randolph Tucker High School,henrico
+Mills E. Godwin High School,henrico
+Varina High School,henrico
+Henrico Virtual Academy,henrico
+
+# ── CHESTERFIELD ───────────────────────────────────────────
+Crestwood Elementary School,chesterfield
+C.E. Curtis Elementary School,chesterfield
+Clover Hill Elementary School,chesterfield
+Crenshaw Elementary School,chesterfield
+Elizabeth Scott Elementary School,chesterfield
+Marguerite Christian Elementary School,chesterfield
+Lloyd C. Bird High School,chesterfield
+Clover Hill High School,chesterfield
+Cosby High School,chesterfield
+Midlothian High School,chesterfield
+James River High School,chesterfield
+Bailey Bridge Middle School,chesterfield
+Carver Middle School,chesterfield
+Elizabeth Davis Middle School,chesterfield
+Deep Creek Middle School,chesterfield
+Falling Creek Middle School,chesterfield
+Manchester Middle School,chesterfield
+Matoaca Middle School,chesterfield
+Midlothian Middle School,chesterfield
+Providence Middle School,chesterfield
+Robious Middle School,chesterfield
+Salem Church Middle School,chesterfield
+Swift Creek Middle School,chesterfield
+Tomahawk Creek Middle School,chesterfield
+
+# ── GOOCHLAND ──────────────────────────────────────────────
+Byrd Elementary School,goochland
+Goochland Elementary School,goochland
+Randolph Elementary School,goochland
+Goochland Middle School,goochland
+Goochland High School,goochland
+
+# ── POWHATAN ───────────────────────────────────────────────
+Flat Rock Elementary School,powhatan
+Pocahontas Elementary School,powhatan
+Powhatan Elementary School,powhatan
+Powhatan Middle School,powhatan
+Powhatan High School,powhatan
+
+# ── CAROLINE ───────────────────────────────────────────────
+Bowling Green Elementary School,caroline
+Lewis and Clark Elementary School,caroline
+Madison Elementary School,caroline
+Caroline Middle School,caroline
+Caroline High School,caroline
+
+# ── NEW KENT ───────────────────────────────────────────────
+George W. Watkins Elementary School,newkent
+New Kent Elementary School,newkent
+Quinton Elementary School,newkent
+New Kent Middle School,newkent
+New Kent High School,newkent
+Bridging Communities STEM Academy,newkent
+
+# ── REGIONAL ───────────────────────────────────────────────
+CodeRVA Regional High School,regional
+Maggie L. Walker Governor's School for Government and International Studies,regional
+Appomattox Regional Governor's School for the Arts and Technology,regional
+Blue Ridge Governor's School,regional
+Commonwealth Governor's School,regional
