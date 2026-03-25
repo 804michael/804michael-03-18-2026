@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 19_25                                 ║
+  ║  MAP VERSION: 26.03.24 19_40                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1223,7 +1223,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.03.24 19_25</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.03.24 19_40</p>
   </div>
 </div>
 
@@ -1261,7 +1261,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.03.24 19_25';
+const MAP_VERSION = '26.03.24 19_40';
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
 
@@ -2219,8 +2219,8 @@ var _csvPromise = fetch('schools.csv')
               line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
       if (!m) return;
       var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
-      var county = m[2].trim().toLowerCase();
-      var level  = m[3].trim().toLowerCase();
+      var county = _normaliseCounty(m[2]);
+      var level  = _normaliseLevel(m[3]);
       SCHOOL_CSV_MAP[key] = { county: county, level: level };
 
       if (!knownCounties.includes(county) && county !== 'caroline') {
@@ -2259,6 +2259,23 @@ var _csvPromise = fetch('schools.csv')
 
 function _normaliseName(name) {
   return (name || '').toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ').trim();
+}
+
+function _normaliseCounty(county) {
+  var c = (county || '').toLowerCase().replace(/[\u2018\u2019]/g, "'").replace(/\s+/g, ' ').trim();
+  c = c.replace(/\s+county\b/g, '').replace(/\s+city\b/g, '');
+  c = c.replace(/\s*-\s*/g, '').replace(/\s+/g, '');
+  if (c === 'richmondcity') c = 'richmond';
+  return c;
+}
+
+function _normaliseLevel(level) {
+  var lv = (level || '').toLowerCase().trim();
+  if (lv === 'elementary' || lv === 'elementary school') return 'elementary';
+  if (lv === 'middle' || lv === 'middle school' || lv === 'junior high') return 'middle';
+  if (lv === 'high' || lv === 'high school' || lv === 'senior high') return 'high';
+  if (lv === 'other') return 'other';
+  return lv;
 }
 
 // Returns CSV entry { county, level } if the school is in our list and should be shown.
@@ -2328,13 +2345,14 @@ function _fetchOverpassWithFallback(query, timeoutMs) {
   ];
   function tryEndpoint(i) {
     if (i >= endpoints.length) return Promise.reject(new Error('All Overpass endpoints failed'));
-    var controller = new AbortController();
-    var to = setTimeout(function() { controller.abort(); }, timeoutMs || 30000);
-    return fetch(endpoints[i], {
+    var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var to = setTimeout(function() { if (controller) controller.abort(); }, timeoutMs || 30000);
+    var opts = {
       method: 'POST',
-      body: 'data=' + encodeURIComponent(query),
-      signal: controller.signal
-    })
+      body: 'data=' + encodeURIComponent(query)
+    };
+    if (controller) opts.signal = controller.signal;
+    return fetch(endpoints[i], opts)
     .then(function(r) {
       clearTimeout(to);
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -2785,7 +2803,10 @@ function closeShapeProps() {
   // on mouseup, nulling _sppLayer before the swatch's click handler fired.
   // Stopping propagation here breaks that chain so swatch clicks always work.
   panel.addEventListener('mousedown',  function(e) { e.stopPropagation(); });
+  panel.addEventListener('mouseup',    function(e) { e.stopPropagation(); });
+  panel.addEventListener('click',      function(e) { e.stopPropagation(); });
   panel.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
+  panel.addEventListener('touchend',   function(e) { e.stopPropagation(); }, { passive: false });
 
   // Save button — commits color and closes panel
   document.getElementById('spp-save-btn').addEventListener('click', function() {
