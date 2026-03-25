@@ -1,13 +1,14 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 18_00                                 ║
+  ║  MAP VERSION: 26.03.24 19_25                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
-  ║  string in TWO places:                                        ║
+  ║  string in THREE places:                                      ║
   ║    1. The MAP VERSION line above (in this comment block)      ║
-  ║    2. The visible <p> tag ~line 600 in the share panel        ║
+  ║    2. const MAP_VERSION in the main <script> block            ║
+  ║    3. The visible map-version text in the share panel         ║
   ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
@@ -1221,8 +1222,8 @@
         Load a Shared Map
       </button>
     </div>
-    <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.85rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 18_00</p>
+    <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.03.24 19_25</p>
   </div>
 </div>
 
@@ -1256,6 +1257,13 @@
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 'use strict';
+
+// ⚠ AI MAINTENANCE RULE
+// Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
+// In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
+const MAP_VERSION = '26.03.24 19_25';
+var _mapVersionEl = document.getElementById('map-version-display');
+if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
 
 // ── Nav boilerplate ──────────────────────────────────────────────────────────
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
