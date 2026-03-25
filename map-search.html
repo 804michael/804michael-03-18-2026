@@ -177,7 +177,7 @@
     .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
-    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.12);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.18);padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
+    .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.24);backdrop-filter:blur(16px) saturate(1.55);-webkit-backdrop-filter:blur(16px) saturate(1.55);border-bottom:1px solid rgba(255,255,255,.28);padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.07);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
     .toolbar-in{display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:5px}
     .tool-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:7px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:var(--black);cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
     .tool-btn:hover{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.25)}
@@ -253,6 +253,9 @@
     }
     @supports not (height: 1dvh){
       .map-wrap{ height: calc(100vh - var(--chrome-h)); }
+    }
+    @supports not (backdrop-filter: blur(1px)){
+      .toolbar{ background:rgba(245,245,245,.95) !important; }
     }
     #map{ position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; }
 
@@ -408,8 +411,9 @@
     .search-btn{width:36px;height:36px;padding:0;background:var(--red);color:var(--white);border:none;border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center;position:relative}
     .search-btn:hover{background:var(--red-dark)}
     .search-btn svg{pointer-events:none}
-    .search-results{position:fixed;background:var(--white);border:2px solid var(--gray-mid);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);overflow:hidden;z-index:9001;display:none}
+    .search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;width:100%;max-height:min(45vh,320px);overflow-y:auto;background:var(--white);border:2px solid var(--gray-mid);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:9001;display:none}
     .search-results.open{display:block}
+    .search-results.mobile-floating{position:fixed;left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:min(46vh,320px)}
     .search-result-item{padding:14px 14px;cursor:pointer;border-bottom:1px solid var(--gray-light);font-size:.86rem;line-height:1.35;transition:background .12s}
     .search-result-item:last-child{border-bottom:none}
     .search-result-item:hover,.search-result-item.focused{background:var(--gray-light)}
@@ -425,6 +429,10 @@
     /* Sheet sits above backdrop and must never be covered by it */
     #pin-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10001;background:var(--white);border-radius:14px 14px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.18);padding:8px 16px 16px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:70vh;overflow-y:auto}
     #pin-sheet.open{transform:translateY(0)}
+    /* Desktop: float near pin drop point rather than full-width bottom sheet */
+    #pin-sheet.desktop-pin-pop{left:auto;right:auto;bottom:auto;border-radius:14px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.22);transform:scale(.92);opacity:0;transition:transform .2s cubic-bezier(.4,0,.2,1),opacity .15s}
+    #pin-sheet.desktop-pin-pop.open{transform:scale(1);opacity:1}
+    .desktop-pin-pop #pin-sheet-handle{display:none}
     #pin-sheet-handle{width:32px;height:3px;background:var(--gray-mid);border-radius:2px;margin:0 auto 6px}
     #pin-sheet-colors{display:flex;align-items:center;gap:6px;margin-bottom:6px}
     #pin-sheet-colors span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);flex-shrink:0}
@@ -474,10 +482,10 @@
     }
     #send-modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center}
     #send-modal-backdrop.open{display:flex}
-    #send-modal{background:var(--white);border-radius:16px;padding:22px 22px 18px;width:min(400px,92vw);box-shadow:0 24px 60px rgba(0,0,0,.25);position:relative}
+    #send-modal{background:var(--white);border-radius:16px;padding:20px 24px 16px;width:min(420px,92vw);box-shadow:0 24px 60px rgba(0,0,0,.25);position:relative}
     #send-modal h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;letter-spacing:.02em;color:var(--black);margin-bottom:4px}
     #send-modal h2 span{color:var(--red)}
-    #send-modal p.modal-sub{font-size:.85rem;color:var(--gray-muted);margin-bottom:22px;line-height:1.4}
+    #send-modal p.modal-sub{font-size:.85rem;color:var(--gray-muted);margin-bottom:16px;line-height:1.4}
     .modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
     .modal-field label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black)}
     .modal-field input{height:42px;border:2px solid var(--gray-mid);border-radius:8px;padding:0 12px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s}
@@ -956,7 +964,7 @@
       <button class="tool-btn" id="btn-circle" onclick="setMode('circle')" data-tip="Circle — drag from center outward" aria-label="Circle — drag from center outward">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
       </button>
-      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="Eraser — tap a shape to remove it" aria-label="Eraser — tap a shape to remove it">
+      <button class="tool-btn" id="btn-erase" onclick="setMode('erase')" data-tip="ERASER - TAP TO REMOVE shape/pin" aria-label="ERASER - TAP TO REMOVE shape/pin">
         <!-- Eraser: rectangle body tilted, flat line base, debris marks below -->
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <!-- Eraser body — rotated rectangle -->
@@ -989,13 +997,6 @@
         </svg>
         <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
       </button>
-      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>
-          <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
-        </svg>
-      </button>
       <!-- Publix toggle — same pattern as schools -->
       <button class="tool-btn" id="btn-publix" onclick="togglePublix()" data-tip="Show Publix stores" aria-label="Show Publix stores">
         <!-- Publix: P inside circle, outline only, matches brand mark -->
@@ -1004,6 +1005,13 @@
           <!-- P letterform: vertical stem + curved bowl -->
           <path d="M9 7v10" stroke-width="2"/>
           <path d="M9 7 h3.5 a3 3 0 0 1 0 6 H9" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="tool-btn" id="btn-home" onclick="goToMyLocation()" data-tip="Go to my location" aria-label="Go to my location">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>
+          <line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/>
         </svg>
       </button>
     </div>
@@ -1086,7 +1094,7 @@
 <!-- MAP -->
 <div class="map-hint" id="map-hint">
   <span class="hint-line-1"><span style="display:inline-block;font-size:1.4em;vertical-align:middle;margin-right:4px;animation:finger-bounce 0.9s ease-in-out infinite" aria-hidden="true">☝️</span> Pick a tool &amp;</span><span class="hint-line-2"> draw on the map 🗺️</span>
-  <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">Use colors how you want — maybe favs in 🟢 or 📍 pins for work</div>
+  <div style="font-size:.85em;font-weight:400;opacity:.75;margin-top:6px;letter-spacing:.03em;text-transform:none;white-space:normal">ERASER - TAP TO REMOVE shape/pin • Use colors how you want — maybe favs in 🟢 or 📍 pins for work</div>
 </div>
 <div class="map-wrap" id="map-wrap">
   <div id="map">
@@ -1151,25 +1159,12 @@
 <div id="send-modal-backdrop">
   <div id="send-modal" role="dialog" aria-modal="true" aria-labelledby="send-modal-title">
     <button id="send-modal-close" aria-label="Close" onclick="closeSendModal()">&#x2715;</button>
-    <!-- 804Michael logo mark: 804 black + Michael red -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 786.329 238.272" style="height:28px;width:auto" fill="none" aria-hidden="true">
-        <path fill="#111111" fill-rule="evenodd" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
-        <path fill="#111111" fill-rule="evenodd" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z"/>
-        <path fill="#111111" fill-rule="evenodd" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
-        <path fill="#ED1C24" fill-rule="evenodd" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
-        <path fill="#ED1C24" fill-rule="evenodd" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z"/>
-      </svg>
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:.02em;text-transform:uppercase;line-height:1">
-          Send My Map to
-        </div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;letter-spacing:.02em;text-transform:uppercase;line-height:1">
-          <span style="color:var(--black)">804-</span><span style="color:var(--red)">Michael</span>
-        </div>
-      </div>
-    </div>
-    <p class="modal-sub">He'll get a link to your exact map<br>— no account, no signup.</p>
+    <!-- Title: "Send My Map to" + 804Michael logo image -->
+    <h2 id="send-modal-title" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;letter-spacing:.02em;color:var(--black);">
+      Send My Map to
+      <img src="images/basic_804_michael.png" alt="804Michael" style="height:32px;width:auto;vertical-align:middle;">
+    </h2>
+    <p class="modal-sub">He'll get a link to your exact map — no account, no signup.</p>
     <div class="modal-field">
       <label for="modal-name">Your Name</label>
       <input type="text" id="modal-name" placeholder="e.g. A Really Smart Home Buyer" autocomplete="name" />
@@ -1179,8 +1174,8 @@
       <input type="email" id="modal-email" placeholder="you@example.com" autocomplete="email" />
     </div>
     <div class="modal-field">
-      <label for="modal-message">Your Message <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(optional — describe colors, areas, details)</span></label>
-      <textarea id="modal-message" placeholder="Do your different colors mean different things? Green = Favorite Places, Red = I do NOT want to live here?" maxlength="600" rows="4" style="resize:vertical;width:100%;padding:10px 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;box-sizing:border-box;line-height:1.45"></textarea>
+      <label for="modal-message">Your Message <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-muted)">(optional)</span></label>
+      <textarea id="modal-message" placeholder="Do your different colors mean different things? Green = Favorite Places, Red = I do NOT want to live here?" maxlength="600" rows="3" style="resize:vertical;width:100%;padding:10px 12px;border:2px solid var(--gray-mid);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;box-sizing:border-box;line-height:1.45"></textarea>
       <div id="modal-message-count" style="text-align:right;font-size:.75rem;color:var(--gray-muted);margin-top:3px">0 / 600</div>
     </div>
     <div class="modal-actions">
@@ -1198,30 +1193,10 @@
 <div class="share-panel" id="share-panel">
   <h2 id="masterpiece-h2" style="transition:opacity 1s ease" onclick="window.innerWidth>768&&document.getElementById('share-panel').scrollIntoView({behavior:'smooth'})" title="Click to see sharing options"><span id="masterpiece-text"></span><span id="masterpiece-cursor" style="display:inline-block;width:2px;height:1em;background:rgba(255,255,255,.75);margin-left:2px;vertical-align:middle;animation:blink-cursor .7s step-end infinite"></span></h2>
   <div class="share-panel-in">
-    <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem)">Share where you're looking</div>
-    <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem)">
-      <span style="font-weight:500;color:rgba(255,255,255,.9);font-size:.9em">with <span style="color:white;font-weight:700">804-</span><span style="color:var(--red);font-weight:700">Michael</span> <span style="display:inline-block;animation:bounce-down 0.9s ease-in-out infinite">👇</span></span>
-    </div>
+    <div class="share-cta" style="font-size:clamp(1rem,2.5vw,1.3rem);font-weight:600;">Share where you're looking <span style="display:inline-block;animation:bounce-down 0.9s ease-in-out infinite">👇</span></div>
     <button class="share-btn share-btn-email" id="share-send" onclick="openSendModal()" style="justify-content:center;align-items:center;background:var(--black);color:white;border-color:white;max-width:360px;margin:0 auto;width:100%;height:50px;gap:8px;padding:0 20px">
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;white-space:nowrap">Send My Map to</span>
-      <svg viewBox="0 0 786.329 175" xmlns="http://www.w3.org/2000/svg" style="height:24px;width:auto;flex-shrink:0;display:block" aria-label="804Michael">
-        <!-- 804 numerals: original fill is black, shown white on dark button -->
-        <g fill="white">
-          <path d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
-          <path d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
-          <path d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
-          <path d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
-        </g>
-        <!-- Michael script: red, kept as original -->
-        <g fill="#ED1C24">
-          <path d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
-          <path d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
-          <path d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z"/>
-          <path d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
-          <path d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z"/>
-          <path d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z"/>
-        </g>
-      </svg>
+      <img src="images/basic_804_michael.png" alt="804Michael Logo" style="height:24px;width:auto;flex-shrink:0;display:block;filter:brightness(0) invert(1)">
     </button>
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem);margin-bottom:-6px">
       <span style="font-weight:400;color:rgba(255,255,255,.9);font-size:.8em">or Anyone Else</span>
@@ -1247,7 +1222,7 @@
       </button>
     </div>
     <!-- ⚠ AI: UPDATE BOTH THIS LINE AND THE TOP COMMENT BLOCK whenever you modify this file. Format: YY.MM.DD HH_MM — DO NOT SKIP. -->
-    <p style="font-size:.85rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.23 15_00</p>
+    <p style="font-size:.85rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-top:6px;text-transform:uppercase">map version 26.03.24 18_00</p>
   </div>
 </div>
 
@@ -1468,6 +1443,7 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', fitM
 // ── State ────────────────────────────────────────────────────────────────────
 let mode        = 'freehand';
 let strokeColor = '#188038';
+let activePinColor = '#188038';
 const WEIGHT    = 3;        // fixed stroke weight
 let hasDrawn    = false;
 
@@ -1632,6 +1608,7 @@ window.setMode = function(m) {
 
 window.setColor = function(el) {
   strokeColor = el.dataset.color;
+  activePinColor = strokeColor;
   document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
 };
@@ -2217,31 +2194,60 @@ var LEVEL_COLORS = {
 var SCHOOL_CSV_MAP = {}; // key: normalised name → { county, level }
 var _csvLoaded     = false;
 
-(function loadSchoolsCsv() {
-  fetch('schools.csv')
-    .then(function(r) {
-      if (!r.ok) throw new Error('schools.csv not found');
-      return r.text();
-    })
-    .then(function(text) {
-      text.split(/\r?\n/).forEach(function(line) {
-        line = line.trim();
-        if (!line || line.charAt(0) === '#') return;
-        var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
-                line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
-        if (!m) return;
-        var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
-        var county = m[2].trim().toLowerCase();
-        var level  = m[3].trim().toLowerCase();
-        SCHOOL_CSV_MAP[key] = { county: county, level: level };
-      });
-      _csvLoaded = true;
-      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
-    })
-    .catch(function(err) {
-      console.warn('[schools.csv] failed to load:', err.message);
+// Convert CSV loading to a Promise so Overpass fetch can wait for it
+var _csvPromise = fetch('schools.csv')
+  .then(function(r) {
+    if (!r.ok) throw new Error('schools.csv not found');
+    return r.text();
+  })
+  .then(function(text) {
+    var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional'];
+    var missingCounties = new Set();
+
+    text.split(/\r?\n/).forEach(function(line) {
+      line = line.trim();
+      if (!line || line.charAt(0) === '#') return;
+      var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
+              line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
+      if (!m) return;
+      var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
+      var county = m[2].trim().toLowerCase();
+      var level  = m[3].trim().toLowerCase();
+      SCHOOL_CSV_MAP[key] = { county: county, level: level };
+
+      if (!knownCounties.includes(county) && county !== 'caroline') {
+        missingCounties.add(county);
+      }
     });
-})();
+
+    // Dynamically add any CSV counties not already in the filter UI
+    var extraSpan = document.getElementById('sfp-extra');
+    if (extraSpan && missingCounties.size > 0) {
+      missingCounties.forEach(function(c) {
+        if (!schoolFilter.counties.hasOwnProperty(c)) {
+          schoolFilter.counties[c] = false;
+        }
+        var btn = document.createElement('button');
+        btn.className = 'sfp-county off';
+        btn.dataset.county = c;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+        btn.addEventListener('click', function() {
+          schoolFilter.counties[c] = !schoolFilter.counties[c];
+          this.classList.toggle('off', !schoolFilter.counties[c]);
+          this.setAttribute('aria-pressed', schoolFilter.counties[c] ? 'true' : 'false');
+          if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+        });
+        extraSpan.appendChild(btn);
+      });
+    }
+
+    _csvLoaded = true;
+    console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
+  })
+  .catch(function(err) {
+    console.warn('[schools.csv] failed to load:', err.message);
+  });
 
 function _normaliseName(name) {
   return (name || '').toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ').trim();
@@ -2307,6 +2313,33 @@ function hideSchoolToast() {
 
 var _schoolsLoading = false; // true while fetch is in-flight
 
+function _fetchOverpassWithFallback(query, timeoutMs) {
+  var endpoints = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter'
+  ];
+  function tryEndpoint(i) {
+    if (i >= endpoints.length) return Promise.reject(new Error('All Overpass endpoints failed'));
+    var controller = new AbortController();
+    var to = setTimeout(function() { controller.abort(); }, timeoutMs || 30000);
+    return fetch(endpoints[i], {
+      method: 'POST',
+      body: 'data=' + encodeURIComponent(query),
+      signal: controller.signal
+    })
+    .then(function(r) {
+      clearTimeout(to);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .catch(function() {
+      clearTimeout(to);
+      return tryEndpoint(i + 1);
+    });
+  }
+  return tryEndpoint(0);
+}
+
 function loadSchools() {
   if (schoolsLoaded) {
     // Already loaded — open the filter panel immediately
@@ -2321,56 +2354,55 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
-  const bbox = '37.1,-78.0,38.2,-76.9';
-  // Overpass provides coordinates only. County and level come entirely from schools.csv.
-  // Any school whose name does not match a CSV entry is ignored.
-  const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
 
-  fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(query)
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    const seen = new Set();
-    data.elements.forEach(function(el) {
-      var lat  = el.lat  || (el.center && el.center.lat);
-      var lon  = el.lon  || (el.center && el.center.lon);
-      var name = (el.tags || {}).name || '';
-      if (!lat || !lon || !name) return;
+  // Wait for CSV to finish loading before processing Overpass results
+  _csvPromise.then(function() {
+    const bbox = '37.1,-78.0,38.2,-76.9';
+    const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
 
-      // CSV is the sole authority — skip anything not listed
-      var csvEntry = _csvLookup(name);
-      if (!csvEntry) return;
-      var level  = csvEntry.level;
-      var county = csvEntry.county;
-      if (level === 'other') return;
+    return _fetchOverpassWithFallback(query, 40000)
+    .then(function(data) {
+      const seen = new Set();
+      data.elements.forEach(function(el) {
+        var lat  = el.lat  || (el.center && el.center.lat);
+        var lon  = el.lon  || (el.center && el.center.lon);
+        var name = (el.tags || {}).name || '';
+        if (!lat || !lon || !name) return;
 
-      var key = lat.toFixed(3) + ',' + lon.toFixed(3);
-      if (seen.has(key)) return;
-      seen.add(key);
+        // CSV is the sole authority — skip anything not listed
+        var csvEntry = _csvLookup(name);
+        if (!csvEntry) return;
+        var level  = csvEntry.level;
+        // Treat "other" tagged schools as high schools
+        if (level === 'other') level = 'high';
+        var county = csvEntry.county;
 
-      var col = LEVEL_COLORS[level];
-      var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
-      var sm = L.circleMarker([lat, lon], {
-        radius: 7, color: col.stroke, weight: 2,
-        fillColor: col.fill, fillOpacity: 0.9,
-        interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-      }).bindTooltip(name + ' \u2022 ' + lvLabel, {
-        permanent: false, direction: 'top', offset: [0, -10],
-        className: 'dist-tip', pane: 'tooltipPane'
+        var key = lat.toFixed(3) + ',' + lon.toFixed(3);
+        if (seen.has(key)) return;
+        seen.add(key);
+
+        var col = LEVEL_COLORS[level];
+        if (!col) return; // failsafe for unexpected level values
+        var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
+        var sm = L.circleMarker([lat, lon], {
+          radius: 7, color: col.stroke, weight: 2,
+          fillColor: col.fill, fillOpacity: 0.9,
+          interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
+        }).bindTooltip(name + ' \u2022 ' + lvLabel, {
+          permanent: false, direction: 'top', offset: [0, -10],
+          className: 'dist-tip', pane: 'tooltipPane'
+        });
+        sm.on('click', function() { this.openTooltip(); });
+        schoolData.push({ marker: sm, level: level, county: county });
       });
-      sm.on('click', function() { this.openTooltip(); });
-      schoolData.push({ marker: sm, level: level, county: county });
+      schoolsLoaded  = true;
+      _schoolsLoading = false;
+      applySchoolFilter();
+      hideSchoolToast();
+      if (schoolsVisible) { document.getElementById('school-filter-panel').classList.add('open'); }
+      btn.setAttribute('data-tip', 'Schools — tap to hide');
     });
-    schoolsLoaded  = true;
-    _schoolsLoading = false;
-    applySchoolFilter();
-    hideSchoolToast();
-    if (schoolsVisible) { document.getElementById('school-filter-panel').classList.add('open'); }
-    btn.setAttribute('data-tip', 'Schools — tap to hide');
-  })
-  .catch(function() {
+  }).catch(function() {
     schoolsLoaded  = false;
     _schoolsLoading = false;
     hideSchoolToast();
@@ -2498,18 +2530,56 @@ function loadPublix() {
     [37.5310,-77.3556,'Publix — Varina'],
     [37.6330,-77.3810,'Publix — Mechanicsville'],
     [37.6560,-77.3390,'Publix — Lee Davis Rd'],
+    [37.4420,-77.5712,'Publix — Nichols Rd','Midlothian / Nichols Rd area',''],
   ];
 
+  function _toTitleCase(s) {
+    return (s || '').toLowerCase().replace(/\b([a-z])/g, function(m) { return m.toUpperCase(); });
+  }
+  function _cleanText(s) {
+    return (s || '').replace(/\s+/g, ' ').trim();
+  }
+  function _normalisePublixName(name) {
+    var n = _cleanText(name);
+    if (!n) return 'Publix';
+    if (!/^publix\b/i.test(n)) n = 'Publix - ' + n;
+    n = n.replace(/\s+[—-]\s+/g, ' - ');
+    return n;
+  }
+  function _normalisePublixAddr(addr) {
+    var a = _cleanText(addr);
+    if (!a) return '';
+    a = a.replace(/\s+,/g, ',').replace(/,\s*,/g, ',');
+    // Keep address/city readable and consistent
+    return _toTitleCase(a);
+  }
+  function _normalisePublixPhone(phone) {
+    var p = _cleanText(phone);
+    if (!p) return '';
+    var digits = p.replace(/[^\d]/g, '');
+    if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    if (digits.length === 10) {
+      return digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6);
+    }
+    return p;
+  }
+
   var seen = new Set();
-  function addPublixMarker(lat, lon, name) {
+  function addPublixMarker(lat, lon, name, addr, phone) {
     var key = lat.toFixed(3) + ',' + lon.toFixed(3);
     if (seen.has(key)) return;
     seen.add(key);
+    var cleanName  = _normalisePublixName(name);
+    var cleanAddr  = _normalisePublixAddr(addr);
+    var cleanPhone = _normalisePublixPhone(phone);
+    var label = cleanName;
+    if (cleanAddr) label += ' • ' + cleanAddr;
+    if (cleanPhone) label += ' • ' + cleanPhone;
     var pm = L.circleMarker([lat, lon], {
       radius: 8, color: '#005a30', weight: 2,
       fillColor: '#00A651', fillOpacity: 0.92,
       interactive: true, pane: 'publixPane'
-    }).bindTooltip(name, {
+    }).bindTooltip(label, {
       permanent: false, direction: 'top', offset: [0,-10],
       className: 'dist-tip', pane: 'tooltipPane'
     });
@@ -2518,25 +2588,33 @@ function loadPublix() {
   }
 
   // Add hardcoded locations immediately
-  KNOWN_PUBLIX.forEach(function(loc) { addPublixMarker(loc[0], loc[1], loc[2]); });
+  KNOWN_PUBLIX.forEach(function(loc) { addPublixMarker(loc[0], loc[1], loc[2], loc[3], loc[4]); });
   publixGroup.addTo(map);
 
   // Then supplement with live Overpass data (catches newly opened stores)
   var bbox = '37.0,-78.1,38.3,-76.8';
   var query = '[out:json][timeout:25];(node["shop"="supermarket"]["name"~"Publix",i]('+bbox+');way["shop"="supermarket"]["name"~"Publix",i]('+bbox+');node["brand:wikidata"="Q672170"]('+bbox+');way["brand:wikidata"="Q672170"]('+bbox+'););out center;';
 
-  fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(query)
-  })
-  .then(function(r) { return r.json(); })
+  _fetchOverpassWithFallback(query, 30000)
   .then(function(data) {
     data.elements.forEach(function(el) {
       var lat = el.lat || (el.center && el.center.lat);
       var lon = el.lon || (el.center && el.center.lon);
       var name = (el.tags && el.tags.name) || 'Publix';
+      var addr = '';
+      var phone = '';
+      if (el.tags) {
+        var houseNo = el.tags['addr:housenumber'] || '';
+        var street = el.tags['addr:street'] || '';
+        var city = el.tags['addr:city'] || '';
+        var state = el.tags['addr:state'] || '';
+        addr = [houseNo, street].filter(Boolean).join(' ').trim();
+        var cityState = [city, state].filter(Boolean).join(', ');
+        if (cityState) addr = addr ? (addr + ', ' + cityState) : cityState;
+        phone = el.tags.phone || el.tags['contact:phone'] || '';
+      }
       if (!lat || !lon) return;
-      addPublixMarker(lat, lon, name);
+      addPublixMarker(lat, lon, name, addr, phone);
     });
     publixLoaded  = true;
     _publixLoading = false;
@@ -2724,8 +2802,8 @@ function closeShapeProps() {
           _sppLayer._permColor        = col;
           _sppLayer.options.color     = col;
           _sppLayer.options.fillColor = col;
-          saveDrawingsToStorage();
         }
+        saveDrawingsToStorage();
       } catch(err) { console.warn('Color change error:', err); }
       panel.querySelectorAll('.spp-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.col === col);
@@ -2862,12 +2940,6 @@ function closeResults() {
   lastResults  = [];
 }
 
-function positionSearchResults() {
-  var rect = document.getElementById('search-wrap').getBoundingClientRect();
-  searchResults.style.top   = (rect.bottom + 4) + 'px';
-  searchResults.style.left  = rect.left + 'px';
-  searchResults.style.width = rect.width + 'px';
-}
 
 function renderResults(places) {
   lastResults = places;
@@ -2891,9 +2963,28 @@ function renderResults(places) {
   searchResults.classList.add('open');
 }
 
-// Reposition on scroll or resize so the dropdown tracks the input
+function positionSearchResults() {
+  if (window.innerWidth > 768) {
+    searchResults.classList.remove('mobile-floating');
+    searchResults.style.bottom = '';
+    searchResults.style.maxHeight = '';
+    return;
+  }
+  var vv = window.visualViewport;
+  var keyboardInset = 0;
+  if (vv) {
+    keyboardInset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  }
+  searchResults.classList.add('mobile-floating');
+  searchResults.style.bottom = (keyboardInset + 8) + 'px';
+  searchResults.style.maxHeight = Math.min(320, Math.max(160, vv ? vv.height * 0.46 : window.innerHeight * 0.4)) + 'px';
+}
+
 window.addEventListener('resize', function() { if (searchResults.classList.contains('open')) positionSearchResults(); });
-document.querySelector('.toolbar').addEventListener('scroll', function() { if (searchResults.classList.contains('open')) positionSearchResults(); });
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', function() { if (searchResults.classList.contains('open')) positionSearchResults(); });
+  window.visualViewport.addEventListener('scroll', function() { if (searchResults.classList.contains('open')) positionSearchResults(); });
+}
 
 function updateFocus(idx) {
   const items = searchResults.querySelectorAll('.search-result-item');
@@ -2960,7 +3051,7 @@ function selectResult(i) {
 }
 
 function dropPin(lat, lng, suggestedLabel) {
-  var pinColor = strokeColor;
+  var pinColor = activePinColor || strokeColor;
 
   function makePinSvg(col) {
     return '<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:36px"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="' + col + '"/><circle cx="14" cy="14" r="5.5" fill="white"/></svg>';
@@ -2972,13 +3063,37 @@ function dropPin(lat, lng, suggestedLabel) {
   var defaultLabel = (suggestedLabel || '').replace(/^(\d+),\s*/, '$1 ').trim();
   var marker = L.marker([lat, lng], { icon: makeIcon(pinColor) }).addTo(pinGroup);
 
-  // ── Bottom sheet ──────────────────────────────────────────────────────────
+  // ── Bottom sheet (mobile) / floating popup (desktop) ─────────────────────
   var sheet     = document.getElementById('pin-sheet');
   var backdrop  = document.getElementById('pin-sheet-backdrop');
   var inp       = document.getElementById('pin-sheet-inp');
   var saveBtn   = document.getElementById('pin-sheet-save');
   var skipBtn   = document.getElementById('pin-sheet-skip');
   var colorsDiv = document.getElementById('pin-sheet-colors');
+
+  // Position sheet near pin for desktop, bottom for mobile
+  if (window.innerWidth > 768) {
+    var pt   = map.latLngToContainerPoint([lat, lng]);
+    var rect = map.getContainer().getBoundingClientRect();
+    var popW = 280;
+    var posX = rect.left + pt.x + 24;
+    var posY = rect.top  + pt.y - 80;
+    // Clamp so it doesn't overflow viewport
+    if (posX + popW > window.innerWidth - 12) posX = rect.left + pt.x - popW - 24;
+    if (posY < 80) posY = 80;
+    if (posY + 220 > window.innerHeight) posY = window.innerHeight - 230;
+    sheet.classList.add('desktop-pin-pop');
+    sheet.style.left   = posX + 'px';
+    sheet.style.top    = posY + 'px';
+    sheet.style.bottom = 'auto';
+    sheet.style.right  = 'auto';
+  } else {
+    sheet.classList.remove('desktop-pin-pop');
+    sheet.style.left   = '0';
+    sheet.style.right  = '0';
+    sheet.style.bottom = '0';
+    sheet.style.top    = 'auto';
+  }
 
   // Rebuild color swatches
   colorsDiv.innerHTML = '<span>Color:</span>';
@@ -2992,6 +3107,7 @@ function dropPin(lat, lng, suggestedLabel) {
     sw.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
     sw.addEventListener('click', function() {
       pinColor = col;
+      activePinColor = col;
       marker.setIcon(makeIcon(col));
       colorsDiv.querySelectorAll('button').forEach(function(s) { s.style.borderColor = 'transparent'; s.style.transform = 'scale(1)'; });
       sw.style.borderColor = col === '#111111' ? '#777' : '#111'; sw.style.transform = 'scale(1.2)';
@@ -3003,8 +3119,9 @@ function dropPin(lat, lng, suggestedLabel) {
 
   inp.value = defaultLabel;
 
-  // Float sheet above keyboard using visualViewport
+  // Float sheet above keyboard using visualViewport (mobile only)
   function reposition() {
+    if (sheet.classList.contains('desktop-pin-pop')) return;
     var vv = window.visualViewport;
     if (vv) {
       sheet.style.bottom = (window.innerHeight - vv.height - vv.offsetTop) + 'px';
@@ -3026,7 +3143,11 @@ function dropPin(lat, lng, suggestedLabel) {
   function closeSheet() {
     sheet.classList.remove('open');
     backdrop.classList.remove('open');
-    sheet.style.bottom = '';
+    if (!sheet.classList.contains('desktop-pin-pop')) {
+      sheet.style.bottom = '';
+    }
+    sheet.classList.remove('desktop-pin-pop');
+    sheet.style.left = ''; sheet.style.top = ''; sheet.style.right = ''; sheet.style.bottom = '';
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', reposition);
       window.visualViewport.removeEventListener('scroll', reposition);
@@ -3045,6 +3166,7 @@ function dropPin(lat, lng, suggestedLabel) {
       }).openTooltip();
     }
     pushUndo({ type: 'add', layer: marker });
+    saveDrawingsToStorage();
     markDrawn();
   }
 
