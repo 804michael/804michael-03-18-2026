@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.03.24 19_40                                 ║
+  ║  MAP VERSION: 26.03.24 19_55                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1223,7 +1223,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.03.24 19_40</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.03.24 19_55</p>
   </div>
 </div>
 
@@ -1261,7 +1261,8 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.03.24 19_40';
+const MAP_VERSION = '26.03.24 19_55';
+const STABILITY_MODE = true; // Keep core mapping tools rock-solid first
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
 
@@ -1577,6 +1578,7 @@ function deactivateAllTools() {
 }
 
 window.setMode = function(m) {
+  if (STABILITY_MODE && (m === 'schools' || m === 'publix')) return;
   // Any active tool can be toggled off by pressing it again — leaves no tool selected
   if (m === mode) {
     deactivateAllTools();
@@ -1613,6 +1615,25 @@ window.setMode = function(m) {
     hideSearchPanel();
   }
 };
+
+if (STABILITY_MODE) {
+  var sb = document.getElementById('btn-schools');
+  var pb = document.getElementById('btn-publix');
+  var sfp = document.getElementById('school-filter-panel');
+  if (sb) {
+    sb.disabled = true;
+    sb.classList.remove('active');
+    sb.setAttribute('data-tip', 'Schools temporarily disabled (stability mode)');
+    sb.setAttribute('aria-label', 'Schools temporarily disabled');
+  }
+  if (pb) {
+    pb.disabled = true;
+    pb.classList.remove('active');
+    pb.setAttribute('data-tip', 'Publix temporarily disabled (stability mode)');
+    pb.setAttribute('aria-label', 'Publix temporarily disabled');
+  }
+  if (sfp) sfp.style.display = 'none';
+}
 
 window.setColor = function(el) {
   strokeColor = el.dataset.color;
@@ -2085,6 +2106,7 @@ function endMove() {
 // Always-on faint polygons showing county lines for geographic reference.
 // Uses Overpass relation geometry (out geom) — most reliable approach.
 (function loadCountyOutlines() {
+  if (STABILITY_MODE) return;
   var COUNTY_RELATIONS = [
     { name: 'Hanover',      id: 469231 },
     { name: 'Henrico',      id: 469230 },
@@ -2203,59 +2225,63 @@ var SCHOOL_CSV_MAP = {}; // key: normalised name → { county, level }
 var _csvLoaded     = false;
 
 // Convert CSV loading to a Promise so Overpass fetch can wait for it
-var _csvPromise = fetch('schools.csv')
-  .then(function(r) {
-    if (!r.ok) throw new Error('schools.csv not found');
-    return r.text();
-  })
-  .then(function(text) {
-    var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional'];
-    var missingCounties = new Set();
+var _csvPromise = Promise.resolve();
+if (!STABILITY_MODE) {
+  _csvPromise = fetch('schools.csv')
+    .then(function(r) {
+      if (!r.ok) throw new Error('schools.csv not found');
+      return r.text();
+    })
+    .then(function(text) {
+      var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional'];
+      var missingCounties = new Set();
 
-    text.split(/\r?\n/).forEach(function(line) {
-      line = line.trim();
-      if (!line || line.charAt(0) === '#') return;
-      var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*(\S+)$/) ||
-              line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*(\S+)$/);
-      if (!m) return;
-      var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
-      var county = _normaliseCounty(m[2]);
-      var level  = _normaliseLevel(m[3]);
-      SCHOOL_CSV_MAP[key] = { county: county, level: level };
+      text.split(/\r?\n/).forEach(function(line) {
+        line = line.trim();
+        if (!line || line.charAt(0) === '#') return;
+        var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*([^,]+?)$/) ||
+                line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^,]+?)$/);
+        if (!m) return;
+        var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
+        var county = _normaliseCounty(m[2]);
+        var level  = _normaliseLevel(m[3]);
+        SCHOOL_CSV_MAP[key] = { county: county, level: level };
 
-      if (!knownCounties.includes(county) && county !== 'caroline') {
-        missingCounties.add(county);
-      }
-    });
-
-    // Dynamically add any CSV counties not already in the filter UI
-    var extraSpan = document.getElementById('sfp-extra');
-    if (extraSpan && missingCounties.size > 0) {
-      missingCounties.forEach(function(c) {
-        if (!schoolFilter.counties.hasOwnProperty(c)) {
-          schoolFilter.counties[c] = false;
+        if (!knownCounties.includes(county) && county !== 'caroline') {
+          missingCounties.add(county);
         }
-        var btn = document.createElement('button');
-        btn.className = 'sfp-county off';
-        btn.dataset.county = c;
-        btn.setAttribute('aria-pressed', 'false');
-        btn.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-        btn.addEventListener('click', function() {
-          schoolFilter.counties[c] = !schoolFilter.counties[c];
-          this.classList.toggle('off', !schoolFilter.counties[c]);
-          this.setAttribute('aria-pressed', schoolFilter.counties[c] ? 'true' : 'false');
-          if (schoolsLoaded && schoolsVisible) applySchoolFilter();
-        });
-        extraSpan.appendChild(btn);
       });
-    }
 
-    _csvLoaded = true;
-    console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
-  })
-  .catch(function(err) {
-    console.warn('[schools.csv] failed to load:', err.message);
-  });
+      // Dynamically add any CSV counties not already in the filter UI
+      var extraSpan = document.getElementById('sfp-extra');
+      if (extraSpan && missingCounties.size > 0) {
+        missingCounties.forEach(function(c) {
+          if (!schoolFilter.counties.hasOwnProperty(c)) {
+            schoolFilter.counties[c] = false;
+          }
+          var btn = document.createElement('button');
+          btn.className = 'sfp-county off';
+          btn.dataset.county = c;
+          btn.setAttribute('aria-pressed', 'false');
+          btn.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+          btn.addEventListener('click', function() {
+            schoolFilter.counties[c] = !schoolFilter.counties[c];
+            this.classList.toggle('off', !schoolFilter.counties[c]);
+            this.setAttribute('aria-pressed', schoolFilter.counties[c] ? 'true' : 'false');
+            if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+          });
+          extraSpan.appendChild(btn);
+        });
+      }
+
+      _csvLoaded = true;
+      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
+    })
+    .catch(function(err) {
+      console.warn('[schools.csv] failed to load:', err.message);
+      throw err;
+    });
+}
 
 function _normaliseName(name) {
   return (name || '').toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ').trim();
@@ -2438,6 +2464,7 @@ function loadSchools() {
 }
 
 window.toggleSchools = function() {
+  if (STABILITY_MODE) return;
   schoolsVisible = !schoolsVisible;
   var btn      = document.getElementById('btn-schools');
   var panel    = document.getElementById('school-filter-panel');
@@ -2655,6 +2682,7 @@ function loadPublix() {
 }
 
 window.togglePublix = function() {
+  if (STABILITY_MODE) return;
   publixVisible = !publixVisible;
   var btn = document.getElementById('btn-publix');
   if (publixVisible) {
