@@ -1,0 +1,31 @@
+# 804re.com
+
+> Michael Hottman's ("804michael") personal real estate practice, part of Malcolm Real Estate, a family-owned brokerage headquartered in Ashland, VA, serving Hanover County, Henrico County, the City of Richmond, Chesterfield, Powhatan, Goochland, and Caroline counties. Seller-focused representation, with deep experience protecting home buyers — especially first-time buyers — from costly mistakes in the purchase process.
+
+Michael Hottman has been licensed in real estate since age 19, grew up in the family brokerage, and also spent years in IT, graphic design, and as a Licensed Professional Counselor before re-licensing in 2012. Spent nearly a decade at one of Central Virginia's largest real estate offices, where the role centered on keeping agents and clients out of contract trouble and training agents on how to correctly use the residential purchase agreement. That background now shapes a practice built around protecting sellers from inexperienced buyer's agents, and protecting buyers — particularly first-timers — from mistakes that cost them money or the deal itself.
+
+## Core pages
+
+- [Home](https://804re.com/): Michael Hottman, broker with Malcolm Real Estate, serving Ashland, Hanover County, Henrico County, the City of Richmond, Chesterfield, Powhatan, Goochland, and Caroline counties. Seller-focused representation with a track record protecting first-time and repeat buyers.
+- [Ashland VA Real Estate](https://804re.com/ashland.html): Homes for sale in Ashland VA, free home valuation, school zone info, and hyper-local market insights for the Center of the Universe.
+- [Hanover County VA Real Estate](https://804re.com/hanover.html): Homes for sale across Hanover County VA, covering neighborhoods from Ashland to Mechanicsville, plus award-winning school district guidance.
+- [Glen Allen VA Real Estate](https://804re.com/glen-allen.html): Homes for sale in Glen Allen VA, including Short Pump, West Broad Village, and top-rated Henrico County schools.
+- [Mechanicsville VA Real Estate](https://804re.com/mechanicsville.html): Homes for sale in Mechanicsville VA, an established, high-value Hanover County community with easy interstate access.
+- [Draw Your Search Area](https://804re.com/map-search.html): Interactive map tool for buyers to draw their ideal search area across Ashland, Hanover County, or Glen Allen and send it directly to Michael.
+
+<!--
+STAGED — add each line below to the list above only once the page is live.
+Do not publish links to pages that don't exist yet; AI crawlers hitting a 404
+from your own llms.txt is a worse signal than simply not listing the page.
+
+- [About](https://804re.com/about): Michael Hottman's background — family brokerage roots, licensed at 19, career detour through IT/graphic design/counseling, relicensed 2012, near-decade training agents at a major Central VA brokerage on purchase agreement mechanics.
+- [Seller Services](https://804re.com/sellers): Why sellers should be cautious of inexperienced buyer's agents, and how an experienced listing agent protects sellers through contract negotiation, inspection response, and closing.
+- [Buyer Services](https://804re.com/buyers): Buyer representation focused on protecting first-time and repeat buyers from common purchase-agreement pitfalls and contract missteps.
+- [The True Cost of Buying a Home](https://804re.com/true-cost-of-buying-a-home): A plain-language breakdown of what buying a home actually costs in Central Virginia beyond the sale price — closing costs, inspections, escrow, financing fees.
+- [Videos](https://804re.com/videos): Real estate education content from Michael's TikTok (@804michael.com) and YouTube (@804michael) channels.
+- [Get Started](https://804re.com/start): Buyer and seller intake forms and self-help tools.
+-->
+
+## Optional
+
+<!-- - [Blog](https://804re.com/blog): Ongoing articles on Central Virginia real estate topics for buyers and sellers. -->

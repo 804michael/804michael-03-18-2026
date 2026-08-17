@@ -1,0 +1,30 @@
+# 804re.com — robots.txt
+# Standard search engines
+User-agent: *
+Allow: /
+
+# Explicit AI crawler allowances
+# Being findable and citable in AI answers (ChatGPT, Claude, Perplexity, Google AI Overviews)
+# requires NOT blocking these bots. Default posture: allow.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://804re.com/sitemap.xml
