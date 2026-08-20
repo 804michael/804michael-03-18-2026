@@ -52,6 +52,7 @@
   .btn-secondary:hover{background:#000;box-shadow:0 4px 14px rgba(0,0,0,.25);}
   .btn-ghost{background:#fff;color:var(--black);border:2px solid var(--gray-mid);}
   .btn-ghost:hover{border-color:var(--red);color:var(--red);}
+  .btn-large{font-size:1.42rem;padding:15px 26px;}
 
   .toolbar{background:#fff;margin:14px 20px 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
     padding:16px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
@@ -109,7 +110,7 @@
   .form-panel{margin:28px 20px 0;background:var(--black);color:rgba(255,255,255,.85);border-radius:14px;padding:22px 26px;}
   .split-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:20px;color:var(--white);text-align:center;margin:0 0 14px;}
   .split-actions{display:flex;justify-content:center;align-items:flex-start;gap:32px;flex-wrap:wrap;}
-  .split-item{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:230px;}
+  .split-item{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:260px;}
   .split-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.4;margin-top:8px;}
 
   footer{text-align:center;font-size:12.5px;color:var(--gray-muted);margin-top:26px;padding:0 20px;}
@@ -180,12 +181,12 @@
     <h2 class="split-title">Two Ways To Add A Stand</h2>
     <div class="split-actions">
       <div class="split-item">
-        <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener" class="btn btn-primary">📝 Fill Out The Form</a>
-        <p class="split-desc">From your desk — addresses get geocoded automatically.</p>
+        <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener" class="btn btn-primary btn-large">📝 Add Stand Form</a>
+        <p class="split-desc">Add any stand you know from anywhere.</p>
       </div>
       <div class="split-item">
-        <button class="btn btn-primary" id="addStandBtn2">📍 Add via GPS</button>
-        <p class="split-desc">From the field — uses your phone's location, no typing required.</p>
+        <button class="btn btn-primary btn-large" id="addStandBtn2">📍 Add Current Location</button>
+        <p class="split-desc">Add the stand you are currently at with your phone GPS location.</p>
       </div>
     </div>
   </div>
@@ -246,7 +247,7 @@
 // Published Google Sheet CSV URL (read pipeline — see prior setup guide).
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQllKE4SJkxkqKoY7QElipKVptQQbcCwEPHl8PvI5o0Q0HQNdFaKmYaPQztbKQ0-2xxBILTcw47Woj7/pub?gid=52146640&single=true&output=csv";
 // Apps Script Web App URL for GPS submissions (doPost) — see add-stand-webapp.gs.
-const ADD_STAND_URL = "";
+const ADD_STAND_URL = "https://script.google.com/macros/s/AKfycbw1ViCML1NaT4mVq-8_MQ0JP7bdCPT7WXiUl6-5dR2CBiVN6i4JNIBPT7Qb6MQJZwQbvQ/exec";
 
 const MAP_CENTER = [37.6667, -77.3358]; // Hanover County, VA
 const MAP_ZOOM = 11;
