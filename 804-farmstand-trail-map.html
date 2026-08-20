@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hanover Farmstand Trail | 804Michael</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,900;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brick:#9c3b2e;
+    --brick-deep:#7a2c22;
+    --navy:#1f2a33;
+    --cream:#f7f1e6;
+    --gold:#c99a3e;
+    --gold-deep:#b3852f;
+    --sage:#6b7d63;
+    --ink:#2a2620;
+    --line:#ded2bd;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;}
+  .page{max-width:1100px;margin:0 auto;padding:0 0 56px;}
+  a{color:inherit;}
+
+  /* Brand strip */
+  .brand-strip{
+    background:var(--navy);color:#e9e2d3;
+    font-size:12.5px;font-weight:600;letter-spacing:.02em;
+    padding:9px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;
+  }
+  .brand-strip a{color:var(--gold);text-decoration:none;}
+  .brand-strip a:hover{text-decoration:underline;}
+
+  header{background:var(--brick);color:#fdf6ec;padding:34px 28px 28px;position:relative;overflow:hidden;}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;
+    background:repeating-linear-gradient(-45deg,var(--gold) 0 10px, transparent 10px 20px);opacity:.5;}
+  .compass{position:absolute;right:24px;top:20px;opacity:.16;width:96px;height:96px;}
+  .eyebrow{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:15px;color:#f4dcb8;letter-spacing:.02em;margin:0 0 6px;}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(32px,5.6vw,52px);line-height:1.02;
+    letter-spacing:-.01em;margin:0 0 10px;}
+  h1 span{color:var(--gold);}
+  .sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:#f4e7d4;}
+  .sub b{color:var(--gold);}
+
+  .status-bar{margin:14px 20px 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
+    display:none;align-items:center;gap:8px;}
+  .status-bar.show{display:flex;}
+  .status-bar.demo{background:#f6e6cf;color:#8a5a10;border:1px solid #e9d19f;}
+  .status-bar.error{background:#f6ddd6;color:#8f3a2a;border:1px solid #e7bdae;}
+  .status-bar.loading{background:#eee7d8;color:var(--sage);border:1px solid var(--line);}
+  .status-bar.locating{background:#e3ece2;color:#3f5c3a;border:1px solid #c3d6c0;}
+
+  /* Action row */
+  .action-row{margin:14px 20px 0;display:flex;flex-wrap:wrap;gap:10px;}
+  .btn{
+    border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:13.5px;
+    cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--sage);color:#fff;box-shadow:0 4px 10px rgba(107,125,99,.35);}
+  .btn-primary:hover{background:#5b6b54;}
+  .btn-secondary{background:var(--gold);color:var(--navy);box-shadow:0 4px 10px rgba(201,154,62,.35);}
+  .btn-secondary:hover{background:var(--gold-deep);}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--brick);}
+
+  .toolbar{background:var(--card);margin:14px 20px 0;border-radius:14px;box-shadow:0 6px 20px rgba(42,38,32,.12);
+    padding:16px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .toolbar-label{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--sage);margin-right:4px;}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);font-weight:600;font-size:13px;
+    padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .15s ease;}
+  .chip:hover{border-color:var(--gold);}
+  .chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+
+  #map{height:480px;margin:16px 20px 0;border-radius:14px;border:1px solid var(--line);
+    box-shadow:0 6px 20px rgba(42,38,32,.10);}
+  .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Inter',sans-serif;}
+  .popup-num{display:inline-block;background:var(--navy);color:#fff;font-weight:800;font-size:12px;
+    width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;margin-right:6px;}
+  .popup-title{font-weight:800;font-size:14.5px;margin:2px 0 2px;}
+  .popup-cat{color:var(--brick);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+  .popup-addr{font-size:12.5px;color:#555;margin-bottom:4px;}
+  .popup-hours{font-size:12px;color:var(--sage);margin-bottom:4px;}
+  .popup-dist{font-size:12px;color:var(--gold-deep);font-weight:700;margin-bottom:4px;}
+  .popup-desc{font-size:13px;margin-bottom:8px;}
+  .popup-dir{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;font-size:12.5px;
+    padding:6px 12px;border-radius:7px;text-decoration:none;}
+  .popup-dir:hover{background:var(--gold-deep);}
+
+  .divider{margin:24px 20px 8px;text-align:center;color:var(--sage);font-family:'Fraunces',serif;font-style:italic;font-size:14px;}
+  .divider::before,.divider::after{content:"~~~~";letter-spacing:4px;color:var(--line);margin:0 10px;}
+
+  .list-wrap{margin:8px 20px 0;}
+  .list-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--navy);margin:6px 0 14px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+  .stand-card{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--brick);
+    border-radius:10px;padding:12px 14px;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;}
+  .stand-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(42,38,32,.12);}
+  .stand-card .row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .stand-card .num{background:var(--navy);color:#fff;font-weight:800;font-size:12px;width:20px;height:20px;
+    line-height:20px;text-align:center;border-radius:50%;flex:none;}
+  .stand-card .name{font-weight:800;font-size:14.5px;}
+  .stand-card .cat{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--brick);letter-spacing:.03em;margin-bottom:3px;}
+  .stand-card .addr{font-size:12px;color:#666;margin-bottom:2px;}
+  .stand-card .hours{font-size:11.5px;color:var(--sage);margin-bottom:4px;}
+  .stand-card .dist{font-size:11.5px;color:var(--gold-deep);font-weight:700;margin-bottom:4px;}
+  .stand-card .desc{font-size:12.5px;color:#3d4536;}
+  .hidden{display:none !important;}
+  .empty-state{margin:20px;padding:30px;text-align:center;color:var(--sage);font-size:14px;
+    background:var(--card);border:1px dashed var(--line);border-radius:12px;}
+
+  .form-panel{margin:36px 20px 0;background:var(--navy);color:#eee5d3;border-radius:14px;padding:24px 26px;}
+  .form-panel h2{font-family:'Fraunces',serif;font-weight:900;font-size:22px;margin:0 0 6px;color:var(--gold);}
+  .form-panel p{font-size:13.5px;line-height:1.5;max-width:640px;color:#d9cfba;margin:0 0 8px;}
+  .form-panel code{background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px;font-size:12px;}
+
+  footer{text-align:center;font-size:12.5px;color:var(--sage);margin-top:26px;padding:0 20px;}
+  .footer-cta{background:var(--gold);color:var(--navy);border-radius:12px;margin:0 20px 20px;padding:16px 20px;
+    text-align:center;font-family:'Fraunces',serif;font-weight:600;font-size:15px;}
+  .footer-cta a{text-decoration:underline;font-weight:800;}
+
+  /* Modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(31,42,51,.55);z-index:1000;
+    align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--card);border-radius:16px;max-width:440px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;}
+  .modal h3{font-family:'Fraunces',serif;font-weight:900;font-size:22px;color:var(--navy);margin:0 0 4px;}
+  .modal p.hint{font-size:13px;color:var(--sage);margin:0 0 16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+  .field input,.field select,.field textarea{
+    width:100%;border:1.5px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13.5px;
+    font-family:'Inter',sans-serif;background:#fff;color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .geo-status{font-size:12.5px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+  .geo-status.waiting{background:#eee7d8;color:var(--sage);}
+  .geo-status.ok{background:#e3ece2;color:#3f5c3a;}
+  .geo-status.fail{background:#f6ddd6;color:#8f3a2a;}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions .btn{flex:1;justify-content:center;}
+  .close-x{position:absolute;top:14px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--sage);}
+  .modal{position:relative;}
+  .submit-note{font-size:11.5px;color:var(--sage);margin-top:10px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="brand-strip">
+  <span>🧭 A community tool from <a href="tel:8046424235">804Michael</a> — Ashland's Center of the Universe</span>
+  <span><a href="sms:8046424235">Text 804-642-4235</a></span>
+</div>
+
+<div class="page">
+  <header>
+    <svg class="compass" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#fff" stroke-width="2"/>
+      <path d="M50 8 L58 50 L50 92 L42 50 Z" fill="#fff"/>
+      <path d="M8 50 L50 42 L92 50 L50 58 Z" fill="#fff"/>
+    </svg>
+    <p class="eyebrow">Hanover County · Virginia</p>
+    <h1>Farmstand<br><span>Trail Map</span></h1>
+    <div class="sub">
+      <span>📍 <b id="stopCount">— stops</b></span>
+      <span>🌾 Local farms & makers around the 804</span>
+    </div>
+  </header>
+
+  <div class="status-bar" id="statusBar"></div>
+
+  <div class="action-row">
+    <button class="btn btn-primary" id="nearMeBtn">📍 Find Stands Near Me</button>
+    <button class="btn btn-secondary" id="addStandBtn">➕ Add This Location</button>
+    <button class="btn btn-ghost hidden" id="resetBtn">Reset View</button>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <span class="toolbar-label">Filter:</span>
+    <button class="chip active" data-cat="all">All Stops</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="divider">tap a pin or a card for directions</div>
+
+  <div class="list-wrap">
+    <div class="list-title">The Full Trail</div>
+    <div class="grid" id="cardGrid"></div>
+  </div>
+
+  <div class="form-panel">
+    <h2>Two ways to add a stand</h2>
+    <p><b>From your desk:</b> fill out the community submission form — addresses get geocoded automatically.
+      <b>From the field:</b> tap "Add This Location" above while standing at the stand — it uses your phone's
+      GPS so there's no address to type at all.</p>
+  </div>
+
+  <div class="footer-cta">
+    🏡 Buying or selling in Ashland, Hanover, Mechanicsville, or Glen Allen?
+    <a href="tel:8046424235">Call or text 804-Michael</a>.
+  </div>
+
+  <footer>Map data © OpenStreetMap contributors · 804re.com</footer>
+</div>
+
+<!-- Add Stand Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="close-x" id="closeModal">✕</button>
+    <h3>Add This Location</h3>
+    <p class="hint">Stand at the farmstand and submit — we'll use your phone's location instead of an address.</p>
+
+    <div class="geo-status waiting" id="geoStatus">📡 Locating you…</div>
+
+    <div class="field">
+      <label for="fName">Farm / Stand Name</label>
+      <input type="text" id="fName" placeholder="e.g. Pole Green Produce">
+    </div>
+    <div class="field">
+      <label for="fCat">Category</label>
+      <select id="fCat">
+        <option value="bakery">Bakery & Sweets</option>
+        <option value="farm">Farms & Produce</option>
+        <option value="nursery">Plants & Nursery</option>
+        <option value="crafts">Crafts & Goods</option>
+        <option value="specialty">Honey & Specialty</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="fHours">Hours / Days Available</label>
+      <input type="text" id="fHours" placeholder="e.g. Sat 9–1">
+    </div>
+    <div class="field">
+      <label for="fDesc">What do they sell?</label>
+      <textarea id="fDesc" placeholder="Short description of goods"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelAdd">Cancel</button>
+      <button class="btn btn-primary" id="submitAdd" disabled>Submit</button>
+    </div>
+    <p class="submit-note">Submissions are reviewed before appearing on the public map.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+// =========================================================================
+// CONFIG
+// =========================================================================
+// Published Google Sheet CSV URL (read pipeline — see prior setup guide).
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQllKE4SJkxkqKoY7QElipKVptQQbcCwEPHl8PvI5o0Q0HQNdFaKmYaPQztbKQ0-2xxBILTcw47Woj7/pub?gid=52146640&single=true&output=csv";
+// Apps Script Web App URL for GPS submissions (doPost) — see add-stand-webapp.gs.
+const ADD_STAND_URL = "";
+
+const MAP_CENTER = [37.6667, -77.3358]; // Hanover County, VA
+const MAP_ZOOM = 11;
+
+const categories = {
+  "bakery":   { label: "Bakery & Sweets",   color: "#9c3b2e" },
+  "farm":     { label: "Farms & Produce",   color: "#6b7d63" },
+  "nursery":  { label: "Plants & Nursery",  color: "#8a9b7e" },
+  "crafts":   { label: "Crafts & Goods",    color: "#c99a3e" },
+  "specialty":{ label: "Honey & Specialty", color: "#7c5a94" },
+  "other":    { label: "Other",             color: "#5b6b7a" }
+};
+
+const SAMPLE_STANDS = [
+  {name:"Courthouse Creamery", cat:"specialty", addr:"9200 Courthouse Rd., Hanover, VA", hours:"Sat 9–1", desc:"Sample entry — small-batch cheese & goat milk soap.", lat:37.660,lng:-77.340},
+  {name:"Pole Green Produce", cat:"farm", addr:"10450 Pole Green Rd., Mechanicsville, VA", hours:"Sat 9–1", desc:"Sample entry — seasonal vegetables, eggs & honey.", lat:37.635,lng:-77.360},
+  {name:"Ashland Sourdough Co.", cat:"bakery", addr:"200 S Railroad Ave., Ashland, VA", hours:"Sat 9–1", desc:"Sample entry — sourdough loaves & cinnamon rolls.", lat:37.756,lng:-77.478},
+  {name:"Rural Point Nursery", cat:"nursery", addr:"7600 Rural Point Rd., Mechanicsville, VA", hours:"Sat 9–1", desc:"Sample entry — native perennials & herb starts.", lat:37.617,lng:-77.330},
+  {name:"Beaverdam Craft Barn", cat:"crafts", addr:"15300 Sliding Hill Rd., Beaverdam, VA", hours:"Sat 9–1", desc:"Sample entry — handmade woodwork & painted signs.", lat:37.815,lng:-77.630}
+];
+
+function normCategory(raw){
+  if(!raw) return "other";
+  const k = raw.toString().toLowerCase();
+  if(k.includes("bak") || k.includes("sweet")) return "bakery";
+  if(k.includes("farm") || k.includes("produce")) return "farm";
+  if(k.includes("plant") || k.includes("nurs")) return "nursery";
+  if(k.includes("craft") || k.includes("good")) return "crafts";
+  if(k.includes("honey") || k.includes("special") || k.includes("lavender")) return "specialty";
+  return "other";
+}
+
+function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+
+function distMiles(lat1,lng1,lat2,lng2){
+  const R=3958.8;
+  const toRad = d=>d*Math.PI/180;
+  const dLat = toRad(lat2-lat1), dLng = toRad(lng2-lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function makeIcon(n, color){
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 5px rgba(0,0,0,.35);border:2px solid #fff;">
+      <span style="transform:rotate(45deg);font-weight:800;font-family:Inter,sans-serif;font-size:12px;color:#fff;">${n}</span>
+    </div>`,
+    iconSize:[28,28], iconAnchor:[14,28], popupAnchor:[0,-26]
+  });
+}
+function makeMeIcon(){
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:20px;height:20px;border-radius:50%;background:#2b7fff;border:3px solid #fff;
+      box-shadow:0 0 0 5px rgba(43,127,255,.28);"></div>`,
+    iconSize:[20,20], iconAnchor:[10,10]
+  });
+}
+
+function setStatus(kind, msg){
+  const bar = document.getElementById('statusBar');
+  bar.className = 'status-bar show ' + kind;
+  bar.textContent = msg;
+}
+function clearStatus(){ document.getElementById('statusBar').className = 'status-bar'; }
+
+const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18
+}).addTo(map);
+
+let ALL_STANDS = [];
+const markers = {};
+let meMarker = null;
+
+function renderStands(stands){
+  ALL_STANDS = stands;
+  stands.forEach((s,i)=> s.n = i+1);
+  document.getElementById('stopCount').textContent = stands.length + (stands.length===1 ? " stop" : " stops");
+
+  const present = [...new Set(stands.map(s=>s.cat))];
+  const toolbar = document.getElementById('toolbar');
+  toolbar.querySelectorAll('.chip:not([data-cat="all"])').forEach(c=>c.remove());
+  present.forEach(key=>{
+    const c = categories[key] || categories.other;
+    const btn = document.createElement('button');
+    btn.className = 'chip'; btn.dataset.cat = key;
+    btn.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    toolbar.appendChild(btn);
+  });
+
+  Object.values(markers).forEach(m=>map.removeLayer(m));
+  for(const k in markers) delete markers[k];
+  document.getElementById('cardGrid').innerHTML = '';
+
+  if(stands.length === 0){
+    document.getElementById('cardGrid').innerHTML = '<div class="empty-state">No stops yet — submissions will appear here automatically.</div>';
+    return;
+  }
+
+  const grid = document.getElementById('cardGrid');
+  const bounds = [];
+
+  stands.forEach(s=>{
+    const catInfo = categories[s.cat] || categories.other;
+    if(isNaN(s.lat) || isNaN(s.lng)) return;
+
+    const marker = L.marker([s.lat,s.lng], {icon: makeIcon(s.n, catInfo.color)}).addTo(map);
+    marker.bindPopup(popupHtml(s, catInfo));
+    markers[s.n] = marker;
+    bounds.push([s.lat,s.lng]);
+
+    const card = document.createElement('div');
+    card.className = 'stand-card';
+    card.id = 'card-'+s.n;
+    card.dataset.cat = s.cat;
+    card.style.borderLeftColor = catInfo.color;
+    card.innerHTML = cardHtml(s, catInfo);
+    card.addEventListener('click', ()=>{
+      map.setView([s.lat,s.lng], 14);
+      markers[s.n].openPopup();
+      document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
+    });
+    grid.appendChild(card);
+  });
+
+  if(bounds.length) map.fitBounds(bounds, {padding:[30,30]});
+  wireFilterChips(stands);
+}
+
+function popupHtml(s, catInfo){
+  return `
+    <div class="popup-title"><span class="popup-num">${s.n}</span>${s.name}</div>
+    <div class="popup-cat">${catInfo.label}</div>
+    <div class="popup-addr">${s.addr || 'Location shared via GPS'}</div>
+    ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
+    ${s.distance !== undefined ? `<div class="popup-dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
+    <div class="popup-desc">${s.desc || ''}</div>
+    <a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a>
+  `;
+}
+function cardHtml(s, catInfo){
+  return `
+    <div class="row"><span class="num">${s.n}</span><span class="name">${s.name}</span></div>
+    <div class="cat">${catInfo.label}</div>
+    <div class="addr">${s.addr || 'Location shared via GPS'}</div>
+    ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
+    ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
+    <div class="desc">${s.desc || ''}</div>
+  `;
+}
+
+function wireFilterChips(stands){
+  document.getElementById('toolbar').onclick = (e)=>{
+    const btn = e.target.closest('.chip');
+    if(!btn) return;
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c===btn));
+    stands.forEach(s=>{
+      const show = cat==='all' || s.cat===cat;
+      const m = markers[s.n];
+      if(m){ if(show && !map.hasLayer(m)) m.addTo(map); if(!show) map.removeLayer(m); }
+      const cardEl = document.getElementById('card-'+s.n);
+      if(cardEl) cardEl.classList.toggle('hidden', !show);
+    });
+  };
+}
+
+function parseCsvRows(rows){
+  return rows
+    .filter(r => (r["Farm Name"] || r["Name"]))
+    .filter(r => { const a = (r["Approved"]||"").toString().toLowerCase(); return a === "" || a === "true"; })
+    .map(r => ({
+      name: r["Farm Name"] || r["Name"] || "Unnamed stop",
+      addr: r["Address"] || "",
+      cat: normCategory(r["Category"]),
+      desc: r["Description"] || "",
+      hours: r["Hours or Dates Available"] || r["Hours"] || "",
+      lat: parseFloat(r["Lat"]),
+      lng: parseFloat(r["Lng"])
+    }))
+    .filter(s => !isNaN(s.lat) && !isNaN(s.lng));
+}
+
+async function loadData(){
+  if(!CSV_URL){
+    setStatus('demo', '📋 Showing sample data — paste your Google Sheet CSV URL into CSV_URL to go live.');
+    renderStands(SAMPLE_STANDS);
+    return;
+  }
+  setStatus('loading', '⏳ Loading farmstand data…');
+  try{
+    const res = await fetch(CSV_URL);
+    if(!res.ok) throw new Error('Fetch failed: ' + res.status);
+    const text = await res.text();
+    const parsed = Papa.parse(text, {header:true, skipEmptyLines:true});
+    const stands = parseCsvRows(parsed.data);
+    if(stands.length === 0){
+      setStatus('demo', '📋 Sheet connected but no approved rows yet — showing sample data instead.');
+      renderStands(SAMPLE_STANDS);
+    } else {
+      clearStatus();
+      renderStands(stands);
+    }
+  }catch(err){
+    setStatus('error', '⚠️ Could not load the Sheet (' + err.message + ') — showing sample data instead.');
+    renderStands(SAMPLE_STANDS);
+  }
+}
+loadData();
+
+// ---- Find Stands Near Me ----
+document.getElementById('nearMeBtn').addEventListener('click', ()=>{
+  if(!navigator.geolocation){
+    setStatus('error', '⚠️ Your browser does not support location. Try searching manually below.');
+    return;
+  }
+  setStatus('locating', '📡 Finding your location…');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude, longitude} = pos.coords;
+
+    if(meMarker) map.removeLayer(meMarker);
+    meMarker = L.marker([latitude, longitude], {icon: makeMeIcon()}).addTo(map);
+    meMarker.bindPopup('<b>You are here</b>').openPopup();
+
+    ALL_STANDS.forEach(s=> s.distance = distMiles(latitude, longitude, s.lat, s.lng));
+    ALL_STANDS.sort((a,b)=> a.distance - b.distance);
+
+    // rebuild cards in distance order, keep same markers/numbers
+    const grid = document.getElementById('cardGrid');
+    grid.innerHTML = '';
+    ALL_STANDS.forEach(s=>{
+      const catInfo = categories[s.cat] || categories.other;
+      if(markers[s.n]) markers[s.n].setPopupContent(popupHtml(s, catInfo));
+      const card = document.createElement('div');
+      card.className = 'stand-card';
+      card.id = 'card-'+s.n;
+      card.dataset.cat = s.cat;
+      card.style.borderLeftColor = catInfo.color;
+      card.innerHTML = cardHtml(s, catInfo);
+      card.addEventListener('click', ()=>{
+        map.setView([s.lat,s.lng], 14);
+        markers[s.n].openPopup();
+        document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
+      });
+      grid.appendChild(card);
+    });
+
+    const nearest = ALL_STANDS[0];
+    const closeFew = ALL_STANDS.slice(0, Math.min(3, ALL_STANDS.length));
+    const boundsPts = [[latitude,longitude], ...closeFew.map(s=>[s.lat,s.lng])];
+    map.fitBounds(boundsPts, {padding:[40,40]});
+    if(nearest && markers[nearest.n]) markers[nearest.n].openPopup();
+
+    setStatus('locating', `📍 Nearest stand: ${nearest ? nearest.name + ' — ' + nearest.distance.toFixed(1) + ' mi away' : 'none found'}`);
+    document.getElementById('resetBtn').classList.remove('hidden');
+  }, err=>{
+    setStatus('error', '⚠️ Could not get your location (' + err.message + '). Check your browser\'s location permission.');
+  }, {enableHighAccuracy:true, timeout:10000});
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(meMarker){ map.removeLayer(meMarker); meMarker = null; }
+  ALL_STANDS.forEach(s=> delete s.distance);
+  renderStands(ALL_STANDS);
+  clearStatus();
+  document.getElementById('resetBtn').classList.add('hidden');
+});
+
+// ---- Add This Location (GPS submission) ----
+const modalOverlay = document.getElementById('modalOverlay');
+const geoStatus = document.getElementById('geoStatus');
+const submitBtn = document.getElementById('submitAdd');
+let capturedCoords = null;
+
+function openModal(){
+  modalOverlay.classList.add('show');
+  capturedCoords = null;
+  submitBtn.disabled = true;
+  geoStatus.className = 'geo-status waiting';
+  geoStatus.textContent = '📡 Locating you…';
+
+  if(!navigator.geolocation){
+    geoStatus.className = 'geo-status fail';
+    geoStatus.textContent = '⚠️ Location not supported on this browser.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    capturedCoords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    geoStatus.className = 'geo-status ok';
+    geoStatus.textContent = `✅ Location captured (±${Math.round(pos.coords.accuracy)}m accuracy)`;
+    submitBtn.disabled = false;
+  }, err=>{
+    geoStatus.className = 'geo-status fail';
+    geoStatus.textContent = '⚠️ Could not get your location — check permissions and try again.';
+  }, {enableHighAccuracy:true, timeout:10000});
+}
+function closeModalFn(){
+  modalOverlay.classList.remove('show');
+  document.getElementById('fName').value = '';
+  document.getElementById('fHours').value = '';
+  document.getElementById('fDesc').value = '';
+}
+
+document.getElementById('addStandBtn').addEventListener('click', openModal);
+document.getElementById('closeModal').addEventListener('click', closeModalFn);
+document.getElementById('cancelAdd').addEventListener('click', closeModalFn);
+modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeModalFn(); });
+
+submitBtn.addEventListener('click', async ()=>{
+  const name = document.getElementById('fName').value.trim();
+  if(!name){ alert('Please enter a name for this stand.'); return; }
+  if(!capturedCoords){ alert('Location not captured yet.'); return; }
+
+  const payload = {
+    name,
+    category: document.getElementById('fCat').value,
+    hours: document.getElementById('fHours').value.trim(),
+    description: document.getElementById('fDesc').value.trim(),
+    lat: capturedCoords.lat,
+    lng: capturedCoords.lng,
+    source: "GPS submission"
+  };
+
+  if(!ADD_STAND_URL){
+    alert('This form isn\'t connected to a sheet yet (ADD_STAND_URL is empty) — see the setup guide to deploy the Apps Script Web App.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+  try{
+    // Apps Script Web Apps typically don't return CORS headers, so we fire-and-forget with no-cors.
+    await fetch(ADD_STAND_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify(payload)
+    });
+    alert('Thanks! Your submission is in for review and will appear on the map once approved.');
+    closeModalFn();
+  }catch(err){
+    alert('Something went wrong submitting — please try again.');
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+  }
+});
+</script>
+</body>
+</html>
