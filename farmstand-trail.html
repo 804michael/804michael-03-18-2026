@@ -13,12 +13,86 @@
     --black:#111; --white:#fff;
     --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
     --gray-text:#555; --gray-muted:#888;
+    --nav-h:68px; --banner-h:38px;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;}
+  body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;
+    padding-top:calc(var(--banner-h) + var(--nav-h));}
   .page{max-width:1100px;margin:0 auto;padding:0 0 56px;}
   a{color:inherit;}
 
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  @keyframes slideInRight{0%{transform:translateX(100%)}100%{transform:translateX(0)}}
+
+  #banner{
+    position:fixed;top:0;left:0;right:0;z-index:9999;
+    height:var(--banner-h);
+    background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);
+    background-size:200% 100%;
+    animation:shimmer 4s linear infinite;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    padding:0 16px;
+  }
+  #banner p{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.8rem;
+    letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.95);text-align:center;}
+  #banner .bd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0;}
+
+  #nav{position:fixed;top:var(--banner-h);left:0;right:0;z-index:1000;height:var(--nav-h);
+    background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(218,41,28,.1);transition:height .3s,box-shadow .3s;}
+  #nav.scrolled{height:56px;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+  .nav-in{max-width:1200px;margin:0 auto;padding:0 24px;height:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .nlogo{display:flex;align-items:center;flex-shrink:0;}
+  .nav-links{display:flex;align-items:center;gap:24px;list-style:none;}
+  .nav-links>li{position:relative;}
+  .nav-links>li>a,.nav-links>li>button.nav-btn{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--black);position:relative;padding-bottom:3px;transition:color .2s;
+    background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;}
+  .nav-links>li>a::after,.nav-links>li>button.nav-btn::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--red);transition:width .25s;}
+  .nav-links>li>a:hover,.nav-links>li>button.nav-btn:hover{color:var(--red);}
+  .nav-links>li>a:hover::after,.nav-links>li>button.nav-btn:hover::after{width:100%;}
+  .nav-links>li>a.active{color:var(--red);}
+  .nav-links>li>a.active::after{width:100%;}
+  .nav-chevron{display:inline-block;width:10px;height:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;flex-shrink:0;}
+  .nav-dropdown{display:none;position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);
+    background:var(--white);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid var(--gray-mid);
+    min-width:190px;overflow:hidden;z-index:500;}
+  .nav-dropdown a{display:flex;align-items:center;gap:10px;padding:11px 18px;
+    font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;color:var(--black);white-space:nowrap;
+    transition:background .15s,color .15s;}
+  .nav-dropdown a:hover{background:var(--gray-light);color:var(--red);}
+  .nav-links>li:hover .nav-dropdown,.nav-links>li:focus-within .nav-dropdown{display:block;}
+  .nav-links>li:hover .nav-chevron,.nav-links>li:focus-within .nav-chevron{transform:rotate(-135deg) translateY(2px);}
+  .connect-wrap{position:relative;}
+  .btn-connect{background:var(--red);color:var(--white);border:2px solid var(--red);border-radius:100px;padding:9px 20px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+    cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;transition:background .2s,box-shadow .2s;}
+  .btn-connect:hover{background:var(--red-dark);box-shadow:0 4px 16px rgba(218,41,28,.3);}
+  .connect-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--white);border-radius:14px;
+    box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid var(--gray-mid);min-width:172px;overflow:hidden;z-index:600;}
+  .connect-dropdown.open{display:block;}
+  .connect-dropdown a{display:flex;align-items:center;gap:12px;padding:13px 20px;
+    font-family:'Barlow',sans-serif;font-weight:600;font-size:.92rem;color:var(--black);white-space:nowrap;
+    transition:background .15s,color .15s;}
+  .connect-dropdown a:hover{background:var(--gray-light);color:var(--red);}
+  .connect-dropdown .cd-icon{width:17px;height:17px;flex-shrink:0;color:var(--red);}
+  .connect-dropdown .cd-divider{height:1px;background:var(--gray-mid);}
+  #ham-btn{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:6px;}
+  #ham-btn span{display:block;width:24px;height:2px;background:var(--black);border-radius:2px;transition:all .3s;}
+  #mob-menu{display:none;position:fixed;inset:0 0 0 auto;width:300px;z-index:2000;background:var(--white);
+    flex-direction:column;padding:80px 32px 40px;box-shadow:-8px 0 40px rgba(0,0,0,.15);}
+  #mob-menu.open{display:flex;animation:slideInRight .32s ease forwards;}
+  #mob-close{position:absolute;top:16px;right:20px;font-size:2rem;background:none;border:none;cursor:pointer;color:var(--black);transition:color .2s;}
+  #mob-close:hover{color:var(--red);}
+  .mob-links{list-style:none;margin-bottom:24px;}
+  .mob-links li{border-bottom:1px solid var(--gray-mid);}
+  .mob-links a{display:block;padding:13px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black);transition:color .2s;}
+  .mob-links a:hover{color:var(--red);}
+  .mob-ctas{display:flex;flex-direction:column;gap:10px;}
+  #backdrop{display:none;position:fixed;inset:0;z-index:1999;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);}
+  #backdrop.open{display:block;}
   header{background:var(--black);color:var(--white);padding:34px 28px 28px;position:relative;overflow:hidden;}
   header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
@@ -145,13 +219,92 @@
 </head>
 <body>
 
+<!-- BANNER -->
+<div id="banner">
+  <div class="bd"></div>
+  <p>Site currently under construction with new tools launching soon. Some features may not work properly.</p>
+  <div class="bd"></div>
+</div>
+
+<!-- NAV -->
+<header id="nav">
+  <nav class="nav-in">
+    <a href="/" class="nlogo" aria-label="804Michael Home">
+      <svg viewBox="0 0 786.329 238.272" style="height:34px;width:auto" aria-label="804Michael logo">
+        <path fill="#111" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="#111" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="#111" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="#111" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
+        <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
+      </svg>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <button class="nav-btn" aria-haspopup="true">Local Areas <span class="nav-chevron"></span></button>
+        <div class="nav-dropdown">
+          <a href="/ashland.html">Ashland</a>
+          <a href="/hanover.html">Hanover County</a>
+          <a href="/mechanicsville.html">Mechanicsville</a>
+          <a href="/glen-allen.html">Glen Allen</a>
+        </div>
+      </li>
+      <li><a href="/#guides">Resources</a></li>
+      <li><a href="/farmstand-trail.html" class="active">Farmstand Trail</a></li>
+      <li><a href="/map-search.html">Draw My Search</a></li>
+    </ul>
+    <div class="nav-ctas">
+      <div class="connect-wrap">
+        <button class="btn-connect" id="connect-btn" aria-haspopup="true" aria-expanded="false">
+          Connect
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="connect-dropdown" id="connect-dd" role="menu">
+          <a href="tel:8046424235" role="menuitem">
+            <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call
+          </a>
+          <div class="cd-divider"></div>
+          <a href="sms:8046424235" role="menuitem">
+            <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Text
+          </a>
+        </div>
+      </div>
+    </div>
+    <button id="ham-btn" aria-label="Open menu">
+      <span id="h1"></span><span id="h2"></span><span id="h3"></span>
+    </button>
+  </nav>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mob-menu" role="dialog" aria-modal="true">
+  <button id="mob-close" aria-label="Close menu">&times;</button>
+  <ul class="mob-links">
+    <li><a href="/" onclick="closeMob()">Home</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Local Areas</span></li>
+    <li><a href="/ashland.html" onclick="closeMob()" style="padding-left:10px">Ashland</a></li>
+    <li><a href="/hanover.html" onclick="closeMob()" style="padding-left:10px">Hanover County</a></li>
+    <li><a href="/mechanicsville.html" onclick="closeMob()" style="padding-left:10px">Mechanicsville</a></li>
+    <li><a href="/glen-allen.html" onclick="closeMob()" style="padding-left:10px">Glen Allen</a></li>
+    <li><a href="/#guides" onclick="closeMob()">Resources</a></li>
+    <li><a href="/farmstand-trail.html" onclick="closeMob()">Farmstand Trail</a></li>
+    <li><a href="/map-search.html" onclick="closeMob()">Draw My Search</a></li>
+  </ul>
+  <div class="mob-ctas">
+    <a href="tel:8046424235" class="btn btn-primary" style="justify-content:center">Call 804-642-4235</a>
+    <a href="sms:8046424235" class="btn btn-ghost" style="justify-content:center">💬 Text 804-Michael</a>
+  </div>
+</div>
+<div id="backdrop" onclick="closeMob()"></div>
+
 <div class="page">
   <header>
-    <p class="eyebrow">Hanover County · Virginia</p>
-    <h1>Farmstand<br><span>Trail Map</span></h1>
+    <h1>Local Farm <span>Stand Map</span></h1>
     <div class="sub">
       <span>📍 <b id="stopCount">— stops</b></span>
-      <span>🌾 Local farms & makers around the 804</span>
+      <span>🌾 Local farm stands around 804</span>
     </div>
   </header>
 
