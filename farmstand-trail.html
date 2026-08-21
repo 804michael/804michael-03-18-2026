@@ -206,6 +206,9 @@
     font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
   }
   .field textarea{resize:vertical;min-height:60px;}
+  .cat-check-group{display:flex;flex-direction:column;gap:6px;}
+  .cat-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;}
+  .cat-check input{width:16px;height:16px;accent-color:var(--red);cursor:pointer;margin:0;}
   .day-toggle{display:flex;flex-wrap:wrap;gap:6px;}
   .day-chip{
     flex:1;min-width:38px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
@@ -373,20 +376,24 @@
     <p class="hint">Stand at the farmstand and submit — we'll use your phone's location instead of an address.</p>
 
     <div class="geo-status waiting" id="geoStatus">📡 Locating you…</div>
+    <div class="field hidden" id="fAddressWrap">
+      <label for="fAddress">Address <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(location wasn't available — enter it manually)</span></label>
+      <input type="text" id="fAddress" placeholder="e.g. 13580 Ashland Road, Ashland, VA">
+    </div>
 
     <div class="field">
       <label for="fName">Farm / Stand Name</label>
       <input type="text" id="fName" placeholder="e.g. Pole Green Produce">
     </div>
     <div class="field">
-      <label for="fCat">Category</label>
-      <select id="fCat">
-        <option value="bakery">Bakery & Sweets</option>
-        <option value="farm">Farms & Produce</option>
-        <option value="nursery">Plants & Nursery</option>
-        <option value="crafts">Crafts & Goods</option>
-        <option value="specialty">Honey & Specialty</option>
-      </select>
+      <label>Category <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(select all that apply)</span></label>
+      <div class="cat-check-group" id="fCatGroup">
+        <label class="cat-check"><input type="checkbox" value="bakery"> Bakery & Sweets</label>
+        <label class="cat-check"><input type="checkbox" value="farm"> Farms & Produce</label>
+        <label class="cat-check"><input type="checkbox" value="nursery"> Plants & Nursery</label>
+        <label class="cat-check"><input type="checkbox" value="crafts"> Crafts & Goods</label>
+        <label class="cat-check"><input type="checkbox" value="specialty"> Honey & Specialty</label>
+      </div>
     </div>
     <div class="field">
       <label>Days Available</label>
@@ -464,6 +471,14 @@ function normCategory(raw){
   if(k.includes("honey") || k.includes("special") || k.includes("lavender")) return "specialty";
   return "other";
 }
+// Splits a comma-joined category string into normalized category keys, e.g. "Farm, Bakery" -> ["farm","bakery"]
+function normCategories(raw){
+  if(!raw) return ["other"];
+  const parts = raw.toString().split(',').map(s=>s.trim()).filter(Boolean);
+  if(parts.length === 0) return ["other"];
+  const cats = [...new Set(parts.map(normCategory))];
+  return cats.length ? cats : ["other"];
+}
 
 function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
 
@@ -527,10 +542,10 @@ let meMarker = null;
 
 function renderStands(stands){
   ALL_STANDS = stands;
-  stands.forEach((s,i)=> s.n = i+1);
+  stands.forEach((s,i)=>{ s.n = i+1; if(!s.cats) s.cats = [s.cat || "other"]; });
   document.getElementById('stopCount').textContent = stands.length + (stands.length===1 ? " stop" : " stops");
 
-  const present = [...new Set(stands.map(s=>s.cat))];
+  const present = [...new Set(stands.flatMap(s=>s.cats))];
   const toolbar = document.getElementById('toolbar');
   toolbar.querySelectorAll('.chip:not([data-cat="all"])').forEach(c=>c.remove());
   present.forEach(key=>{
@@ -581,9 +596,10 @@ function renderStands(stands){
 }
 
 function popupHtml(s, catInfo){
+  const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
   return `
     <div class="popup-title"><span class="popup-num">${s.n}</span>${s.name}</div>
-    <div class="popup-cat">${catInfo.label}</div>
+    <div class="popup-cat">${catLabels}</div>
     <div class="popup-addr">${s.addr || 'Location shared via GPS'}</div>
     ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
     ${s.distance !== undefined ? `<div class="popup-dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
@@ -592,9 +608,10 @@ function popupHtml(s, catInfo){
   `;
 }
 function cardHtml(s, catInfo){
+  const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
   return `
     <div class="row"><span class="num">${s.n}</span><span class="name">${s.name}</span></div>
-    <div class="cat">${catInfo.label}</div>
+    <div class="cat">${catLabels}</div>
     <div class="addr">${s.addr || 'Location shared via GPS'}</div>
     ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
@@ -609,7 +626,7 @@ function wireFilterChips(stands){
     const cat = btn.dataset.cat;
     document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c===btn));
     stands.forEach(s=>{
-      const show = cat==='all' || s.cat===cat;
+      const show = cat==='all' || s.cats.includes(cat);
       const m = markers[s.n];
       if(m){ if(show && !map.hasLayer(m)) m.addTo(map); if(!show) map.removeLayer(m); }
       const cardEl = document.getElementById('card-'+s.n);
@@ -625,10 +642,12 @@ function parseCsvRows(rows){
     .map(r => {
       const days = (r["Days Available"] || "").split(',').map(s=>s.trim()).filter(Boolean);
       const structuredHours = formatHoursSummary(days, r["Open Time"], r["Close Time"]);
+      const cats = normCategories(r["Category"]);
       return {
         name: r["Farm Name"] || r["Name"] || "Unnamed stop",
         addr: r["Address"] || "",
-        cat: normCategory(r["Category"]),
+        cat: cats[0],
+        cats: cats,
         desc: r["Description"] || "",
         hours: structuredHours || r["Hours or Dates Available"] || r["Hours"] || "",
         lat: parseFloat(r["Lat"]),
@@ -749,10 +768,14 @@ function openModal(){
   submitBtn.disabled = true;
   geoStatus.className = 'geo-status waiting';
   geoStatus.textContent = '📡 Locating you…';
+  document.getElementById('fAddressWrap').classList.add('hidden');
+  document.getElementById('fAddress').value = '';
 
   if(!navigator.geolocation){
     geoStatus.className = 'geo-status fail';
-    geoStatus.textContent = '⚠️ Location not supported on this browser.';
+    geoStatus.textContent = '⚠️ Location not supported on this browser — enter the address below instead.';
+    document.getElementById('fAddressWrap').classList.remove('hidden');
+    submitBtn.disabled = false;
     return;
   }
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -762,7 +785,9 @@ function openModal(){
     submitBtn.disabled = false;
   }, err=>{
     geoStatus.className = 'geo-status fail';
-    geoStatus.textContent = '⚠️ Could not get your location — check permissions and try again.';
+    geoStatus.textContent = '⚠️ Could not get your location — enter the address below instead.';
+    document.getElementById('fAddressWrap').classList.remove('hidden');
+    submitBtn.disabled = false;
   }, {enableHighAccuracy:true, timeout:10000});
 }
 function closeModalFn(){
@@ -771,6 +796,7 @@ function closeModalFn(){
   document.getElementById('fOpen').value = '';
   document.getElementById('fClose').value = '';
   document.getElementById('fDesc').value = '';
+  document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   selectedDays = [];
   document.getElementById('fDays').querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
 }
@@ -784,22 +810,28 @@ modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeM
 submitBtn.addEventListener('click', async ()=>{
   const name = document.getElementById('fName').value.trim();
   if(!name){ alert('Please enter a name for this stand.'); return; }
-  if(!capturedCoords){ alert('Location not captured yet.'); return; }
+
+  const manualAddress = document.getElementById('fAddress').value.trim();
+  if(!capturedCoords && !manualAddress){
+    alert('Location wasn\'t captured — please enter an address so this stand can be placed on the map.');
+    return;
+  }
 
   const openTime = document.getElementById('fOpen').value;
   const closeTime = document.getElementById('fClose').value;
 
   const payload = {
     name,
-    category: document.getElementById('fCat').value,
+    category: Array.from(document.querySelectorAll('#fCatGroup input:checked')).map(el=>el.value).join(', '),
     days: selectedDays.join(', '),
     openTime,
     closeTime,
     hours: formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
     description: document.getElementById('fDesc').value.trim(),
-    lat: capturedCoords.lat,
-    lng: capturedCoords.lng,
-    source: "GPS submission"
+    address: manualAddress || "",
+    lat: capturedCoords ? capturedCoords.lat : "",
+    lng: capturedCoords ? capturedCoords.lng : "",
+    source: capturedCoords ? "GPS submission" : "Manual address submission"
   };
 
   if(!ADD_STAND_URL){
