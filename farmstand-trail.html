@@ -637,14 +637,14 @@ function wireFilterChips(stands){
 
 function parseCsvRows(rows){
   return rows
-    .filter(r => (r["Farm Name"] || r["Name"]))
+    .filter(r => (r["Farm Name"] || r["Name"] || r["Farm/Vendor Name"]))
     .filter(r => { const a = (r["Approved"]||"").toString().toLowerCase(); return a === "" || a === "true"; })
     .map(r => {
       const days = (r["Days Available"] || "").split(',').map(s=>s.trim()).filter(Boolean);
       const structuredHours = formatHoursSummary(days, r["Open Time"], r["Close Time"]);
-      const cats = normCategories(r["Category"]);
+      const cats = normCategories(r["Category"] || r["Goods Sold"] || r["Good Sold"]);
       return {
-        name: r["Farm Name"] || r["Name"] || "Unnamed stop",
+        name: r["Farm Name"] || r["Name"] || r["Farm/Vendor Name"] || "Unnamed stop",
         addr: r["Address"] || "",
         cat: cats[0],
         cats: cats,
