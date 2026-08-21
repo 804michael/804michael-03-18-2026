@@ -180,7 +180,7 @@
   .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;}
   .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
   .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
-  .stand-card .desc{font-size:19px;color:#3d3d3d;}
+  .stand-card .desc{font-size:19px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;padding-right:4px;}
   .stand-card .website{margin-top:6px;}
   .stand-card .website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
   .stand-card .website a:hover{text-decoration:underline;}
@@ -279,9 +279,14 @@
           <a href="/glen-allen.html">Glen Allen</a>
         </div>
       </li>
-      <li><a href="/#guides">Resources</a></li>
-      <li><a href="/farmstand-trail.html" class="active">Farmstand Trail</a></li>
-      <li><a href="/map-search.html">Draw My Search</a></li>
+      <li>
+        <button class="nav-btn" aria-haspopup="true">Resources <span class="nav-chevron"></span></button>
+        <div class="nav-dropdown">
+          <a href="/#guides">Area Guides</a>
+          <a href="/farmstand-trail.html" class="active">Local Farm Stands</a>
+          <a href="/map-search.html">Draw My Search</a>
+        </div>
+      </li>
     </ul>
     <div class="nav-ctas">
       <div class="connect-wrap">
@@ -318,9 +323,10 @@
     <li><a href="/hanover.html" onclick="closeMob()" style="padding-left:10px">Hanover County</a></li>
     <li><a href="/mechanicsville.html" onclick="closeMob()" style="padding-left:10px">Mechanicsville</a></li>
     <li><a href="/glen-allen.html" onclick="closeMob()" style="padding-left:10px">Glen Allen</a></li>
-    <li><a href="/#guides" onclick="closeMob()">Resources</a></li>
-    <li><a href="/farmstand-trail.html" onclick="closeMob()">Farmstand Trail</a></li>
-    <li><a href="/map-search.html" onclick="closeMob()">Draw My Search</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Resources</span></li>
+    <li><a href="/#guides" onclick="closeMob()" style="padding-left:10px">Area Guides</a></li>
+    <li><a href="/farmstand-trail.html" onclick="closeMob()" style="padding-left:10px">Local Farm Stands</a></li>
+    <li><a href="/map-search.html" onclick="closeMob()" style="padding-left:10px">Draw My Search</a></li>
   </ul>
   <div class="mob-ctas">
     <a href="tel:8046424235" class="btn btn-primary" style="justify-content:center">Call 804-642-4235</a>
@@ -558,6 +564,33 @@ function setStatus(kind, msg){
   bar.textContent = msg;
 }
 function clearStatus(){ document.getElementById('statusBar').className = 'status-bar'; }
+
+// ---- Mobile nav (hamburger menu) — identical behavior to index.html ----
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', ()=>{
+  navEl.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+const mob = document.getElementById('mob-menu');
+const bd  = document.getElementById('backdrop');
+const h1  = document.getElementById('h1');
+const h2  = document.getElementById('h2');
+const h3  = document.getElementById('h3');
+
+function openMob(){
+  mob.classList.add('open'); bd.classList.add('open');
+  h1.style.transform='translateY(7px) rotate(45deg)';
+  h2.style.opacity='0';
+  h3.style.transform='translateY(-7px) rotate(-45deg)';
+  document.body.style.overflow='hidden';
+}
+window.closeMob = function closeMob(){
+  mob.classList.remove('open'); bd.classList.remove('open');
+  h1.style.transform=''; h2.style.opacity=''; h3.style.transform='';
+  document.body.style.overflow='';
+}
+document.getElementById('ham-btn').addEventListener('click', openMob);
+document.getElementById('mob-close').addEventListener('click', closeMob);
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

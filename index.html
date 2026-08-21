@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.20 01_00                                 ║
+  ║  SITE VERSION: 26.08.21 00_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -577,9 +577,14 @@
           <a href="glen-allen.html">Glen Allen</a>
         </div>
       </li>
-      <li><a href="#guides">Resources</a></li>
-      <li><a href="farmstand-trail.html">Farmstand Trail</a></li>
-      <li><a href="map-search.html">Draw My Search</a></li>
+      <li>
+        <button class="nav-btn" aria-haspopup="true">Resources <span class="nav-chevron"></span></button>
+        <div class="nav-dropdown">
+          <a href="#guides">Area Guides</a>
+          <a href="farmstand-trail.html">Local Farm Stands</a>
+          <a href="map-search.html">Draw My Search</a>
+        </div>
+      </li>
     </ul>
     <div class="nav-ctas">
       <div class="connect-wrap">
@@ -621,8 +626,10 @@
     <li><a href="hanover.html"        onclick="closeMob()" style="padding-left:10px">Hanover County</a></li>
     <li><a href="mechanicsville.html" onclick="closeMob()" style="padding-left:10px">Mechanicsville</a></li>
     <li><a href="glen-allen.html"     onclick="closeMob()" style="padding-left:10px">Glen Allen</a></li>
-    <li><a href="#guides" onclick="closeMob()">Resources</a></li>
-    <li><a href="farmstand-trail.html" onclick="closeMob()">Farmstand Trail</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Resources</span></li>
+    <li><a href="#guides" onclick="closeMob()" style="padding-left:10px">Area Guides</a></li>
+    <li><a href="farmstand-trail.html" onclick="closeMob()" style="padding-left:10px">Local Farm Stands</a></li>
+    <li><a href="map-search.html" onclick="closeMob()" style="padding-left:10px">Draw My Search</a></li>
     <li><a href="map-search.html" onclick="closeMob()">Draw My Search</a></li>
     <li><a href="#contact"        onclick="closeMob()">Contact</a></li>
   </ul>
@@ -935,7 +942,7 @@
       </a>
       <a href="farmstand-trail.html" id="farmstand-trail" class="g-card reveal d4">
         <div class="g-img"><img src="images/Corn_Tomato-pexels-11724874.jpg" alt="Fresh local corn and tomatoes at a Hanover County farmstand"/></div>
-        <div class="g-body"><h3>Farmstand Trail</h3><div class="g-tag">Find A Stand Near You</div><p>An interactive map of local farmstands, bakeries, and makers across Hanover County — find what's near you right now or add a stop from the field.</p><span class="g-explore">Open the Map <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        <div class="g-body"><h3>Local Farm Stands</h3><div class="g-tag">Find A Stand Near You</div><p>An interactive map of local farmstands, bakeries, and makers across Hanover County — find what's near you right now or add a stop from the field.</p><span class="g-explore">Open the Map <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
       </a>
     </div>
   </div>
@@ -1020,7 +1027,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.20 01_00</p>
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.21 00_00</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
@@ -1034,7 +1041,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.20 01_00';
+  const SITE_VERSION = '26.08.21 00_00';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'site version ' + SITE_VERSION;
 
