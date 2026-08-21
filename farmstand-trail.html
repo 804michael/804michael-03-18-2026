@@ -151,7 +151,7 @@
   .popup-addr{font-size:19px;color:#555;margin-bottom:6px;}
   .popup-hours{font-size:18px;color:var(--gray-muted);margin-bottom:6px;}
   .popup-dist{font-size:18px;color:var(--red);font-weight:700;margin-bottom:6px;}
-  .popup-desc{font-size:19.5px;margin-bottom:12px;}
+  .popup-desc{font-size:19.5px;margin-bottom:12px;max-height:5.6em;overflow-y:auto;line-height:1.4;padding-right:4px;}
   .popup-website{margin-bottom:10px;}
   .popup-website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
   .popup-website a:hover{text-decoration:underline;}
@@ -219,7 +219,7 @@
     font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
   }
   .field textarea{resize:vertical;min-height:60px;}
-  .cat-check-group{display:flex;flex-direction:column;gap:6px;}
+  .cat-check-group{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
   .cat-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;}
   .cat-check input{width:16px;height:16px;accent-color:var(--red);cursor:pointer;margin:0;}
   .day-toggle{display:flex;flex-wrap:wrap;gap:6px;}
@@ -391,10 +391,10 @@
       <label>Category <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(select all that apply)</span></label>
       <div class="cat-check-group" id="fCatGroup">
         <label class="cat-check"><input type="checkbox" value="bakery"> Bakery & Sweets</label>
-        <label class="cat-check"><input type="checkbox" value="farm"> Farms & Produce</label>
-        <label class="cat-check"><input type="checkbox" value="nursery"> Plants & Nursery</label>
         <label class="cat-check"><input type="checkbox" value="crafts"> Crafts & Goods</label>
+        <label class="cat-check"><input type="checkbox" value="farm"> Farms & Produce</label>
         <label class="cat-check"><input type="checkbox" value="specialty"> Honey & Specialty</label>
+        <label class="cat-check"><input type="checkbox" value="nursery"> Plants & Nursery</label>
       </div>
     </div>
     <div class="field">
@@ -409,7 +409,10 @@
         <button type="button" class="day-chip" data-day="Sat">Sat</button>
       </div>
     </div>
-    <div class="field time-row">
+    <div class="field">
+      <label class="cat-check"><input type="checkbox" id="fUnmanned"> Open all the time / unmanned stand (no set hours)</label>
+    </div>
+    <div class="field time-row hidden" id="fHoursWrap">
       <div>
         <label for="fOpen">Opens</label>
         <input type="time" id="fOpen">
@@ -533,12 +536,11 @@ async function getDrivingDistanceMiles(lat1,lng1,lat2,lng2){
 function makeIcon(n, color){
   return L.divIcon({
     className: '',
-    html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:50% 50% 50% 0;
-        transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;
+    html: `<div style="background:${color};width:26px;height:26px;border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);
         box-shadow:0 2px 5px rgba(0,0,0,.35);border:2px solid #fff;">
-      <span style="transform:rotate(45deg);font-weight:800;font-family:Inter,sans-serif;font-size:12px;color:#fff;">${n}</span>
     </div>`,
-    iconSize:[28,28], iconAnchor:[14,28], popupAnchor:[0,-26]
+    iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24]
   });
 }
 function makeMeIcon(){
@@ -601,7 +603,7 @@ function renderStands(stands){
     if(isNaN(s.lat) || isNaN(s.lng)) return;
 
     const marker = L.marker([s.lat,s.lng], {icon: makeIcon(s.n, catInfo.color)}).addTo(map);
-    marker.bindPopup(popupHtml(s, catInfo), {maxWidth: 340, minWidth: 260});
+    marker.bindPopup(popupHtml(s, catInfo), {maxWidth: 400, minWidth: 300});
     markers[s.n] = marker;
     bounds.push([s.lat,s.lng]);
 
@@ -626,7 +628,7 @@ function renderStands(stands){
 function popupHtml(s, catInfo){
   const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
   return `
-    <div class="popup-title"><span class="popup-num">${s.n}</span>${s.name}</div>
+    <div class="popup-title">${s.name}</div>
     <div class="popup-cat">${catLabels}</div>
     <div class="popup-addr">${s.addr || 'Location shared via GPS'}</div>
     ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
@@ -814,6 +816,12 @@ const submitBtn = document.getElementById('submitAdd');
 let capturedCoords = null;
 let selectedDays = [];
 
+function updateHoursVisibility(){
+  const unmanned = document.getElementById('fUnmanned').checked;
+  const show = !unmanned && selectedDays.length > 0;
+  document.getElementById('fHoursWrap').classList.toggle('hidden', !show);
+}
+
 document.getElementById('fDays').querySelectorAll('.day-chip').forEach(chip=>{
   chip.addEventListener('click', ()=>{
     const day = chip.dataset.day;
@@ -824,8 +832,11 @@ document.getElementById('fDays').querySelectorAll('.day-chip').forEach(chip=>{
       selectedDays.push(day);
       chip.classList.add('active');
     }
+    updateHoursVisibility();
   });
 });
+
+document.getElementById('fUnmanned').addEventListener('change', updateHoursVisibility);
 
 function openModal(){
   modalOverlay.classList.add('show');
@@ -862,6 +873,8 @@ function closeModalFn(){
   document.getElementById('fClose').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fWebsite').value = '';
+  document.getElementById('fUnmanned').checked = false;
+  document.getElementById('fHoursWrap').classList.add('hidden');
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   selectedDays = [];
   document.getElementById('fDays').querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
@@ -885,13 +898,15 @@ submitBtn.addEventListener('click', async ()=>{
   const openTime = document.getElementById('fOpen').value;
   const closeTime = document.getElementById('fClose').value;
 
+  const isUnmanned = document.getElementById('fUnmanned').checked;
+
   const payload = {
     name,
     category: Array.from(document.querySelectorAll('#fCatGroup input:checked')).map(el=>el.value).join(', '),
-    days: selectedDays.join(', '),
-    openTime,
-    closeTime,
-    hours: formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
+    days: isUnmanned ? '' : selectedDays.join(', '),
+    openTime: isUnmanned ? '' : openTime,
+    closeTime: isUnmanned ? '' : closeTime,
+    hours: isUnmanned ? 'Open 24/7 (Unmanned)' : formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
     description: document.getElementById('fDesc').value.trim(),
     website: document.getElementById('fWebsite').value.trim(),
     address: manualAddress || "",
