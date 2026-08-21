@@ -145,16 +145,20 @@
   .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Barlow',sans-serif;}
   .popup-num{display:inline-block;background:var(--black);color:#fff;font-weight:800;font-size:12px;
     width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;margin-right:6px;}
-  .popup-title{font-weight:700;font-size:14.5px;margin:2px 0 2px;}
-  .popup-cat{color:var(--red);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;
+  .popup-title{font-weight:700;font-size:22px;margin:2px 0 4px;}
+  .popup-cat{color:var(--red);font-size:16.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;
     font-family:'Barlow Condensed',sans-serif;}
-  .popup-addr{font-size:12.5px;color:#555;margin-bottom:4px;}
-  .popup-hours{font-size:12px;color:var(--gray-muted);margin-bottom:4px;}
-  .popup-dist{font-size:12px;color:var(--red);font-weight:700;margin-bottom:4px;}
-  .popup-desc{font-size:13px;margin-bottom:8px;}
-  .popup-dir{display:inline-block;background:var(--red);color:#fff;font-weight:700;font-size:12px;
+  .popup-addr{font-size:19px;color:#555;margin-bottom:6px;}
+  .popup-hours{font-size:18px;color:var(--gray-muted);margin-bottom:6px;}
+  .popup-dist{font-size:18px;color:var(--red);font-weight:700;margin-bottom:6px;}
+  .popup-desc{font-size:19.5px;margin-bottom:12px;}
+  .popup-website{margin-bottom:10px;}
+  .popup-website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
+  .popup-website a:hover{text-decoration:underline;}
+  .popup-dir-wrap{text-align:right;}
+  .popup-dir{display:inline-block;background:var(--red);color:#fff !important;font-weight:700;font-size:17px;
     font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;
-    padding:7px 14px;border-radius:100px;text-decoration:none;}
+    padding:10px 22px;border-radius:100px;text-decoration:none !important;}
   .popup-dir:hover{background:var(--red-dark);}
 
   .divider{margin:24px 20px 8px;text-align:center;color:var(--gray-muted);
@@ -170,13 +174,16 @@
   .stand-card .row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .stand-card .num{background:var(--black);color:#fff;font-weight:800;font-size:12px;width:20px;height:20px;
     line-height:20px;text-align:center;border-radius:50%;flex:none;}
-  .stand-card .name{font-weight:700;font-size:14.5px;}
-  .stand-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;
-    color:var(--red);letter-spacing:.06em;margin-bottom:3px;}
-  .stand-card .addr{font-size:12px;color:#666;margin-bottom:2px;}
-  .stand-card .hours{font-size:11.5px;color:var(--gray-muted);margin-bottom:4px;}
-  .stand-card .dist{font-size:11.5px;color:var(--red);font-weight:700;margin-bottom:4px;}
-  .stand-card .desc{font-size:12.5px;color:#3d3d3d;}
+  .stand-card .name{font-weight:700;font-size:22px;}
+  .stand-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:16.5px;font-weight:700;text-transform:uppercase;
+    color:var(--red);letter-spacing:.06em;margin-bottom:5px;}
+  .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;}
+  .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
+  .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
+  .stand-card .desc{font-size:19px;color:#3d3d3d;}
+  .stand-card .website{margin-top:6px;}
+  .stand-card .website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
+  .stand-card .website a:hover{text-decoration:underline;}
   .hidden{display:none !important;}
   .empty-state{margin:20px;padding:30px;text-align:center;color:var(--gray-muted);font-size:14px;
     background:var(--gray-light);border:1px dashed var(--gray-mid);border-radius:12px;}
@@ -188,9 +195,15 @@
   .split-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.4;margin-top:8px;}
 
   footer{text-align:center;font-size:12.5px;color:var(--gray-muted);margin-top:26px;padding:0 20px;}
-  .footer-cta{background:var(--red);color:#fff;border-radius:12px;margin:0 20px 20px;padding:16px 20px;
-    text-align:center;font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;}
-  .footer-cta a{text-decoration:underline;font-weight:800;color:#fff;}
+  .sponsor-block{background:#fff;border-top:1px solid var(--gray-mid);margin:0 20px 20px;padding:26px 20px;text-align:center;}
+  .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 10px;}
+  .sponsor-logo{height:34px;width:auto;display:inline-block;margin-bottom:16px;}
+  .sponsor-contact{font-family:'Barlow',sans-serif;font-size:15px;color:var(--black);margin:0 0 8px;}
+  .sponsor-contact a{color:var(--red);font-weight:700;text-decoration:none;}
+  .sponsor-contact a:hover{text-decoration:underline;}
+  .sponsor-form-link{font-family:'Barlow',sans-serif;font-size:12.5px;color:var(--gray-muted);margin:0;}
+  .sponsor-form-link a{color:var(--gray-muted);font-weight:700;}
+  .sponsor-form-link a:hover{color:var(--red);}
 
   /* Modal */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.6);z-index:1000;
@@ -331,6 +344,7 @@
     <button class="btn btn-primary" id="nearMeBtn">📍 Find Stands Near Me</button>
     <button class="btn btn-secondary" id="addStandBtn">➕ Add a Stand</button>
     <button class="btn btn-ghost hidden" id="resetBtn">Reset View</button>
+    <button class="btn btn-ghost" id="shareMapBtn">📤 Share this Map</button>
   </div>
 
   <div class="toolbar" id="toolbar">
@@ -343,26 +357,14 @@
   <div class="divider">tap a pin or a card for directions</div>
 
   <div class="list-wrap">
-    <div class="list-title">The Full Trail</div>
     <div class="grid" id="cardGrid"></div>
   </div>
 
-  <div class="form-panel">
-    <h2 class="split-title">Two Ways To Add A Stand</h2>
-    <div class="split-actions">
-      <div class="split-item">
-        <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener" class="btn btn-primary btn-large">📝 Add Stand Form</a>
-        <p class="split-desc">Add any stand you know from anywhere.</p>
-      </div>
-      <div class="split-item">
-        <button class="btn btn-primary btn-large" id="addStandBtn2">📍 Add Current Location</button>
-        <p class="split-desc">Add the stand you are currently at with your phone GPS location.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer-cta">
-    For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Text or Call 804-Michael</a> (or 804-642-4235).
+  <div class="sponsor-block">
+    <p class="sponsor-label">Sponsored by</p>
+    <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Real Estate" class="sponsor-logo">
+    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Text or Call 804-Michael</a> (or 804-642-4235).</p>
+    <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
   <footer>Map data © OpenStreetMap contributors · 804re.com</footer>
@@ -420,6 +422,10 @@
     <div class="field">
       <label for="fDesc">What do they sell?</label>
       <textarea id="fDesc" placeholder="Short description of goods"></textarea>
+    </div>
+    <div class="field">
+      <label for="fWebsite">Website or Social Link <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input type="text" id="fWebsite" placeholder="e.g. instagram.com/yourstand">
     </div>
 
     <div class="modal-actions">
@@ -481,6 +487,10 @@ function normCategories(raw){
 }
 
 function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+function normalizeUrl(url){
+  if(!url) return '';
+  return /^https?:\/\//i.test(url) ? url : 'https://' + url;
+}
 
 function formatTime12(t){
   if(!t) return '';
@@ -501,6 +511,23 @@ function distMiles(lat1,lng1,lat2,lng2){
   const dLat = toRad(lat2-lat1), dLng = toRad(lng2-lng1);
   const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// Real driving distance via OSRM's free public routing server (no API key required).
+// Returns miles, or null if the route lookup fails (caller should fall back to distMiles).
+async function getDrivingDistanceMiles(lat1,lng1,lat2,lng2){
+  try{
+    const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=false`;
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(data.code === 'Ok' && data.routes && data.routes[0]){
+      return data.routes[0].distance / 1609.34; // meters -> miles
+    }
+    return null;
+  }catch(e){
+    return null;
+  }
 }
 
 function makeIcon(n, color){
@@ -541,6 +568,7 @@ const markers = {};
 let meMarker = null;
 
 function renderStands(stands){
+  stands = stands.slice().sort((a,b)=> a.name.localeCompare(b.name));
   ALL_STANDS = stands;
   stands.forEach((s,i)=>{ s.n = i+1; if(!s.cats) s.cats = [s.cat || "other"]; });
   document.getElementById('stopCount').textContent = stands.length + (stands.length===1 ? " stop" : " stops");
@@ -573,7 +601,7 @@ function renderStands(stands){
     if(isNaN(s.lat) || isNaN(s.lng)) return;
 
     const marker = L.marker([s.lat,s.lng], {icon: makeIcon(s.n, catInfo.color)}).addTo(map);
-    marker.bindPopup(popupHtml(s, catInfo));
+    marker.bindPopup(popupHtml(s, catInfo), {maxWidth: 340, minWidth: 260});
     markers[s.n] = marker;
     bounds.push([s.lat,s.lng]);
 
@@ -602,20 +630,22 @@ function popupHtml(s, catInfo){
     <div class="popup-cat">${catLabels}</div>
     <div class="popup-addr">${s.addr || 'Location shared via GPS'}</div>
     ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
-    ${s.distance !== undefined ? `<div class="popup-dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
+    ${s.distance !== undefined ? `<div class="popup-dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="popup-desc">${s.desc || ''}</div>
-    <a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a>
+    ${s.website ? `<div class="popup-website"><a href="${normalizeUrl(s.website)}" target="_blank" rel="noopener">🔗 Visit Website</a></div>` : ''}
+    <div class="popup-dir-wrap"><a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a></div>
   `;
 }
 function cardHtml(s, catInfo){
   const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
   return `
-    <div class="row"><span class="num">${s.n}</span><span class="name">${s.name}</span></div>
+    <div class="row"><span class="name">${s.name}</span></div>
     <div class="cat">${catLabels}</div>
     <div class="addr">${s.addr || 'Location shared via GPS'}</div>
     ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
-    ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi away</div>` : ''}
+    ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="desc">${s.desc || ''}</div>
+    ${s.website ? `<div class="website"><a href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a></div>` : ''}
   `;
 }
 
@@ -649,6 +679,7 @@ function parseCsvRows(rows){
         cat: cats[0],
         cats: cats,
         desc: r["Description"] || "",
+        website: r["Website"] || r["Website or Social Link"] || r["Link"] || r["Social Link"] || "",
         hours: structuredHours || r["Hours or Dates Available"] || r["Hours"] || "",
         lat: parseFloat(r["Lat"]),
         lng: parseFloat(r["Lng"])
@@ -691,14 +722,22 @@ document.getElementById('nearMeBtn').addEventListener('click', ()=>{
     return;
   }
   setStatus('locating', '📡 Finding your location…');
-  navigator.geolocation.getCurrentPosition(pos=>{
+  navigator.geolocation.getCurrentPosition(async pos=>{
     const {latitude, longitude} = pos.coords;
 
     if(meMarker) map.removeLayer(meMarker);
     meMarker = L.marker([latitude, longitude], {icon: makeMeIcon()}).addTo(map);
     meMarker.bindPopup('<b>You are here</b>').openPopup();
 
-    ALL_STANDS.forEach(s=> s.distance = distMiles(latitude, longitude, s.lat, s.lng));
+    setStatus('locating', '🚗 Calculating driving distances…');
+
+    // Real driving distance via OSRM's free public routing service (no API key).
+    // Falls back to straight-line distance for any stand where the route lookup fails.
+    await Promise.all(ALL_STANDS.map(async s=>{
+      const driving = await getDrivingDistanceMiles(latitude, longitude, s.lat, s.lng);
+      s.distance = driving !== null ? driving : distMiles(latitude, longitude, s.lat, s.lng);
+      s.distanceIsDriving = driving !== null;
+    }));
     ALL_STANDS.sort((a,b)=> a.distance - b.distance);
 
     // rebuild cards in distance order, keep same markers/numbers
@@ -740,6 +779,32 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   renderStands(ALL_STANDS);
   clearStatus();
   document.getElementById('resetBtn').classList.add('hidden');
+});
+
+document.getElementById('shareMapBtn').addEventListener('click', async ()=>{
+  const shareText = "Check out this map of local farm stands";
+  const shareUrl = window.location.href;
+  const btn = document.getElementById('shareMapBtn');
+  const originalLabel = btn.textContent;
+
+  if(navigator.share){
+    try{
+      await navigator.share({ title: 'Hanover Farmstand Trail', text: shareText, url: shareUrl });
+    }catch(e){ /* user cancelled share sheet — no error needed */ }
+    return;
+  }
+
+  // Desktop fallback: copy pre-filled text + link to clipboard for pasting
+  // into Facebook groups, Nextdoor, etc. — neither supports pre-filled post
+  // text via URL for group/neighborhood posts, so copy-paste is the reliable path.
+  const fullText = `${shareText}: ${shareUrl}`;
+  try{
+    await navigator.clipboard.writeText(fullText);
+    btn.textContent = '✓ Copied! Paste it anywhere';
+    setTimeout(()=>{ btn.textContent = originalLabel; }, 2500);
+  }catch(e){
+    prompt('Copy this to share:', fullText);
+  }
 });
 
 // ---- Add This Location (GPS submission) ----
@@ -796,13 +861,13 @@ function closeModalFn(){
   document.getElementById('fOpen').value = '';
   document.getElementById('fClose').value = '';
   document.getElementById('fDesc').value = '';
+  document.getElementById('fWebsite').value = '';
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   selectedDays = [];
   document.getElementById('fDays').querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
 }
 
 document.getElementById('addStandBtn').addEventListener('click', openModal);
-document.getElementById('addStandBtn2').addEventListener('click', openModal);
 document.getElementById('closeModal').addEventListener('click', closeModalFn);
 document.getElementById('cancelAdd').addEventListener('click', closeModalFn);
 modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeModalFn(); });
@@ -828,6 +893,7 @@ submitBtn.addEventListener('click', async ()=>{
     closeTime,
     hours: formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
     description: document.getElementById('fDesc').value.trim(),
+    website: document.getElementById('fWebsite').value.trim(),
     address: manualAddress || "",
     lat: capturedCoords ? capturedCoords.lat : "",
     lng: capturedCoords ? capturedCoords.lng : "",
@@ -849,7 +915,7 @@ submitBtn.addEventListener('click', async ()=>{
       headers: {'Content-Type':'text/plain'},
       body: JSON.stringify(payload)
     });
-    alert('Thanks! Your submission is in for review and will appear on the map once approved.');
+    alert('Thanks for adding a location to the Map. Your submission will be reviewed prior to publishing it on the map, so don\'t be concerned if it takes a bit to appear.');
     closeModalFn();
   }catch(err){
     alert('Something went wrong submitting — please try again.');
