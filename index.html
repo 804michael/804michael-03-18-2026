@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.20 00_00                                 ║
+  ║  SITE VERSION: 26.08.20 01_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -449,12 +449,12 @@
 
     /* ── Meet Michael ── */
     #meet{background:var(--gray-light)}
-    .meet-g{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:center}
+    .meet-g{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start}
     .meet-img{display:flex;justify-content:center}
-    .meet-img img{width:100%;max-width:420px;height:auto;display:block;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
-    .meet-txt h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);line-height:1.1;margin-bottom:18px}
+    .meet-img img{width:100%;max-width:100%;height:auto;display:block;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
+    .meet-txt h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);line-height:.98;margin-bottom:18px}
     .meet-txt h2 .r{color:var(--red)}
-    .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.42em;letter-spacing:0;color:var(--red);display:inline-block;}
+    .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.63em;letter-spacing:0;color:var(--red);display:inline-block;margin-top:-2px;}
     .meet-txt p{font-family:'Barlow',sans-serif;font-weight:400;font-size:1.05rem;color:var(--gray-text);line-height:1.7;margin-bottom:20px}
 
     /* ── Guides ── */
@@ -1020,7 +1020,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.20 00_00</p>
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.20 01_00</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
@@ -1034,7 +1034,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.20 00_00';
+  const SITE_VERSION = '26.08.20 01_00';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'site version ' + SITE_VERSION;
 
