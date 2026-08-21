@@ -1,3 +1,24 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.08.20 00_00                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copyright║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -421,6 +442,9 @@
     .chk{list-style:none;margin-bottom:32px;display:flex;flex-direction:column;gap:12px;text-align:left}
     .chk li{display:flex;align-items:flex-start;gap:12px;font-family:'Barlow',sans-serif;font-size:.98rem;color:var(--gray-text);line-height:1.5}
     .chk-dot{width:22px;height:22px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:2px}
+    .chk li:has(.chk-head){flex-direction:column;gap:2px}
+    .chk-head{display:flex;align-items:center;gap:12px}
+    .chk-body{margin-left:34px;color:var(--gray-text)}
     .btn-row{display:flex;gap:12px;flex-wrap:wrap}
 
     /* ── Meet Michael ── */
@@ -430,7 +454,7 @@
     .meet-img img{width:100%;max-width:420px;height:auto;display:block;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
     .meet-txt h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);line-height:1.1;margin-bottom:18px}
     .meet-txt h2 .r{color:var(--red)}
-    .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.5em;letter-spacing:.02em;color:var(--red);}
+    .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.42em;letter-spacing:0;color:var(--red);display:inline-block;}
     .meet-txt p{font-family:'Barlow',sans-serif;font-weight:400;font-size:1.05rem;color:var(--gray-text);line-height:1.7;margin-bottom:20px}
 
     /* ── Guides ── */
@@ -833,9 +857,18 @@
           In 2012, Michael was licensed again when he returned to real estate and shortly thereafter joined one of Central Virginia's largest brokerages and started training and guiding agents through complex transactions while actively helping clients sell and buy homes. His unique intersection of architecture, marketing, technology, counseling, and contract mastery is his clients' greatest advantage:
         </p>
         <ul class="chk">
-          <li><span class="chk-dot">✓</span><b>For Sellers:</b>&nbsp;Protecting your equity by marketing your home to the widest buyer pool possible. Once offers arrive, spotting pitfalls early to prevent costly delays.</li>
-          <li><span class="chk-dot">✓</span><b>For Buyers:</b>&nbsp;Navigating negotiations with counselor-level calm and crafting clean, compelling offers that often win on the first attempt without overpaying.</li>
-          <li><span class="chk-dot">✓</span><b>For Agents:</b>&nbsp;Consulting on sticky, high-stakes transactions, giving 804Michael a rare, multifaceted perspective most standard agents don't have.</li>
+          <li>
+            <div class="chk-head"><span class="chk-dot">✓</span><b>For Sellers:</b></div>
+            <div class="chk-body">Protecting your equity by marketing your home to the widest buyer pool possible. Once offers arrive, spotting pitfalls early to prevent costly delays.</div>
+          </li>
+          <li>
+            <div class="chk-head"><span class="chk-dot">✓</span><b>For Buyers:</b></div>
+            <div class="chk-body">Navigating negotiations with counselor-level calm and crafting clean, compelling offers that often win on the first attempt without overpaying.</div>
+          </li>
+          <li>
+            <div class="chk-head"><span class="chk-dot">✓</span><b>For Agents:</b></div>
+            <div class="chk-body">Consulting on sticky, high-stakes transactions, giving 804Michael a rare, multifaceted perspective most standard agents don't have.</div>
+          </li>
         </ul>
         <p>Text or Call Michael today to discuss your real estate goals.</p>
         <div class="btn-row">
@@ -986,6 +1019,8 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.20 00_00</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
@@ -996,6 +1031,13 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ⚠ AI MAINTENANCE RULE
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.08.20 00_00';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'site version ' + SITE_VERSION;
+
   // Dynamic year
   document.getElementById('yr').textContent = new Date().getFullYear();
 
