@@ -206,6 +206,16 @@
     font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
   }
   .field textarea{resize:vertical;min-height:60px;}
+  .day-toggle{display:flex;flex-wrap:wrap;gap:6px;}
+  .day-chip{
+    flex:1;min-width:38px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;
+    padding:8px 4px;border-radius:7px;cursor:pointer;transition:all .15s ease;
+  }
+  .day-chip:hover{border-color:var(--red);}
+  .day-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .time-row{display:flex;gap:12px;}
+  .time-row>div{flex:1;}
   .geo-status{font-size:12.5px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
   .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
   .geo-status.ok{background:#eef6ee;color:#2f6b30;}
@@ -379,8 +389,26 @@
       </select>
     </div>
     <div class="field">
-      <label for="fHours">Hours / Days Available</label>
-      <input type="text" id="fHours" placeholder="e.g. Sat 9–1">
+      <label>Days Available</label>
+      <div class="day-toggle" id="fDays">
+        <button type="button" class="day-chip" data-day="Sun">Sun</button>
+        <button type="button" class="day-chip" data-day="Mon">Mon</button>
+        <button type="button" class="day-chip" data-day="Tue">Tue</button>
+        <button type="button" class="day-chip" data-day="Wed">Wed</button>
+        <button type="button" class="day-chip" data-day="Thu">Thu</button>
+        <button type="button" class="day-chip" data-day="Fri">Fri</button>
+        <button type="button" class="day-chip" data-day="Sat">Sat</button>
+      </div>
+    </div>
+    <div class="field time-row">
+      <div>
+        <label for="fOpen">Opens</label>
+        <input type="time" id="fOpen">
+      </div>
+      <div>
+        <label for="fClose">Closes</label>
+        <input type="time" id="fClose">
+      </div>
     </div>
     <div class="field">
       <label for="fDesc">What do they sell?</label>
@@ -438,6 +466,19 @@ function normCategory(raw){
 }
 
 function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+
+function formatTime12(t){
+  if(!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${h12} ${period}` : `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+function formatHoursSummary(days, openTime, closeTime){
+  const dayStr = days && days.length ? days.join(', ') : '';
+  const timeStr = (openTime && closeTime) ? `${formatTime12(openTime)}–${formatTime12(closeTime)}` : '';
+  return [dayStr, timeStr].filter(Boolean).join(' ');
+}
 
 function distMiles(lat1,lng1,lat2,lng2){
   const R=3958.8;
@@ -581,15 +622,19 @@ function parseCsvRows(rows){
   return rows
     .filter(r => (r["Farm Name"] || r["Name"]))
     .filter(r => { const a = (r["Approved"]||"").toString().toLowerCase(); return a === "" || a === "true"; })
-    .map(r => ({
-      name: r["Farm Name"] || r["Name"] || "Unnamed stop",
-      addr: r["Address"] || "",
-      cat: normCategory(r["Category"]),
-      desc: r["Description"] || "",
-      hours: r["Hours or Dates Available"] || r["Hours"] || "",
-      lat: parseFloat(r["Lat"]),
-      lng: parseFloat(r["Lng"])
-    }))
+    .map(r => {
+      const days = (r["Days Available"] || "").split(',').map(s=>s.trim()).filter(Boolean);
+      const structuredHours = formatHoursSummary(days, r["Open Time"], r["Close Time"]);
+      return {
+        name: r["Farm Name"] || r["Name"] || "Unnamed stop",
+        addr: r["Address"] || "",
+        cat: normCategory(r["Category"]),
+        desc: r["Description"] || "",
+        hours: structuredHours || r["Hours or Dates Available"] || r["Hours"] || "",
+        lat: parseFloat(r["Lat"]),
+        lng: parseFloat(r["Lng"])
+      };
+    })
     .filter(s => !isNaN(s.lat) && !isNaN(s.lng));
 }
 
@@ -683,6 +728,20 @@ const modalOverlay = document.getElementById('modalOverlay');
 const geoStatus = document.getElementById('geoStatus');
 const submitBtn = document.getElementById('submitAdd');
 let capturedCoords = null;
+let selectedDays = [];
+
+document.getElementById('fDays').querySelectorAll('.day-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const day = chip.dataset.day;
+    if(selectedDays.includes(day)){
+      selectedDays = selectedDays.filter(d=>d!==day);
+      chip.classList.remove('active');
+    } else {
+      selectedDays.push(day);
+      chip.classList.add('active');
+    }
+  });
+});
 
 function openModal(){
   modalOverlay.classList.add('show');
@@ -709,8 +768,11 @@ function openModal(){
 function closeModalFn(){
   modalOverlay.classList.remove('show');
   document.getElementById('fName').value = '';
-  document.getElementById('fHours').value = '';
+  document.getElementById('fOpen').value = '';
+  document.getElementById('fClose').value = '';
   document.getElementById('fDesc').value = '';
+  selectedDays = [];
+  document.getElementById('fDays').querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
 }
 
 document.getElementById('addStandBtn').addEventListener('click', openModal);
@@ -724,10 +786,16 @@ submitBtn.addEventListener('click', async ()=>{
   if(!name){ alert('Please enter a name for this stand.'); return; }
   if(!capturedCoords){ alert('Location not captured yet.'); return; }
 
+  const openTime = document.getElementById('fOpen').value;
+  const closeTime = document.getElementById('fClose').value;
+
   const payload = {
     name,
     category: document.getElementById('fCat').value,
-    hours: document.getElementById('fHours').value.trim(),
+    days: selectedDays.join(', '),
+    openTime,
+    closeTime,
+    hours: formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
     description: document.getElementById('fDesc').value.trim(),
     lat: capturedCoords.lat,
     lng: capturedCoords.lng,
