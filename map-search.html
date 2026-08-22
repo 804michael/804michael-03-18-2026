@@ -900,8 +900,14 @@
           <a href="glen-allen.html">Glen Allen</a>
         </div>
       </li>
-      <li><a href="index.html#guides">Resources</a></li>
-      <li><a href="map-search.html">Draw My Search</a></li>
+      <li>
+        <button class="nav-btn" aria-haspopup="true">Resources <span class="nav-chevron"></span></button>
+        <div class="nav-dropdown">
+          <a href="index.html#guides">Area Guides</a>
+          <a href="farmstand-trail.html">Local Farm Stands</a>
+          <a href="map-search.html" class="active">Draw My Search</a>
+        </div>
+      </li>
     </ul>
     <div class="nav-ctas">
       <div class="connect-wrap">
@@ -926,11 +932,15 @@
   <button id="mob-close" aria-label="Close menu">&times;</button>
   <ul class="mob-links">
     <li><a href="index.html" onclick="closeMob()">Home</a></li>
-    <li><a href="ashland.html" onclick="closeMob()">Ashland</a></li>
-    <li><a href="hanover.html" onclick="closeMob()">Hanover County</a></li>
-    <li><a href="mechanicsville.html" onclick="closeMob()">Mechanicsville</a></li>
-    <li><a href="glen-allen.html" onclick="closeMob()">Glen Allen</a></li>
-    <li><a href="map-search.html" onclick="closeMob()">Draw My Search</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Local Areas</span></li>
+    <li><a href="ashland.html" onclick="closeMob()" style="padding-left:10px">Ashland</a></li>
+    <li><a href="hanover.html" onclick="closeMob()" style="padding-left:10px">Hanover County</a></li>
+    <li><a href="mechanicsville.html" onclick="closeMob()" style="padding-left:10px">Mechanicsville</a></li>
+    <li><a href="glen-allen.html" onclick="closeMob()" style="padding-left:10px">Glen Allen</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Resources</span></li>
+    <li><a href="index.html#guides" onclick="closeMob()" style="padding-left:10px">Area Guides</a></li>
+    <li><a href="farmstand-trail.html" onclick="closeMob()" style="padding-left:10px">Local Farm Stands</a></li>
+    <li><a href="map-search.html" onclick="closeMob()" style="padding-left:10px">Draw My Search</a></li>
   </ul>
   <div class="mob-ctas">
     <a href="tel:8046424235" class="btn btn-red" style="justify-content:center">Call 804-642-4235</a>
@@ -1200,7 +1210,7 @@
       <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Logo" style="height:24px;width:auto;flex-shrink:0;display:block;filter:brightness(0) invert(1)">
     </button>
     <div class="share-cta" style="font-size:clamp(1.1rem,3vw,1.5rem);margin-bottom:-6px">
-      <span style="font-weight:400;color:rgba(255,255,255,.9);font-size:.8em">Send my map somewhere else</span>
+      <span style="font-weight:400;color:rgba(255,255,255,.9);font-size:.8em">Send my map to somewhere else</span>
     </div>
     <div class="share-btns" style="flex-direction:column;align-items:stretch;max-width:420px;width:100%;margin:0 auto">
       <!-- Copy link + Text -->
