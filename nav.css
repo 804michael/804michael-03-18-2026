@@ -1,0 +1,148 @@
+/* ============================================================
+   SHARED SITE NAVIGATION — nav.css
+   Loaded on every page via: <link rel="stylesheet" href="nav.css">
+   Pairs with nav-partial.html + nav.js.
+
+   Edit this ONE file to restyle the nav on every page at once.
+   Do not duplicate these rules into individual page <style> blocks —
+   that's exactly the drift this system exists to prevent.
+   ============================================================ */
+
+:root{
+  --nav-h:68px; --banner-h:38px;
+}
+
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes slideInRight{0%{transform:translateX(100%)}100%{transform:translateX(0)}}
+
+/* ── Banner ── */
+#banner{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  height:var(--banner-h);
+  background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);
+  background-size:200% 100%;
+  animation:shimmer 4s linear infinite;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:0 16px;
+}
+#banner p{
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;
+  font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+  color:rgba(255,255,255,.95);text-align:center;
+}
+#banner .bd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
+
+/* ── Nav bar ── */
+#nav{
+  position:fixed;top:var(--banner-h);left:0;right:0;z-index:5000;
+  height:var(--nav-h);
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(218,41,28,.1);
+  transition:height .3s,box-shadow .3s;
+}
+#nav.scrolled{height:56px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.nav-in{
+  max-width:1200px;margin:0 auto;padding:0 24px;
+  height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.nlogo{display:flex;align-items:center;flex-shrink:0}
+.nlogo-804{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.75rem;line-height:1;color:var(--black,#111);letter-spacing:-.02em}
+.nlogo-m{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.4rem;line-height:1;color:var(--red,#DA291C);margin-left:3px}
+
+.nav-links{display:flex;align-items:center;gap:24px;list-style:none;margin:0;padding:0}
+.nav-links>li{position:relative}
+.nav-links>li>a,.nav-links>li>button.nav-btn{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--black,#111);
+  position:relative;padding-bottom:3px;transition:color .2s;
+  background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;
+  text-decoration:none;
+}
+.nav-links>li>a::after,.nav-links>li>button.nav-btn::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--red,#DA291C);transition:width .25s}
+.nav-links>li>a:hover,.nav-links>li>button.nav-btn:hover{color:var(--red,#DA291C)}
+.nav-links>li>a:hover::after,.nav-links>li>button.nav-btn:hover::after{width:100%}
+.nav-links>li>a.active{color:var(--red,#DA291C)}
+.nav-links>li>a.active::after{width:100%}
+.nav-chevron{display:inline-block;width:10px;height:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;flex-shrink:0}
+
+/* Dropdown */
+.nav-dropdown{
+  display:none;position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);
+  background:var(--white,#fff);border-radius:12px;
+  box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid var(--gray-mid,#e0e0e0);
+  min-width:190px;overflow:hidden;z-index:5001;
+}
+.nav-dropdown a,.nav-dropdown button.dd-action{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 18px;
+  font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;
+  color:var(--black,#111);white-space:nowrap;
+  transition:background .15s,color .15s;
+  background:none;border:none;cursor:pointer;width:100%;text-align:left;
+  text-decoration:none;
+}
+.nav-dropdown a:hover,.nav-dropdown button.dd-action:hover{background:var(--gray-light,#f5f5f5);color:var(--red,#DA291C)}
+.nav-dropdown a.active{color:var(--red,#DA291C);background:var(--gray-light,#f5f5f5)}
+.nav-dropdown .dd-icon{width:16px;height:16px;flex-shrink:0;color:var(--red,#DA291C)}
+.nav-dropdown .dd-divider{height:1px;background:var(--gray-mid,#e0e0e0);margin:4px 0}
+.nav-links>li:hover .nav-dropdown,.nav-links>li:focus-within .nav-dropdown{display:block}
+.nav-links>li:hover .nav-chevron,.nav-links>li:focus-within .nav-chevron{transform:rotate(-135deg) translateY(2px)}
+
+/* Connect pill */
+.connect-wrap{position:relative}
+.btn-connect{
+  background:var(--red,#DA291C);color:var(--white,#fff);border:2px solid var(--red,#DA291C);
+  border-radius:100px;padding:9px 20px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;
+  transition:background .2s,box-shadow .2s;
+}
+.btn-connect:hover{background:var(--red-dark,#b01f15);box-shadow:0 4px 16px rgba(218,41,28,.3)}
+.connect-dropdown{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--white,#fff);border-radius:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid var(--gray-mid,#e0e0e0);
+  min-width:172px;overflow:hidden;z-index:5001;
+}
+.connect-dropdown.open{display:block}
+.connect-dropdown a{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 20px;
+  font-family:'Barlow',sans-serif;font-weight:600;font-size:.92rem;
+  color:var(--black,#111);white-space:nowrap;
+  transition:background .15s,color .15s;
+  text-decoration:none;
+}
+.connect-dropdown a:hover{background:var(--gray-light,#f5f5f5);color:var(--red,#DA291C)}
+.connect-dropdown .cd-icon{width:17px;height:17px;flex-shrink:0;color:var(--red,#DA291C)}
+.connect-dropdown .cd-divider{height:1px;background:var(--gray-mid,#e0e0e0)}
+
+/* ── Hamburger ── */
+#ham-btn{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:6px}
+#ham-btn span{display:block;width:24px;height:2px;background:var(--black,#111);border-radius:2px;transition:all .3s}
+
+/* ── Mobile menu ── */
+#mob-menu{
+  display:none;position:fixed;inset:0 0 0 auto;width:300px;z-index:6000;
+  background:var(--white,#fff);flex-direction:column;padding:80px 32px 40px;
+  box-shadow:-8px 0 40px rgba(0,0,0,.15);
+}
+#mob-menu.open{display:flex;animation:slideInRight .32s ease forwards}
+#mob-close{position:absolute;top:16px;right:20px;font-size:2rem;background:none;border:none;cursor:pointer;color:var(--black,#111);transition:color .2s}
+#mob-close:hover{color:var(--red,#DA291C)}
+.mob-links{list-style:none;margin-bottom:24px;padding:0}
+.mob-links li{border-bottom:1px solid var(--gray-mid,#e0e0e0)}
+.mob-links a{display:block;padding:13px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black,#111);transition:color .2s;text-decoration:none}
+.mob-links a:hover{color:var(--red,#DA291C)}
+.mob-ctas{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.mob-socials{display:flex;gap:12px;justify-content:center;margin-top:auto}
+#backdrop{display:none;position:fixed;inset:0;z-index:5999;background:rgba(0,0,0,.35);backdrop-filter:blur(4px)}
+#backdrop.open{display:block}
+
+/* ── Responsive: switch to hamburger ── */
+@media(max-width:768px){
+  .nav-links,.nav-ctas{display:none}
+  #ham-btn{display:flex}
+}
