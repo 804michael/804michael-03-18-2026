@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.21 00_00                                 ║
+  ║  SITE VERSION: 26.08.23 00_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -158,21 +158,28 @@
     .val-modal-close:hover{color:var(--red);}
     .val-field{margin-bottom:14px;flex:1;}
     .val-row{display:flex;gap:14px;}
+    .val-row-3{gap:10px;}
+    .val-field-sm{flex:0 0 72px;}
     .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black);margin-bottom:5px;}
-    .val-field input,.val-field select{
+    .val-field input,.val-field select,.val-field textarea{
       width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:10px 12px;font-size:.95rem;
-      font-family:'Barlow',sans-serif;background:#fff;color:var(--black);}
-    .val-field input:focus,.val-field select:focus{outline:none;border-color:var(--red);}
-    .val-field input.invalid,.val-toggle.invalid{border-color:#e53935;}
-    .val-toggle{display:flex;gap:10px;}
-    .val-toggle-opt{
-      flex:1;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;
-      padding:11px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
+      font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;}
+    .val-field textarea{resize:vertical;min-height:78px;font-family:'Barlow',sans-serif;line-height:1.4;}
+    .val-field input:focus,.val-field select:focus,.val-field textarea:focus{outline:none;border-color:var(--red);}
+    .val-field input.invalid,.val-field textarea.invalid{border-color:#e53935;}
+    @keyframes valPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,.35);}
+      50%{box-shadow:0 0 0 6px rgba(218,41,28,0);}
     }
-    .val-toggle-opt:hover{border-color:var(--red);}
-    .val-toggle-opt.active{background:var(--red);border-color:var(--red);color:#fff;}
-    .val-toggle.invalid .val-toggle-opt{border-color:#e53935;}
+    .val-toggle-under{
+      width:100%;margin-top:6px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+      padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
+      animation:valPulse 2s ease-in-out infinite;
+    }
+    .val-toggle-under:hover{border-color:var(--red);}
+    .val-toggle-under.active{background:var(--red);border-color:var(--red);color:#fff;animation:none;}
+    .val-toggle-under.invalid{border-color:#e53935;}
     .val-modal-status{margin-top:2px;margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-align:center;min-height:1.2em;}
     .val-modal-status.success{color:#188038;}
     .val-modal-status.error{color:#e53935;}
@@ -335,7 +342,8 @@
     #meet{background:var(--gray-light)}
     .meet-g{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start}
     .meet-img{display:flex;justify-content:center}
-    .meet-img img{width:100%;max-width:100%;height:auto;display:block;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
+    .meet-img-frame{width:100%;aspect-ratio:3/4;overflow:hidden;border-radius:4px;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
+    .meet-img-frame img{width:100%;height:100%;object-fit:cover;object-position:35% 15%;display:block}
     .meet-txt h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);line-height:.98;margin-bottom:18px}
     .meet-txt h2 .r{color:var(--red)}
     .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.63em;letter-spacing:0;color:var(--red);display:inline-block;margin-top:-2px;}
@@ -407,7 +415,7 @@
       .val-g{grid-template-columns:1fr}
       .val-img img{height:260px}
       .meet-g{grid-template-columns:1fr;text-align:center}
-      .meet-img img{max-width:260px;margin:0 auto}
+      .meet-img-frame{max-width:280px;margin:0 auto}
       .why-cards{grid-template-columns:1fr}
       .g-grid{grid-template-columns:1fr}
       #guides{clip-path:none;padding-bottom:96px}
@@ -436,70 +444,25 @@
     <p class="val-modal-hint">A few details so your report is accurate — no automated guesswork.</p>
     <form id="val-form">
       <div class="val-field">
+        <label for="val-notes">Tell 804Michael about your Home <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+        <textarea id="val-notes" name="notes" rows="4" placeholder="A few details so your report is accurate (why you are looking for your home value, any updates in past 3-5 years, anything else you think could affect your value)."></textarea>
+      </div>
+      <div class="val-field">
         <label for="val-address">Street Address</label>
         <input type="text" id="val-address" name="address" required />
       </div>
-      <div class="val-row">
+      <div class="val-row val-row-3">
         <div class="val-field">
           <label for="val-city">City</label>
           <input type="text" id="val-city" name="city" required />
         </div>
-        <div class="val-field">
+        <div class="val-field val-field-sm">
           <label for="val-state">State</label>
-          <select id="val-state" name="state" required>
-            <option value="VA" selected>Virginia</option>
-            <option disabled>──────────</option>
-            <option value="AL">Alabama</option>
-            <option value="AK">Alaska</option>
-            <option value="AZ">Arizona</option>
-            <option value="AR">Arkansas</option>
-            <option value="CA">California</option>
-            <option value="CO">Colorado</option>
-            <option value="CT">Connecticut</option>
-            <option value="DE">Delaware</option>
-            <option value="FL">Florida</option>
-            <option value="GA">Georgia</option>
-            <option value="HI">Hawaii</option>
-            <option value="ID">Idaho</option>
-            <option value="IL">Illinois</option>
-            <option value="IN">Indiana</option>
-            <option value="IA">Iowa</option>
-            <option value="KS">Kansas</option>
-            <option value="KY">Kentucky</option>
-            <option value="LA">Louisiana</option>
-            <option value="ME">Maine</option>
-            <option value="MD">Maryland</option>
-            <option value="MA">Massachusetts</option>
-            <option value="MI">Michigan</option>
-            <option value="MN">Minnesota</option>
-            <option value="MS">Mississippi</option>
-            <option value="MO">Missouri</option>
-            <option value="MT">Montana</option>
-            <option value="NE">Nebraska</option>
-            <option value="NV">Nevada</option>
-            <option value="NH">New Hampshire</option>
-            <option value="NJ">New Jersey</option>
-            <option value="NM">New Mexico</option>
-            <option value="NY">New York</option>
-            <option value="NC">North Carolina</option>
-            <option value="ND">North Dakota</option>
-            <option value="OH">Ohio</option>
-            <option value="OK">Oklahoma</option>
-            <option value="OR">Oregon</option>
-            <option value="PA">Pennsylvania</option>
-            <option value="RI">Rhode Island</option>
-            <option value="SC">South Carolina</option>
-            <option value="SD">South Dakota</option>
-            <option value="TN">Tennessee</option>
-            <option value="TX">Texas</option>
-            <option value="UT">Utah</option>
-            <option value="VT">Vermont</option>
-            <option value="VA">Virginia</option>
-            <option value="WA">Washington</option>
-            <option value="WV">West Virginia</option>
-            <option value="WI">Wisconsin</option>
-            <option value="WY">Wyoming</option>
-          </select>
+          <input type="text" id="val-state" name="state" maxlength="2" value="VA" placeholder="VA" style="text-transform:uppercase" />
+        </div>
+        <div class="val-field val-field-sm">
+          <label for="val-zip">Zip</label>
+          <input type="text" id="val-zip" name="zip" inputmode="numeric" maxlength="10" placeholder="23005" required />
         </div>
       </div>
       <div class="val-row">
@@ -514,19 +477,14 @@
       </div>
       <div class="val-row">
         <div class="val-field">
-          <label for="val-email">Email</label>
-          <input type="email" id="val-email" name="email" />
+          <label for="val-phone">Phone</label>
+          <input type="tel" id="val-phone" name="phone" placeholder="804-642-4235" inputmode="numeric" />
+          <button type="button" class="val-toggle-opt val-toggle-under" data-method="phone">📞 Prefer Phone</button>
         </div>
         <div class="val-field">
-          <label for="val-phone">Phone</label>
-          <input type="tel" id="val-phone" name="phone" />
-        </div>
-      </div>
-      <div class="val-field">
-        <label>Preferred Contact Method</label>
-        <div class="val-toggle" id="val-contact-toggle">
-          <button type="button" class="val-toggle-opt" data-method="phone">📞 Phone</button>
-          <button type="button" class="val-toggle-opt" data-method="email">✉️ Email</button>
+          <label for="val-email">Email</label>
+          <input type="email" id="val-email" name="email" placeholder="you@example.com" />
+          <button type="button" class="val-toggle-opt val-toggle-under" data-method="email">✉️ Prefer Email</button>
         </div>
       </div>
       <p id="val-modal-status" class="val-modal-status"></p>
@@ -626,10 +584,12 @@
   <div class="sec-in">
     <div class="meet-g">
       <div class="meet-img reveal">
-        <picture>
-          <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
-          <img src="images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" width="1000" height="687" loading="lazy" />
-        </picture>
+        <div class="meet-img-frame">
+          <picture>
+            <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
+            <img src="images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" width="1000" height="687" loading="lazy" />
+          </picture>
+        </div>
       </div>
       <div class="meet-txt reveal d1">
         <div class="sec-lbl"><span class="sec-lbl-line"></span>Meet 804Michael</div>
@@ -730,8 +690,8 @@
   <div class="sec-in">
     <div class="why-hd reveal">
       <div class="sec-lbl" style="justify-content:center"><span class="sec-lbl-line"></span>Why Michael<span class="sec-lbl-line"></span></div>
-      <h2>The <span class="r">804</span> Is All He Does</h2>
-      <p>Michael Hottman isn't a generalist. He lives, breathes, and works the 804 — from Ashland's tree-lined streets to Glen Allen's growing subdivisions. Know which streets feed the best Hanover school zones, which neighborhoods have Publix within a mile, and exactly how Short Pump proximity affects your price.</p>
+      <h2><span class="r">Focused</span> on 804</h2>
+      <p>True to his nickname, 804Michael helps sellers and buyers navigate Central Virginia with clarity. From Ashland's historic neighborhoods to Glen Allen's growing subdivisions, understanding the true value of a home requires seeing the complete picture: knowing how top schools and local amenities can drive values up, and where overlooked drawbacks quietly drag resale leverage down.</p>
     </div>
     <div class="why-cards">
       <div class="w-card reveal d1">
@@ -804,7 +764,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.21 00_00</p>
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.23 00_00</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
@@ -818,7 +778,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.21 00_00';
+  const SITE_VERSION = '26.08.23 00_00';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'site version ' + SITE_VERSION;
 
@@ -838,23 +798,41 @@
   // with its own dedicated template for valuation requests.
   var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
   var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
-  var VALUATION_TEMPLATE_ID = 'template_valuation_request'; // create this template in EmailJS — see setup notes
+  var VALUATION_TEMPLATE_ID = 'template_valuation_request'; // must exist in your EmailJS dashboard — see setup notes
   function _initEmailJS(){ if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', _initEmailJS); } else { _initEmailJS(); }
 
   const valOverlay = document.getElementById('val-modal-overlay');
   const valForm = document.getElementById('val-form');
   const valStatus = document.getElementById('val-modal-status');
-  const valToggle = document.getElementById('val-contact-toggle');
   const valSubmitBtn = document.getElementById('val-submit-btn');
+  const valToggleBtns = document.querySelectorAll('.val-toggle-under');
   let preferredMethod = null;
 
-  valToggle.querySelectorAll('.val-toggle-opt').forEach(btn=>{
+  valToggleBtns.forEach(btn=>{
     btn.addEventListener('click', ()=>{
       preferredMethod = btn.dataset.method;
-      valToggle.querySelectorAll('.val-toggle-opt').forEach(b=>b.classList.toggle('active', b===btn));
-      valToggle.classList.remove('invalid');
+      valToggleBtns.forEach(b=>{
+        b.classList.toggle('active', b===btn);
+        b.classList.remove('invalid');
+      });
     });
+  });
+
+  // Auto-format phone as XXX-XXX-XXXX while typing
+  const valPhoneEl = document.getElementById('val-phone');
+  valPhoneEl.addEventListener('input', ()=>{
+    let digits = valPhoneEl.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if(digits.length > 6) formatted = digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6);
+    else if(digits.length > 3) formatted = digits.slice(0,3) + '-' + digits.slice(3);
+    valPhoneEl.value = formatted;
+  });
+
+  // Force State to uppercase, max 2 letters
+  const valStateEl = document.getElementById('val-state');
+  valStateEl.addEventListener('input', ()=>{
+    valStateEl.value = valStateEl.value.replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase();
   });
 
   document.getElementById('openValuationModal').addEventListener('click', ()=>{
@@ -879,29 +857,31 @@
 
     const addressEl = document.getElementById('val-address');
     const cityEl = document.getElementById('val-city');
+    const zipEl = document.getElementById('val-zip');
     const fnameEl = document.getElementById('val-fname');
     const lnameEl = document.getElementById('val-lname');
     const emailEl = document.getElementById('val-email');
     const phoneEl = document.getElementById('val-phone');
 
-    let valid = true;
-    [addressEl, cityEl, fnameEl, lnameEl].forEach(el=>{
-      if(!el.value.trim()){ el.classList.add('invalid'); valid = false; }
+    const missing = [];
+
+    [['Street Address', addressEl], ['City', cityEl], ['Zip', zipEl], ['First Name', fnameEl], ['Last Name', lnameEl]].forEach(([label, el])=>{
+      if(!el.value.trim()){ el.classList.add('invalid'); missing.push(label); }
     });
 
-    if(!preferredMethod){
-      valToggle.classList.add('invalid');
-      valid = false;
-    } else if(preferredMethod === 'phone' && !phoneEl.value.trim()){
+    const hasPhone = phoneEl.value.replace(/\D/g,'').length === 10;
+    const hasEmail = emailEl.value.trim() && emailEl.value.includes('@');
+    if(!hasPhone && !hasEmail){
       phoneEl.classList.add('invalid');
-      valid = false;
-    } else if(preferredMethod === 'email' && (!emailEl.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim()))){
       emailEl.classList.add('invalid');
-      valid = false;
+      missing.push('Phone or Email');
+    } else if(emailEl.value.trim() && !hasEmail){
+      emailEl.classList.add('invalid');
+      missing.push('a valid Email (must include @)');
     }
 
-    if(!valid){
-      valStatus.textContent = 'Please fill in all required fields.';
+    if(missing.length){
+      valStatus.textContent = 'Missing: ' + missing.join(', ') + '.';
       valStatus.className = 'val-modal-status error';
       return;
     }
@@ -910,27 +890,35 @@
     const originalLabel = valSubmitBtn.innerHTML;
     valSubmitBtn.innerHTML = '<span class="val-btn-spinner"></span>Sending…';
 
-    const state = document.getElementById('val-state').value;
+    const state = valStateEl.value.trim() || 'VA';
+    const notes = document.getElementById('val-notes').value.trim();
 
     emailjs.send(EMAILJS_SERVICE_ID, VALUATION_TEMPLATE_ID, {
       from_name: (fnameEl.value.trim() + ' ' + lnameEl.value.trim()).trim(),
       from_email: emailEl.value.trim() || '(not provided)',
       phone: phoneEl.value.trim() || '(not provided)',
-      preferred_contact: preferredMethod,
+      preferred_contact: preferredMethod || '(not specified)',
       address: addressEl.value.trim(),
       city: cityEl.value.trim(),
-      state: state
+      state: state,
+      zip: zipEl.value.trim(),
+      notes: notes || '(none provided)'
     }).then(function(){
       valStatus.textContent = '✓ 804Michael will be in touch with your custom report.';
       valStatus.className = 'val-modal-status success';
       valSubmitBtn.innerHTML = '✓ Sent!';
       valForm.reset();
+      valStateEl.value = 'VA';
       preferredMethod = null;
-      valToggle.querySelectorAll('.val-toggle-opt').forEach(b=>b.classList.remove('active'));
+      valToggleBtns.forEach(b=>b.classList.remove('active'));
       setTimeout(closeValModal, 2200);
     }).catch(function(err){
       console.error('EmailJS error:', err);
-      valStatus.textContent = 'Something went wrong — please try again.';
+      // Surface the actual EmailJS error text when available (e.g. "template ID not found",
+      // "service ID not found") instead of a generic message — this is the fastest way to
+      // diagnose a misconfigured EmailJS template/service straight from the browser console.
+      const detail = (err && (err.text || err.message)) ? (': ' + (err.text || err.message)) : '';
+      valStatus.textContent = 'Something went wrong sending your request' + detail + '. Please try again or call/text 804-Michael directly.';
       valStatus.className = 'val-modal-status error';
       valSubmitBtn.disabled = false;
       valSubmitBtn.innerHTML = originalLabel;
