@@ -62,6 +62,7 @@
 
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     @keyframes fadeUp{0%{opacity:0;transform:translateY(24px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ── Banner ── */
     #banner{position:fixed;top:0;left:0;right:0;z-index:9999;height:var(--banner-h);background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);background-size:200% 100%;animation:shimmer 4s linear infinite;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 16px}
@@ -190,6 +191,46 @@
     .reveal.js-ready{opacity:0;transform:translateY(20px)}
     .reveal.vis{opacity:1;transform:none}
     .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+        /* ── Valuation modal ── */
+        .val-modal-overlay{display:none;position:fixed;inset:0;z-index:3000;background:rgba(17,17,17,.6);
+          align-items:center;justify-content:center;padding:20px;}
+        .val-modal-overlay.open{display:flex;}
+        .val-modal{background:var(--white);border-radius:16px;max-width:480px;width:100%;padding:30px;
+          max-height:90vh;overflow-y:auto;position:relative;}
+        .val-modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:1.4rem;color:var(--black);margin-bottom:4px;}
+        .val-modal-hint{font-family:'Barlow',sans-serif;font-size:.92rem;color:var(--gray-muted);margin-bottom:18px;}
+        .val-modal-close{position:absolute;top:14px;right:18px;font-size:1.6rem;background:none;border:none;cursor:pointer;color:var(--gray-muted);transition:color .2s;}
+        .val-modal-close:hover{color:var(--red);}
+        .val-field{margin-bottom:14px;flex:1;}
+        .val-row{display:flex;gap:14px;}
+        .val-row-3{gap:10px;}
+        .val-field-sm{flex:0 0 72px;}
+        .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black);margin-bottom:5px;}
+        .val-field input,.val-field select,.val-field textarea{
+          width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:10px 12px;font-size:.95rem;
+          font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;}
+        .val-field textarea{resize:vertical;min-height:78px;font-family:'Barlow',sans-serif;line-height:1.4;}
+        .val-field input:focus,.val-field select:focus,.val-field textarea:focus{outline:none;border-color:var(--red);}
+        .val-field input.invalid,.val-field textarea.invalid{border-color:#e53935;}
+        @keyframes valPulse{
+          0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,.35);}
+          50%{box-shadow:0 0 0 6px rgba(218,41,28,0);}
+        }
+        .val-toggle-under{
+          width:100%;margin-top:6px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+          font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+          padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
+          animation:valPulse 2s ease-in-out infinite;
+        }
+        .val-toggle-under:hover{border-color:var(--red);}
+        .val-toggle-under.active{background:var(--red);border-color:var(--red);color:#fff;animation:none;}
+        .val-toggle-under.invalid{border-color:#e53935;}
+        .val-modal-status{margin-top:2px;margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-align:center;min-height:1.2em;}
+        .val-modal-status.success{color:#188038;}
+        .val-modal-status.error{color:#e53935;}
+        .val-btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block;vertical-align:middle;margin-right:6px;}
+    
+    
   </style>
 </head>
 <body>
@@ -228,8 +269,14 @@
           <a href="glen-allen.html">Glen Allen</a>
         </div>
       </li>
-      <li><a href="index.html#guides">Resources</a></li>
-      <li><a href="map-search.html">Draw My Search</a></li>
+      <li>
+        <button class="nav-btn" aria-haspopup="true">Resources <span class="nav-chevron"></span></button>
+        <div class="nav-dropdown">
+          <a href="index.html#guides">Area Guides</a>
+          <a href="farmstand-trail.html">Local Farm Stands</a>
+          <a href="map-search.html">Draw My Search</a>
+        </div>
+      </li>
     </ul>
     <div class="nav-ctas">
       <div class="connect-wrap">
@@ -271,9 +318,10 @@
     <li><a href="hanover.html"        onclick="closeMob()" style="padding-left:10px">Hanover County</a></li>
     <li><a href="mechanicsville.html" onclick="closeMob()" style="padding-left:10px">Mechanicsville</a></li>
     <li><a href="glen-allen.html"     onclick="closeMob()" style="padding-left:10px">Glen Allen</a></li>
-    <li><a href="index.html#guides" onclick="closeMob()">Resources</a></li>
-    <li><a href="map-search.html" onclick="closeMob()">Draw My Search</a></li>
-    <li><a href="index.html#contact"  onclick="closeMob()">Contact</a></li>
+    <li style="border-bottom:none;padding-bottom:0"><span style="display:block;padding:13px 0 6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-muted)">Resources</span></li>
+    <li><a href="index.html#guides" onclick="closeMob()" style="padding-left:10px">Area Guides</a></li>
+    <li><a href="farmstand-trail.html" onclick="closeMob()" style="padding-left:10px">Local Farm Stands</a></li>
+    <li><a href="map-search.html" onclick="closeMob()" style="padding-left:10px">Draw My Search</a></li>
   </ul>
   <div class="mob-ctas">
     <a href="tel:8046424235" class="btn btn-red" style="justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call <span style="font-family:'Barlow',sans-serif;font-weight:600;letter-spacing:.02em">804-642-4235</span></a>
@@ -281,6 +329,63 @@
   </div>
 </div>
 <div id="backdrop" onclick="closeMob()"></div>
+
+<div id="val-modal-overlay" class="val-modal-overlay">
+  <div class="val-modal">
+    <button id="val-modal-close" class="val-modal-close" aria-label="Close">&times;</button>
+    <h3>Tell 804Michael about your situation</h3>
+    <p class="val-modal-hint">A few details so your report is accurate — no automated guesswork.</p>
+    <form id="val-form">
+      <div class="val-field">
+        <label for="val-notes">Tell 804Michael about your Home <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+        <textarea id="val-notes" name="notes" rows="4" placeholder="A few details so your report is accurate (why you are looking for your home value, any updates in past 3-5 years, anything else you think could affect your value)."></textarea>
+      </div>
+      <div class="val-field">
+        <label for="val-address">Street Address</label>
+        <input type="text" id="val-address" name="address" required />
+      </div>
+      <div class="val-row val-row-3">
+        <div class="val-field">
+          <label for="val-city">City</label>
+          <input type="text" id="val-city" name="city" required />
+        </div>
+        <div class="val-field val-field-sm">
+          <label for="val-state">State</label>
+          <input type="text" id="val-state" name="state" maxlength="2" value="VA" placeholder="VA" style="text-transform:uppercase" />
+        </div>
+        <div class="val-field val-field-sm">
+          <label for="val-zip">Zip</label>
+          <input type="text" id="val-zip" name="zip" inputmode="numeric" maxlength="10" placeholder="23005" required />
+        </div>
+      </div>
+      <div class="val-row">
+        <div class="val-field">
+          <label for="val-fname">First Name</label>
+          <input type="text" id="val-fname" name="firstName" required />
+        </div>
+        <div class="val-field">
+          <label for="val-lname">Last Name</label>
+          <input type="text" id="val-lname" name="lastName" required />
+        </div>
+      </div>
+      <div class="val-row">
+        <div class="val-field">
+          <label for="val-phone">Phone</label>
+          <input type="tel" id="val-phone" name="phone" placeholder="804-642-4235" inputmode="numeric" />
+          <button type="button" class="val-toggle-opt val-toggle-under" data-method="phone">📞 Prefer Phone</button>
+        </div>
+        <div class="val-field">
+          <label for="val-email">Email</label>
+          <input type="email" id="val-email" name="email" placeholder="you@example.com" />
+          <button type="button" class="val-toggle-opt val-toggle-under" data-method="email">✉️ Prefer Email</button>
+        </div>
+      </div>
+      <p id="val-modal-status" class="val-modal-status"></p>
+      <button type="submit" id="val-submit-btn" class="btn btn-red" style="width:100%;justify-content:center">Get My Custom Report</button>
+    </form>
+  </div>
+</div>
+
 
 <!-- PAGE HERO -->
 <div class="pg-hero">
@@ -400,8 +505,7 @@
     <div class="cta-card reveal d1">
       <h4>What's Your Ashland Home Worth?</h4>
       <p>Get a free, no-pressure home valuation from a local expert who knows this market.</p>
-      <a href="tel:8046424235" class="btn-white"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call <span style="font-family:'Barlow',sans-serif;font-weight:600;letter-spacing:.02em">804-642-4235</span></a>
-      <a href="sms:8046424235" class="btn-white-outline">💬 Text 804-Michael</a>
+      <button type="button" id="openValuationModal" class="btn-white" style="width:100%;justify-content:center;border:none;cursor:pointer">Get My Custom Report</button>
     </div>
 
     <!-- Explore Other Areas -->
@@ -455,6 +559,7 @@
   </div>
 </footer>
 
+<script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -491,4 +596,139 @@
   document.getElementById('mob-close').addEventListener('click', closeMob);
   const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
-  win
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', ()=>{ nav.classList.toggle('scrolled', window.scrollY > 40); });
+  // Valuation request modal — uses the same EmailJS account as the map-search tool,
+  // with its own dedicated template for valuation requests.
+  var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
+  var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
+  var VALUATION_TEMPLATE_ID = 'template_valuation_request'; // must exist in your EmailJS dashboard — see setup notes
+  function _initEmailJS(){ if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', _initEmailJS); } else { _initEmailJS(); }
+
+  const valOverlay = document.getElementById('val-modal-overlay');
+  const valForm = document.getElementById('val-form');
+  const valStatus = document.getElementById('val-modal-status');
+  const valSubmitBtn = document.getElementById('val-submit-btn');
+  const valToggleBtns = document.querySelectorAll('.val-toggle-under');
+  let preferredMethod = null;
+
+  valToggleBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      preferredMethod = btn.dataset.method;
+      valToggleBtns.forEach(b=>{
+        b.classList.toggle('active', b===btn);
+        b.classList.remove('invalid');
+      });
+    });
+  });
+
+  // Auto-format phone as XXX-XXX-XXXX while typing
+  const valPhoneEl = document.getElementById('val-phone');
+  valPhoneEl.addEventListener('input', ()=>{
+    let digits = valPhoneEl.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if(digits.length > 6) formatted = digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6);
+    else if(digits.length > 3) formatted = digits.slice(0,3) + '-' + digits.slice(3);
+    valPhoneEl.value = formatted;
+  });
+
+  // Force State to uppercase, max 2 letters
+  const valStateEl = document.getElementById('val-state');
+  valStateEl.addEventListener('input', ()=>{
+    valStateEl.value = valStateEl.value.replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase();
+  });
+
+  document.getElementById('openValuationModal').addEventListener('click', ()=>{
+    valStatus.textContent = '';
+    valStatus.className = 'val-modal-status';
+    valForm.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+    valOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+  function closeValModal(){
+    valOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('val-modal-close').addEventListener('click', closeValModal);
+  valOverlay.addEventListener('click', e=>{ if(e.target === valOverlay) closeValModal(); });
+
+  valForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    valForm.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+    valStatus.textContent = '';
+    valStatus.className = 'val-modal-status';
+
+    const addressEl = document.getElementById('val-address');
+    const cityEl = document.getElementById('val-city');
+    const zipEl = document.getElementById('val-zip');
+    const fnameEl = document.getElementById('val-fname');
+    const lnameEl = document.getElementById('val-lname');
+    const emailEl = document.getElementById('val-email');
+    const phoneEl = document.getElementById('val-phone');
+
+    const missing = [];
+
+    [['Street Address', addressEl], ['City', cityEl], ['Zip', zipEl], ['First Name', fnameEl], ['Last Name', lnameEl]].forEach(([label, el])=>{
+      if(!el.value.trim()){ el.classList.add('invalid'); missing.push(label); }
+    });
+
+    const hasPhone = phoneEl.value.replace(/\D/g,'').length === 10;
+    const hasEmail = emailEl.value.trim() && emailEl.value.includes('@');
+    if(!hasPhone && !hasEmail){
+      phoneEl.classList.add('invalid');
+      emailEl.classList.add('invalid');
+      missing.push('Phone or Email');
+    } else if(emailEl.value.trim() && !hasEmail){
+      emailEl.classList.add('invalid');
+      missing.push('a valid Email (must include @)');
+    }
+
+    if(missing.length){
+      valStatus.textContent = 'Missing: ' + missing.join(', ') + '.';
+      valStatus.className = 'val-modal-status error';
+      return;
+    }
+
+    valSubmitBtn.disabled = true;
+    const originalLabel = valSubmitBtn.innerHTML;
+    valSubmitBtn.innerHTML = '<span class="val-btn-spinner"></span>Sending…';
+
+    const state = valStateEl.value.trim() || 'VA';
+    const notes = document.getElementById('val-notes').value.trim();
+
+    emailjs.send(EMAILJS_SERVICE_ID, VALUATION_TEMPLATE_ID, {
+      from_name: (fnameEl.value.trim() + ' ' + lnameEl.value.trim()).trim(),
+      from_email: emailEl.value.trim() || '(not provided)',
+      phone: phoneEl.value.trim() || '(not provided)',
+      preferred_contact: preferredMethod || '(not specified)',
+      address: addressEl.value.trim(),
+      city: cityEl.value.trim(),
+      state: state,
+      zip: zipEl.value.trim(),
+      notes: notes || '(none provided)'
+    }).then(function(){
+      valStatus.textContent = '✓ 804Michael will be in touch with your custom report.';
+      valStatus.className = 'val-modal-status success';
+      valSubmitBtn.innerHTML = '✓ Sent!';
+      valForm.reset();
+      valStateEl.value = 'VA';
+      preferredMethod = null;
+      valToggleBtns.forEach(b=>b.classList.remove('active'));
+      setTimeout(closeValModal, 2200);
+    }).catch(function(err){
+      console.error('EmailJS error:', err);
+      // Surface the actual EmailJS error text when available (e.g. "template ID not found",
+      // "service ID not found") instead of a generic message — this is the fastest way to
+      // diagnose a misconfigured EmailJS template/service straight from the browser console.
+      const detail = (err && (err.text || err.message)) ? (': ' + (err.text || err.message)) : '';
+      valStatus.textContent = 'Something went wrong sending your request' + detail + '. Please try again or call/text 804-Michael directly.';
+      valStatus.className = 'val-modal-status error';
+      valSubmitBtn.disabled = false;
+      valSubmitBtn.innerHTML = originalLabel;
+    });
+  });
+
+</script>
+</body>
+</html>
