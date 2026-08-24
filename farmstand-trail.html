@@ -1,3 +1,24 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.08.23 15_52                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,8 +46,16 @@
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   @keyframes slideInRight{0%{transform:translateX(100%)}100%{transform:translateX(0)}}
 
-  header{background:var(--black);color:var(--white);padding:34px 28px 28px;position:relative;overflow:hidden;}
-  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
+  /* NOTE: scoped to .hero (not a bare `header{}` element selector) — the shared
+     nav partial (nav-partial.html) also injects a <header id="nav"> element,
+     and a page-level `header{}` rule was bleeding onto it: its overflow:hidden
+     was clipping the "Resources"/"Local Areas" dropdown menus, and its padding
+     was inflating the nav's real height beyond the --nav-h assumed elsewhere,
+     which is what caused the nav to render behind content and the mobile menu
+     to jump between pages. Always scope page-local styles to a class, never
+     to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
+  .hero{background:var(--black);color:var(--white);padding:34px 28px 28px;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
   .eyebrow::before{content:'';display:inline-block;width:26px;height:2px;background:var(--red);}
@@ -91,10 +120,10 @@
   }
   .leaflet-control-attribution a{ color:rgba(0,0,0,.5) !important; }
   .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Barlow',sans-serif;}
-  .leaflet-popup-content{margin:14px 18px !important;line-height:1.4;}
+  .leaflet-popup-content{margin:16px 20px !important;line-height:1.4;}
   .popup-num{display:inline-block;background:var(--black);color:#fff;font-weight:800;font-size:12px;
     width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;margin-right:6px;}
-  .popup-title{font-weight:700;font-size:22px;margin:2px 0 4px;line-height:1.15;}
+  .popup-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;margin:2px 0 5px;line-height:1.15;letter-spacing:.01em;}
   .popup-cat{color:var(--red);font-size:16.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;
     font-family:'Barlow Condensed',sans-serif;}
   .popup-addr{font-size:19px;color:#555;margin-bottom:6px;line-height:1.3;}
@@ -124,7 +153,7 @@
   .stand-card .row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .stand-card .num{background:var(--black);color:#fff;font-weight:800;font-size:12px;width:20px;height:20px;
     line-height:20px;text-align:center;border-radius:50%;flex:none;}
-  .stand-card .name{font-weight:700;font-size:22px;line-height:1.15;}
+  .stand-card .name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1.15;letter-spacing:.01em;}
   .stand-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:16.5px;font-weight:700;text-transform:uppercase;
     color:var(--red);letter-spacing:.06em;margin-bottom:5px;}
   .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;line-height:1.25;}
@@ -146,8 +175,8 @@
 
   footer{text-align:center;font-size:12.5px;color:var(--gray-muted);margin-top:26px;padding:0 20px;}
   .sponsor-block{background:#fff;border-top:1px solid var(--gray-mid);margin:0 20px 20px;padding:26px 20px;text-align:center;}
-  .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 10px;}
-  .sponsor-logo{height:34px;width:auto;display:inline-block;margin-bottom:16px;}
+  .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 14px;}
+  .sponsor-logo{height:68px;width:auto;display:inline-block;margin-bottom:16px;}
   .sponsor-contact{font-family:'Barlow',sans-serif;font-size:15px;color:var(--black);margin:0 0 8px;}
   .sponsor-contact a{color:var(--red);font-weight:700;text-decoration:none;}
   .sponsor-contact a:hover{text-decoration:underline;}
@@ -192,7 +221,7 @@
   .modal{position:relative;}
   .submit-note{font-size:11.5px;color:var(--gray-muted);margin-top:10px;text-align:center;}
   @media(max-width:480px){
-    .leaflet-popup-content-wrapper{max-width:220px;}
+    .leaflet-popup-content-wrapper{max-width:265px;}
     #map{height:380px;}
   }
 </style>
@@ -203,13 +232,13 @@
 <script src="nav.js" defer></script>
 
 <div class="page">
-  <header>
+  <div class="hero">
     <h1>Local Farm <span>Stand Map</span></h1>
     <div class="sub">
       <span>📍 <b id="stopCount">— stops</b></span>
       <span>🌾 Local farm stands around 804</span>
     </div>
-  </header>
+  </div>
 
   <div class="status-bar" id="statusBar"></div>
 
@@ -240,6 +269,8 @@
     <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.23 15_52</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com</footer>
 </div>
 
@@ -467,6 +498,12 @@ function setStatus(kind, msg){
 }
 function clearStatus(){ document.getElementById('statusBar').className = 'status-bar'; }
 
+// ⚠ AI MAINTENANCE RULE
+// Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+// In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+const SITE_VERSION = '26.08.23 15_52';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'site version ' + SITE_VERSION; })();
+
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -529,7 +566,7 @@ function renderStands(stands){
     if(isNaN(s.lat) || isNaN(s.lng)) return;
 
     const marker = L.marker([s.lat,s.lng], {icon: makeIcon(s.n, catInfo.color)}).addTo(map);
-    marker.bindPopup(popupHtml(s, catInfo), {maxWidth: 260, minWidth: 200, autoPanPadding: [20,80]});
+    marker.bindPopup(popupHtml(s, catInfo), {maxWidth: 300, minWidth: 240, autoPanPadding: [20,80]});
     marker.on('click', ()=> highlightCard(s.n));
     markers[s.n] = marker;
     bounds.push([s.lat,s.lng]);
