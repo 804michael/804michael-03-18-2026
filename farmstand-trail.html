@@ -74,6 +74,7 @@
 
   #map{height:480px;margin:16px 20px 0;border-radius:14px;border:1px solid var(--gray-mid);
     box-shadow:0 6px 20px rgba(0,0,0,.08);}
+  .leaflet-top,.leaflet-bottom{z-index:400 !important;}
   .leaflet-control-attribution{
     margin:0 !important;
     background:rgba(255,255,255,.08) !important;
@@ -90,12 +91,13 @@
   }
   .leaflet-control-attribution a{ color:rgba(0,0,0,.5) !important; }
   .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Barlow',sans-serif;}
+  .leaflet-popup-content{margin:14px 18px !important;line-height:1.4;}
   .popup-num{display:inline-block;background:var(--black);color:#fff;font-weight:800;font-size:12px;
     width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;margin-right:6px;}
-  .popup-title{font-weight:700;font-size:22px;margin:2px 0 4px;}
+  .popup-title{font-weight:700;font-size:22px;margin:2px 0 4px;line-height:1.15;}
   .popup-cat{color:var(--red);font-size:16.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;
     font-family:'Barlow Condensed',sans-serif;}
-  .popup-addr{font-size:19px;color:#555;margin-bottom:6px;}
+  .popup-addr{font-size:19px;color:#555;margin-bottom:6px;line-height:1.3;}
   .popup-hours{font-size:18px;color:var(--gray-muted);margin-bottom:6px;}
   .popup-dist{font-size:18px;color:var(--red);font-weight:700;margin-bottom:6px;}
   .popup-desc{font-size:19.5px;margin-bottom:12px;max-height:5.6em;overflow-y:auto;line-height:1.4;padding-right:4px;}
@@ -122,10 +124,10 @@
   .stand-card .row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .stand-card .num{background:var(--black);color:#fff;font-weight:800;font-size:12px;width:20px;height:20px;
     line-height:20px;text-align:center;border-radius:50%;flex:none;}
-  .stand-card .name{font-weight:700;font-size:22px;}
+  .stand-card .name{font-weight:700;font-size:22px;line-height:1.15;}
   .stand-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:16.5px;font-weight:700;text-transform:uppercase;
     color:var(--red);letter-spacing:.06em;margin-bottom:5px;}
-  .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;}
+  .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;line-height:1.25;}
   .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
   .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
   .stand-card .desc{font-size:19px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;padding-right:4px;}
@@ -369,6 +371,13 @@ function normalizeUrl(url){
   if(!/^https?:\/\//i.test(u)) u = 'https://' + u;
   return u;
 }
+// Normalizes inconsistent capitalization from manual typing (Form or GPS-fallback address entry)
+// so "123 main st, ashland VA" and "123 MAIN ST, ASHLAND VA" both display the same way.
+// This only affects display — the underlying Sheet data is never modified.
+function titleCaseAddress(str){
+  if(!str) return str;
+  return str.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
+}
 
 function formatTime12(t){
   if(!t) return '';
@@ -588,7 +597,7 @@ function parseCsvRows(rows){
       const cats = normCategories(r["Category"] || r["Goods Sold"] || r["Good Sold"]);
       return {
         name: r["Farm Name"] || r["Name"] || r["Farm/Vendor Name"] || "Unnamed stop",
-        addr: r["Address"] || "",
+        addr: titleCaseAddress(r["Address"] || ""),
         cat: cats[0],
         cats: cats,
         desc: r["Description"] || "",
