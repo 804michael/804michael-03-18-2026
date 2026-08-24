@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.23 15_52                                 ║
+  ║  SITE VERSION: 26.08.23 16_10                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -177,7 +177,7 @@
   .sponsor-block{background:#fff;border-top:1px solid var(--gray-mid);margin:0 20px 20px;padding:26px 20px;text-align:center;}
   .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 14px;}
   .sponsor-logo{height:68px;width:auto;display:inline-block;margin-bottom:16px;}
-  .sponsor-contact{font-family:'Barlow',sans-serif;font-size:15px;color:var(--black);margin:0 0 8px;}
+  .sponsor-contact{font-family:'Barlow',sans-serif;font-size:30px;color:var(--black);margin:0 0 8px;}
   .sponsor-contact a{color:var(--red);font-weight:700;text-decoration:none;}
   .sponsor-contact a:hover{text-decoration:underline;}
   .sponsor-form-link{font-family:'Barlow',sans-serif;font-size:12.5px;color:var(--gray-muted);margin:0;}
@@ -265,12 +265,12 @@
   <div class="sponsor-block">
     <p class="sponsor-label">Sponsored by</p>
     <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Real Estate" class="sponsor-logo">
-    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Text or Call 804-Michael</a> (or 804-642-4235).</p>
+    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Text or Call 804-Michael</a> (804-642-4235)</p>
     <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.23 15_52</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.23 16_10</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com</footer>
 </div>
 
@@ -501,7 +501,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.23 15_52';
+const SITE_VERSION = '26.08.23 16_10';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'site version ' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

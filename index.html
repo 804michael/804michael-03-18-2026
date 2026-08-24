@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.23 00_00                                 ║
+  ║  SITE VERSION: 26.08.23 16_10                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -197,6 +197,14 @@
     .sicon svg{width:18px;height:18px}
     .sicon-dk{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.45)}
 
+    /* Bottom-of-page (Contact section) social icons — color brand marks, 2x size.
+       Scoped to .ct-soc only so the shared mobile-menu .sicon icons (injected by
+       nav-partial.html) are unaffected. */
+    .ct-soc{gap:24px}
+    .ct-soc .sicon{width:80px;height:80px;border-width:1.5px}
+    .ct-soc .sicon svg{width:36px;height:36px}
+    .ct-soc .sicon:hover{transform:scale(1.1)}
+
     /* ── Hero ── */
     #home{
       position:relative;min-height:100vh;overflow:hidden;
@@ -343,7 +351,7 @@
     .meet-g{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start}
     .meet-img{display:flex;justify-content:center}
     .meet-img-frame{width:100%;aspect-ratio:3/4;overflow:hidden;border-radius:4px;filter:drop-shadow(0 22px 34px rgba(0,0,0,.18))}
-    .meet-img-frame img{width:100%;height:100%;object-fit:cover;object-position:35% 15%;display:block}
+    .meet-img-frame img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
     .meet-txt h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(2rem,3.5vw,3rem);line-height:.98;margin-bottom:18px}
     .meet-txt h2 .r{color:var(--red)}
     .meet-txt h2 .h2-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.63em;letter-spacing:0;color:var(--red);display:inline-block;margin-top:-2px;}
@@ -587,7 +595,7 @@
         <div class="meet-img-frame">
           <picture>
             <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
-            <img src="images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" width="1000" height="687" loading="lazy" />
+            <img src="images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" width="1272" height="1696" loading="lazy" />
           </picture>
         </div>
       </div>
@@ -723,7 +731,7 @@
     </div>
     <h2>Ready to Make<br/>Your <span class="r">Move?</span></h2>
     <p>Whether you're selling your historic home in the Center of the Universe or looking to buy your first home in Glen Allen,</p>
-    <p style="margin-top:20px;font-size:1.3rem;font-weight:600;color:rgba(255,255,255,.85);line-height:2">
+    <p style="margin-top:20px;font-size:2.6rem;font-weight:600;color:rgba(255,255,255,.85);line-height:1.3">
       Let's chat.<br/>No pressure.<br/>Just real local expertise.
     </p>
     <div class="ct-btns">
@@ -739,9 +747,33 @@
     <hr class="ct-div"/>
     <p class="flbl">Follow @804Michael</p>
     <div class="ct-soc">
-      <a href="https://tiktok.com/@804michael"   target="_blank" aria-label="TikTok"    class="sicon sicon-dk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.86 4.86 0 01-1-.07z"/></svg></a>
-      <a href="https://youtube.com/@804michael"  target="_blank" aria-label="YouTube"   class="sicon sicon-dk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><polygon points="9.545,15.568 15.818,12 9.545,8.432"/></svg></a>
-      <a href="https://instagram.com/804michael" target="_blank" aria-label="Instagram" class="sicon sicon-dk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+      <a href="https://tiktok.com/@804michael"   target="_blank" aria-label="TikTok"    class="sicon sicon-dk">
+        <svg viewBox="0 0 24 24">
+          <path fill="#25F4EE" transform="translate(-1,1)" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.86 4.86 0 01-1-.07z"/>
+          <path fill="#FE2C55" transform="translate(1,-0.7)" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.86 4.86 0 01-1-.07z"/>
+          <path fill="#FFFFFF" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.86 4.86 0 01-1-.07z"/>
+        </svg>
+      </a>
+      <a href="https://youtube.com/@804michael"  target="_blank" aria-label="YouTube"   class="sicon sicon-dk">
+        <svg viewBox="0 0 24 24">
+          <path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/>
+          <polygon fill="#FFFFFF" points="9.545,15.568 15.818,12 9.545,8.432"/>
+        </svg>
+      </a>
+      <a href="https://instagram.com/804michael" target="_blank" aria-label="Instagram" class="sicon sicon-dk">
+        <svg viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="igGradFooter" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFDC80"/>
+              <stop offset="25%" stop-color="#FCAF45"/>
+              <stop offset="50%" stop-color="#F77737"/>
+              <stop offset="75%" stop-color="#F56040"/>
+              <stop offset="100%" stop-color="#C13584"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#igGradFooter)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </a>
     </div>
   </div>
 </section>
@@ -764,7 +796,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.23 00_00</p>
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">site version 26.08.23 16_10</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
@@ -778,7 +810,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.23 00_00';
+  const SITE_VERSION = '26.08.23 16_10';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'site version ' + SITE_VERSION;
 
