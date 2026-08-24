@@ -221,7 +221,9 @@
           font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
           padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
           animation:valPulse 2s ease-in-out infinite;
-        }
+        
+        .val-toggle-under[data-method="email"]{animation-delay:1s;}
+
         .val-toggle-under:hover{border-color:var(--red);}
         .val-toggle-under.active{background:var(--red);border-color:var(--red);color:#fff;animation:none;}
         .val-toggle-under.invalid{border-color:#e53935;}
@@ -368,6 +370,7 @@
           <input type="text" id="val-lname" name="lastName" required />
         </div>
       </div>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-muted);margin:2px 0 8px">What's the best way to connect?</p>
       <div class="val-row">
         <div class="val-field">
           <label for="val-phone">Phone</label>
@@ -553,6 +556,7 @@
     </a>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      Malcolm Real Estate, Ashland, Virginia<br/>
       Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
       Licensed Real Estate Broker in Virginia
     </p>

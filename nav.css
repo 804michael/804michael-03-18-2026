@@ -73,6 +73,14 @@
   box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid var(--gray-mid,#e0e0e0);
   min-width:190px;overflow:hidden;z-index:5001;
 }
+/* Invisible bridge over the 12px gap between the trigger and the dropdown.
+   :hover on the parent <li> stays true while the pointer is over ANY descendant,
+   including this pseudo-element — without it, moving the mouse straight down from
+   the button crosses a dead zone that isn't part of the li's hit area, so the
+   dropdown closes before the pointer reaches it. */
+.nav-dropdown::before{
+  content:'';position:absolute;top:-12px;left:0;right:0;height:12px;background:transparent;
+}
 .nav-dropdown a,.nav-dropdown button.dd-action{
   display:flex;align-items:center;gap:10px;
   padding:11px 18px;

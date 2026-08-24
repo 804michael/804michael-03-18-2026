@@ -82,9 +82,15 @@
 
     // Active-link highlighting — matches the current page's filename
     // against every nav link's href, works regardless of which page loaded this partial.
+    // Links with a "#" fragment (e.g. index.html#guides) are same-page scroll shortcuts,
+    // not a distinct destination page, so they're excluded — otherwise "Area Guides"
+    // would show as permanently active on every visit to the homepage, fighting with
+    // the intended hover-only highlight inside the dropdown.
     const currentFile = (location.pathname.split('/').pop() || 'index.html');
     document.querySelectorAll('.nav-links a, .nav-dropdown a, .mob-links a').forEach(a => {
-      const hrefFile = a.getAttribute('href').split('#')[0].split('/').pop();
+      const rawHref = a.getAttribute('href');
+      if (rawHref.includes('#')) return;
+      const hrefFile = rawHref.split('/').pop();
       if (hrefFile && hrefFile === currentFile) {
         a.classList.add('active');
       }

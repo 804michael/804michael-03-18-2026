@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.23 16_10                                 ║
+  ║  SITE VERSION: 26.08.24 10_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -270,8 +270,8 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.23 16_10</p>
-  <footer>Map data © OpenStreetMap contributors · 804re.com</footer>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.24 10_45</p>
+  <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
 <!-- Add Stand Modal -->
@@ -315,6 +315,7 @@
     </div>
     <div class="field">
       <label class="cat-check"><input type="checkbox" id="fUnmanned"> Open all the time / unmanned stand (no set hours)</label>
+      <label class="cat-check"><input type="checkbox" id="fVaries"> Hours vary, check site</label>
     </div>
     <div class="field time-row hidden" id="fHoursWrap">
       <div>
@@ -501,8 +502,8 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.23 16_10';
-(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'site version ' + SITE_VERSION; })();
+const SITE_VERSION = '26.08.24 10_45';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -590,17 +591,30 @@ function renderStands(stands){
 function popupHtml(s, catInfo){
   return `
     <div class="popup-title">${s.name}</div>
-    <div class="popup-addr">${s.addr || 'Location shared via GPS'}</div>
+    <div class="popup-addr">${formatAddr(s.addr)}</div>
     ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
     <div class="popup-dir-wrap"><a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a></div>
   `;
+}
+// Formats "Street, City, VA ZIP" as two lines — street on its own line, then
+// "City, ZIP" — and drops the state abbreviation, since every stand on this
+// map is already in Virginia and repeating "VA" on every card just adds clutter.
+function formatAddr(addr){
+  if(!addr) return 'Location shared via GPS';
+  const parts = addr.split(',').map(p=>p.trim()).filter(Boolean);
+  if(parts.length < 2) return addr;
+  const street = parts[0];
+  let rest = parts.slice(1).join(', ');
+  rest = rest.replace(/\b(Virginia|VA)\b\.?/gi, '').replace(/\s{2,}/g, ' ').trim();
+  rest = rest.replace(/,\s*,/g, ',').replace(/,\s*$/, '').replace(/^,\s*/, '').trim();
+  return `${street}<br>${rest}`;
 }
 function cardHtml(s, catInfo){
   const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
   return `
     <div class="row"><span class="name">${s.name}</span></div>
     <div class="cat">${catLabels}</div>
-    <div class="addr">${s.addr || 'Location shared via GPS'}</div>
+    <div class="addr">${formatAddr(s.addr)}</div>
     ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="desc">${s.desc || ''}</div>
@@ -771,7 +785,8 @@ let selectedDays = [];
 
 function updateHoursVisibility(){
   const unmanned = document.getElementById('fUnmanned').checked;
-  const show = !unmanned && selectedDays.length > 0;
+  const varies = document.getElementById('fVaries').checked;
+  const show = !unmanned && !varies && selectedDays.length > 0;
   document.getElementById('fHoursWrap').classList.toggle('hidden', !show);
 }
 
@@ -789,7 +804,14 @@ document.getElementById('fDays').querySelectorAll('.day-chip').forEach(chip=>{
   });
 });
 
-document.getElementById('fUnmanned').addEventListener('change', updateHoursVisibility);
+document.getElementById('fUnmanned').addEventListener('change', ()=>{
+  if(document.getElementById('fUnmanned').checked) document.getElementById('fVaries').checked = false;
+  updateHoursVisibility();
+});
+document.getElementById('fVaries').addEventListener('change', ()=>{
+  if(document.getElementById('fVaries').checked) document.getElementById('fUnmanned').checked = false;
+  updateHoursVisibility();
+});
 
 function openModal(){
   modalOverlay.classList.add('show');
@@ -827,6 +849,7 @@ function closeModalFn(){
   document.getElementById('fDesc').value = '';
   document.getElementById('fWebsite').value = '';
   document.getElementById('fUnmanned').checked = false;
+  document.getElementById('fVaries').checked = false;
   document.getElementById('fHoursWrap').classList.add('hidden');
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   selectedDays = [];
@@ -852,14 +875,16 @@ submitBtn.addEventListener('click', async ()=>{
   const closeTime = document.getElementById('fClose').value;
 
   const isUnmanned = document.getElementById('fUnmanned').checked;
+  const isVaries = document.getElementById('fVaries').checked;
+  const noSetHours = isUnmanned || isVaries;
 
   const payload = {
     name,
     category: Array.from(document.querySelectorAll('#fCatGroup input:checked')).map(el=>el.value).join(', '),
-    days: isUnmanned ? '' : selectedDays.join(', '),
-    openTime: isUnmanned ? '' : openTime,
-    closeTime: isUnmanned ? '' : closeTime,
-    hours: isUnmanned ? 'Open all the time' : formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
+    days: noSetHours ? '' : selectedDays.join(', '),
+    openTime: noSetHours ? '' : openTime,
+    closeTime: noSetHours ? '' : closeTime,
+    hours: isUnmanned ? 'Open all the time' : isVaries ? 'Hours vary, check site' : formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
     description: document.getElementById('fDesc').value.trim(),
     website: document.getElementById('fWebsite').value.trim(),
     address: manualAddress || "",
