@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.24 10_30                                 ║
+  ║  SITE VERSION: 26.08.24 11_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -47,6 +47,7 @@
   {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
+    "@id": "https://804re.com/#agent",
     "name": "804Michael — Michael Hottman Real Estate",
     "alternateName": "804michael",
     "url": "https://804re.com",
@@ -100,7 +101,11 @@
       "First-time home buyer representation",
       "Seller representation",
       "Real estate contract review",
-      "Protecting sellers from inexperienced buyer's agents"
+      "Protecting sellers from inexperienced buyer's agents",
+      "Virginia buyer-broker representation agreements",
+      "Dual agency and fiduciary duty in Virginia real estate",
+      "Virginia residential property disclosure requirements",
+      "Ashland, Virginia local history and community"
     ]
   }
   </script>
@@ -108,21 +113,14 @@
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "about": { "@id": "https://804re.com/#agent" },
     "mainEntity": [
       {
         "@type": "Question",
         "name": "What areas does 804Michael serve?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "804Michael, Michael Hottman, is a Realtor and Broker with Malcolm Real Estate serving Ashland, Hanover County, Mechanicsville, Glen Allen, Short Pump, and the wider Richmond, Henrico, Chesterfield, Powhatan, Goochland, and Caroline County areas of Central Virginia."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What's the difference between a Realtor and a real estate broker?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "A Realtor is a licensed real estate agent who is a member of the National Association of Realtors. A broker has completed additional licensing requirements beyond an agent's license and can supervise other agents. Michael Hottman is licensed as both a Realtor and a Broker in Virginia, which is why other agents often bring him in when a transaction gets complicated."
+          "text": "804Michael, Michael Hottman, a Broker with Malcolm Real Estate, serves Ashland, Hanover County, Mechanicsville, Glen Allen, Short Pump, Henrico County, and the broader Richmond metropolitan area in Central Virginia, including Chesterfield, Powhatan, Goochland, and Caroline counties."
         }
       },
       {
@@ -130,23 +128,39 @@
         "name": "Why is Ashland, VA called the \"Center of the Universe\"?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "It's a local nickname for Ashland, Virginia, tied to the town's walkable Main Street, the train tracks running straight through the middle of downtown, and its long history as a railroad town. Locals wear it with pride, and it shows up throughout the 804Michael brand."
+          "text": "Ashland earned the moniker \"Center of the Universe\" due to its central geographic location within Hanover County and the state, combined with proud, small-town civic pride. The phrase was popularized by former town mayor Richard \"Dick\" Gillis during his tenure from 1977 to 1990 and has since become the town's official, celebrated identity."
         }
       },
       {
         "@type": "Question",
-        "name": "What should I know about closing costs in Hanover County, VA?",
+        "name": "Do I need a buyer-broker agreement in Virginia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Closing costs in Hanover County typically run a few percent of the purchase price and can include items like lender fees, title insurance, recording fees, and prorated taxes. Exact costs vary by lender and transaction, so it's best to get a specific estimate from your lender or a local real estate professional before making assumptions."
+          "text": "Yes. Virginia law (<a href=\"https://law.lis.virginia.gov/vacode/title54.1/chapter21/section54.1-2132/\">Virginia Code &#167; 54.1-2132</a>) requires real estate agents to have a signed written buyer-broker (representation) agreement with a prospective buyer before showing them any property. This agreement clearly defines the brokerage relationship, services provided, agreement duration, and compensation terms. <a href=\"https://804michael.link/BuyerAgentSAMPLE\">Download a sample buyer-broker agreement here</a>."
         }
       },
       {
         "@type": "Question",
-        "name": "Does 804Michael help both buyers and sellers?",
+        "name": "Does 804Michael help both sellers and buyers?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. Michael Hottman represents both buyers and sellers throughout Ashland, Hanover County, and the surrounding Central Virginia area, and he's also the Broker other agents turn to for guidance when a deal runs into trouble."
+          "text": "Yes. Michael represents sellers and buyers throughout Ashland, Hanover County, and Greater Central Virginia, and he is often the broker other agents consult when complex contract issues arise. However, 804Michael does not practice dual agency \u2014 he will never represent both the seller and the buyer in the same transaction, ensuring your fiduciary interests, confidential leverage, and bottom line receive undivided loyalty and protection."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What disclosures are required when selling a home in Virginia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Very few disclosures are required from sellers in Virginia, so buyers need to exercise extreme due diligence when buying homes. As of 2026, the state has identified 19 specific items sellers do not need to disclose, and 10 specific disclosures that apply only to limited property types. This list changes annually, so it's important to work with an agent who stays current on it. See the <a href=\"https://www.dpor.virginia.gov/Consumers/Residential_Property_Disclosures\">Virginia DPOR residential property disclosures page</a> for the current list."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I choose the best real estate agent in Central Virginia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Look beyond high transaction volume or low commission fees. Instead, choose a local agent whose communication style and values genuinely fit yours \u2014 someone who actually lives in and knows the area, not an oversized team or \"big agent\" chasing lots of transactions. A great local agent brings a perspective and care that protects your transaction and prevents costly contract pitfalls."
         }
       }
     ]
@@ -400,6 +414,8 @@
     }
     .faq-item[open] summary::after{transform:rotate(45deg)}
     .faq-item p{font-family:'Barlow',sans-serif;font-size:.95rem;line-height:1.6;color:var(--gray-muted);padding:0 0 18px}
+    .faq-item p a{color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+    .faq-item p a:hover{text-decoration:none}
 
     /* Reveal — visible by default, JS enhances with animation */
     .reveal{opacity:1;transform:translateY(0);transition:opacity .7s,transform .7s}
@@ -828,23 +844,27 @@
     <div class="faq-list reveal">
       <details class="faq-item" open>
         <summary>What areas does 804Michael serve?</summary>
-        <p>804Michael, Michael Hottman, is a Realtor and Broker with Malcolm Real Estate serving Ashland, Hanover County, Mechanicsville, Glen Allen, Short Pump, and the wider Richmond, Henrico, Chesterfield, Powhatan, Goochland, and Caroline County areas of Central Virginia.</p>
-      </details>
-      <details class="faq-item">
-        <summary>What's the difference between a Realtor and a real estate broker?</summary>
-        <p>A Realtor is a licensed real estate agent who is a member of the National Association of Realtors. A broker has completed additional licensing requirements beyond an agent's license and can supervise other agents. Michael Hottman is licensed as both a Realtor and a Broker in Virginia, which is why other agents often bring him in when a transaction gets complicated.</p>
+        <p>804Michael, Michael Hottman, a Broker with Malcolm Real Estate, serves Ashland, Hanover County, Mechanicsville, Glen Allen, Short Pump, Henrico County, and the broader Richmond metropolitan area in Central Virginia, including Chesterfield, Powhatan, Goochland, and Caroline counties.</p>
       </details>
       <details class="faq-item">
         <summary>Why is Ashland, VA called the "Center of the Universe"?</summary>
-        <p>It's a local nickname for Ashland, Virginia, tied to the town's walkable Main Street, the train tracks running straight through the middle of downtown, and its long history as a railroad town. Locals wear it with pride, and it shows up throughout the 804Michael brand.</p>
+        <p>Ashland earned the moniker "Center of the Universe" due to its central geographic location within Hanover County and the state, combined with proud, small-town civic pride. The phrase was popularized by former town mayor Richard "Dick" Gillis during his tenure from 1977 to 1990 and has since become the town's official, celebrated identity.</p>
       </details>
       <details class="faq-item">
-        <summary>What should I know about closing costs in Hanover County, VA?</summary>
-        <p>Closing costs in Hanover County typically run a few percent of the purchase price and can include items like lender fees, title insurance, recording fees, and prorated taxes. Exact costs vary by lender and transaction, so it's best to get a specific estimate from your lender or a local real estate professional before making assumptions.</p>
+        <summary>Do I need a buyer-broker agreement in Virginia?</summary>
+        <p>Yes. Virginia law (<a href="https://law.lis.virginia.gov/vacode/title54.1/chapter21/section54.1-2132/" target="_blank" rel="noopener">Virginia Code &sect; 54.1-2132</a>) requires real estate agents to have a signed written buyer-broker (representation) agreement with a prospective buyer before showing them any property. This agreement clearly defines the brokerage relationship, services provided, agreement duration, and compensation terms. <a href="https://804michael.link/BuyerAgentSAMPLE" target="_blank" rel="noopener">Download a sample buyer-broker agreement here</a>.</p>
       </details>
       <details class="faq-item">
-        <summary>Does 804Michael help both buyers and sellers?</summary>
-        <p>Yes. Michael Hottman represents both buyers and sellers throughout Ashland, Hanover County, and the surrounding Central Virginia area, and he's also the Broker other agents turn to for guidance when a deal runs into trouble.</p>
+        <summary>Does 804Michael help both sellers and buyers?</summary>
+        <p>Yes. Michael represents sellers and buyers throughout Ashland, Hanover County, and Greater Central Virginia, and he is often the broker other agents consult when complex contract issues arise. However, 804Michael does not practice dual agency &mdash; he will never represent both the seller and the buyer in the same transaction, ensuring your fiduciary interests, confidential leverage, and bottom line receive undivided loyalty and protection.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What disclosures are required when selling a home in Virginia?</summary>
+        <p>Very few disclosures are required from sellers in Virginia, so buyers need to exercise extreme due diligence when buying homes. As of 2026, the state has identified 19 specific items sellers do not need to disclose, and 10 specific disclosures that apply only to limited property types. This list changes annually, so it's important to work with an agent who stays current on it. See the <a href="https://www.dpor.virginia.gov/Consumers/Residential_Property_Disclosures" target="_blank" rel="noopener">Virginia DPOR residential property disclosures page</a> for the current list.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How do I choose the best real estate agent in Central Virginia?</summary>
+        <p>Look beyond high transaction volume or low commission fees. Instead, choose a local agent whose communication style and values genuinely fit yours &mdash; someone who actually lives in and knows the area, not an oversized team or "big agent" chasing lots of transactions. A great local agent brings a perspective and care that protects your transaction and prevents costly contract pitfalls.</p>
       </details>
     </div>
   </div>
@@ -925,7 +945,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">V26.08.24 10_30</p>
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">V26.08.24 11_15</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -940,7 +960,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.24 10_30';
+  const SITE_VERSION = '26.08.24 11_15';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
