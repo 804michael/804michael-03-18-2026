@@ -192,24 +192,24 @@
     .reveal.vis{opacity:1;transform:none}
     .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
         /* ── Valuation modal ── */
-        .val-modal-overlay{display:none;position:fixed;inset:0;z-index:3000;background:rgba(17,17,17,.6);
+        .val-modal-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(17,17,17,.6);
           align-items:center;justify-content:center;padding:20px;}
         .val-modal-overlay.open{display:flex;}
-        .val-modal{background:var(--white);border-radius:16px;max-width:480px;width:100%;padding:30px;
+        .val-modal{background:var(--white);border-radius:16px;max-width:480px;width:100%;padding:26px;
           max-height:90vh;overflow-y:auto;position:relative;}
         .val-modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:1.4rem;color:var(--black);margin-bottom:4px;}
-        .val-modal-hint{font-family:'Barlow',sans-serif;font-size:.92rem;color:var(--gray-muted);margin-bottom:18px;}
+        .val-modal-hint{font-family:'Barlow',sans-serif;font-size:.92rem;color:var(--gray-muted);margin-bottom:14px;}
         .val-modal-close{position:absolute;top:14px;right:18px;font-size:1.6rem;background:none;border:none;cursor:pointer;color:var(--gray-muted);transition:color .2s;}
         .val-modal-close:hover{color:var(--red);}
-        .val-field{margin-bottom:14px;flex:1;}
+        .val-field{margin-bottom:11px;flex:1;}
         .val-row{display:flex;gap:14px;}
         .val-row-3{gap:10px;}
         .val-field-sm{flex:0 0 72px;}
-        .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black);margin-bottom:5px;}
+        .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.8rem;color:var(--black);margin-bottom:4px;}
         .val-field input,.val-field select,.val-field textarea{
-          width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:10px 12px;font-size:.95rem;
+          width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 12px;font-size:.95rem;
           font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;}
-        .val-field textarea{resize:vertical;min-height:78px;font-family:'Barlow',sans-serif;line-height:1.4;}
+        .val-field textarea{resize:vertical;min-height:64px;font-family:'Barlow',sans-serif;line-height:1.35;}
         .val-field input:focus,.val-field select:focus,.val-field textarea:focus{outline:none;border-color:var(--red);}
         .val-field input.invalid,.val-field textarea.invalid{border-color:#e53935;}
         @keyframes valPulse{
@@ -221,7 +221,7 @@
           font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
           padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
           animation:valPulse 2s ease-in-out infinite;
-        
+        }
         .val-toggle-under[data-method="email"]{animation-delay:1s;}
 
         .val-toggle-under:hover{border-color:var(--red);}
@@ -231,8 +231,20 @@
         .val-modal-status.success{color:#188038;}
         .val-modal-status.error{color:#e53935;}
         .val-btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block;vertical-align:middle;margin-right:6px;}
-    
-    
+
+    @media(max-width:480px){
+      .val-modal-overlay{padding:0;align-items:flex-start}
+      .val-modal{max-width:100%;width:100%;height:100%;max-height:100%;border-radius:0;padding:18px 16px 24px}
+      .val-modal h3{font-size:1.2rem}
+      .val-modal-hint{font-size:.85rem;margin-bottom:10px}
+      .val-field{margin-bottom:8px}
+      .val-row{gap:10px}
+      .val-field label{font-size:.75rem;margin-bottom:3px}
+      .val-field input,.val-field select,.val-field textarea{padding:8px 10px;font-size:.9rem}
+      .val-field textarea{min-height:52px}
+      .val-toggle-under{padding:7px 8px;margin-top:4px}
+      .val-modal-status{margin-bottom:10px}
+    }
   </style>
 </head>
 <body>

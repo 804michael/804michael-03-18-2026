@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.24 10_45                                 ║
+  ║  SITE VERSION: 26.08.24 15_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -54,7 +54,7 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{background:var(--black);color:var(--white);padding:34px 28px 28px;position:relative;overflow:hidden;}
+  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
@@ -90,13 +90,13 @@
   .btn-large{font-size:1.42rem;padding:15px 26px;}
 
   .toolbar{background:#fff;margin:14px 20px 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
-    padding:16px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    padding:10px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
     border:1px solid var(--gray-mid);}
   .toolbar-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--gray-muted);margin-right:4px;}
   .chip{border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
     font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
-    padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .15s ease;}
+    padding:6px 13px;border-radius:999px;cursor:pointer;transition:all .15s ease;}
   .chip:hover{border-color:var(--red);}
   .chip.active{background:var(--black);border-color:var(--black);color:#fff;}
   .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
@@ -120,10 +120,12 @@
   }
   .leaflet-control-attribution a{ color:rgba(0,0,0,.5) !important; }
   .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Barlow',sans-serif;}
-  .leaflet-popup-content{margin:16px 20px !important;line-height:1.4;}
+  .leaflet-popup-content{margin:16px 20px 20px !important;line-height:1.4;}
   .popup-num{display:inline-block;background:var(--black);color:#fff;font-weight:800;font-size:12px;
     width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;margin-right:6px;}
   .popup-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;margin:2px 0 5px;line-height:1.15;letter-spacing:.01em;}
+  .popup-title-link{color:var(--black);text-decoration:none;border-bottom:1.5px dotted var(--gray-mid);cursor:pointer;}
+  .popup-title-link:hover{color:var(--red);border-bottom-color:var(--red);}
   .popup-cat{color:var(--red);font-size:16.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;
     font-family:'Barlow Condensed',sans-serif;}
   .popup-addr{font-size:19px;color:#555;margin-bottom:6px;line-height:1.3;}
@@ -153,7 +155,8 @@
   .stand-card .row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .stand-card .num{background:var(--black);color:#fff;font-weight:800;font-size:12px;width:20px;height:20px;
     line-height:20px;text-align:center;border-radius:50%;flex:none;}
-  .stand-card .name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1.15;letter-spacing:.01em;}
+  .stand-card .name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1.15;letter-spacing:.01em;border-bottom:1.5px dotted transparent;}
+  .stand-card:hover .name{color:var(--red);border-bottom-color:var(--red);}
   .stand-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:16.5px;font-weight:700;text-transform:uppercase;
     color:var(--red);letter-spacing:.06em;margin-bottom:5px;}
   .stand-card .addr{font-size:18px;color:#666;margin-bottom:3px;line-height:1.25;}
@@ -177,7 +180,7 @@
   .sponsor-block{background:#fff;border-top:1px solid var(--gray-mid);margin:0 20px 20px;padding:26px 20px;text-align:center;}
   .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 14px;}
   .sponsor-logo{height:68px;width:auto;display:inline-block;margin-bottom:16px;}
-  .sponsor-contact{font-family:'Barlow',sans-serif;font-size:30px;color:var(--black);margin:0 0 8px;}
+  .sponsor-contact{font-family:'Barlow',sans-serif;font-size:21px;color:var(--black);margin:0 0 8px;}
   .sponsor-contact a{color:var(--red);font-weight:700;text-decoration:none;}
   .sponsor-contact a:hover{text-decoration:underline;}
   .sponsor-form-link{font-family:'Barlow',sans-serif;font-size:12.5px;color:var(--gray-muted);margin:0;}
@@ -265,12 +268,12 @@
   <div class="sponsor-block">
     <p class="sponsor-label">Sponsored by</p>
     <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Real Estate" class="sponsor-logo">
-    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Text or Call 804-Michael</a> (804-642-4235)</p>
+    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="sms:8046424235">Text</a> or <a href="tel:8046424235">Call 804-Michael</a> (804-642-4235)</p>
     <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.24 10_45</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.24 15_30</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -502,7 +505,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.24 10_45';
+const SITE_VERSION = '26.08.24 15_30';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -590,11 +593,18 @@ function renderStands(stands){
 
 function popupHtml(s, catInfo){
   return `
-    <div class="popup-title">${s.name}</div>
+    <div class="popup-title"><a href="#card-${s.n}" class="popup-title-link" onclick="jumpToCard(${s.n}); return false;">${s.name}</a></div>
     <div class="popup-addr">${formatAddr(s.addr)}</div>
     ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
     <div class="popup-dir-wrap"><a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a></div>
   `;
+}
+// Scrolls down to a stand's card and highlights it — the popup-title link's counterpart
+// to clicking a card, which already scrolls up to and opens that stand's map popup.
+function jumpToCard(n){
+  highlightCard(n);
+  const card = document.getElementById('card-'+n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'center'});
 }
 // Formats "Street, City, VA ZIP" as two lines — street on its own line, then
 // "City, ZIP" — and drops the state abbreviation, since every stand on this
