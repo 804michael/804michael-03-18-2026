@@ -188,7 +188,7 @@
         .val-toggle-under:hover{border-color:var(--red);}
         .val-toggle-under.active{background:var(--red);border-color:var(--red);color:#fff;animation:none;}
         .val-toggle-under.invalid{border-color:#e53935;}
-        .val-modal-status{margin-top:2px;margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-align:center;min-height:1.2em;}
+        .val-modal-status{margin-top:0;margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.04em;text-align:center;min-height:1.2em;}
         .val-modal-status.success{color:#188038;}
         .val-modal-status.error{color:#e53935;}
         .val-btn-spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block;vertical-align:middle;margin-right:6px;}
@@ -204,7 +204,7 @@
       .val-field input,.val-field select,.val-field textarea{padding:8px 10px;font-size:.9rem}
       .val-field textarea{min-height:52px}
       .val-toggle-under{padding:7px 8px;margin-top:4px}
-      .val-modal-status{margin-bottom:10px}
+      .val-modal-status{margin-bottom:4px}
     }
   </style>
 </head>
@@ -216,11 +216,10 @@
 <div id="val-modal-overlay" class="val-modal-overlay">
   <div class="val-modal">
     <button id="val-modal-close" class="val-modal-close" aria-label="Close">&times;</button>
-    <h3>Tell 804Michael about your situation</h3>
-    <p class="val-modal-hint">A few details so your report is accurate — no automated guesswork.</p>
+    <h3>Custom Home Value Request</h3>
     <form id="val-form">
       <div class="val-field">
-        <label for="val-notes">Tell 804Michael about your Home <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+        <label for="val-notes"><span style="font-size:1.2rem">Tell 804Michael about your Home</span> <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;font-size:.8rem">(optional)</span></label>
         <textarea id="val-notes" name="notes" rows="4" placeholder="A few details so your report is accurate (why you are looking for your home value, any updates in past 3-5 years, anything else you think could affect your value)."></textarea>
       </div>
       <div class="val-field">
@@ -251,15 +250,13 @@
           <input type="text" id="val-lname" name="lastName" required />
         </div>
       </div>
-      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-muted);margin:2px 0 8px">What's the best way to connect?</p>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-muted);margin:2px 0 8px">What's the best way to connect?</p>
       <div class="val-row">
         <div class="val-field">
-          <label for="val-phone">Phone</label>
           <input type="tel" id="val-phone" name="phone" placeholder="804-642-4235" inputmode="numeric" />
           <button type="button" class="val-toggle-opt val-toggle-under" data-method="phone">📞 Prefer Phone</button>
         </div>
         <div class="val-field">
-          <label for="val-email">Email</label>
           <input type="email" id="val-email" name="email" placeholder="you@example.com" />
           <button type="button" class="val-toggle-opt val-toggle-under" data-method="email">✉️ Prefer Email</button>
         </div>
