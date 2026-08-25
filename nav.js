@@ -26,6 +26,10 @@
     .then(html => {
       placeholder.outerHTML = html;
       initNav();
+      // Let pages know the shared nav/banner markup now exists in the DOM —
+      // useful for any page that measures banner/nav height (e.g. map-search.html
+      // sizing the map area around the fixed chrome above it).
+      window.dispatchEvent(new CustomEvent('navReady'));
     })
     .catch(err => {
       console.error('nav.js: failed to load shared navigation.', err);
