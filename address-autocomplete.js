@@ -128,7 +128,16 @@
       addressEl.focus();
     }
 
-    function fetchSuggestions(query) {
+    function prioritizeVirginia(list) {
+    // Stable sort: VA matches float to the top, original order preserved within each group.
+    var isVA = /,\s*VA\s+\d/;
+    return list
+      .map(function (item, i) { return { item: item, i: i, va: isVA.test(item) ? 0 : 1 }; })
+      .sort(function (a, b) { return a.va - b.va || a.i - b.i; })
+      .map(function (entry) { return entry.item; });
+  }
+
+  function fetchSuggestions(query) {
       if (currentController) currentController.abort();
       currentController = new AbortController();
 
@@ -140,7 +149,7 @@
           if (!Array.isArray(data)) data = [];
           // Ignore stale responses if the input has since changed
           if (addressEl.value.trim() === query) {
-            renderList(data.slice(0, 8));
+            renderList(prioritizeVirginia(data).slice(0, 8));
           }
         })
         .catch(function (err) {
