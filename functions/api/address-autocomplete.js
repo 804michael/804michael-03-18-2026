@@ -90,7 +90,8 @@ export async function onRequestGet(context) {
         `${STHAN_BASE}/AutoComplete/USA/Address/${encodeURIComponent(q)}`,
         { headers: { Authorization: `Bearer ${freshToken}` } }
       );
-      const retryData = await retryRes.json();
+      const retryEnvelope = await retryRes.json();
+      const retryData = Array.isArray(retryEnvelope) ? retryEnvelope : (retryEnvelope.Result || []);
       return new Response(JSON.stringify(retryData), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
@@ -100,7 +101,10 @@ export async function onRequestGet(context) {
       throw new Error(`sthan.io autocomplete failed: ${apiRes.status}`);
     }
 
-    const suggestions = await apiRes.json();
+    const envelope = await apiRes.json();
+    // sthan.io wraps every response in an envelope: { Id, Result, IsError, StatusCode, Errors }.
+    // Their docs show only the Result contents for brevity, which is what our frontend expects.
+    const suggestions = Array.isArray(envelope) ? envelope : (envelope.Result || []);
     return new Response(JSON.stringify(suggestions), {
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
