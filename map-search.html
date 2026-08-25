@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.24 12_00                                 ║
+  ║  MAP VERSION: 26.08.25 10_00                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -624,6 +624,7 @@
     .spp-action.spp-save:hover{background:rgba(240,240,240,1)}
     .spp-action.spp-delete{background:rgba(255,255,255,1);color:rgba(218,41,28,1);border-color:rgba(218,41,28,0.35)}
     .spp-action.spp-delete:hover{background:rgba(255,235,235,1);border-color:rgba(218,41,28,0.7)}
+    .spp-action.spp-edit.editing{background:rgba(218,41,28,0.9);border-color:rgba(218,41,28,0.9);color:#fff}
     .spp-action svg{pointer-events:none;flex-shrink:0}
 
     /* Vertex handle styling (Leaflet.Editable) */
@@ -994,8 +995,12 @@
         <div class="spp-swatch" data-col="#1a73e8" style="background:#1a73e8" title="Blue"></div>
       </div>
       <div id="spp-opacity-row" style="display:none"></div>
-      <!-- Save + Delete -->
+      <!-- Save + Edit + Delete -->
       <div class="spp-actions">
+        <button class="spp-action spp-edit" id="spp-edit-btn" aria-label="Edit shape">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
+          Edit
+        </button>
         <button class="spp-action spp-save" id="spp-save-btn" aria-label="Save / close">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           Save
@@ -1089,7 +1094,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.24 12_00</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.25 10_00</p>
   </div>
 </div>
 
@@ -1127,7 +1132,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.24 12_00';
+const MAP_VERSION = '26.08.25 10_00';
 const STABILITY_MODE = true; // Keep core mapping tools rock-solid first
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -1778,11 +1783,6 @@ function deselectShape() {
 // Stub — no longer used (kept so nothing breaks if called)
 function openPropsSheet(layer)  { selectShape(layer); }
 function closePropsSheet()      { deselectShape(); }
-function _repositionPicker()    {}
-function startVertexEdit()      {}
-function stopVertexEdit()       {}
-function commitEditSession()    {}
-
 
 function _resetMoveState() {
   moveLayer = null; moveDragStart = null;
@@ -2626,6 +2626,11 @@ function openShapeProps(layer, col) {
     sw.classList.toggle('active', sw.dataset.col === col);
   });
 
+  // Vertex editing only makes sense for shapes with a boundary (circle/polygon/
+  // rectangle/polyline) — a pin marker has nothing to reshape.
+  var editBtn = document.getElementById('spp-edit-btn');
+  if (editBtn) editBtn.style.display = (layer instanceof L.Marker) ? 'none' : '';
+
   // Position panel right beside the shape's geographic center
   function _positionPanel() {
     if (!_sppLayer) return;
@@ -2689,6 +2694,24 @@ function closeShapeProps() {
   document.getElementById('spp-save-btn').addEventListener('click', function() {
     if (_sppLayer) saveDrawingsToStorage();
     deselectShape();
+  });
+
+  // Edit button — enters vertex-editing mode (drag handles to reshape).
+  // Snapshots the current geometry first so Cancel (in the edit-mode-bar) can
+  // restore it, matches the pattern commitEditSession()/undo already expect.
+  document.getElementById('spp-edit-btn').addEventListener('click', function() {
+    if (!_sppLayer || typeof _sppLayer.enableEdit !== 'function') return;
+    if (_sppLayer instanceof L.Circle) {
+      _editOrigCenter = _sppLayer.getLatLng();
+      _editOrigRadius = _sppLayer.getRadius();
+    } else if (_sppLayer.getLatLngs) {
+      _editOrigLLs = _deepCopyLLs(_sppLayer.getLatLngs());
+    }
+    map.dragging.disable();
+    panel.classList.remove('open');
+    try { _sppLayer.enableEdit(); } catch(e) { console.warn('enableEdit error:', e); }
+    document.getElementById('edit-mode-bar').classList.add('active');
+    this.classList.add('editing');
   });
 
   // Color swatches
@@ -2759,6 +2782,9 @@ function commitEditSession(save) {
       pushUndo({ type:'editPoly', layer:_sppLayer,
                  origL: _editOrigLLs, newL: newLLs });
     }
+    // Persist immediately, same as a drag-move — otherwise a reshape only
+    // survives if the user remembers to also click the separate Save button.
+    saveDrawingsToStorage();
   } else {
     // Cancel — restore original shape
     if (_sppLayer instanceof L.Circle && _editOrigCenter) {
