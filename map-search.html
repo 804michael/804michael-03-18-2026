@@ -2120,27 +2120,51 @@ if (!STABILITY_MODE) {
       // Read the header row and find each column BY NAME, not by fixed
       // position — this is what makes the parser survive someone reordering
       // or adding columns to the CSV later without silently breaking again.
-      var header = splitCSVLine(lines[0]).map(function(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); });
-      var idxName   = header.findIndex(function(h) { return h.indexOf('school') !== -1 || h.indexOf('name') !== -1; });
-      var idxCounty = header.findIndex(function(h) { return h.indexOf('county') !== -1; });
-      var idxLevel  = header.findIndex(function(h) { return h.indexOf('level') !== -1; });
+      // A header row is OPTIONAL and, when present, can be in ANY column
+      // order (e.g. "county,level,school_name" as well as
+      // "school_name,county,level") — some exports list county first. We
+      // detect a header by checking whether any field, once stripped down
+      // to letters, is exactly one of the known column labels. A real data
+      // row's fields (an actual school name, an actual county) will not
+      // collapse to one of these bare label words.
+      var firstFields = splitCSVLine(lines[0]);
+      var HEADER_LABELS = ['name', 'schoolname', 'county', 'countyid', 'level'];
+      var looksLikeHeader = firstFields.some(function(h) {
+        return HEADER_LABELS.indexOf(h.toLowerCase().replace(/[^a-z]/g, '')) !== -1;
+      });
 
-      if (idxName === -1 || idxCounty === -1 || idxLevel === -1) {
-        throw new Error('schools.csv header must include columns for school name, county, and level — found: ' + lines[0]);
+      var idxName, idxCounty, idxLevel, dataLines;
+      if (looksLikeHeader) {
+        var header = firstFields.map(function(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); });
+        idxName   = header.findIndex(function(h) { return h.indexOf('school') !== -1 || h.indexOf('name') !== -1; });
+        idxCounty = header.findIndex(function(h) { return h.indexOf('county') !== -1; });
+        idxLevel  = header.findIndex(function(h) { return h.indexOf('level') !== -1; }); // -1 is fine — level falls back to name-sniffing below
+        if (idxName === -1 || idxCounty === -1) {
+          throw new Error('schools.csv header must include columns for school name and county — found: ' + lines[0]);
+        }
+        dataLines = lines.slice(1);
+      } else {
+        // No header row — positional format: name, county[, level]
+        idxName = 0; idxCounty = 1; idxLevel = 2;
+        dataLines = lines;
       }
 
-      var dataLines = lines.slice(1);
       var matchedCount = 0;
 
       dataLines.forEach(function(line) {
         var f = splitCSVLine(line);
-        if (f.length <= Math.max(idxName, idxCounty, idxLevel)) return; // malformed row, skip
+        if (f.length <= Math.max(idxName, idxCounty)) return; // malformed row, skip
         var rawName = f[idxName];
         if (!rawName) return;
 
         var key    = rawName.trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
         var county = _normaliseCounty(f[idxCounty]);
-        var level  = _normaliseLevel(f[idxLevel]);
+        // Use an explicit level column when one exists and is filled in;
+        // otherwise infer elementary/middle/high straight from the name
+        // ("Bell Creek Middle School" → middle), which is how schools.csv
+        // actually ships today (name + county only, no level column).
+        var rawLevel = (idxLevel !== -1 && f.length > idxLevel) ? f[idxLevel] : '';
+        var level  = rawLevel ? _normaliseLevel(rawLevel) : _levelFromName(rawName);
         matchedCount++;
 
         // Flag (don't silently allow) two different counties claiming the same
@@ -2217,6 +2241,19 @@ function _normaliseLevel(level) {
   if (lv === 'high' || lv === 'high school' || lv === 'senior high') return 'high';
   if (lv === 'other') return 'other';
   return lv;
+}
+
+// Fallback used when schools.csv has no level column: sniff elementary/
+// middle/high straight out of the school's name. Checked most-specific
+// first since "junior high" and "middle" both contain neither "high" nor
+// "elementary" as a false positive risk, but "high" alone could appear
+// inside an unrelated name — this is good enough for real VA school names.
+function _levelFromName(name) {
+  var n = (name || '').toLowerCase();
+  if (n.indexOf('middle') !== -1 || n.indexOf('junior high') !== -1) return 'middle';
+  if (n.indexOf('high') !== -1) return 'high';
+  if (n.indexOf('elementary') !== -1) return 'elementary';
+  return 'other'; // unrecognized naming pattern — treated as high downstream
 }
 
 // Returns CSV entry { county, level } if the school is in our list and should be shown.
