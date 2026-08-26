@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.26 03_06                                 ║
+  ║  MAP VERSION: 26.08.26 10_19                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1094,7 +1094,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 03_06</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 10_19</p>
   </div>
 </div>
 
@@ -1132,7 +1132,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.26 03_06';
+const MAP_VERSION = '26.08.26 10_19';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2427,29 +2427,27 @@ function loadPublix() {
 
   // Hardcoded RVA-area Publix locations (lat, lon, name)
   // These always load instantly as a reliable baseline
+  // Verified against Google Places (26.08.26) — replaces a hand-typed list that
+  // had drifted from reality on several entries. A few of the old labels
+  // ("Cold Harbor", "Lee Davis Rd") did not correspond to any real Publix and
+  // have been dropped; the rest are now the actual store coordinates.
   var KNOWN_PUBLIX = [
-    [37.6504,-77.4289,'Publix — Ashland'],
-    [37.6437,-77.5344,'Publix — Atlee Station'],
-    [37.6671,-77.5862,'Publix — Cold Harbor'],
-    [37.6108,-77.5530,'Publix — Short Pump Crossing'],
-    [37.6498,-77.6040,'Publix — Twin Hickory'],
-    [37.6803,-77.5983,'Publix — Wyndham'],
-    [37.5987,-77.5541,'Publix — Broad Street'],
-    [37.5756,-77.5017,'Publix — Carytown'],
-    [37.5390,-77.4290,'Publix — Manchester'],
-    [37.5234,-77.5060,'Publix — Southside'],
-    [37.4863,-77.4743,'Publix — Hull Street'],
-    [37.5576,-77.6283,'Publix — Willow Lawn'],
-    [37.5800,-77.6665,'Publix — Gayton Crossing'],
-    [37.5490,-77.6420,'Publix — Midlothian Tpke'],
-    [37.4450,-77.6414,'Publix — Chesterfield'],
-    [37.3892,-77.6467,'Publix — Brandermill'],
-    [37.4074,-77.5616,'Publix — Chester'],
-    [37.3410,-77.4255,'Publix — Colonial Heights'],
-    [37.5310,-77.3556,'Publix — Varina'],
-    [37.6330,-77.3810,'Publix — Mechanicsville'],
-    [37.6560,-77.3390,'Publix — Lee Davis Rd'],
-    [37.4420,-77.5712,'Publix — Nichols Rd','Midlothian / Nichols Rd area',''],
+    [37.6750938,-77.4631596,'Publix — Virginia Center Marketplace','10150 Brook Rd, Glen Allen, VA 23059','+1 804-262-8190'],
+    [37.6108569,-77.3356777,'Publix — Brandy Creek Commons','6603 Mechanicsville Tpke, Mechanicsville, VA 23111','+1 804-569-3902'],
+    [37.6490280,-77.6159586,'Publix — Short Pump Crossing','3460 Pump Rd, Henrico, VA 23233','+1 804-364-6314'],
+    [37.6839171,-77.5864501,'Publix — Nuckols Place','5400 Wyndham Forest Dr, Glen Allen, VA 23059','+1 804-527-5334'],
+    [37.6399095,-77.5631385,'Publix — Westpark Shopping Center','9645 W Broad St, Glen Allen, VA 23060','+1 804-965-6303'],
+    [37.5569683,-77.4879850,'Publix — Carytown Exchange','3535 Ellwood Ave, Richmond, VA 23221','+1 804-253-6372'],
+    [37.5910406,-77.5327848,'Publix — The Village Shopping Center','7035 Three Chopt Rd N, Richmond, VA 23226','+1 804-288-1070'],
+    [37.5343308,-77.5246216,'Publix — Shops at Stratford Hills','7045 Forest Hill Ave, Richmond, VA 23225','+1 804-323-4110'],
+    [37.4103387,-77.6561471,'Publix — Harbour Pointe','13700 Hull Street Rd, Midlothian, VA 23112','+1 804-739-1160'],
+    [37.5037513,-77.6610358,'Publix — Charter Colony','200 Charter Colony Pkwy, Midlothian, VA 23114','+1 804-378-3222'],
+    [37.5199525,-77.6128520,'Publix — Huguenot Village','2015 Huguenot Rd, North Chesterfield, VA 23235','+1 804-330-3704'],
+    [37.4014821,-77.7087139,'Publix — Cosby Village','7200 Cosby Village Rd, Chesterfield, VA 23832','+1 804-639-6525'],
+    [37.2690886,-77.4105689,'Publix — Colonial Square','3007 Boulevard, Colonial Heights, VA 23834','+1 804-520-4520'],
+    [37.5255361,-77.3518622,'Publix — White Oak Village','4591 S Laburnum Ave, Richmond, VA 23231','+1 804-226-1915'],
+    [37.6568684,-77.5257750,'Publix — Shoppes at Crossridge','10250 Staples Mill Rd, Glen Allen, VA 23060','+1 804-755-2360'],
+    [37.6226525,-77.6239582,'Publix — John Rolfe Commons','2250 John Rolfe Pkwy, Henrico, VA 23233','+1 804-360-4920'],
   ];
 
   function _toTitleCase(s) {
