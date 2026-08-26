@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.26 10_19                                 ║
+  ║  MAP VERSION: 26.08.26 10_29                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1094,7 +1094,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 10_19</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 10_29</p>
   </div>
 </div>
 
@@ -1132,7 +1132,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.26 10_19';
+const MAP_VERSION = '26.08.26 10_29';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2091,15 +2091,57 @@ if (!STABILITY_MODE) {
       var missingCounties = new Set();
       var duplicateNames = [];
 
-      text.split(/\r?\n/).forEach(function(line) {
-        line = line.trim();
-        if (!line || line.charAt(0) === '#') return;
-        var m = line.match(/^"([^"]+)"\s*,\s*([^,]+?)\s*,\s*([^,]+?)$/) ||
-                line.match(/^([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^,]+?)$/);
-        if (!m) return;
-        var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
-        var county = _normaliseCounty(m[2]);
-        var level  = _normaliseLevel(m[3]);
+      // Splits one CSV line into fields, respecting double-quoted fields that
+      // may contain commas (e.g. "Smith, John Elementary"). Simpler than a
+      // full CSV grammar, but handles every real-world case this file needs.
+      function splitCSVLine(line) {
+        var fields = [];
+        var cur = '';
+        var inQuotes = false;
+        for (var i = 0; i < line.length; i++) {
+          var ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+          } else if (ch === ',' && !inQuotes) {
+            fields.push(cur.trim());
+            cur = '';
+          } else {
+            cur += ch;
+          }
+        }
+        fields.push(cur.trim());
+        return fields;
+      }
+
+      var lines = text.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l && l.charAt(0) !== '#'; });
+      if (!lines.length) throw new Error('schools.csv is empty');
+
+      // Read the header row and find each column BY NAME, not by fixed
+      // position — this is what makes the parser survive someone reordering
+      // or adding columns to the CSV later without silently breaking again.
+      var header = splitCSVLine(lines[0]).map(function(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); });
+      var idxName   = header.findIndex(function(h) { return h.indexOf('school') !== -1 || h.indexOf('name') !== -1; });
+      var idxCounty = header.findIndex(function(h) { return h.indexOf('county') !== -1; });
+      var idxLevel  = header.findIndex(function(h) { return h.indexOf('level') !== -1; });
+
+      if (idxName === -1 || idxCounty === -1 || idxLevel === -1) {
+        throw new Error('schools.csv header must include columns for school name, county, and level — found: ' + lines[0]);
+      }
+
+      var dataLines = lines.slice(1);
+      var matchedCount = 0;
+
+      dataLines.forEach(function(line) {
+        var f = splitCSVLine(line);
+        if (f.length <= Math.max(idxName, idxCounty, idxLevel)) return; // malformed row, skip
+        var rawName = f[idxName];
+        if (!rawName) return;
+
+        var key    = rawName.trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
+        var county = _normaliseCounty(f[idxCounty]);
+        var level  = _normaliseLevel(f[idxLevel]);
+        matchedCount++;
 
         // Flag (don't silently allow) two different counties claiming the same
         // school name — this is the exact scenario that causes a school to
@@ -2116,6 +2158,13 @@ if (!STABILITY_MODE) {
 
       if (duplicateNames.length) {
         console.warn('[schools.csv] ' + duplicateNames.length + ' school name(s) appear under more than one county — the LAST row in the CSV wins for each. Rename these to be distinguishable (e.g. add the school\u2019s town) so they can\u2019t collide:\n  ' + duplicateNames.join('\n  '));
+      }
+
+      // Loud sanity check: if we parsed far fewer entries than there were
+      // data rows, something is still wrong with the format — surface it
+      // clearly instead of silently proceeding with a near-empty map.
+      if (matchedCount < dataLines.length * 0.9) {
+        console.error('[schools.csv] Only parsed ' + matchedCount + ' of ' + dataLines.length + ' data rows. Check the file for malformed lines or an unexpected column layout.');
       }
 
       // Dynamically add any CSV counties not already in the filter UI
@@ -2141,7 +2190,7 @@ if (!STABILITY_MODE) {
       }
 
       _csvLoaded = true;
-      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries');
+      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries (' + matchedCount + ' of ' + dataLines.length + ' data rows matched, columns: name=' + idxName + ' county=' + idxCounty + ' level=' + idxLevel + ')');
     })
     .catch(function(err) {
       console.warn('[schools.csv] failed to load:', err.message);
