@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.26 10_29                                 ║
+  ║  MAP VERSION: 26.08.26 12_20                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -574,10 +574,10 @@
     #shape-props{
       position:fixed;
       z-index:9500;
-      background:rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.95);
       backdrop-filter:blur(3px);
       -webkit-backdrop-filter:blur(3px);
-      border:1px solid rgba(255,255,255,0.22);
+      border:1px solid rgba(0,0,0,0.15);
       border-radius:10px;
       box-shadow:0 2px 12px rgba(0,0,0,.18);
       padding:6px 7px;
@@ -604,23 +604,23 @@
       transition:transform .1s,border-color .1s;flex-shrink:0;
     }
     .spp-swatch:hover{transform:scale(1.2)}
-    .spp-swatch.active{border-color:rgba(255,255,255,0.9);transform:scale(1.15)}
-    .spp-swatch[data-col="#111111"].active{border-color:rgba(255,255,255,0.7)}
+    .spp-swatch.active{border-color:var(--black);transform:scale(1.15)}
+    .spp-swatch[data-col="#111111"].active{border-color:#777}
     /* Action row */
     .spp-actions{display:flex;gap:4px}
     .spp-action{
       flex:1;height:26px;border-radius:6px;
-      border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(0,0,0,0.15);
+      background:rgba(255,255,255,0.88);
       cursor:pointer;
       display:flex;align-items:center;justify-content:center;gap:4px;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.93rem;letter-spacing:.06em;text-transform:uppercase;
-      color:rgba(255,255,255,0.92);transition:background .1s,border-color .1s;
+      color:var(--black);transition:background .1s,border-color .1s;
       white-space:nowrap;padding:0 7px;
     }
-    .spp-action:hover{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.45)}
-    .spp-action.spp-save{background:rgba(255,255,255,1);color:#111;border-color:rgba(255,255,255,0.9)}
+    .spp-action:hover{background:rgba(255,255,255,0.98);border-color:rgba(0,0,0,0.3)}
+    .spp-action.spp-save{background:rgba(255,255,255,1);color:#111;border-color:rgba(0,0,0,0.35)}
     .spp-action.spp-save:hover{background:rgba(240,240,240,1)}
     .spp-action.spp-delete{background:rgba(255,255,255,1);color:rgba(218,41,28,1);border-color:rgba(218,41,28,0.35)}
     .spp-action.spp-delete:hover{background:rgba(255,235,235,1);border-color:rgba(218,41,28,0.7)}
@@ -715,6 +715,7 @@
     #sfp-elem.off .sfp-dot{border-color:#4285f4}
     #sfp-mid.off  .sfp-dot{border-color:#f29900}
     #sfp-high.off .sfp-dot{border-color:#DA291C}
+    #sfp-regional.off .sfp-dot{border-color:#8e24aa}
 
     /* County chip — white bg, black text */
     .sfp-county{
@@ -924,6 +925,9 @@
     <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
       <span class="sfp-dot" style="background:#DA291C"></span>High School
     </button>
+    <button class="sfp-level" id="sfp-regional" data-regional="true" aria-pressed="true" title="Magnet / regional schools (e.g. CodeRVA) that draw from multiple counties">
+      <span class="sfp-dot" style="background:#8e24aa"></span>Magnet/Regional
+    </button>
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
     <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
@@ -1094,7 +1098,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 10_29</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 12_20</p>
   </div>
 </div>
 
@@ -1132,7 +1136,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.26 10_29';
+const MAP_VERSION = '26.08.26 12_20';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -1326,6 +1330,27 @@ let polyTapPreview  = null;  // live preview polyline
 let polyTapTimer    = null;  // timer for auto-close after inactivity
 let polyTapDragging = false; // true once pointer moved enough to be a drag
 let polyTapDownAt   = null;  // {x,y} of pointerdown for drag detection
+let _lastTapUpAt     = 0;    // performance.now() of the last tap-up, for double-tap detection
+let _lastTapUpXY     = null; // {x,y} of the last tap-up, for double-tap detection
+// How long to wait after the last tap before auto-closing a tap-built polygon.
+// Bumped up from the original 1200ms so there's more breathing room to line up
+// the next point without the shape closing out from under you. This now acts
+// as a fallback safety net — DOUBLE_TAP_MS below is the primary way to close.
+const TAP_CLOSE_DELAY_MS = 3000;
+// A second tap/click landing within this many ms and this many px of the
+// previous tap-up is treated as a double-click/double-tap: closes the polygon
+// immediately (like Google My Maps) instead of adding another vertex at
+// essentially the same spot. Lets you finish a shape on demand and start the
+// next one's first tap right away, without waiting on TAP_CLOSE_DELAY_MS.
+const DOUBLE_TAP_MS = 350;
+const DOUBLE_TAP_PX = 25;
+// Freehand drag paths capture a raw latlng on every pointermove (often 50-200+
+// points for a single stroke). This tolerance (in projected pixels at the
+// current zoom) is fed to Leaflet's built-in Douglas-Peucker simplifier when
+// the drag is committed, so freehand shapes end up with a handful of vertices
+// that trace the drawn outline instead of one vertex per pixel — closer to a
+// clean vector shape, and much easier to reshape afterward with the Edit tool.
+const FREEHAND_SIMPLIFY_TOLERANCE = 3;
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Always show miles to 1 decimal place
 function fmtMiles(meters) {
@@ -1386,6 +1411,20 @@ function showDistAt(latlng, text) {
 
 function clearDistTooltip() { if (distTooltip) { map.removeLayer(distTooltip); distTooltip = null; } }
 
+// Reduce a dense freehand drag path down to its "corner" points using
+// Leaflet's built-in Douglas-Peucker + radial-distance simplifier, so a
+// smooth drag ends up as a clean handful of vertices instead of one per
+// pointermove. Projects to a fixed zoom before simplifying so the tolerance
+// (in pixels) means the same thing regardless of current pan position.
+function _simplifyFreehandPath(lls) {
+  if (!lls || lls.length < 3) return lls;
+  var zoom = map.getZoom();
+  var pts  = lls.map(function(ll) { return map.project(ll, zoom); });
+  var simplifiedPts = L.LineUtil.simplify(pts, FREEHAND_SIMPLIFY_TOLERANCE);
+  if (simplifiedPts.length < 3) return lls; // safety net — never collapse below a valid polygon
+  return simplifiedPts.map(function(p) { return map.unproject(p, zoom); });
+}
+
 // Close the tap-polygon and commit it
 function closeTapPolygon() {
   clearTimeout(polyTapTimer); polyTapTimer = null;
@@ -1394,6 +1433,7 @@ function closeTapPolygon() {
     commitLayer(L.polygon(polyTapPoints, shapeStyle()));
   }
   polyTapPoints = [];
+  _lastTapUpAt = 0; _lastTapUpXY = null;
 }
 
 function cancelInProgress() {
@@ -1403,6 +1443,7 @@ function cancelInProgress() {
   if (polyTapPreview)  { map.removeLayer(polyTapPreview);  polyTapPreview  = null; }
   clearTimeout(polyTapTimer); polyTapTimer = null;
   polyTapPoints = []; polyTapDragging = false; polyTapDownAt = null;
+  _lastTapUpAt = 0; _lastTapUpXY = null;
   clearDistTooltip();
   polyLatLngs   = [];
   circleCenter  = null;
@@ -1558,6 +1599,7 @@ let isErasing = false;
 
 function onPointerDown(clientX, clientY) {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'pin') {
     // Drop a pin where user taps — open label sheet
@@ -1587,6 +1629,7 @@ function onPointerDown(clientX, clientY) {
 
 function onPointerMove(clientX, clientY) {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand' && drawingPolyline) {
     // Mark as drag if pointer moved > 8px from down position
@@ -1612,6 +1655,7 @@ function onPointerMove(clientX, clientY) {
 
 function onPointerUp(clientX, clientY) {
   if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   isErasing = false;
   if (mode === 'move') {
     _lastMoveUpLL = containerPointToLL(clientX, clientY);
@@ -1621,9 +1665,24 @@ function onPointerUp(clientX, clientY) {
   if (mode === 'freehand' && drawingPolyline) {
     if (!polyTapDragging) {
       // TAP: polygon-tap mode — use polyTapDragging as sole discriminator
+      // Check for a double-tap/double-click BEFORE clearing the preview layer,
+      // so a fast second tap near the last point closes the shape immediately
+      // instead of adding another vertex almost on top of the previous one.
+      const now = performance.now();
+      const isDoubleTap = polyTapPoints.length >= 3 && _lastTapUpXY &&
+        (now - _lastTapUpAt) < DOUBLE_TAP_MS &&
+        Math.hypot(clientX - _lastTapUpXY.x, clientY - _lastTapUpXY.y) < DOUBLE_TAP_PX;
+
       // Clear any noise points from touchmove before handling the tap
       map.removeLayer(drawingPolyline); drawingPolyline = null;
       polyLatLngs = [];
+
+      if (isDoubleTap) {
+        _lastTapUpAt = 0; _lastTapUpXY = null;
+        closeTapPolygon(); // commits with the points already collected — tool stays active for the next shape
+        return;
+      }
+
       const ll = containerPointToLL(clientX, clientY);
       if (polyTapPoints.length === 0) {
         // First tap — start preview
@@ -1631,22 +1690,25 @@ function onPointerUp(clientX, clientY) {
         polyTapPreview = L.polyline([ll], { ...shapeStyle(), fill: false,
           dashArray: '6 4', weight: 2 }).addTo(map);
         clearTimeout(polyTapTimer);
-        polyTapTimer = setTimeout(closeTapPolygon, 1200);
+        polyTapTimer = setTimeout(closeTapPolygon, TAP_CLOSE_DELAY_MS);
       } else {
         // Additional tap — extend polygon
         polyTapPoints.push(ll);
         polyTapPreview.setLatLngs(polyTapPoints);
         clearTimeout(polyTapTimer);
         if (polyTapPoints.length >= 3) {
-          polyTapTimer = setTimeout(closeTapPolygon, 1200);
+          polyTapTimer = setTimeout(closeTapPolygon, TAP_CLOSE_DELAY_MS);
         }
       }
+      _lastTapUpAt = now;
+      _lastTapUpXY = { x: clientX, y: clientY };
     } else {
       // DRAG: freehand — polyTapDragging was set by onPointerMove threshold
       polyTapPoints = []; polyTapDragging = false;
+      _lastTapUpAt = 0; _lastTapUpXY = null;
       const lls = polyLatLngs;
       map.removeLayer(drawingPolyline); drawingPolyline = null; polyLatLngs = [];
-      if (lls.length >= 4) { commitLayer(L.polygon(lls, shapeStyle())); }
+      if (lls.length >= 4) { commitLayer(L.polygon(_simplifyFreehandPath(lls), shapeStyle())); }
     }
   }
   if (mode === 'circle' && circleCenter && previewCircle) {
@@ -1720,6 +1782,10 @@ let moveOrigLatLngs = null;   // saved latlngs for Polyline / Polygon (deep arra
 let selectedLayer   = null;   // shape currently selected for color change
 let _moveDidDrag    = false;  // true only when doMove actually translates the shape
 let _lastMoveUpLL   = null;   // latlng of last pointerUp in move mode
+let _vertexEditActive = false; // true while Leaflet.Editable vertex handles are live —
+                                // the whole-shape Move tool must stay out of the way so
+                                // handle drags reshape a single point instead of the
+                                // whole-shape drag logic hijacking the pointer.
 
 function detachMoveListeners() { _resetMoveState(); deselectShape(); }
 
@@ -2048,10 +2114,13 @@ let schoolsVisible = false;
 var schoolData = [];
 
 // Filter state — Hanover + Henrico on by default; others off
+// 'regional' is a separate on/off switch for magnet/regional schools (e.g. CodeRVA),
+// independent of the county chips — see applySchoolFilter().
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
   counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
-               powhatan: false, goochland: false, newkent: false }
+               powhatan: false, goochland: false, newkent: false },
+  regional: true
 };
 
 // Per-level colors  (Elementary=blue  Middle=orange  High=red)
@@ -2244,15 +2313,16 @@ function _normaliseLevel(level) {
 }
 
 // Fallback used when schools.csv has no level column: sniff elementary/
-// middle/high straight out of the school's name. Checked most-specific
-// first since "junior high" and "middle" both contain neither "high" nor
-// "elementary" as a false positive risk, but "high" alone could appear
-// inside an unrelated name — this is good enough for real VA school names.
+// middle/high straight out of the school's name. Uses \b word-boundary
+// regexes (not plain indexOf) so "high" only matches as its own word —
+// otherwise names like "Highland Elementary" match the substring "high"
+// inside "Highland" and get misclassified as a High School. Checked
+// middle/junior-high first since those are the most specific patterns.
 function _levelFromName(name) {
   var n = (name || '').toLowerCase();
-  if (n.indexOf('middle') !== -1 || n.indexOf('junior high') !== -1) return 'middle';
-  if (n.indexOf('high') !== -1) return 'high';
-  if (n.indexOf('elementary') !== -1) return 'elementary';
+  if (/\bmiddle\b/.test(n) || /\bjunior high\b/.test(n)) return 'middle';
+  if (/\belementary\b/.test(n)) return 'elementary';
+  if (/\bhigh\b/.test(n)) return 'high';
   return 'other'; // unrecognized naming pattern — treated as high downstream
 }
 
@@ -2268,13 +2338,14 @@ function _csvLookup(name) {
 
 function applySchoolFilter() {
   schoolGroup.clearLayers();
-  // Regional schools show when high school level is on AND at least one county is on.
+  // Regional/magnet schools (e.g. CodeRVA) show when: the Magnet/Regional toggle is on,
+  // High School level is on, AND at least one county is on.
   var anyCountyOn = Object.keys(schoolFilter.counties).some(function(k) { return schoolFilter.counties[k]; });
   var highOn = schoolFilter.levels['high'];
   schoolData.forEach(function(d) {
     var show;
     if (d.county === 'regional') {
-      show = highOn && anyCountyOn;
+      show = schoolFilter.regional && highOn && anyCountyOn;
     } else {
       show = schoolFilter.levels[d.level] && schoolFilter.counties[d.county];
     }
@@ -2381,7 +2452,13 @@ function loadSchools() {
         if (level === 'other') level = 'high';
         var county = csvEntry.county;
 
-        var key = lat.toFixed(3) + ',' + lon.toFixed(3);
+        // Dedupe by normalised school name, not coordinates — Overpass often
+        // returns more than one OSM element (a node + a building outline/way)
+        // for the same school, and those can sit 100m+ apart, which let
+        // coordinate-only dedup through as two separate pins for one school.
+        // Since CSV is the single source of truth per name, name is the
+        // correct uniqueness key here.
+        var key = _normaliseName(name);
         if (seen.has(key)) return;
         seen.add(key);
 
@@ -2452,7 +2529,7 @@ window.toggleSfpCollapse = function() {
 
 // ── School filter panel interactions ─────────────────────────────────────────
 (function() {
-  document.querySelectorAll('.sfp-level').forEach(function(b) {
+  document.querySelectorAll('.sfp-level[data-level]').forEach(function(b) {
     b.addEventListener('click', function() {
       var lv = this.dataset.level;
       schoolFilter.levels[lv] = !schoolFilter.levels[lv];
@@ -2461,6 +2538,16 @@ window.toggleSfpCollapse = function() {
       if (schoolsLoaded && schoolsVisible) applySchoolFilter();
     });
   });
+  // Magnet/Regional toggle — separate boolean, not part of levels or counties
+  var regionalBtn = document.getElementById('sfp-regional');
+  if (regionalBtn) {
+    regionalBtn.addEventListener('click', function() {
+      schoolFilter.regional = !schoolFilter.regional;
+      this.classList.toggle('off', !schoolFilter.regional);
+      this.setAttribute('aria-pressed', schoolFilter.regional ? 'true' : 'false');
+      if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+    });
+  }
   document.querySelectorAll('.sfp-county').forEach(function(b) {
     b.addEventListener('click', function() {
       var co = this.dataset.county;
@@ -2773,6 +2860,7 @@ function closeShapeProps() {
   if (_sppLayer && _sppLayer.disableEdit) {
     try { _sppLayer.disableEdit(); } catch(e) {}
   }
+  _vertexEditActive = false;
   var editBar = document.getElementById('edit-mode-bar');
   if (editBar) editBar.classList.remove('active');
   var editBtn = document.getElementById('spp-edit-btn');
@@ -2819,6 +2907,7 @@ function closeShapeProps() {
     try { _sppLayer.enableEdit(); } catch(e) { console.warn('enableEdit error:', e); }
     document.getElementById('edit-mode-bar').classList.add('active');
     this.classList.add('editing');
+    _vertexEditActive = true;
   });
 
   // Color swatches
@@ -2866,6 +2955,7 @@ function closeShapeProps() {
 function commitEditSession(save) {
   if (!_sppLayer) return;
   try { _sppLayer.disableEdit(); } catch(e) {}
+  _vertexEditActive = false;
   document.getElementById('edit-mode-bar').classList.remove('active');
   var editBtn = document.getElementById('spp-edit-btn');
   if (editBtn) {
