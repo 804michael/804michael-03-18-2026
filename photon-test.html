@@ -1,0 +1,283 @@
+<!--
+  TEST PAGE — NOT part of the live site, not linked in navigation.
+  Purpose: evaluate Photon (Komoot's OSM-based geocoder) as an address
+  autocomplete option, side by side with what's currently live (Nominatim).
+  Safe to delete once you're done evaluating.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>TEST — Photon Autocomplete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#DA291C; --red-dark:#b01f15;
+    --black:#111; --white:#fff;
+    --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
+    --gray-text:#555; --gray-muted:#888;
+  }
+  *{box-sizing:border-box}
+  body{
+    font-family:'Barlow',sans-serif;background:var(--gray-light);color:var(--black);
+    -webkit-font-smoothing:antialiased;margin:0;padding:32px 16px 80px;
+  }
+  .test-banner{
+    max-width:720px;margin:0 auto 24px;background:var(--black);color:#fff;
+    border-radius:10px;padding:12px 18px;font-size:.85rem;line-height:1.5;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .test-banner strong{color:#ffce54}
+  .wrap{max-width:720px;margin:0 auto;display:grid;gap:20px;grid-template-columns:1fr;}
+  @media(min-width:860px){ .wrap{max-width:1040px;grid-template-columns:1fr 380px;align-items:start;} }
+
+  .card{background:var(--white);border-radius:16px;padding:28px;box-shadow:0 2px 14px rgba(0,0,0,.06);}
+  h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.7rem;margin:0 0 4px;}
+  .subhead{color:var(--gray-muted);font-size:.92rem;margin:0 0 22px;}
+
+  .field{margin-bottom:16px;position:relative;}
+  .field label{display:block;font-weight:700;font-size:.8rem;margin-bottom:4px;}
+  .field input, .field textarea{
+    width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 12px;
+    font-size:.95rem;font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
+  }
+  .field input:focus, .field textarea:focus{outline:none;border-color:var(--red);}
+  .row2{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;}
+  .row2b{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .btn-red{
+    background:var(--red);color:#fff;border:2px solid var(--red);border-radius:8px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;font-size:.95rem;padding:13px 20px;width:100%;cursor:pointer;
+    transition:background .15s, box-shadow .15s;
+  }
+  .btn-red:hover{background:var(--red-dark);box-shadow:0 6px 20px rgba(218,41,28,.3)}
+
+  .addr-ac-wrap{position:relative;}
+  .addr-ac-list{
+    position:absolute;top:100%;left:0;right:0;z-index:20;margin:4px 0 0;padding:6px;
+    list-style:none;background:#fff;border:1.5px solid var(--gray-mid);border-radius:8px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);max-height:240px;overflow-y:auto;
+  }
+  .addr-ac-item{padding:9px 10px;border-radius:6px;font-size:.92rem;cursor:pointer;line-height:1.3;}
+  .addr-ac-item.active, .addr-ac-item:hover{background:var(--red);color:#fff;}
+  .addr-ac-empty{padding:9px 10px;font-size:.85rem;color:var(--gray-muted);}
+
+  /* Debug panel */
+  .debug{background:#0d0d0d;color:#d8d8d8;border-radius:16px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:.78rem;}
+  .debug h2{font-family:'Barlow Condensed',sans-serif;color:#ffce54;font-size:1rem;margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em;}
+  .debug .row{margin-bottom:14px;}
+  .debug .k{color:#7fd1ff;}
+  .debug pre{white-space:pre-wrap;word-break:break-word;background:#161616;padding:10px;border-radius:6px;margin:6px 0 0;max-height:280px;overflow:auto;}
+  .debug .status-ok{color:#7cf29a}
+  .debug .status-empty{color:#888}
+  .debug .muted{color:#777}
+</style>
+</head>
+<body>
+
+  <div class="test-banner">
+    <span>🧪</span>
+    <span><strong>Test page — not part of the live site.</strong> Not linked in navigation, not wired to EmailJS. Purpose: see how Photon behaves for address autocomplete compared to the Nominatim version currently live on 804re.com. Safe to delete this file when you're done.</span>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Custom Home Value Request <span style="color:var(--red)">(Photon test)</span></h1>
+      <p class="subhead">Same form fields as the live valuation modal — autocomplete here is powered by Photon instead of Nominatim.</p>
+
+      <div class="field">
+        <label>Tell 804Michael about your home (optional)</label>
+        <textarea rows="3" placeholder="A few details so your report is accurate..."></textarea>
+      </div>
+
+      <div class="field addr-ac-wrap">
+        <label>Street Address</label>
+        <input type="text" id="val-address" placeholder="Start typing an address…" autocomplete="off" />
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>City</label><input type="text" id="val-city" /></div>
+        <div class="field"><label>State</label><input type="text" id="val-state" /></div>
+        <div class="field"><label>Zip</label><input type="text" id="val-zip" /></div>
+      </div>
+
+      <div class="row2b">
+        <div class="field"><label>First Name</label><input type="text" /></div>
+        <div class="field"><label>Last Name</label><input type="text" /></div>
+      </div>
+
+      <button class="btn-red" type="button" onclick="alert('Test page only — nothing is submitted.')">Get My Custom Report</button>
+    </div>
+
+    <div class="debug">
+      <h2>Live debug panel</h2>
+      <div class="row"><span class="k">Query sent:</span> <span id="dbg-query" class="muted">—</span></div>
+      <div class="row"><span class="k">Status:</span> <span id="dbg-status" class="muted">Waiting for input…</span></div>
+      <div class="row"><span class="k">Result count:</span> <span id="dbg-count" class="muted">—</span></div>
+      <div class="row"><span class="k">Raw response:</span><pre id="dbg-raw">—</pre></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Photon's public instance. No API key needed.
+  var ENDPOINT = 'https://photon.komoot.io/api/';
+  // Bias center: roughly Ashland/Hanover County, VA.
+  var BIAS_LAT = 37.7599;
+  var BIAS_LON = -77.4842;
+  var DEBOUNCE_MS = 300;
+  var MIN_CHARS = 3;
+
+  var STATE_ABBR = {
+    alabama:'AL',alaska:'AK',arizona:'AZ',arkansas:'AR',california:'CA',colorado:'CO',
+    connecticut:'CT',delaware:'DE','district of columbia':'DC',florida:'FL',georgia:'GA',
+    hawaii:'HI',idaho:'ID',illinois:'IL',indiana:'IN',iowa:'IA',kansas:'KS',kentucky:'KY',
+    louisiana:'LA',maine:'ME',maryland:'MD',massachusetts:'MA',michigan:'MI',minnesota:'MN',
+    mississippi:'MS',missouri:'MO',montana:'MT',nebraska:'NE',nevada:'NV','new hampshire':'NH',
+    'new jersey':'NJ','new mexico':'NM','new york':'NY','north carolina':'NC','north dakota':'ND',
+    ohio:'OH',oklahoma:'OK',oregon:'OR',pennsylvania:'PA','rhode island':'RI','south carolina':'SC',
+    'south dakota':'SD',tennessee:'TN',texas:'TX',utah:'UT',vermont:'VT',virginia:'VA',
+    washington:'WA','west virginia':'WV',wisconsin:'WI',wyoming:'WY',
+  };
+  function stateToAbbr(name){
+    if(!name) return '';
+    if(name.length===2) return name.toUpperCase();
+    return STATE_ABBR[name.trim().toLowerCase()] || name;
+  }
+
+  var addressEl = document.getElementById('val-address');
+  var wrap = addressEl.parentNode;
+  var list = document.createElement('ul');
+  list.className = 'addr-ac-list';
+  list.hidden = true;
+  wrap.appendChild(list);
+
+  var dbgQuery = document.getElementById('dbg-query');
+  var dbgStatus = document.getElementById('dbg-status');
+  var dbgCount = document.getElementById('dbg-count');
+  var dbgRaw = document.getElementById('dbg-raw');
+
+  var debounceTimer = null, activeIndex = -1, currentItems = [], controller = null;
+
+  function closeList(){
+    list.hidden = true; list.innerHTML = ''; currentItems = []; activeIndex = -1;
+  }
+
+  function renderList(items){
+    currentItems = items; activeIndex = -1; list.innerHTML = '';
+    if(!items.length){
+      var empty = document.createElement('li');
+      empty.className = 'addr-ac-empty';
+      empty.textContent = 'No matches';
+      list.appendChild(empty);
+      list.hidden = false;
+      return;
+    }
+    items.forEach(function(item, i){
+      var li = document.createElement('li');
+      li.className = 'addr-ac-item';
+      li.textContent = item.display;
+      li.addEventListener('mousedown', function(e){ e.preventDefault(); select(item); });
+      li.addEventListener('mouseenter', function(){ setActive(i); });
+      list.appendChild(li);
+    });
+    list.hidden = false;
+  }
+
+  function setActive(i){
+    var children = list.querySelectorAll('.addr-ac-item');
+    children.forEach(function(el){ el.classList.remove('active'); });
+    if(i>=0 && i<children.length){ children[i].classList.add('active'); children[i].scrollIntoView({block:'nearest'}); }
+    activeIndex = i;
+  }
+
+  function select(item){
+    addressEl.value = item.street;
+    document.getElementById('val-city').value = item.city;
+    document.getElementById('val-state').value = item.state;
+    document.getElementById('val-zip').value = item.zip;
+    closeList();
+    addressEl.focus();
+  }
+
+  function toSuggestion(feature){
+    var p = feature.properties || {};
+    var street = (p.housenumber ? p.housenumber + ' ' + (p.street||'') : (p.street||p.name||'')).trim();
+    var city = p.city || p.district || p.county || '';
+    var state = stateToAbbr(p.state || '');
+    var zip = p.postcode || '';
+    var display = [street, city, state].filter(Boolean).join(', ') + (zip ? ' ' + zip : '');
+    return { display: display, street: street, city: city, state: state, zip: zip };
+  }
+
+  function fetchSuggestions(query){
+    if(controller) controller.abort();
+    controller = new AbortController();
+
+    var url = ENDPOINT + '?q=' + encodeURIComponent(query) +
+      '&limit=8&lat=' + BIAS_LAT + '&lon=' + BIAS_LON + '&location_bias_scale=0.6';
+
+    dbgQuery.textContent = query;
+    dbgQuery.className = '';
+    dbgStatus.textContent = 'Fetching…';
+    dbgStatus.className = 'muted';
+
+    var t0 = performance.now();
+
+    fetch(url, { signal: controller.signal })
+      .then(function(res){ return res.json().then(function(json){ return {ok:res.ok, status:res.status, json:json}; }); })
+      .then(function(res){
+        var ms = Math.round(performance.now() - t0);
+        var features = (res.json && res.json.features) || [];
+        dbgStatus.innerHTML = '<span class="status-ok">' + res.status + ' OK</span> · ' + ms + 'ms';
+        dbgCount.textContent = features.length;
+        dbgRaw.textContent = JSON.stringify(res.json, null, 2);
+
+        if(addressEl.value.trim() === query){
+          renderList(features.map(toSuggestion).filter(function(s){ return s.display; }));
+        }
+      })
+      .catch(function(err){
+        if(err.name !== 'AbortError'){
+          dbgStatus.innerHTML = '<span style="color:#ff6b6b">Error</span>';
+          dbgRaw.textContent = String(err);
+          closeList();
+        }
+      });
+  }
+
+  addressEl.addEventListener('input', function(){
+    var query = addressEl.value.trim();
+    clearTimeout(debounceTimer);
+    if(query.length < MIN_CHARS){
+      closeList();
+      dbgStatus.textContent = 'Type at least ' + MIN_CHARS + ' characters…';
+      dbgStatus.className = 'muted';
+      return;
+    }
+    debounceTimer = setTimeout(function(){
+      if(addressEl.value.trim() === query) fetchSuggestions(query);
+    }, DEBOUNCE_MS);
+  });
+
+  addressEl.addEventListener('keydown', function(e){
+    if(list.hidden) return;
+    if(e.key==='ArrowDown'){ e.preventDefault(); setActive(Math.min(activeIndex+1, currentItems.length-1)); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); setActive(Math.max(activeIndex-1,0)); }
+    else if(e.key==='Enter'){ if(activeIndex>=0 && currentItems[activeIndex]){ e.preventDefault(); select(currentItems[activeIndex]); } }
+    else if(e.key==='Escape'){ closeList(); }
+  });
+
+  addressEl.addEventListener('blur', function(){ setTimeout(closeList, 120); });
+  document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) closeList(); });
+})();
+</script>
+</body>
+</html>
