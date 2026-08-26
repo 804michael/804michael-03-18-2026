@@ -1,24 +1,48 @@
 /*
   804Michael — Address Autocomplete for the "Custom Home Value Request" modal
   ----------------------------------------------------------------------------
-  Attaches to #val-address (present in the shared valuation modal on every
-  page: index.html, ashland.html, mechanicsville.html, glen-allen.html,
-  hanover.html). As the user types, suggestions come from our own
-  /api/address-autocomplete proxy (a Cloudflare Pages Function), which in
-  turn calls sthan.io — never call sthan.io directly from the browser.
+  Uses Nominatim (OpenStreetMap's free geocoding service) — the same service
+  already powering map-search.html on this site. Called directly from the
+  browser; no backend proxy or API credentials needed.
 
-  On selecting a suggestion, parses the returned string
-    "123 Main St APT 1, Andover, MA 01810-3816"
-  into street / city / state / zip and fills #val-city, #val-state, #val-zip.
+  Results are soft-biased toward Virginia via a viewbox (addresses elsewhere
+  in the US still show up, just ranked lower), and each suggestion is built
+  from Nominatim's structured address fields, so City/State/Zip come out
+  clean — including a plain 5-digit ZIP rather than ZIP+4.
 
   Include with: <script defer src="address-autocomplete.js"></script>
 */
 (function () {
   'use strict';
 
-  var ENDPOINT = '/api/address-autocomplete';
-  var DEBOUNCE_MS = 250;
+  var ENDPOINT = 'https://nominatim.openstreetmap.org/search';
+  // Statewide Virginia bounding box, used as a soft preference (bounded=0),
+  // not a hard filter — out-of-state addresses can still match, just ranked lower.
+  var VA_VIEWBOX = '-83.7,39.5,-75.1,36.5';
+  var DEBOUNCE_MS = 300;
   var MIN_CHARS = 3;
+
+  var STATE_ABBR = {
+    alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA',
+    colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC',
+    florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL',
+    indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA',
+    maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI',
+    minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT',
+    nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ',
+    'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC',
+    'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR',
+    pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+    'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT',
+    vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV',
+    wisconsin: 'WI', wyoming: 'WY',
+  };
+
+  function stateToAbbr(name) {
+    if (!name) return '';
+    if (name.length === 2) return name.toUpperCase();
+    return STATE_ABBR[name.trim().toLowerCase()] || name;
+  }
 
   function init() {
     var addressEl = document.getElementById('val-address');
@@ -44,7 +68,6 @@
     var activeIndex = -1;
     var currentItems = [];
     var currentController = null;
-    var lastQuery = '';
 
     function closeList() {
       list.hidden = true;
@@ -64,19 +87,16 @@
         return;
       }
 
-      items.forEach(function (text, i) {
+      items.forEach(function (item, i) {
         var li = document.createElement('li');
         li.className = 'addr-ac-item';
-        li.textContent = text;
+        li.textContent = item.display;
         li.setAttribute('role', 'option');
         li.addEventListener('mousedown', function (e) {
-          // mousedown (not click) so it fires before the input's blur
-          e.preventDefault();
-          selectSuggestion(text);
+          e.preventDefault(); // fires before input's blur
+          selectSuggestion(item);
         });
-        li.addEventListener('mouseenter', function () {
-          setActive(i);
-        });
+        li.addEventListener('mouseenter', function () { setActive(i); });
         list.appendChild(li);
       });
 
@@ -94,62 +114,55 @@
       activeIndex = i;
     }
 
-    function parseAddress(full) {
-      // Expected shape: "123 Main St APT 1, Andover, MA 01810-3816"
-      var match = full.match(/^(.*),\s*(.*),\s*([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)\s*$/);
-      if (!match) return null;
-      return {
-        street: match[1].trim(),
-        city: match[2].trim(),
-        state: match[3].trim().toUpperCase(),
-        zip: match[4].trim(),
-      };
-    }
-
-    function selectSuggestion(full) {
-      var parsed = parseAddress(full);
-      if (parsed) {
-        addressEl.value = parsed.street;
-        var cityEl = document.getElementById('val-city');
-        var stateEl = document.getElementById('val-state');
-        var zipEl = document.getElementById('val-zip');
-        if (cityEl) cityEl.value = parsed.city;
-        if (stateEl) stateEl.value = parsed.state;
-        if (zipEl) zipEl.value = parsed.zip;
-        [cityEl, stateEl, zipEl].forEach(function (el) {
-          if (el) el.classList.remove('invalid');
-        });
-      } else {
-        // Fallback: couldn't parse, just drop the full string in the address field
-        addressEl.value = full;
-      }
-      addressEl.classList.remove('invalid');
+    function selectSuggestion(item) {
+      addressEl.value = item.street;
+      var cityEl = document.getElementById('val-city');
+      var stateEl = document.getElementById('val-state');
+      var zipEl = document.getElementById('val-zip');
+      if (cityEl) cityEl.value = item.city;
+      if (stateEl) stateEl.value = item.state;
+      if (zipEl) zipEl.value = item.zip;
+      [addressEl, cityEl, stateEl, zipEl].forEach(function (el) {
+        if (el) el.classList.remove('invalid');
+      });
       closeList();
       addressEl.focus();
     }
 
-    function prioritizeVirginia(list) {
-    // Stable sort: VA matches float to the top, original order preserved within each group.
-    var isVA = /,\s*VA\s+\d/;
-    return list
-      .map(function (item, i) { return { item: item, i: i, va: isVA.test(item) ? 0 : 1 }; })
-      .sort(function (a, b) { return a.va - b.va || a.i - b.i; })
-      .map(function (entry) { return entry.item; });
-  }
+    function toSuggestion(result) {
+      var a = result.address || {};
+      var houseNum = a.house_number || '';
+      var road = a.road || a.pedestrian || a.path || '';
+      var street = (houseNum ? houseNum + ' ' + road : road).trim() ||
+        (result.display_name ? result.display_name.split(',')[0] : '');
+      var city = a.city || a.town || a.village || a.hamlet || a.county || '';
+      var state = stateToAbbr(a.state || '');
+      var zip = (a.postcode || '').split('-')[0]; // strip ZIP+4 if Nominatim ever includes it
 
-  function fetchSuggestions(query) {
+      var displayParts = [street, city, state].filter(Boolean).join(', ');
+      var display = zip ? displayParts + ' ' + zip : displayParts;
+
+      return { display: display, street: street, city: city, state: state, zip: zip };
+    }
+
+    function fetchSuggestions(query) {
       if (currentController) currentController.abort();
       currentController = new AbortController();
 
-      fetch(ENDPOINT + '?q=' + encodeURIComponent(query), {
+      var url = ENDPOINT +
+        '?format=json&limit=8&addressdetails=1&countrycodes=us' +
+        '&q=' + encodeURIComponent(query) +
+        '&viewbox=' + VA_VIEWBOX + '&bounded=0';
+
+      fetch(url, {
         signal: currentController.signal,
+        headers: { 'Accept-Language': 'en-US,en' },
       })
         .then(function (res) { return res.ok ? res.json() : []; })
         .then(function (data) {
           if (!Array.isArray(data)) data = [];
-          // Ignore stale responses if the input has since changed
           if (addressEl.value.trim() === query) {
-            renderList(prioritizeVirginia(data).slice(0, 8));
+            renderList(data.map(toSuggestion).filter(function (s) { return s.display; }));
           }
         })
         .catch(function (err) {
@@ -159,7 +172,6 @@
 
     addressEl.addEventListener('input', function () {
       var query = addressEl.value.trim();
-      lastQuery = query;
       clearTimeout(debounceTimer);
 
       if (query.length < MIN_CHARS) {
@@ -192,8 +204,7 @@
     });
 
     addressEl.addEventListener('blur', function () {
-      // Slight delay so a mousedown-selection can register first
-      setTimeout(closeList, 120);
+      setTimeout(closeList, 120); // let a mousedown-selection register first
     });
 
     document.addEventListener('click', function (e) {
