@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.25 10_00                                 ║
+  ║  MAP VERSION: 26.08.26 03_06                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1094,7 +1094,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.25 10_00</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 03_06</p>
   </div>
 </div>
 
@@ -1132,8 +1132,8 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.25 10_00';
-const STABILITY_MODE = true; // Keep core mapping tools rock-solid first
+const MAP_VERSION = '26.08.26 03_06';
+const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
 
@@ -1975,11 +1975,7 @@ function endMove() {
   countyPane.style.zIndex = 225;
   countyPane.style.pointerEvents = 'none';
 
-  fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(query)
-  })
-  .then(function(r) { return r.json(); })
+  _fetchOverpassWithFallback(query, 30000)
   .then(function(data) {
     data.elements.forEach(function(rel) {
       if (rel.type !== 'relation') return;
@@ -2076,14 +2072,24 @@ var _csvLoaded     = false;
 // Convert CSV loading to a Promise so Overpass fetch can wait for it
 var _csvPromise = Promise.resolve();
 if (!STABILITY_MODE) {
-  _csvPromise = fetch('schools.csv')
-    .then(function(r) {
-      if (!r.ok) throw new Error('schools.csv not found');
-      return r.text();
-    })
+  // Tries schools.csv first, falls back to 804schools.csv — avoids a hard
+  // failure if the file in the repo is named differently than expected.
+  function _fetchCSVWithFallback(paths) {
+    function tryPath(i) {
+      if (i >= paths.length) return Promise.reject(new Error('No CSV found at: ' + paths.join(', ')));
+      return fetch(paths[i]).then(function(r) {
+        if (!r.ok) throw new Error('404 at ' + paths[i]);
+        return r.text();
+      }).catch(function() { return tryPath(i + 1); });
+    }
+    return tryPath(0);
+  }
+
+  _csvPromise = _fetchCSVWithFallback(['schools.csv', '804schools.csv'])
     .then(function(text) {
       var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional'];
       var missingCounties = new Set();
+      var duplicateNames = [];
 
       text.split(/\r?\n/).forEach(function(line) {
         line = line.trim();
@@ -2094,12 +2100,23 @@ if (!STABILITY_MODE) {
         var key    = m[1].trim().toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ');
         var county = _normaliseCounty(m[2]);
         var level  = _normaliseLevel(m[3]);
+
+        // Flag (don't silently allow) two different counties claiming the same
+        // school name — this is the exact scenario that causes a school to
+        // silently end up filed under the wrong county's toggle.
+        if (SCHOOL_CSV_MAP[key] && SCHOOL_CSV_MAP[key].county !== county) {
+          duplicateNames.push(key + ' (' + SCHOOL_CSV_MAP[key].county + ' \u2192 ' + county + ')');
+        }
         SCHOOL_CSV_MAP[key] = { county: county, level: level };
 
         if (!knownCounties.includes(county) && county !== 'caroline') {
           missingCounties.add(county);
         }
       });
+
+      if (duplicateNames.length) {
+        console.warn('[schools.csv] ' + duplicateNames.length + ' school name(s) appear under more than one county — the LAST row in the CSV wins for each. Rename these to be distinguishable (e.g. add the school\u2019s town) so they can\u2019t collide:\n  ' + duplicateNames.join('\n  '));
+      }
 
       // Dynamically add any CSV counties not already in the filter UI
       var extraSpan = document.getElementById('sfp-extra');
@@ -2466,11 +2483,17 @@ function loadPublix() {
     return p;
   }
 
-  var seen = new Set();
+  // De-dupe by real distance (meters), not rounded coordinates — a store's
+  // hardcoded position and its Overpass position are often 50-150m apart
+  // (parking lot center vs. building entrance), which used to slip past a
+  // fixed-precision coordinate match and show as two separate pins.
+  var DEDUPE_RADIUS_M = 300;
+  var addedPoints = [];
   function addPublixMarker(lat, lon, name, addr, phone) {
-    var key = lat.toFixed(3) + ',' + lon.toFixed(3);
-    if (seen.has(key)) return;
-    seen.add(key);
+    var here = L.latLng(lat, lon);
+    var tooClose = addedPoints.some(function(p) { return here.distanceTo(p) < DEDUPE_RADIUS_M; });
+    if (tooClose) return;
+    addedPoints.push(here);
     var cleanName  = _normalisePublixName(name);
     var cleanAddr  = _normalisePublixAddr(addr);
     var cleanPhone = _normalisePublixPhone(phone);
@@ -3275,10 +3298,7 @@ function buildShareURL() {
 
 function shareViaSMS() {
   var url = buildShareURL();
-  fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
-    .then(function(r) { return r.text(); })
-    .then(function(short) { doSMS(short.trim() || url); })
-    .catch(function() { doSMS(url); });
+  doSMS(url);
 }
 function doSMS(url) {
   var msg = 'Check out the areas I marked on this map: ' + url;
@@ -3289,37 +3309,13 @@ function copyMapLink() {
   var url = buildShareURL();
   var btn = document.getElementById('share-copy');
 
-  // Show a working state while we shorten
-  var origHTML = btn.innerHTML;
-  btn.innerHTML = btn.innerHTML.replace(/<span[^>]*>.*<\/span>/, '<span>Shortening…</span>');
-  btn.disabled = true;
-
-  fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
-    .then(function(r) { return r.text(); })
-    .then(function(shortUrl) {
-      shortUrl = shortUrl.trim();
-      btn.disabled = false;
-      // Copy the short URL
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shortUrl).then(function() {
-          showCopied(btn);
-        }).catch(function() { fallbackCopy(shortUrl, btn); });
-      } else {
-        fallbackCopy(shortUrl, btn);
-      }
-    })
-    .catch(function() {
-      // TinyURL failed — fall back to copying the full URL
-      btn.disabled = false;
-      btn.innerHTML = origHTML;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(function() {
-          showCopied(btn);
-        }).catch(function() { fallbackCopy(url, btn); });
-      } else {
-        fallbackCopy(url, btn);
-      }
-    });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      showCopied(btn);
+    }).catch(function() { fallbackCopy(url, btn); });
+  } else {
+    fallbackCopy(url, btn);
+  }
 }
 
 window.openLoadMapModal = function() {
@@ -3799,6 +3795,7 @@ if (window.innerWidth <= 768) {
   setTimeout(function() {
     var banner = document.getElementById('banner');
     collapsePgHeader();
+    if (!banner) return; // nav.js hasn't injected it yet — nothing to hide
     banner.classList.add('hide');
     setTimeout(function() {
       banner.style.display = 'none';
