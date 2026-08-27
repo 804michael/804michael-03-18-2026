@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 10_40                                 ║
+  ║  MAP VERSION: 26.08.27 11_20                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1140,7 +1140,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 10_40</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 11_20</p>
   </div>
 </div>
 
@@ -1178,7 +1178,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 10_40';
+const MAP_VERSION = '26.08.27 11_20';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2252,23 +2252,29 @@ if (!STABILITY_MODE) {
         return HEADER_LABELS.indexOf(h.toLowerCase().replace(/[^a-z]/g, '')) !== -1;
       });
 
-      var idxName, idxCounty, idxLevel, dataLines;
+      var idxName, idxCounty, idxLevel, idxLat, idxLon, dataLines;
       if (looksLikeHeader) {
         var header = firstFields.map(function(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); });
         idxName   = header.findIndex(function(h) { return h.indexOf('school') !== -1 || h.indexOf('name') !== -1; });
         idxCounty = header.findIndex(function(h) { return h.indexOf('county') !== -1; });
         idxLevel  = header.findIndex(function(h) { return h.indexOf('level') !== -1; }); // -1 is fine — level falls back to name-sniffing below
+        // lat/lon are both optional — when present for a row, that row skips
+        // the Overpass name-search entirely (see loadSchools()). Accepts
+        // "lat"/"lon", "latitude"/"longitude", or "lng" for longitude.
+        idxLat    = header.findIndex(function(h) { return h === 'lat' || h.indexOf('latitude') !== -1; });
+        idxLon    = header.findIndex(function(h) { return h === 'lon' || h === 'lng' || h.indexOf('longitude') !== -1; });
         if (idxName === -1 || idxCounty === -1) {
           throw new Error('schools.csv header must include columns for school name and county — found: ' + lines[0]);
         }
         dataLines = lines.slice(1);
       } else {
         // No header row — positional format: name, county[, level]
-        idxName = 0; idxCounty = 1; idxLevel = 2;
+        idxName = 0; idxCounty = 1; idxLevel = 2; idxLat = -1; idxLon = -1;
         dataLines = lines;
       }
 
       var matchedCount = 0;
+      var geocodedCount = 0;
 
       dataLines.forEach(function(line) {
         var f = splitCSVLine(line);
@@ -2286,13 +2292,27 @@ if (!STABILITY_MODE) {
         var level  = rawLevel ? _normaliseLevel(rawLevel) : _levelFromName(rawName);
         matchedCount++;
 
+        // Parse lat/lon when both columns exist and both cells are present,
+        // valid numbers. A row with only one of the two, or an unparsable
+        // value, is treated as "no coordinates" and falls back to the
+        // Overpass name search like every other row — never half-applied.
+        var lat, lon;
+        if (idxLat !== -1 && idxLon !== -1 && f.length > Math.max(idxLat, idxLon)) {
+          var latNum = parseFloat(f[idxLat]);
+          var lonNum = parseFloat(f[idxLon]);
+          if (isFinite(latNum) && isFinite(lonNum) && f[idxLat] !== '' && f[idxLon] !== '') {
+            lat = latNum; lon = lonNum;
+            geocodedCount++;
+          }
+        }
+
         // Flag (don't silently allow) two different counties claiming the same
         // school name — this is the exact scenario that causes a school to
         // silently end up filed under the wrong county's toggle.
         if (SCHOOL_CSV_MAP[key] && SCHOOL_CSV_MAP[key].county !== county) {
           duplicateNames.push(key + ' (' + SCHOOL_CSV_MAP[key].county + ' \u2192 ' + county + ')');
         }
-        SCHOOL_CSV_MAP[key] = { county: county, level: level };
+        SCHOOL_CSV_MAP[key] = { name: rawName.trim(), county: county, level: level, lat: lat, lon: lon };
 
         if (!knownCounties.includes(county) && county !== 'caroline') {
           missingCounties.add(county);
@@ -2333,7 +2353,7 @@ if (!STABILITY_MODE) {
       }
 
       _csvLoaded = true;
-      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries (' + matchedCount + ' of ' + dataLines.length + ' data rows matched, columns: name=' + idxName + ' county=' + idxCounty + ' level=' + idxLevel + ')');
+      console.log('[schools.csv] loaded ' + Object.keys(SCHOOL_CSV_MAP).length + ' entries (' + matchedCount + ' of ' + dataLines.length + ' data rows matched, ' + geocodedCount + ' with CSV lat/lon — those skip the Overpass name search, columns: name=' + idxName + ' county=' + idxCounty + ' level=' + idxLevel + ' lat=' + idxLat + ' lon=' + idxLon + ')');
     })
     .catch(function(err) {
       console.warn('[schools.csv] failed to load:', err.message);
@@ -2483,9 +2503,45 @@ function loadSchools() {
   btn.setAttribute('data-tip', 'Loading\u2026');
   showSchoolToast();
 
+  // Builds one school's circleMarker + tooltip. Shared by both the direct-
+  // CSV-coordinate path and the Overpass name-search path below, so a school
+  // looks identical either way it was located.
+  function _makeSchoolMarker(name, lat, lon, level, county) {
+    var col = county === 'regional' ? REGIONAL_COLOR :
+              county === 'private'  ? PRIVATE_COLOR  :
+              LEVEL_COLORS[level];
+    if (!col) return null; // failsafe for unexpected level values
+    var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
+    var sm = L.circleMarker([lat, lon], {
+      radius: 7, color: col.stroke, weight: 2,
+      fillColor: col.fill, fillOpacity: 0.9,
+      interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
+    }).bindTooltip(name + ' \u2022 ' + lvLabel, {
+      permanent: false, direction: 'top', offset: [0, -10],
+      className: 'dist-tip', pane: 'tooltipPane'
+    });
+    sm.on('click', function() { this.openTooltip(); });
+    return sm;
+  }
 
   // Wait for CSV to finish loading before processing Overpass results
   _csvPromise.then(function() {
+    // ── Pass 1: place every school that already has lat/lon in the CSV ──
+    // These skip Overpass's fragile name-matching entirely (see the Maggie
+    // Walker case — a long official name that doesn't match OSM's shorter
+    // tag). geocodedKeys tracks which normalised names were handled here so
+    // pass 2 doesn't create a second, possibly-mismatched marker for them.
+    var geocodedKeys = new Set();
+    Object.keys(SCHOOL_CSV_MAP).forEach(function(key) {
+      var entry = SCHOOL_CSV_MAP[key];
+      if (entry.lat === undefined || entry.lon === undefined || entry.county === 'caroline') return;
+      var level = entry.level === 'other' ? 'high' : entry.level;
+      var sm = _makeSchoolMarker(entry.name, entry.lat, entry.lon, level, entry.county);
+      if (!sm) return;
+      geocodedKeys.add(key);
+      schoolData.push({ marker: sm, level: level, county: entry.county });
+    });
+
     const bbox = '37.1,-78.0,38.2,-76.9';
     const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
 
@@ -2514,22 +2570,13 @@ function loadSchools() {
         // correct uniqueness key here.
         var key = _normaliseName(name);
         if (seen.has(key)) return;
+        // Already placed directly from the CSV's own lat/lon in pass 1 —
+        // don't add a second (Overpass-derived, possibly wrong) marker.
+        if (geocodedKeys.has(key)) return;
         seen.add(key);
 
-        var col = county === 'regional' ? REGIONAL_COLOR :
-                  county === 'private'  ? PRIVATE_COLOR  :
-                  LEVEL_COLORS[level];
-        if (!col) return; // failsafe for unexpected level values
-        var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
-        var sm = L.circleMarker([lat, lon], {
-          radius: 7, color: col.stroke, weight: 2,
-          fillColor: col.fill, fillOpacity: 0.9,
-          interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-        }).bindTooltip(name + ' \u2022 ' + lvLabel, {
-          permanent: false, direction: 'top', offset: [0, -10],
-          className: 'dist-tip', pane: 'tooltipPane'
-        });
-        sm.on('click', function() { this.openTooltip(); });
+        var sm = _makeSchoolMarker(name, lat, lon, level, county);
+        if (!sm) return;
         schoolData.push({ marker: sm, level: level, county: county });
       });
       schoolsLoaded  = true;
