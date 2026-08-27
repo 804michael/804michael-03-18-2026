@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.26 12_20                                 ║
+  ║  MAP VERSION: 26.08.27 09_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -128,6 +128,29 @@
     .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.15rem,2.2vw,1.45rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
+    /* Desktop only: match the (slimmed) Local Farm Stand Map hero — taller
+       black banner with a red accent strip, bigger headline, roomier
+       subtitle — instead of the compact mobile bar above. Mobile keeps the
+       compact rules above completely untouched; .pg-header stays
+       position:fixed either way, so the dynamic --pgheader-h/--chrome-h
+       measurement in updateLayout() picks up the new height automatically. */
+    @media(min-width:769px){
+      .pg-header{
+        padding:19px 28px 16px;
+        gap:8px;
+        border-bottom:4px solid var(--red, #DA291C);
+      }
+      .pg-header h1{
+        font-size:clamp(1.8rem,3.2vw,2.6rem);
+        white-space:normal;
+        line-height:1.05;
+      }
+      .pg-header p{
+        font-size:clamp(.85rem,1.1vw,1rem);
+        line-height:1.3;
+        max-width:640px;
+      }
+    }
 
     /* Toolbar — fixed on ALL screen sizes so it always appears below the chrome */
     .toolbar{position:fixed;top:calc(var(--banner-h) + var(--nav-h) + var(--pgheader-h, 34px));left:0;right:0;z-index:800;background:rgba(255,255,255,.24);backdrop-filter:blur(16px) saturate(1.55);-webkit-backdrop-filter:blur(16px) saturate(1.55);border-bottom:1px solid rgba(255,255,255,.28);padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.07);overflow:visible;-webkit-transform:translateZ(0);transform:translateZ(0)}
@@ -175,7 +198,7 @@
        Only the masterpiece question peeks up, rest scrolls into view.
        Mobile: 100dvh with padding-top to clear fixed chrome. */
     :root{ --chrome-h: 192px; --pgheader-h: 34px }
-    @media(max-width:768px){ :root{ --chrome-h: 172px; --pgheader-h: 34px } }
+    @media(max-width:768px){ :root{ --chrome-h: 200px; --pgheader-h: 34px } }
     .map-wrap{
       position: relative;
       width: 100%;
@@ -199,9 +222,18 @@
     @media(max-width:768px){
       .map-wrap{
         /* Toolbar is position:fixed; map fills full height below chrome */
-        margin-top: var(--chrome-h, 172px);
-        height: calc(100dvh - var(--chrome-h, 172px));
+        margin-top: var(--chrome-h, 200px);
+        height: calc(100dvh - var(--chrome-h, 200px));
         padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+      }
+    }
+    /* True phones (<600px, below the tablet peek breakpoint further down):
+       reserve an extra 40px so the "Done with your masterpiece" heading
+       peeks below the map instead of sitting flush against the bottom edge,
+       where Android's dynamic toolbar/gesture bar can cover it entirely. */
+    @media(max-width:599px){
+      .map-wrap{
+        height: calc(100dvh - var(--chrome-h, 200px) - 40px);
       }
     }
     @supports not (height: 1dvh){
@@ -638,7 +670,12 @@
     /* Edit-active indicator bar */
     #edit-mode-bar{
       position:fixed;
-      bottom:0;left:0;right:0;
+      left:0;right:0;
+      /* top is set dynamically in JS to sit just below the toolbar — see
+         positionEditModeBar(). Was previously pinned to the bottom of the
+         viewport, where mobile browser chrome (address bar / gesture bar)
+         could cover the Done/Cancel buttons and make them untappable. */
+      top:0;
       z-index:9600;
       background:var(--black);
       color:white;
@@ -647,7 +684,6 @@
       align-items:center;justify-content:center;gap:14px;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;
       font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;
-      padding-bottom:env(safe-area-inset-bottom,0px);
     }
     #edit-mode-bar.active{display:flex}
     #edit-mode-bar button{
@@ -716,6 +752,7 @@
     #sfp-mid.off  .sfp-dot{border-color:#f29900}
     #sfp-high.off .sfp-dot{border-color:#DA291C}
     #sfp-regional.off .sfp-dot{border-color:#8e24aa}
+    #sfp-private.off .sfp-dot{border-color:#00897b}
 
     /* County chip — white bg, black text */
     .sfp-county{
@@ -885,13 +922,12 @@
       </button>
     </div>
 
-    <!-- Other tools: Move, Pan, Undo, Redo, Clear (zoom hidden per request) -->
+    <!-- Other tools: Move, Undo, Redo, Clear (zoom hidden per request) -->
     <button class="tool-btn" id="btn-move" onclick="setMode('move')" data-tip="Move/Recolor — drag to move, tap to recolor" aria-label="Move or recolor a shape">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
     </button>
-    <button class="tool-btn" id="btn-pan" onclick="setMode('pan')" data-tip="Pan — move the map" aria-label="Pan — move the map">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><polyline points="9,5 12,2 15,5"/><polyline points="9,19 12,22 15,19"/><polyline points="5,9 2,12 5,15"/><polyline points="19,9 22,12 19,15"/></svg>
-    </button>
+    <!-- Pan tool removed — deselecting any active tool (tap it again) already
+         re-enables map dragging, which is functionally identical to Pan mode. -->
     <!-- Zoom handled by #map-zoom-ctrl bottom-left of map -->
     <div class="tool-group">
       <button class="tool-btn" id="btn-undo" onclick="undoLast()" data-tip="Undo  ⌘Z / Ctrl+Z" aria-label="Undo" disabled>
@@ -925,8 +961,11 @@
     <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
       <span class="sfp-dot" style="background:#DA291C"></span>High School
     </button>
-    <button class="sfp-level" id="sfp-regional" data-regional="true" aria-pressed="true" title="Magnet / regional schools (e.g. CodeRVA) that draw from multiple counties">
+    <button class="sfp-level off" id="sfp-regional" data-regional="true" aria-pressed="false" title="Magnet / regional schools (e.g. CodeRVA) that draw from multiple counties">
       <span class="sfp-dot" style="background:#8e24aa"></span>Magnet/Regional
+    </button>
+    <button class="sfp-level off" id="sfp-private" data-private="true" aria-pressed="false" title="Private schools">
+      <span class="sfp-dot" style="background:#00897b"></span>Private Schools
     </button>
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
@@ -1098,7 +1137,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.26 12_20</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 09_15</p>
   </div>
 </div>
 
@@ -1136,7 +1175,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.26 12_20';
+const MAP_VERSION = '26.08.27 09_15';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -1457,7 +1496,7 @@ function containerPointToLL(clientX, clientY) {
 }
 
 // ── Mode switching ────────────────────────────────────────────────────────────
-const ALL_MODES = ['pan', 'freehand', 'circle', 'erase', 'move', 'pin', 'search'];
+const ALL_MODES = ['freehand', 'circle', 'erase', 'move', 'pin', 'search'];
 
 // Shared helper: deactivate all tools, enable map drag, reset cursor
 function deactivateAllTools() {
@@ -1489,10 +1528,10 @@ window.setMode = function(m) {
   if (mode === 'move') detachMoveListeners();
   mode = m;
   ALL_MODES.forEach(t => { const el = document.getElementById('btn-' + t); if (el) el.classList.toggle('active', t === m); });
-  if (m === 'pan' || m === 'search') {
+  if (m === 'search') {
     map.dragging.enable();
     map.scrollWheelZoom.enable();
-    map.getContainer().style.cursor = m === 'pan' ? 'grab' : '';
+    map.getContainer().style.cursor = '';
   } else if (m === 'move') {
     map.dragging.disable();
     map.scrollWheelZoom.disable();
@@ -1598,7 +1637,7 @@ const mapEl = map.getContainer();
 let isErasing = false;
 
 function onPointerDown(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'pin') {
@@ -1628,7 +1667,7 @@ function onPointerDown(clientX, clientY) {
 }
 
 function onPointerMove(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   const ll = containerPointToLL(clientX, clientY);
   if (mode === 'freehand' && drawingPolyline) {
@@ -1654,7 +1693,7 @@ function onPointerMove(clientX, clientY) {
 }
 
 function onPointerUp(clientX, clientY) {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   if (mode === 'move' && _vertexEditActive) return; // let Leaflet.Editable's own vertex drag handle this
   isErasing = false;
   if (mode === 'move') {
@@ -2114,13 +2153,15 @@ let schoolsVisible = false;
 var schoolData = [];
 
 // Filter state — Hanover + Henrico on by default; others off
-// 'regional' is a separate on/off switch for magnet/regional schools (e.g. CodeRVA),
-// independent of the county chips — see applySchoolFilter().
+// 'regional' and 'private' are separate on/off switches independent of the
+// county chips — see applySchoolFilter(). Both default off: they're add-on
+// categories the user opts into, not part of the standard public-school view.
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
   counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
                powhatan: false, goochland: false, newkent: false },
-  regional: true
+  regional: false,
+  private:  false
 };
 
 // Per-level colors  (Elementary=blue  Middle=orange  High=red)
@@ -2129,6 +2170,12 @@ var LEVEL_COLORS = {
   middle:     { fill: '#f29900', stroke: '#e67e00' },
   high:       { fill: '#DA291C', stroke: '#b01f15' }
 };
+// Magnet/Regional schools (e.g. CodeRVA) get their own color instead of their
+// level color, matching the purple dot on the Magnet/Regional toggle button.
+var REGIONAL_COLOR = { fill: '#8e24aa', stroke: '#6a1b7a' };
+// Private schools likewise get their own color, matching the teal dot on the
+// Private Schools toggle button.
+var PRIVATE_COLOR = { fill: '#00897b', stroke: '#00695c' };
 
 // ── School data — CSV is the sole source of truth ────────────────────────────
 // schools.csv provides name, county, and level for every school.
@@ -2156,7 +2203,7 @@ if (!STABILITY_MODE) {
 
   _csvPromise = _fetchCSVWithFallback(['schools.csv', '804schools.csv'])
     .then(function(text) {
-      var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional'];
+      var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional','private'];
       var missingCounties = new Set();
       var duplicateNames = [];
 
@@ -2346,6 +2393,10 @@ function applySchoolFilter() {
     var show;
     if (d.county === 'regional') {
       show = schoolFilter.regional && highOn && anyCountyOn;
+    } else if (d.county === 'private') {
+      // Private schools aren't zoned to a public division, so the Private
+      // toggle alone controls them — independent of the level/county chips.
+      show = schoolFilter.private;
     } else {
       show = schoolFilter.levels[d.level] && schoolFilter.counties[d.county];
     }
@@ -2462,7 +2513,9 @@ function loadSchools() {
         if (seen.has(key)) return;
         seen.add(key);
 
-        var col = LEVEL_COLORS[level];
+        var col = county === 'regional' ? REGIONAL_COLOR :
+                  county === 'private'  ? PRIVATE_COLOR  :
+                  LEVEL_COLORS[level];
         if (!col) return; // failsafe for unexpected level values
         var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
         var sm = L.circleMarker([lat, lon], {
@@ -2545,6 +2598,17 @@ window.toggleSfpCollapse = function() {
       schoolFilter.regional = !schoolFilter.regional;
       this.classList.toggle('off', !schoolFilter.regional);
       this.setAttribute('aria-pressed', schoolFilter.regional ? 'true' : 'false');
+      if (schoolsLoaded && schoolsVisible) applySchoolFilter();
+    });
+  }
+  // Private Schools toggle — separate boolean, off by default, independent of
+  // level/county chips (private schools aren't zoned to a public division).
+  var privateBtn = document.getElementById('sfp-private');
+  if (privateBtn) {
+    privateBtn.addEventListener('click', function() {
+      schoolFilter.private = !schoolFilter.private;
+      this.classList.toggle('off', !schoolFilter.private);
+      this.setAttribute('aria-pressed', schoolFilter.private ? 'true' : 'false');
       if (schoolsLoaded && schoolsVisible) applySchoolFilter();
     });
   }
@@ -2766,7 +2830,7 @@ mapEl.addEventListener('mouseleave', () => {
 
 // Touch events — preventDefault stops the page scrolling while drawing
 mapEl.addEventListener('touchstart', e => {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   // Two or more fingers = pinch/zoom — cancel any in-progress drawing, let Leaflet handle
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -2775,7 +2839,7 @@ mapEl.addEventListener('touchstart', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchmove', e => {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   // Second finger joined mid-stroke — abort drawing, let Leaflet zoom
   if (e.touches.length > 1) { cancelInProgress(); return; }
   e.preventDefault();
@@ -2784,7 +2848,7 @@ mapEl.addEventListener('touchmove', e => {
 }, { passive: false });
 
 mapEl.addEventListener('touchend', e => {
-  if (mode === 'pan' || mode === 'none' || mode === 'search') return;
+  if (mode === 'none' || mode === 'search') return;
   e.preventDefault();
   const t = e.changedTouches[0];
   onPointerUp(t.clientX, t.clientY);
@@ -2894,7 +2958,17 @@ function closeShapeProps() {
   // Edit button — enters vertex-editing mode (drag handles to reshape).
   // Snapshots the current geometry first so Cancel (in the edit-mode-bar) can
   // restore it, matches the pattern commitEditSession()/undo already expect.
-  document.getElementById('spp-edit-btn').addEventListener('click', function() {
+function positionEditModeBar() {
+  var bar = document.getElementById('edit-mode-bar');
+  var tb  = document.getElementById('toolbar');
+  if (!bar || !tb) return;
+  bar.style.top = tb.getBoundingClientRect().bottom + 'px';
+}
+window.addEventListener('resize', function() {
+  if (document.getElementById('edit-mode-bar').classList.contains('active')) positionEditModeBar();
+});
+
+document.getElementById('spp-edit-btn').addEventListener('click', function() {
     if (!_sppLayer || typeof _sppLayer.enableEdit !== 'function') return;
     if (_sppLayer instanceof L.Circle) {
       _editOrigCenter = _sppLayer.getLatLng();
@@ -2905,6 +2979,7 @@ function closeShapeProps() {
     map.dragging.disable();
     panel.classList.remove('open');
     try { _sppLayer.enableEdit(); } catch(e) { console.warn('enableEdit error:', e); }
+    positionEditModeBar();
     document.getElementById('edit-mode-bar').classList.add('active');
     this.classList.add('editing');
     _vertexEditActive = true;

@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.24 15_30                                 ║
+  ║  SITE VERSION: 26.08.27 09_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -54,15 +54,15 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
+  .hero{background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+    text-transform:uppercase;color:var(--red);margin:0 0 9px;display:flex;align-items:center;gap:10px;}
   .eyebrow::before{content:'';display:inline-block;width:26px;height:2px;background:var(--red);}
-  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(32px,5.6vw,52px);line-height:1.05;
-    letter-spacing:-.01em;margin:0 0 10px;}
+  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;
+    letter-spacing:-.01em;margin:0 0 8px;}
   h1 span{color:var(--red);}
-  .sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
+  .sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:600;font-size:13px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
   .sub b{color:var(--white);}
 
   .status-bar{margin:14px 20px 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
@@ -163,9 +163,12 @@
   .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
   .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
   .stand-card .desc{font-size:19px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;padding-right:4px;}
-  .stand-card .website{margin-top:6px;}
-  .stand-card .website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
-  .stand-card .website a:hover{text-decoration:underline;}
+  .stand-card .card-links{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:8px;}
+  .stand-card .website{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
+  .stand-card .website:hover{text-decoration:underline;}
+  .stand-card .card-dir{display:inline-flex;align-items:center;gap:5px;color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
+  .stand-card .card-dir svg{flex-shrink:0;}
+  .stand-card .card-dir:hover{text-decoration:underline;}
   .hidden{display:none !important;}
   .empty-state{margin:20px;padding:30px;text-align:center;color:var(--gray-muted);font-size:14px;
     background:var(--gray-light);border:1px dashed var(--gray-mid);border-radius:12px;}
@@ -225,6 +228,13 @@
   .submit-note{font-size:11.5px;color:var(--gray-muted);margin-top:10px;text-align:center;}
   @media(max-width:480px){
     .leaflet-popup-content-wrapper{max-width:265px;}
+    /* Leaflet's popup-tip triangle adds ~10-12px of extra visual space below
+       the content box that has no equivalent on the right side. At this
+       narrower mobile width that asymmetry becomes noticeable around the
+       Directions button — desktop popups are wide enough that it's not
+       obvious. Trim the bottom margin here (right stays 20px, matching
+       desktop) so the two gaps read as equal once the tip is factored in. */
+    .leaflet-popup-content{margin:16px 20px 9px !important;}
     #map{height:380px;}
   }
 </style>
@@ -273,7 +283,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.24 15_30</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 09_15</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -505,7 +515,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.24 15_30';
+const SITE_VERSION = '26.08.27 09_15';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -628,7 +638,13 @@ function cardHtml(s, catInfo){
     ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="desc">${s.desc || ''}</div>
-    ${s.website ? `<div class="website"><a href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a></div>` : ''}
+    <div class="card-links">
+      ${s.website ? `<a class="website" href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a>` : ''}
+      <a class="card-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Get Directions
+      </a>
+    </div>
   `;
 }
 
