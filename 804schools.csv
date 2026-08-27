@@ -17,6 +17,7 @@ Hanover,Middle,Bell Creek Middle School
 Hanover,Middle,Chickahominy Middle School
 Hanover,Middle,Liberty Middle School
 Hanover,Middle,Oak Knoll Middle School
+Hanover,High,The Georgetown School
 Hanover,High,Atlee High School
 Hanover,High,Hanover High School
 Hanover,High,Mechanicsville High School
@@ -89,7 +90,7 @@ Henrico,High,Highland Springs High School
 Henrico,High,John Randolph Tucker High School
 Henrico,High,Mills E. Godwin High School
 Henrico,High,Varina High School
-Henrico,Other,Henrico Virtual Academy
+Henrico,High,The Academy at Virginia Randolph
 ,,
 Chesterfield,Elementary,Crestwood Elementary School
 Chesterfield,Elementary,C.E. Curtis Elementary School
@@ -143,6 +144,22 @@ New Kent,Other,Bridging Communities STEM Academy
 ,,
 Regional,High,CodeRVA Regional High School
 Regional,High,Maggie L. Walker Governor's School for Government & International Studies
-Regional,High,Appomattox Regional Governor's School for the Arts and Technology
-Regional,High,Blue Ridge Governor's School
-Regional,High,Commonwealth Governor's School
+,,
+Private,,Collegiate School
+Private,,St. Christopher's School
+Private,,St. Catherine's School
+Private,,The Steward School
+Private,,Trinity Episcopal School
+Private,,Saint Gertrude High School
+Private,,Benedictine College Preparatory
+Private,,Veritas School
+Private,,The New Community School
+Private,,Millwood School
+Private,,Blessed Sacrament Huguenot School
+Private,,St. Michael's Episcopal School
+Private,,Sabot at Stony Point
+Private,,Orchard House School
+Private,,St. Edward-Epiphany Catholic School
+Private,,St. Bridget Catholic School
+Private,,St. Mary's Catholic School
+Private,,Our Lady of Lourdes Catholic School
