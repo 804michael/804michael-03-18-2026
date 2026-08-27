@@ -43,7 +43,11 @@
 }
 #nav.scrolled{height:56px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
 .nav-in{
-  max-width:1200px;margin:0 auto;padding:0 24px;
+  /* No max-width/centering here on purpose — the logo and nav items anchor
+     directly to the real viewport edges via padding, so the logo stays put
+     in the corner at any window width instead of drifting inward once the
+     page is wider than an old fixed max-width container. */
+  margin:0;padding:0 16px;
   height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
 }
 .nlogo{display:flex;align-items:center;flex-shrink:0}

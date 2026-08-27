@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.27 09_15                                 ║
+  ║  SITE VERSION: 26.08.27 10_40                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -62,7 +62,7 @@
   h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;
     letter-spacing:-.01em;margin:0 0 8px;}
   h1 span{color:var(--red);}
-  .sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:600;font-size:13px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
+  .sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:400;font-size:13px;color:rgba(255,255,255,.75);}
   .sub b{color:var(--white);}
 
   .status-bar{margin:14px 20px 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
@@ -163,7 +163,7 @@
   .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
   .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
   .stand-card .desc{font-size:19px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;padding-right:4px;}
-  .stand-card .card-links{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:8px;}
+  .stand-card .card-links{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;}
   .stand-card .website{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
   .stand-card .website:hover{text-decoration:underline;}
   .stand-card .card-dir{display:inline-flex;align-items:center;gap:5px;color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
@@ -283,7 +283,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 09_15</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 10_40</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -515,7 +515,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.27 09_15';
+const SITE_VERSION = '26.08.27 10_40';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -639,10 +639,10 @@ function cardHtml(s, catInfo){
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="desc">${s.desc || ''}</div>
     <div class="card-links">
-      ${s.website ? `<a class="website" href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a>` : ''}
+      ${s.website ? `<a class="website" href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Website</a>` : ''}
       <a class="card-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        Get Directions
+        Directions
       </a>
     </div>
   `;
