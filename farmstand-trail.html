@@ -944,5 +944,28 @@ submitBtn.addEventListener('click', async ()=>{
   }
 });
 </script>
+
+<script>
+// ── Keep the black hero bar flush against the real nav bar ─────────────────
+// body's padding-top (which pushes .hero down below the fixed nav) was a
+// static calc() off --banner-h/--nav-h. If the actual rendered promo banner
+// doesn't match that assumed height (or isn't there at all on load yet),
+// that leaves a visible white gap between the nav and the hero — same root
+// cause as the equivalent fix on the Draw-Your-Search map page. Measuring
+// #nav's real, live position sidesteps the mismatch entirely, and a
+// ResizeObserver catches the nav's own 68px→56px scroll-shrink too.
+function _fixHeroOffset() {
+  var navEl = document.getElementById('nav');
+  if (navEl) document.body.style.paddingTop = navEl.getBoundingClientRect().bottom + 'px';
+}
+window.addEventListener('navReady', function() {
+  _fixHeroOffset();
+  var navEl = document.getElementById('nav');
+  if (navEl && window.ResizeObserver) {
+    new ResizeObserver(_fixHeroOffset).observe(navEl);
+  }
+});
+window.addEventListener('resize', _fixHeroOffset);
+</script>
 </body>
 </html>

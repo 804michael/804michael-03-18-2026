@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 15_30                                 ║
+  ║  MAP VERSION: 26.08.27 16_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1138,7 +1138,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 15_30</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 16_45</p>
   </div>
 </div>
 
@@ -1176,7 +1176,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 15_30';
+const MAP_VERSION = '26.08.27 16_45';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2406,17 +2406,17 @@ function _csvLookup(name) {
 
 function applySchoolFilter() {
   schoolGroup.clearLayers();
-  // Regional/magnet schools (e.g. CodeRVA) show when: the Magnet/Regional toggle is on,
-  // High School level is on, AND at least one county is on.
-  var anyCountyOn = Object.keys(schoolFilter.counties).some(function(k) { return schoolFilter.counties[k]; });
-  var highOn = schoolFilter.levels['high'];
   schoolData.forEach(function(d) {
     var show;
     if (d.county === 'regional') {
-      show = schoolFilter.regional && highOn && anyCountyOn;
+      // Regional/magnet schools (e.g. CodeRVA, Maggie Walker) aren't zoned to
+      // a single division, so the toggle alone controls them now — same
+      // independent behavior as Private Schools, and no longer gated behind
+      // also having a county checkbox and High School both on.
+      show = schoolFilter.regional;
     } else if (d.county === 'private') {
-      // Private schools aren't zoned to a public division, so the Private
-      // toggle alone controls them — independent of the level/county chips.
+      // Private schools aren't zoned to a public division either, so the
+      // Private toggle alone controls them — independent of level/county chips.
       show = schoolFilter.private;
     } else {
       show = schoolFilter.levels[d.level] && schoolFilter.counties[d.county];
@@ -4138,7 +4138,19 @@ window.addEventListener('load', function() { updateLayout(); setTimeout(updateLa
 window.addEventListener('resize', updateLayout);
 // The shared nav/banner (loaded async by nav.js) arrives after DOMContentLoaded/load —
 // re-measure once it's actually in the DOM so --banner-h and --chrome-h are accurate.
-window.addEventListener('navReady', function() { updateLayout(); });
+window.addEventListener('navReady', function() {
+  updateLayout();
+  // #nav shrinks 68px→56px when nav.js adds .scrolled on scroll — that
+  // resize wasn't triggering a re-measure, so .pg-header (pinned to nav's
+  // real bottom edge) stayed put at the taller position, opening a gap
+  // between the nav and the black header the moment the page scrolled at
+  // all. A ResizeObserver catches that height change directly, regardless
+  // of what triggers it.
+  var navEl = document.getElementById('nav');
+  if (navEl && window.ResizeObserver) {
+    new ResizeObserver(function() { updateLayout(); }).observe(navEl);
+  }
+});
 // ResizeObserver keeps toolbar height accurate when it wraps to 2 rows
 (function() {
   var toolbar = document.getElementById('toolbar');
