@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 17_10                                 ║
+  ║  MAP VERSION: 26.08.27 17_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -256,7 +256,14 @@
       border-radius:16px;
       padding:18px 26px 16px;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:10px;pointer-events:none;z-index:700;
+      gap:10px;pointer-events:none;
+      /* Was z-index:700 — lower than the toolbar (800) and pg-header (850).
+         Before the header shrinks (collapsePgHeader), the map area starts
+         further down, and this toast's own 50%-centered position could land
+         underneath those fixed elements, which then painted over it since
+         they had the higher z-index. Bumped above all normal page chrome so
+         it's always on top regardless of header state. */
+      z-index:9400;
       width:auto;max-width:min(88vw,360px);min-width:220px;
       box-shadow:0 8px 36px rgba(0,0,0,.45);
       opacity:0;transition:opacity .35s;
@@ -899,8 +906,8 @@
       </button>
       <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18.5 12.8c0 4.6-3 8.7-6.5 8.7s-6.5-4.1-6.5-8.7C5.5 8.8 8 6 10.5 6c.6 0 1.1.2 1.5.5.4-.3.9-.5 1.5-.5 2.5 0 5 2.8 5 6.8z"/>
-          <path d="M12 6c0-2 1-3 2.5-3.5"/>
+          <circle cx="12" cy="14" r="7.5"/>
+          <line x1="12" y1="6.5" x2="12" y2="3.5"/>
         </svg>
         <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
       </button>
@@ -962,15 +969,15 @@
     <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
       <span class="sfp-dot" style="background:#DA291C"></span>High School
     </button>
-    <button class="sfp-level off" id="sfp-regional" data-regional="true" aria-pressed="false" title="Magnet / regional schools (e.g. CodeRVA) that draw from multiple counties">
-      <span class="sfp-dot" style="background:#8e24aa"></span>Magnet/Regional
+    <button class="sfp-level off" id="sfp-regional" data-regional="true" aria-pressed="false" title="Regional/magnet schools (e.g. CodeRVA) that draw from multiple counties">
+      <span class="sfp-dot" style="background:#8e24aa"></span>Regional
     </button>
     <button class="sfp-level off" id="sfp-private" data-private="true" aria-pressed="false" title="Private schools">
       <span class="sfp-dot" style="background:#00897b"></span>Private Schools
     </button>
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
-    <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
+    <button class="sfp-county off" data-county="henrico"      aria-pressed="false">Henrico</button>
     <button class="sfp-county off" data-county="chesterfield" aria-pressed="false">Chesterfield</button>
     <button class="sfp-county off" data-county="richmond"     aria-pressed="false">Richmond City</button>
     <!-- More button reveals extra counties -->
@@ -1138,7 +1145,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 17_10</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 17_45</p>
   </div>
 </div>
 
@@ -1176,7 +1183,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 17_10';
+const MAP_VERSION = '26.08.27 17_45';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2159,7 +2166,7 @@ var schoolData = [];
 // categories the user opts into, not part of the standard public-school view.
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
-  counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
+  counties: { hanover: true, henrico: false, richmond: false, chesterfield: false,
                powhatan: false, goochland: false, newkent: false },
   regional: false,
   private:  false
@@ -2556,7 +2563,7 @@ function loadSchools() {
       schoolData.filter(function(d){return d.county==='regional';}).length + ' regional, ' +
       schoolData.filter(function(d){return d.county==='private';}).length + ' private. ' +
       'If either is 0, the CSV lat/lon aren\u2019t being read for those rows. ' +
-      'If both are >0 but nothing shows on the map, the Magnet/Regional or Private Schools toggle is simply off \u2014 check schoolFilter.regional / schoolFilter.private in the console.');
+      'If both are >0 but nothing shows on the map, the Regional or Private Schools toggle is simply off \u2014 check schoolFilter.regional / schoolFilter.private in the console.');
 
     const bbox = '37.1,-78.0,38.2,-76.9';
     const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
@@ -2657,7 +2664,7 @@ window.toggleSfpCollapse = function() {
       if (schoolsLoaded && schoolsVisible) applySchoolFilter();
     });
   });
-  // Magnet/Regional toggle — separate boolean, not part of levels or counties
+  // Regional toggle — separate boolean, not part of levels or counties
   var regionalBtn = document.getElementById('sfp-regional');
   if (regionalBtn) {
     regionalBtn.addEventListener('click', function() {
