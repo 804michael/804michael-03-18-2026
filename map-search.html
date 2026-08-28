@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 11_20                                 ║
+  ║  MAP VERSION: 26.08.27 19_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -256,7 +256,14 @@
       border-radius:16px;
       padding:18px 26px 16px;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:10px;pointer-events:none;z-index:700;
+      gap:10px;pointer-events:none;
+      /* Was z-index:700 — lower than the toolbar (800) and pg-header (850).
+         Before the header shrinks (collapsePgHeader), the map area starts
+         further down, and this toast's own 50%-centered position could land
+         underneath those fixed elements, which then painted over it since
+         they had the higher z-index. Bumped above all normal page chrome so
+         it's always on top regardless of header state. */
+      z-index:9400;
       width:auto;max-width:min(88vw,360px);min-width:220px;
       box-shadow:0 8px 36px rgba(0,0,0,.45);
       opacity:0;transition:opacity .35s;
@@ -898,13 +905,11 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
-        <svg width="17" height="14" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
-          <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <path d="M16 7C16 5 16 4 18 3"/>
-          <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 9.5 12 5l10 4.5-10 4.5L2 9.5z"/>
+          <path d="M6 11.5v4.5c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5" fill="none"/>
+          <path d="M21 9.5v6" stroke-linecap="round"/>
         </svg>
-        <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
       </button>
       <!-- Publix toggle — same pattern as schools -->
       <button class="tool-btn" id="btn-publix" onclick="togglePublix()" data-tip="Show Publix stores" aria-label="Show Publix stores">
@@ -964,15 +969,15 @@
     <button class="sfp-level" id="sfp-high" data-level="high" aria-pressed="true">
       <span class="sfp-dot" style="background:#DA291C"></span>High School
     </button>
-    <button class="sfp-level off" id="sfp-regional" data-regional="true" aria-pressed="false" title="Magnet / regional schools (e.g. CodeRVA) that draw from multiple counties">
-      <span class="sfp-dot" style="background:#8e24aa"></span>Magnet/Regional
+    <button class="sfp-level off" id="sfp-regional" data-regional="true" aria-pressed="false" title="Regional/magnet schools (e.g. CodeRVA) that draw from multiple counties">
+      <span class="sfp-dot" style="background:#8e24aa"></span>Regional
     </button>
     <button class="sfp-level off" id="sfp-private" data-private="true" aria-pressed="false" title="Private schools">
       <span class="sfp-dot" style="background:#00897b"></span>Private Schools
     </button>
     <span class="sfp-sep"></span>
     <button class="sfp-county"     data-county="hanover"      aria-pressed="true">Hanover</button>
-    <button class="sfp-county"     data-county="henrico"      aria-pressed="true">Henrico</button>
+    <button class="sfp-county off" data-county="henrico"      aria-pressed="false">Henrico</button>
     <button class="sfp-county off" data-county="chesterfield" aria-pressed="false">Chesterfield</button>
     <button class="sfp-county off" data-county="richmond"     aria-pressed="false">Richmond City</button>
     <!-- More button reveals extra counties -->
@@ -1140,7 +1145,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 11_20</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 19_30</p>
   </div>
 </div>
 
@@ -1178,7 +1183,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 11_20';
+const MAP_VERSION = '26.08.27 19_30';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2161,7 +2166,7 @@ var schoolData = [];
 // categories the user opts into, not part of the standard public-school view.
 var schoolFilter = {
   levels:   { elementary: true, middle: true, high: true },
-  counties: { hanover: true, henrico: true, richmond: false, chesterfield: false,
+  counties: { hanover: true, henrico: false, richmond: false, chesterfield: false,
                powhatan: false, goochland: false, newkent: false },
   regional: false,
   private:  false
@@ -2198,13 +2203,19 @@ if (!STABILITY_MODE) {
       if (i >= paths.length) return Promise.reject(new Error('No CSV found at: ' + paths.join(', ')));
       return fetch(paths[i]).then(function(r) {
         if (!r.ok) throw new Error('404 at ' + paths[i]);
+        console.log('[schools.csv] fetched from: ' + paths[i]);
         return r.text();
       }).catch(function() { return tryPath(i + 1); });
     }
     return tryPath(0);
   }
 
-  _csvPromise = _fetchCSVWithFallback(['schools.csv', '804schools.csv'])
+  // 804schools.csv first — that's the file actually being maintained (lat/lon,
+  // private schools, etc.). 'schools.csv' is a legacy fallback name only, and
+  // must NOT be left sitting on the server as a stale duplicate: if it exists,
+  // it'll never be reached since 804schools.csv is checked first, but an old
+  // schools.csv is still worth deleting so nobody edits the wrong file by habit.
+  _csvPromise = _fetchCSVWithFallback(['804schools.csv', 'schools.csv'])
     .then(function(text) {
       var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional','private'];
       var missingCounties = new Set();
@@ -2312,7 +2323,7 @@ if (!STABILITY_MODE) {
         if (SCHOOL_CSV_MAP[key] && SCHOOL_CSV_MAP[key].county !== county) {
           duplicateNames.push(key + ' (' + SCHOOL_CSV_MAP[key].county + ' \u2192 ' + county + ')');
         }
-        SCHOOL_CSV_MAP[key] = { name: rawName.trim(), county: county, level: level, lat: lat, lon: lon };
+        SCHOOL_CSV_MAP[key] = { name: rawName.trim(), county: county, level: level, rawLevel: rawLevel, lat: lat, lon: lon };
 
         if (!knownCounties.includes(county) && county !== 'caroline') {
           missingCounties.add(county);
@@ -2408,17 +2419,17 @@ function _csvLookup(name) {
 
 function applySchoolFilter() {
   schoolGroup.clearLayers();
-  // Regional/magnet schools (e.g. CodeRVA) show when: the Magnet/Regional toggle is on,
-  // High School level is on, AND at least one county is on.
-  var anyCountyOn = Object.keys(schoolFilter.counties).some(function(k) { return schoolFilter.counties[k]; });
-  var highOn = schoolFilter.levels['high'];
   schoolData.forEach(function(d) {
     var show;
     if (d.county === 'regional') {
-      show = schoolFilter.regional && highOn && anyCountyOn;
+      // Regional/magnet schools (e.g. CodeRVA, Maggie Walker) aren't zoned to
+      // a single division, so the toggle alone controls them now — same
+      // independent behavior as Private Schools, and no longer gated behind
+      // also having a county checkbox and High School both on.
+      show = schoolFilter.regional;
     } else if (d.county === 'private') {
-      // Private schools aren't zoned to a public division, so the Private
-      // toggle alone controls them — independent of the level/county chips.
+      // Private schools aren't zoned to a public division either, so the
+      // Private toggle alone controls them — independent of level/county chips.
       show = schoolFilter.private;
     } else {
       show = schoolFilter.levels[d.level] && schoolFilter.counties[d.county];
@@ -2505,18 +2516,25 @@ function loadSchools() {
 
   // Builds one school's circleMarker + tooltip. Shared by both the direct-
   // CSV-coordinate path and the Overpass name-search path below, so a school
-  // looks identical either way it was located.
-  function _makeSchoolMarker(name, lat, lon, level, county) {
+  // looks identical either way it was located. Tooltip is just the school
+  // name for public/regional schools — the level is normally baked into the
+  // name already ("Ashland Elementary School"). Private schools are the
+  // exception: their names rarely say what grades they serve ("Collegiate
+  // School"), so those get the grade range from the CSV appended, shown
+  // exactly as entered (e.g. "PK-12") rather than forced into the
+  // elementary/middle/high buckets that don't really fit a K-12 school.
+  function _makeSchoolMarker(name, lat, lon, level, county, rawLevel) {
     var col = county === 'regional' ? REGIONAL_COLOR :
               county === 'private'  ? PRIVATE_COLOR  :
               LEVEL_COLORS[level];
     if (!col) return null; // failsafe for unexpected level values
-    var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
+    var tooltipText = name;
+    if (county === 'private' && rawLevel) tooltipText += ' \u2022 ' + rawLevel;
     var sm = L.circleMarker([lat, lon], {
       radius: 7, color: col.stroke, weight: 2,
       fillColor: col.fill, fillOpacity: 0.9,
       interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-    }).bindTooltip(name + ' \u2022 ' + lvLabel, {
+    }).bindTooltip(tooltipText, {
       permanent: false, direction: 'top', offset: [0, -10],
       className: 'dist-tip', pane: 'tooltipPane'
     });
@@ -2536,11 +2554,16 @@ function loadSchools() {
       var entry = SCHOOL_CSV_MAP[key];
       if (entry.lat === undefined || entry.lon === undefined || entry.county === 'caroline') return;
       var level = entry.level === 'other' ? 'high' : entry.level;
-      var sm = _makeSchoolMarker(entry.name, entry.lat, entry.lon, level, entry.county);
+      var sm = _makeSchoolMarker(entry.name, entry.lat, entry.lon, level, entry.county, entry.rawLevel);
       if (!sm) return;
       geocodedKeys.add(key);
       schoolData.push({ marker: sm, level: level, county: entry.county });
     });
+    console.log('[schools] placed ' + geocodedKeys.size + ' schools directly from CSV lat/lon \u2014 ' +
+      schoolData.filter(function(d){return d.county==='regional';}).length + ' regional, ' +
+      schoolData.filter(function(d){return d.county==='private';}).length + ' private. ' +
+      'If either is 0, the CSV lat/lon aren\u2019t being read for those rows. ' +
+      'If both are >0 but nothing shows on the map, the Regional or Private Schools toggle is simply off \u2014 check schoolFilter.regional / schoolFilter.private in the console.');
 
     const bbox = '37.1,-78.0,38.2,-76.9';
     const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
@@ -2575,7 +2598,7 @@ function loadSchools() {
         if (geocodedKeys.has(key)) return;
         seen.add(key);
 
-        var sm = _makeSchoolMarker(name, lat, lon, level, county);
+        var sm = _makeSchoolMarker(name, lat, lon, level, county, csvEntry.rawLevel);
         if (!sm) return;
         schoolData.push({ marker: sm, level: level, county: county });
       });
@@ -2641,7 +2664,7 @@ window.toggleSfpCollapse = function() {
       if (schoolsLoaded && schoolsVisible) applySchoolFilter();
     });
   });
-  // Magnet/Regional toggle — separate boolean, not part of levels or counties
+  // Regional toggle — separate boolean, not part of levels or counties
   var regionalBtn = document.getElementById('sfp-regional');
   if (regionalBtn) {
     regionalBtn.addEventListener('click', function() {
@@ -4046,8 +4069,30 @@ function goToMyLocation() {
 function updateLayout() {
   var pgHeader  = document.querySelector('.pg-header');
   var banner    = document.getElementById('banner');
+  var navEl     = document.getElementById('nav');
   var toolbarEl = document.getElementById('toolbar');
   if (!pgHeader) return;
+
+  // Pin pg-header directly to the real bottom edge of the nav bar, measured
+  // live from the DOM, instead of trusting the --banner-h/--nav-h calc chain.
+  // That chain could leave a visible white gap between the nav and the black
+  // header whenever the promo banner reports a stale/default height (from
+  // nav.css's --banner-h:38px fallback) before JS has fully settled, or when
+  // this page's nav-partial.html doesn't include a banner at all — measuring
+  // #nav's own rendered position sidesteps that entirely.
+  if (navEl) {
+    pgHeader.style.top = navEl.getBoundingClientRect().bottom + 'px';
+  }
+
+  // Same fix, one level down: pin the toolbar directly to pg-header's real
+  // bottom edge instead of the --pgheader-h calc chain. pg-header now moves
+  // via direct JS positioning above, but the toolbar's CSS was still using
+  // calc(--banner-h + --nav-h + --pgheader-h) — a separate, slightly-lagging
+  // path to the same number, which is exactly what let the toolbar drift out
+  // of sync with the header it's supposed to sit flush against.
+  if (toolbarEl) {
+    toolbarEl.style.top = pgHeader.getBoundingClientRect().bottom + 'px';
+  }
 
   var pgH      = pgHeader.getBoundingClientRect().height;
   var toolbarH = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
@@ -4061,9 +4106,10 @@ function updateLayout() {
   var bannerH = (banner && banner.style.display !== 'none')
                   ? banner.getBoundingClientRect().height
                   : 0;
-  // Keep --banner-h accurate so toolbar top and pg-header top stay correct
+  // Keep --banner-h accurate so toolbar top stays correct
   document.documentElement.style.setProperty('--banner-h', bannerH + 'px');
-  var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || (window.innerWidth <= 768 ? 48 : 68);
+  var navH    = navEl ? navEl.getBoundingClientRect().height
+                      : (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || (window.innerWidth <= 768 ? 48 : 68));
   var chromeH = bannerH + navH + pgH + toolbarH;
   document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
 
@@ -4115,7 +4161,28 @@ window.addEventListener('load', function() { updateLayout(); setTimeout(updateLa
 window.addEventListener('resize', updateLayout);
 // The shared nav/banner (loaded async by nav.js) arrives after DOMContentLoaded/load —
 // re-measure once it's actually in the DOM so --banner-h and --chrome-h are accurate.
-window.addEventListener('navReady', function() { updateLayout(); });
+window.addEventListener('navReady', function() {
+  updateLayout();
+  // #nav shrinks 68px→56px when nav.js adds .scrolled on scroll — that
+  // resize wasn't triggering a re-measure, so .pg-header (pinned to nav's
+  // real bottom edge) stayed put at the taller position, opening a gap
+  // between the nav and the black header the moment the page scrolled at
+  // all. A ResizeObserver catches that height change directly, regardless
+  // of what triggers it.
+  var navEl = document.getElementById('nav');
+  if (navEl && window.ResizeObserver) {
+    new ResizeObserver(function() { updateLayout(); }).observe(navEl);
+  }
+  // Belt-and-suspenders: also watch .pg-header itself for any height change
+  // not already covered by the explicit calls in collapsePgHeader() and the
+  // window resize listener — e.g. a font finishing its async load and
+  // reflowing the headline by a few pixels. Keeps the toolbar snug against
+  // it no matter what causes the header's height to move.
+  var pgHeaderEl = document.querySelector('.pg-header');
+  if (pgHeaderEl && window.ResizeObserver) {
+    new ResizeObserver(function() { updateLayout(); }).observe(pgHeaderEl);
+  }
+});
 // ResizeObserver keeps toolbar height accurate when it wraps to 2 rows
 (function() {
   var toolbar = document.getElementById('toolbar');

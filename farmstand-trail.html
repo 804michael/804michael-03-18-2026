@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.27 10_40                                 ║
+  ║  SITE VERSION: 26.08.27 16_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -283,7 +283,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 10_40</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 16_45</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -515,7 +515,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.27 10_40';
+const SITE_VERSION = '26.08.27 16_45';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -943,6 +943,29 @@ submitBtn.addEventListener('click', async ()=>{
     submitBtn.textContent = 'Submit';
   }
 });
+</script>
+
+<script>
+// ── Keep the black hero bar flush against the real nav bar ─────────────────
+// body's padding-top (which pushes .hero down below the fixed nav) was a
+// static calc() off --banner-h/--nav-h. If the actual rendered promo banner
+// doesn't match that assumed height (or isn't there at all on load yet),
+// that leaves a visible white gap between the nav and the hero — same root
+// cause as the equivalent fix on the Draw-Your-Search map page. Measuring
+// #nav's real, live position sidesteps the mismatch entirely, and a
+// ResizeObserver catches the nav's own 68px→56px scroll-shrink too.
+function _fixHeroOffset() {
+  var navEl = document.getElementById('nav');
+  if (navEl) document.body.style.paddingTop = navEl.getBoundingClientRect().bottom + 'px';
+}
+window.addEventListener('navReady', function() {
+  _fixHeroOffset();
+  var navEl = document.getElementById('nav');
+  if (navEl && window.ResizeObserver) {
+    new ResizeObserver(_fixHeroOffset).observe(navEl);
+  }
+});
+window.addEventListener('resize', _fixHeroOffset);
 </script>
 </body>
 </html>

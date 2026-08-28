@@ -54,8 +54,24 @@
 .nlogo-804{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.75rem;line-height:1;color:var(--black,#111);letter-spacing:-.02em}
 .nlogo-m{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.4rem;line-height:1;color:var(--red,#DA291C);margin-left:3px}
 
-.nav-links{display:flex;align-items:stretch;align-self:stretch;gap:24px;list-style:none;margin:0;padding:0}
-.nav-links>li{position:relative;display:flex;align-items:center}
+.nav-links{display:flex;align-items:center;gap:24px;list-style:none;margin:0;padding:0}
+.nav-links>li{position:relative;}
+/* Second, independent hover-bridge — separate from .nav-dropdown::before's own
+   12px bridge above the dropdown box. This one is anchored to the LI itself
+   (top:100%, li's real un-modified bottom edge) and reaches generously
+   downward and outward, covering rounding/timing slop right at the seam
+   between the link and the dropdown's own bridge that could otherwise let
+   a fast or slightly-off-course pointer momentarily leave the hover tree
+   and cause the dropdown to close ("roll up") before the pointer reaches it.
+   Deliberately NOT implemented as padding on the LI — that would also shift
+   the dropdown's own top:calc(100% + 12px) position, since both measure off
+   the same padding-box percentage, undoing the fix as a side effect. */
+.nav-links>li::after{
+  content:'';
+  position:absolute;
+  top:100%; left:-24px; right:-24px;
+  height:26px;
+}
 .nav-links>li>a,.nav-links>li>button.nav-btn{
   font-family:'Barlow Condensed',sans-serif;font-weight:700;
   font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--black,#111);
