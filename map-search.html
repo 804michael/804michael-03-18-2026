@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 17_45                                 ║
+  ║  MAP VERSION: 26.08.27 18_10                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -906,10 +906,9 @@
       </button>
       <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="14" r="7.5"/>
-          <line x1="12" y1="6.5" x2="12" y2="3.5"/>
+          <path d="M18.5 12.8c0 4.6-3 8.7-6.5 8.7s-6.5-4.1-6.5-8.7C5.5 8.8 8 6 10.5 6c.6 0 1.1.2 1.5.5.4-.3.9-.5 1.5-.5 2.5 0 5 2.8 5 6.8z"/>
+          <path d="M12 6c0-2 1-3 2.5-3.5"/>
         </svg>
-        <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
       </button>
       <!-- Publix toggle — same pattern as schools -->
       <button class="tool-btn" id="btn-publix" onclick="togglePublix()" data-tip="Show Publix stores" aria-label="Show Publix stores">
@@ -1145,7 +1144,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 17_45</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 18_10</p>
   </div>
 </div>
 
@@ -1183,7 +1182,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 17_45';
+const MAP_VERSION = '26.08.27 18_10';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -4084,6 +4083,16 @@ function updateLayout() {
     pgHeader.style.top = navEl.getBoundingClientRect().bottom + 'px';
   }
 
+  // Same fix, one level down: pin the toolbar directly to pg-header's real
+  // bottom edge instead of the --pgheader-h calc chain. pg-header now moves
+  // via direct JS positioning above, but the toolbar's CSS was still using
+  // calc(--banner-h + --nav-h + --pgheader-h) — a separate, slightly-lagging
+  // path to the same number, which is exactly what let the toolbar drift out
+  // of sync with the header it's supposed to sit flush against.
+  if (toolbarEl) {
+    toolbarEl.style.top = pgHeader.getBoundingClientRect().bottom + 'px';
+  }
+
   var pgH      = pgHeader.getBoundingClientRect().height;
   var toolbarH = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
 
@@ -4162,6 +4171,15 @@ window.addEventListener('navReady', function() {
   var navEl = document.getElementById('nav');
   if (navEl && window.ResizeObserver) {
     new ResizeObserver(function() { updateLayout(); }).observe(navEl);
+  }
+  // Belt-and-suspenders: also watch .pg-header itself for any height change
+  // not already covered by the explicit calls in collapsePgHeader() and the
+  // window resize listener — e.g. a font finishing its async load and
+  // reflowing the headline by a few pixels. Keeps the toolbar snug against
+  // it no matter what causes the header's height to move.
+  var pgHeaderEl = document.querySelector('.pg-header');
+  if (pgHeaderEl && window.ResizeObserver) {
+    new ResizeObserver(function() { updateLayout(); }).observe(pgHeaderEl);
   }
 });
 // ResizeObserver keeps toolbar height accurate when it wraps to 2 rows
