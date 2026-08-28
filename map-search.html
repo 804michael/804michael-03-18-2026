@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 16_45                                 ║
+  ║  MAP VERSION: 26.08.27 17_10                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1138,7 +1138,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 16_45</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 17_10</p>
   </div>
 </div>
 
@@ -1176,7 +1176,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 16_45';
+const MAP_VERSION = '26.08.27 17_10';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2196,13 +2196,19 @@ if (!STABILITY_MODE) {
       if (i >= paths.length) return Promise.reject(new Error('No CSV found at: ' + paths.join(', ')));
       return fetch(paths[i]).then(function(r) {
         if (!r.ok) throw new Error('404 at ' + paths[i]);
+        console.log('[schools.csv] fetched from: ' + paths[i]);
         return r.text();
       }).catch(function() { return tryPath(i + 1); });
     }
     return tryPath(0);
   }
 
-  _csvPromise = _fetchCSVWithFallback(['schools.csv', '804schools.csv'])
+  // 804schools.csv first — that's the file actually being maintained (lat/lon,
+  // private schools, etc.). 'schools.csv' is a legacy fallback name only, and
+  // must NOT be left sitting on the server as a stale duplicate: if it exists,
+  // it'll never be reached since 804schools.csv is checked first, but an old
+  // schools.csv is still worth deleting so nobody edits the wrong file by habit.
+  _csvPromise = _fetchCSVWithFallback(['804schools.csv', 'schools.csv'])
     .then(function(text) {
       var knownCounties = ['hanover','henrico','chesterfield','richmond','powhatan','goochland','newkent','regional','private'];
       var missingCounties = new Set();
