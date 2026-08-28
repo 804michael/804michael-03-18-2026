@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.27 16_45                                 ║
+  ║  SITE VERSION: 26.08.28 09_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -35,7 +35,7 @@
     --black:#111; --white:#fff;
     --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
     --gray-text:#555; --gray-muted:#888;
-    --nav-h:68px; --banner-h:38px;
+    --nav-h:68px; --banner-h:44px;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;
@@ -54,7 +54,19 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;}
+  .hero{
+    background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;
+    /* .page (the parent) is max-width:1100px & centered, which was clipping
+       the hero to that same centered box instead of reaching the true
+       viewport edges on wider screens. This is the standard "full-bleed
+       inside a centered container" trick: stretch to 100vw and pull back
+       with negative margins equal to half the viewport minus half the
+       hero's own width, so it spans edge-to-edge regardless of .page's
+       constraint while everything else inside .page stays centered as before. */
+    width:100vw;
+    margin-left:calc(50% - 50vw);
+    margin-right:calc(50% - 50vw);
+  }
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 9px;display:flex;align-items:center;gap:10px;}
@@ -283,7 +295,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.27 16_45</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.08.28 09_15</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -515,7 +527,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.27 16_45';
+const SITE_VERSION = '26.08.28 09_15';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

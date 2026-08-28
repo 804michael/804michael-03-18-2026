@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 19_30                                 ║
+  ║  MAP VERSION: 26.08.28 09_15                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1145,7 +1145,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 19_30</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.28 09_15</p>
   </div>
 </div>
 
@@ -1183,7 +1183,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 19_30';
+const MAP_VERSION = '26.08.28 09_15';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -4077,7 +4077,7 @@ function updateLayout() {
   // live from the DOM, instead of trusting the --banner-h/--nav-h calc chain.
   // That chain could leave a visible white gap between the nav and the black
   // header whenever the promo banner reports a stale/default height (from
-  // nav.css's --banner-h:38px fallback) before JS has fully settled, or when
+  // nav.css's --banner-h:44px fallback) before JS has fully settled, or when
   // this page's nav-partial.html doesn't include a banner at all — measuring
   // #nav's own rendered position sidesteps that entirely.
   if (navEl) {
@@ -4135,19 +4135,14 @@ function collapsePgHeader() {
   }, 370);
 }
 
-// ── A+B: On mobile, banner hide AND pg-header description collapse fire together ─
+// ── On mobile, the pg-header description collapses after a delay (kept per
+//    your request — "Draw your area shrinks when tool hint fades"). The
+//    promo banner itself used to also auto-hide on mobile after 5s, which
+//    farmstand-trail.html never did — that inconsistency is why the banner
+//    could disappear on this page but not that one. Banner now stays put on
+//    both pages; only the header description collapses.
 if (window.innerWidth <= 768) {
-  setTimeout(function() {
-    var banner = document.getElementById('banner');
-    collapsePgHeader();
-    if (!banner) return; // nav.js hasn't injected it yet — nothing to hide
-    banner.classList.add('hide');
-    setTimeout(function() {
-      banner.style.display = 'none';
-      document.documentElement.style.setProperty('--banner-h', '0px');
-      updateLayout();
-    }, 450);
-  }, 5000);
+  setTimeout(collapsePgHeader, 5000);
 } else {
   // Desktop: collapse after 6 seconds
   setTimeout(collapsePgHeader, 6000);
