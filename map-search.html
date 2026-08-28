@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 14_05                                 ║
+  ║  MAP VERSION: 26.08.27 15_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -898,11 +898,9 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <button class="tool-btn" id="btn-schools" onclick="toggleSchools()" data-tip="Show Schools" aria-label="Show Schools" style="gap:2px">
-        <svg width="17" height="14" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 7c-2.5 0-6.5-1-7.5 2.5S7 15 8 18s4 4.5 6 4.5h4c2 0 4.5-1.5 6-4.5s2-5.5 1-8.5S18.5 7 16 7z"/>
-          <path d="M12 22.5 Q16 19.5 20 22.5" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <path d="M16 7C16 5 16 4 18 3"/>
-          <path d="M18 3C19 2 22 2.5 22 4.5C21 5 18.5 4.5 18 3z"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18.5 12.8c0 4.6-3 8.7-6.5 8.7s-6.5-4.1-6.5-8.7C5.5 8.8 8 6 10.5 6c.6 0 1.1.2 1.5.5.4-.3.9-.5 1.5-.5 2.5 0 5 2.8 5 6.8z"/>
+          <path d="M12 6c0-2 1-3 2.5-3.5"/>
         </svg>
         <svg id="schools-chevron" width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="2,3 5,7 8,3"/></svg>
       </button>
@@ -1140,7 +1138,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 14_05</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 15_30</p>
   </div>
 </div>
 
@@ -1178,7 +1176,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 14_05';
+const MAP_VERSION = '26.08.27 15_30';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2548,6 +2546,11 @@ function loadSchools() {
       geocodedKeys.add(key);
       schoolData.push({ marker: sm, level: level, county: entry.county });
     });
+    console.log('[schools] placed ' + geocodedKeys.size + ' schools directly from CSV lat/lon \u2014 ' +
+      schoolData.filter(function(d){return d.county==='regional';}).length + ' regional, ' +
+      schoolData.filter(function(d){return d.county==='private';}).length + ' private. ' +
+      'If either is 0, the CSV lat/lon aren\u2019t being read for those rows. ' +
+      'If both are >0 but nothing shows on the map, the Magnet/Regional or Private Schools toggle is simply off \u2014 check schoolFilter.regional / schoolFilter.private in the console.');
 
     const bbox = '37.1,-78.0,38.2,-76.9';
     const query = '[out:json][timeout:60];(node["amenity"="school"]('+bbox+');way["amenity"="school"]('+bbox+'););out 600 center;';
@@ -4053,8 +4056,20 @@ function goToMyLocation() {
 function updateLayout() {
   var pgHeader  = document.querySelector('.pg-header');
   var banner    = document.getElementById('banner');
+  var navEl     = document.getElementById('nav');
   var toolbarEl = document.getElementById('toolbar');
   if (!pgHeader) return;
+
+  // Pin pg-header directly to the real bottom edge of the nav bar, measured
+  // live from the DOM, instead of trusting the --banner-h/--nav-h calc chain.
+  // That chain could leave a visible white gap between the nav and the black
+  // header whenever the promo banner reports a stale/default height (from
+  // nav.css's --banner-h:38px fallback) before JS has fully settled, or when
+  // this page's nav-partial.html doesn't include a banner at all — measuring
+  // #nav's own rendered position sidesteps that entirely.
+  if (navEl) {
+    pgHeader.style.top = navEl.getBoundingClientRect().bottom + 'px';
+  }
 
   var pgH      = pgHeader.getBoundingClientRect().height;
   var toolbarH = toolbarEl ? toolbarEl.getBoundingClientRect().height : 52;
@@ -4068,9 +4083,10 @@ function updateLayout() {
   var bannerH = (banner && banner.style.display !== 'none')
                   ? banner.getBoundingClientRect().height
                   : 0;
-  // Keep --banner-h accurate so toolbar top and pg-header top stay correct
+  // Keep --banner-h accurate so toolbar top stays correct
   document.documentElement.style.setProperty('--banner-h', bannerH + 'px');
-  var navH    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || (window.innerWidth <= 768 ? 48 : 68);
+  var navH    = navEl ? navEl.getBoundingClientRect().height
+                      : (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || (window.innerWidth <= 768 ? 48 : 68));
   var chromeH = bannerH + navH + pgH + toolbarH;
   document.documentElement.style.setProperty('--chrome-h', chromeH + 'px');
 
