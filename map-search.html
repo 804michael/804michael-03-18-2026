@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.08.27 11_20                                 ║
+  ║  MAP VERSION: 26.08.27 14_05                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -1140,7 +1140,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 11_20</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.08.27 14_05</p>
   </div>
 </div>
 
@@ -1178,7 +1178,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.08.27 11_20';
+const MAP_VERSION = '26.08.27 14_05';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -2312,7 +2312,7 @@ if (!STABILITY_MODE) {
         if (SCHOOL_CSV_MAP[key] && SCHOOL_CSV_MAP[key].county !== county) {
           duplicateNames.push(key + ' (' + SCHOOL_CSV_MAP[key].county + ' \u2192 ' + county + ')');
         }
-        SCHOOL_CSV_MAP[key] = { name: rawName.trim(), county: county, level: level, lat: lat, lon: lon };
+        SCHOOL_CSV_MAP[key] = { name: rawName.trim(), county: county, level: level, rawLevel: rawLevel, lat: lat, lon: lon };
 
         if (!knownCounties.includes(county) && county !== 'caroline') {
           missingCounties.add(county);
@@ -2505,18 +2505,25 @@ function loadSchools() {
 
   // Builds one school's circleMarker + tooltip. Shared by both the direct-
   // CSV-coordinate path and the Overpass name-search path below, so a school
-  // looks identical either way it was located.
-  function _makeSchoolMarker(name, lat, lon, level, county) {
+  // looks identical either way it was located. Tooltip is just the school
+  // name for public/regional schools — the level is normally baked into the
+  // name already ("Ashland Elementary School"). Private schools are the
+  // exception: their names rarely say what grades they serve ("Collegiate
+  // School"), so those get the grade range from the CSV appended, shown
+  // exactly as entered (e.g. "PK-12") rather than forced into the
+  // elementary/middle/high buckets that don't really fit a K-12 school.
+  function _makeSchoolMarker(name, lat, lon, level, county, rawLevel) {
     var col = county === 'regional' ? REGIONAL_COLOR :
               county === 'private'  ? PRIVATE_COLOR  :
               LEVEL_COLORS[level];
     if (!col) return null; // failsafe for unexpected level values
-    var lvLabel = level === 'elementary' ? 'Elementary' : level === 'middle' ? 'Middle School' : 'High School';
+    var tooltipText = name;
+    if (county === 'private' && rawLevel) tooltipText += ' \u2022 ' + rawLevel;
     var sm = L.circleMarker([lat, lon], {
       radius: 7, color: col.stroke, weight: 2,
       fillColor: col.fill, fillOpacity: 0.9,
       interactive: true, pane: SCHOOL_PANES[level] || 'schoolPaneHigh'
-    }).bindTooltip(name + ' \u2022 ' + lvLabel, {
+    }).bindTooltip(tooltipText, {
       permanent: false, direction: 'top', offset: [0, -10],
       className: 'dist-tip', pane: 'tooltipPane'
     });
@@ -2536,7 +2543,7 @@ function loadSchools() {
       var entry = SCHOOL_CSV_MAP[key];
       if (entry.lat === undefined || entry.lon === undefined || entry.county === 'caroline') return;
       var level = entry.level === 'other' ? 'high' : entry.level;
-      var sm = _makeSchoolMarker(entry.name, entry.lat, entry.lon, level, entry.county);
+      var sm = _makeSchoolMarker(entry.name, entry.lat, entry.lon, level, entry.county, entry.rawLevel);
       if (!sm) return;
       geocodedKeys.add(key);
       schoolData.push({ marker: sm, level: level, county: entry.county });
@@ -2575,7 +2582,7 @@ function loadSchools() {
         if (geocodedKeys.has(key)) return;
         seen.add(key);
 
-        var sm = _makeSchoolMarker(name, lat, lon, level, county);
+        var sm = _makeSchoolMarker(name, lat, lon, level, county, csvEntry.rawLevel);
         if (!sm) return;
         schoolData.push({ marker: sm, level: level, county: county });
       });
