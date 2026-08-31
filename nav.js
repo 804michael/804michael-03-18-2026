@@ -46,6 +46,34 @@
     const mobClose = document.getElementById('mob-close');
     const connectBtn = document.getElementById('connect-btn');
     const connectDd = document.getElementById('connect-dd');
+    const banner = document.getElementById('banner');
+
+    // Keep --banner-h synced to the banner's ACTUAL rendered height, always.
+    // The banner's promo text wraps to a different number of lines depending
+    // on viewport width (and font size), so no single hardcoded pixel value
+    // in nav.css/a page's <style> block can stay correct at every width —
+    // that's what kept causing #nav to sit behind the banner (or extra gap
+    // below it) every time the banner text or font size changed. This makes
+    // it self-correcting instead of something that has to be hand-tuned
+    // across every page again on the next banner change.
+    let bannerSyncRaf = null;
+    function syncBannerHeight() {
+      if (!banner) return;
+      const h = Math.ceil(banner.getBoundingClientRect().height);
+      if (h > 0) document.documentElement.style.setProperty('--banner-h', h + 'px');
+    }
+    function scheduleBannerSync() {
+      if (bannerSyncRaf) cancelAnimationFrame(bannerSyncRaf);
+      bannerSyncRaf = requestAnimationFrame(syncBannerHeight);
+    }
+    scheduleBannerSync();
+    window.addEventListener('resize', scheduleBannerSync);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(scheduleBannerSync);
+    }
+    // Re-check once more shortly after load in case a late web-font swap
+    // (FOUT → the real Barlow Condensed) reflowed the banner's line count.
+    setTimeout(scheduleBannerSync, 500);
 
     // Nav shrink on scroll
     window.addEventListener('scroll', () => {

@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 20_55                                 ║
+  ║  SITE VERSION: 26.08.31 21_27                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -169,10 +169,16 @@
     /* The Interest Rate hint ("current avg fixed rate") must never wrap —
        the column above is widened (1.3fr) specifically to give it room. */
     #c-rate-hint{white-space:nowrap}
-    /* Monthly Debts' hint must also stay on one line. */
-    #c-debts-hint{white-space:nowrap}
-    /* HOA Dues' hint must also stay on one line. */
-    #c-hoa-hint{white-space:nowrap}
+    /* Monthly Debts and HOA Fees' hints go back inline (not their own line)
+       in a condensed typeface — narrower per-character than the label's own
+       font at the same size, so the parenthetical fits beside the label on
+       one line at typical widths. That keeps these labels the same number
+       of lines as their row-mates (Income/Loan Term, Down Payment/PMI
+       Status), which is what keeps the actual input boxes lined up across
+       each row. No forced nowrap — if a row ever gets too narrow (a laptop
+       width with the sidebar still showing) it just wraps normally instead
+       of overflowing. */
+    #c-debts-hint,#c-hoa-hint{display:inline;font-family:'Barlow Condensed',sans-serif}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
@@ -299,7 +305,7 @@
       font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
     }
     #c-addr:focus{outline:none;border-color:var(--red)}
-    .calc-addr-btn-field .pill{width:100%;padding:0 12px;text-align:center}
+    .calc-addr-btn-field .pill{width:100%;height:41px;padding:0 12px;text-align:center;display:flex;align-items:center;justify-content:center;line-height:1.15}
     .calc-addr-status{font-size:.8rem;color:var(--gray-muted);margin-top:4px;min-height:.9em}
     .calc-addr-status.ok{color:#1b5e20}
     .calc-addr-status.err{color:#8a1f1a}
@@ -390,6 +396,7 @@
     .breakdown li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--gray-mid);font-size:.92rem}
     .breakdown li:last-child{border-bottom:none}
     .breakdown li .k{color:var(--gray-text)}
+    .breakdown li .k-sub{font-size:.78rem;color:var(--gray-muted)}
     /* Values 50% larger than the row's base .92rem text (.92 × 1.5 ≈ 1.38rem). */
     .breakdown li .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.38rem}
     .breakdown li.total{border-top:2px solid var(--black);border-bottom:none;margin-top:4px;padding-top:12px}
@@ -471,10 +478,10 @@
   <!-- MAIN CONTENT -->
   <main class="pg-main">
 
-    <h2 class="reveal">How Much Home Can <span class="r">You</span> Afford?</h2>
-    <p class="lede reveal d1">Enter your income, monthly debts and down payment to see an estimated home price and monthly payment. Open "Advanced Options" to fine-tune the interest rate, insurance and PMI for a more precise number.</p>
+    <h2>How Much Home Can <span class="r">You</span> Afford?</h2>
+    <p class="lede">Enter your income, monthly debts and down payment to see an estimated home price and monthly payment. Open "Advanced Options" to fine-tune the interest rate, insurance and PMI for a more precise number.</p>
 
-    <div class="calc-card reveal d2">
+    <div class="calc-card">
 
       <div class="calc-grid calc-grid-weighted">
         <div class="calc-field">
@@ -517,7 +524,7 @@
           <div class="pmi-notice" id="pmi-notice">typically Required if &lt;20% down</div>
         </div>
         <div class="calc-field">
-          <label for="c-hoa">HOA Dues <span class="hint" id="c-hoa-hint">(monthly)</span></label>
+          <label for="c-hoa">HOA Fees <span class="hint" id="c-hoa-hint">(monthly)</span></label>
           <div class="calc-input-wrap">
             <span class="pfx">$</span>
             <input type="text" inputmode="numeric" id="c-hoa" value="0" />
@@ -540,7 +547,6 @@
             <option value="0.53">Goochland County — 0.53%</option>
             <option value="0.77">Powhatan County — 0.77%</option>
             <option value="0.89">Chesterfield County — 0.89%</option>
-            <option value="custom">Other / Custom Rate</option>
           </select>
         </div>
         <div class="calc-field calc-tax-rate-field" style="grid-column:3">
@@ -549,10 +555,6 @@
 
         <div class="calc-field" style="grid-column:1/-1">
           <p class="calc-tax-custom-note" id="c-tax-custom-note">Using your Custom Tax Rate from Advanced Options — overrides the county selection above.</p>
-          <div class="calc-input-wrap" id="c-tax-custom-wrap" style="display:none;margin-top:8px;max-width:180px">
-            <input type="text" inputmode="decimal" id="c-tax" class="pct" value="0.81" />
-            <span class="sfx">%</span>
-          </div>
         </div>
 
         <div class="calc-field calc-tax-primary-field" style="grid-column:1/3">
@@ -640,9 +642,9 @@
             <div class="calc-section-lbl">Estimated Monthly Costs</div>
             <ul class="breakdown" id="r-breakdown">
               <li><span class="k">Principal &amp; Interest</span><span class="v" id="b-pi">$0</span></li>
-              <li><span class="k">Real Estate Tax</span><span class="v" id="b-tax">$0</span></li>
+              <li><span class="k">Real Estate Tax <span class="k-sub" id="b-tax-rate"></span></span><span class="v" id="b-tax">$0</span></li>
               <li><span class="k">Homeowners Insurance</span><span class="v" id="b-ins">$0</span></li>
-              <li><span class="k">HOA Dues</span><span class="v" id="b-hoa">$0</span></li>
+              <li><span class="k">HOA Fees</span><span class="v" id="b-hoa">$0</span></li>
               <li><span class="k">PMI</span><span class="v" id="b-pmi">$0</span></li>
               <li class="total"><span class="k">Total Monthly Payment</span><span class="v" id="b-total">$0</span></li>
             </ul>
@@ -668,7 +670,7 @@
         </div>
       </div>
 
-      <p class="calc-disclaimer">This calculator provides estimates for general planning purposes only and is not a loan offer, pre-approval, or guarantee of financing. County property tax rates shown are current public rates as of August 2026 and change annually with each locality's budget — always confirm the exact rate with the county before relying on it. Actual mortgage rates, insurance, HOA dues and qualification depend on your lender, credit profile and the specific property. For an accurate number, talk to a licensed lender and to 804Michael about current local market conditions.</p>
+      <p class="calc-disclaimer">This calculator provides estimates for general planning purposes only and is not a loan offer, pre-approval, or guarantee of financing. County property tax rates shown are current public rates as of August 2026 and change annually with each locality's budget — always confirm the exact rate with the county before relying on it. Actual mortgage rates, insurance, HOA fees and qualification depend on your lender, credit profile and the specific property. For an accurate number, talk to a licensed lender and to 804Michael about current local market conditions.</p>
 
     </div>
 
@@ -748,7 +750,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 20_55</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_27</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -761,7 +763,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 20_55';
+  const SITE_VERSION = '26.08.31 21_27';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -945,24 +947,24 @@
       calculate();
     });
 
-    /* ── Property tax: county dropdown + custom rate ── */
-    const taxCountyEl = $('c-tax-county'), taxCustomWrap = $('c-tax-custom-wrap'), taxCustomEl = $('c-tax');
-    // Advanced Options' "Custom Tax Rate" is a separate override layer on
-    // top of the county dropdown/custom-rate pair above — when it has a
-    // value, it wins regardless of what's selected in the dropdown. It's a
-    // plain input with no persistence (no localStorage/cookie), so like
-    // every other field on this page it naturally resets on a page refresh.
+    /* ── Property tax: county dropdown + Advanced Options override ──
+       The county dropdown is the only "pick a rate" control now — the old
+       "Other / Custom Rate" option + inline % field duplicated the
+       Advanced Options "Custom Tax Rate" field below, so it's gone.
+       Advanced Options' Custom Tax Rate is a single override layer on top
+       of the dropdown — when it has a value, it wins regardless of what's
+       selected. It's a plain input with no persistence (no
+       localStorage/cookie), so like every other field on this page it
+       naturally resets on a page refresh. */
+    const taxCountyEl = $('c-tax-county');
     const taxAdvEl = $('c-tax-adv');
-    taxCountyEl.addEventListener('change', ()=>{
-      taxCustomWrap.style.display = taxCountyEl.value === 'custom' ? 'block' : 'none';
-      calculate();
-    });
+    taxCountyEl.addEventListener('change', calculate);
     function isCustomTaxActive(){
       return parseNum(taxAdvEl) > 0;
     }
     function currentTaxPct(){
       if (isCustomTaxActive()) return parseNum(taxAdvEl);
-      return taxCountyEl.value === 'custom' ? parseNum(taxCustomEl) : parseFloat(taxCountyEl.value);
+      return parseFloat(taxCountyEl.value);
     }
 
     /* ── Address → county lookup (Census Bureau's free public geocoder) ── */
@@ -1002,7 +1004,6 @@
         const found = COUNTY_RATE_MAP.find(c => c.match.test(lookupName));
         if (found){
           taxCountyEl.value = found.value;
-          taxCustomWrap.style.display = 'none';
           addrStatus.className = 'calc-addr-status ok';
           addrStatus.textContent = '✓ Found: ' + (countyName || placeName) + ' — using ' + found.value + '%';
           calculate();
@@ -1012,7 +1013,7 @@
         }
       } catch (err){
         addrStatus.className = 'calc-addr-status err';
-        addrStatus.textContent = "I can't seem to find that address. Please check the address or choose a county from the list above.";
+        addrStatus.textContent = "I can't seem to find that address. Please check the address, enter more of the address, or choose a county from the list above.";
       } finally {
         addrBtn.disabled = false;
       }
@@ -1063,6 +1064,7 @@
       const taxPct = currentTaxPct();
       $('c-tax-rate-display').textContent = taxPct.toFixed(2) + '%';
       $('c-tax-custom-note').classList.toggle('show', isCustomTaxActive());
+      $('b-tax-rate').textContent = '(' + taxPct.toFixed(2) + '%)';
       const insAnnual = parseNum($('c-ins'));
       const hoaMonthly = parseNum($('c-hoa'));
       const pmiPct = parseNum($('c-pmi'));
@@ -1086,6 +1088,7 @@
         $('pmi-notice').className = 'pmi-notice';
         $('pmi-notice').textContent = 'Enter your numbers above to see PMI status';
         ['b-pi','b-tax','b-ins','b-hoa','b-pmi','b-total'].forEach(id => $(id).textContent = '$0');
+        $('b-tax-rate').textContent = '';
         return;
       }
       warnEl.classList.remove('show');
