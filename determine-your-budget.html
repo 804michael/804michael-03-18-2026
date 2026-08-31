@@ -1,3 +1,24 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.08.31 16_48                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,8 +148,7 @@
        separate it visually, so a boxed border/shadow was redundant. ── */
     .calc-card{background:var(--white);padding:0}
     .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
-    .calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 14px}
-    @media(max-width:680px){.calc-grid{grid-template-columns:1fr 1fr}}
+    .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
     @media(max-width:420px){.calc-grid{grid-template-columns:1fr}}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
@@ -163,13 +183,11 @@
     .down-sync-row .calc-input-wrap.pct-wrap{flex:0 0 68px;width:68px}
     .down-sync-row .calc-input-wrap.pct-wrap input{padding-left:10px;padding-right:22px}
     .down-sync-eq{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--gray-muted);flex-shrink:0}
-    .pmi-badge{
-      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.03em;text-transform:uppercase;
-      padding:5px 10px;border-radius:999px;white-space:normal;line-height:1.3;background:var(--gray-light);color:var(--gray-muted);
-      flex-basis:100%;
+    .pmi-notice{
+      display:none;margin-top:10px;background:#fff8e1;border:1px solid #f0d78c;color:#8a6100;border-radius:10px;
+      padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:600;line-height:1.4;
     }
-    .pmi-badge:empty{display:none}
-    .pmi-badge.warn{background:#fff8e1;color:#8a6100}
+    .pmi-notice.show{display:block}
 
     /* ── Comfort level slider ──
        The tick mark + its label live ABOVE the track (in the wrap's own
@@ -178,8 +196,8 @@
        that box (even at a higher z-index) can render behind the thumb or
        get visually clipped by it. Keeping the tick entirely outside the
        input's box sidesteps that instead of fighting it with z-index. */
-    .calc-slider-live{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;color:var(--black);margin:6px 0 2px;min-height:1.4em}
-    .calc-slider-live b{color:var(--red)}
+    .calc-slider-live{font-family:'Barlow',sans-serif;font-weight:500;font-size:1.15rem;color:var(--black);margin:4px 0 2px;min-height:1.4em;line-height:1.3}
+    .calc-slider-live b{font-weight:500;color:var(--red)}
     .calc-slider-wrap{position:relative;padding-top:30px;margin-top:10px}
     .calc-slider{
       -webkit-appearance:none;appearance:none;display:block;width:100%;height:8px;border-radius:999px;margin:0;
@@ -211,8 +229,8 @@
     .calc-tax-row{display:flex;align-items:center;gap:10px}
     .calc-tax-row select{flex:1}
     .calc-tax-rate{
-      font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--red);
-      white-space:nowrap;min-width:58px;text-align:right;flex-shrink:0;
+      font-family:'Barlow',sans-serif;font-weight:500;font-size:1.3rem;color:var(--red);
+      white-space:nowrap;min-width:64px;text-align:right;flex-shrink:0;
     }
 
     /* ── Property tax: address lookup ── */
@@ -241,13 +259,14 @@
     .result-headline{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:20px}
     .result-hero{flex:1;min-width:220px}
     .result-hero .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
-    .result-hero .num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;line-height:1;letter-spacing:-.01em}
+    .result-hero .num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;line-height:1;letter-spacing:-.01em;display:flex;align-items:flex-start;gap:2px}
+    .result-hero .num .cur{font-size:.4em;font-weight:500;line-height:1.15}
     .result-hero .num.r{color:var(--red)}
     .result-hero .sub{font-size:.85rem;color:var(--gray-muted);margin-top:4px}
 
     .result-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
-    .chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-light);border-radius:999px;padding:7px 14px;font-family:'Barlow',sans-serif;font-weight:600;font-size:.84rem;color:var(--black)}
-    .chip b{font-family:'Barlow Condensed',sans-serif;font-weight:800}
+    .chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-light);border-radius:999px;padding:8px 16px;font-family:'Barlow',sans-serif;font-weight:500;font-size:1rem;color:var(--black)}
+    .chip b{font-family:'Barlow',sans-serif;font-weight:500}
     .chip.status-conservative{background:#e8f5e9;color:#1b5e20}
     .chip.status-comfortable{background:#e3f2fd;color:#0d47a1}
     .chip.status-manageable{background:#fff8e1;color:#8a6100}
@@ -366,6 +385,13 @@
           </div>
         </div>
         <div class="calc-field">
+          <label for="c-hoa">HOA Dues <span class="hint">(monthly)</span></label>
+          <div class="calc-input-wrap">
+            <span class="pfx">$</span>
+            <input type="text" inputmode="numeric" id="c-hoa" value="0" />
+          </div>
+        </div>
+        <div class="calc-field" style="grid-column:1/-1">
           <label>Down Payment</label>
           <div class="down-sync-row">
             <div class="calc-input-wrap">
@@ -377,15 +403,8 @@
               <input type="text" inputmode="decimal" id="c-down-pct" class="pct" value="0.0" aria-label="Down payment percent" />
               <span class="sfx">%</span>
             </div>
-            <span class="pmi-badge" id="pmi-badge"></span>
           </div>
-        </div>
-        <div class="calc-field">
-          <label for="c-hoa">HOA Dues <span class="hint">(monthly)</span></label>
-          <div class="calc-input-wrap">
-            <span class="pfx">$</span>
-            <input type="text" inputmode="numeric" id="c-hoa" value="0" />
-          </div>
+          <div class="pmi-notice" id="pmi-notice">PMI typically Required Under 20% down</div>
         </div>
       </div>
 
@@ -461,8 +480,8 @@
         </div>
 
         <div class="calc-field" style="margin-top:4px">
-          <label for="c-dti">DTI/Comfort Level <span class="hint" id="c-dti-readout">36% &middot; Comfortable</span></label>
-          <div class="calc-slider-live" id="c-dti-live"></div>
+          <label for="c-dti">DTI/Comfort Level</label>
+          <div class="calc-slider-live" id="c-dti-live">36% &middot; Comfortable</div>
           <div class="calc-slider-wrap">
             <div class="calc-slider-tick" style="left:25%">
               <span class="calc-slider-tick-label">20% DTI</span>
@@ -578,6 +597,8 @@
         <path fill="#ED1C24" d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
       </svg>
     </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="site-version-display" style="font-size:.78rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:700;text-transform:uppercase">V26.08.31 16_48</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -588,6 +609,12 @@
 </footer>
 
 <script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.08.31 16_48';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
   const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
@@ -596,6 +623,13 @@
   (function(){
     const $ = id => document.getElementById(id);
     const fmtMoney = n => '$' + Math.round(n).toLocaleString('en-US');
+    // Monthly payment is an estimate, so it's rounded UP to the next $10 —
+    // simpler number, and erring toward "your payment might be a little
+    // lower" reads better than a false-precision number that could land
+    // a touch high in practice. Home price is left at normal rounding.
+    const fmtMoneyUp10 = n => '$' + (Math.ceil(n / 10) * 10).toLocaleString('en-US');
+    const fmtMoneyBig = n => '<span class="cur">$</span>' + Math.round(n).toLocaleString('en-US');
+    const fmtMoneyBigUp10 = n => '<span class="cur">$</span>' + (Math.ceil(n / 10) * 10).toLocaleString('en-US');
     const fmtPct = n => n.toFixed(1) + '%';
 
     function parseNum(el){
@@ -685,7 +719,7 @@
     /* ── Comfort-level slider — green → yellow → red across the full range,
        with a fixed tick at the conventional 43% "recommended max" and a
        warning notice once the person drags past it. ── */
-    const dtiSlider = $('c-dti'), dtiReadout = $('c-dti-readout'), dtiNotice = $('c-dti-notice');
+    const dtiSlider = $('c-dti'), dtiNotice = $('c-dti-notice');
     const RECOMMENDED_DTI_MAX = 43;
     const GREEN = [46, 163, 63], YELLOW = [230, 178, 40], RED = [211, 45, 35];
     function lerpColor(a, b, t){
@@ -728,8 +762,6 @@
     dtiSlider.addEventListener('input', ()=>{
       paintSlider();
       const val = +dtiSlider.value;
-      const status = statusFor(val);
-      dtiReadout.innerHTML = val + '% &middot; ' + status.label;
       dtiNotice.classList.toggle('show', val > RECOMMENDED_DTI_MAX);
       calculate();
     });
@@ -826,14 +858,15 @@
       const debts = parseNum($('c-debts'));
 
       // Down payment: whichever field the person is actively driving is the source
-      // of truth; the other is derived from it using the last computed home price.
-      let down;
-      if (downSource === 'percent'){
-        const pct = parseNum(downPctEl);
-        const basis = lastPrice > 0 ? lastPrice : (parseNum(downDollarEl) / 0.1 || 0); // rough seed before first calc
-        down = basis * (pct / 100);
-      } else {
-        down = parseNum(downDollarEl);
+      // of truth. When it's the % field, the dollar down payment isn't fixed —
+      // it scales with whatever home price the search is testing (down = price ×
+      // pct), so it's resolved fresh inside the binary search below rather than
+      // from a stale "last computed price," which used to leave the displayed
+      // down-payment % a step behind whatever the person actually typed.
+      const downPct = downSource === 'percent' ? parseNum(downPctEl) : null;
+      const downDollarFixed = downSource === 'percent' ? null : parseNum(downDollarEl);
+      function downFor(candidatePrice){
+        return downSource === 'percent' ? candidatePrice * (downPct / 100) : downDollarFixed;
       }
 
       const dtiTarget = parseFloat($('c-dti').value);
@@ -860,21 +893,31 @@
         $('r-dti-chip').className = 'chip';
         $('r-pmi-chip').style.display = 'none';
         $('c-dti-live').textContent = '';
-        $('pmi-badge').className = 'pmi-badge';
-        $('pmi-badge').textContent = '';
+        $('pmi-notice').classList.remove('show');
         ['b-pi','b-tax','b-ins','b-hoa','b-pmi','b-total'].forEach(id => $(id).textContent = '$0');
         return;
       }
       warnEl.classList.remove('show');
 
       // Binary search for the home price whose total monthly cost equals maxHousing.
-      let lo = down, hi = Math.max(down + 50000, down * 6, 3000000);
+      // downFor(mid) is evaluated fresh at every candidate price, so in percent
+      // mode the down payment tracks whatever price is being tested instead of
+      // a stale figure from the previous calculate() call.
+      let lo, hi;
+      if (downSource === 'percent'){
+        lo = 0;
+        hi = Math.max(3000000, income * 15);
+      } else {
+        lo = downDollarFixed;
+        hi = Math.max(downDollarFixed + 50000, downDollarFixed * 6, 3000000);
+      }
       for (let i = 0; i < 60; i++){
         const mid = (lo + hi) / 2;
-        const cost = monthlyCostFor(mid, down, rate, termYears, taxPct, insAnnual, hoaMonthly, pmiPct);
+        const cost = monthlyCostFor(mid, downFor(mid), rate, termYears, taxPct, insAnnual, hoaMonthly, pmiPct);
         if (cost.total > maxHousing) hi = mid; else lo = mid;
       }
       const price = lo;
+      const down = downFor(price);
       const result = monthlyCostFor(price, down, rate, termYears, taxPct, insAnnual, hoaMonthly, pmiPct);
       const backEndDti = income > 0 ? ((result.total + debts) / grossMonthly) * 100 : 0;
       lastPrice = price;
@@ -886,41 +929,36 @@
         downDollarEl.value = Math.round(down).toLocaleString('en-US');
       }
 
-      $('r-price').textContent = fmtMoney(price);
+      $('r-price').innerHTML = fmtMoneyBig(price);
       $('r-loan-sub').textContent = 'Loan amount: ' + fmtMoney(result.loan);
-      $('r-monthly').textContent = fmtMoney(result.total);
+      $('r-monthly').innerHTML = fmtMoneyBigUp10(result.total);
       $('r-down-pct').innerHTML = '&nbsp;' + fmtPct(result.downPct);
       $('r-dti-val').innerHTML = '&nbsp;' + fmtPct(backEndDti);
 
       // Live feedback right at the slider — dragging it visibly moves the price
-      // and payment, the way realtyofamerica.com's slider does.
-      $('c-dti-live').innerHTML = 'At this level: <b>' + fmtMoney(price) + '</b> home &middot; <b>' + fmtMoney(result.total) + '</b>/mo';
-
+      // and payment, the way realtyofamerica.com's slider does. Combined onto
+      // one line with the comfort-level readout, in normal (not bold) weight
+      // at a larger size — easier to read at a glance while dragging.
       const status = statusFor(dtiTarget);
+      $('c-dti-live').innerHTML = dtiTarget + '% &middot; ' + status.label +
+        ' — At this level: ' + fmtMoney(price) + ' home &middot; ' + fmtMoneyUp10(result.total) + '/mo';
+
       $('r-dti-chip').className = 'chip ' + status.cls;
       $('r-dti-chip').innerHTML = 'DTI ratio: <b id="r-dti-val">&nbsp;' + fmtPct(backEndDti) + '</b> · ' + status.label;
 
       $('r-pmi-chip').style.display = result.pmi > 0 ? 'inline-flex' : 'none';
 
-      // PMI status badge next to the down payment fields — PMI is driven by
+      // PMI notice right under the down payment fields — PMI is driven by
       // loan-to-value (down payment %), not by the DTI/comfort-level slider.
-      // Only shown (pops up) when it's actually relevant, i.e. under 20% down;
-      // at 20%+ down there's nothing to warn about, so the badge stays empty.
-      const pmiBadgeEl = $('pmi-badge');
-      if (result.downPct >= 20){
-        pmiBadgeEl.className = 'pmi-badge';
-        pmiBadgeEl.textContent = '';
-      } else {
-        pmiBadgeEl.className = 'pmi-badge warn';
-        pmiBadgeEl.textContent = 'Under 20% down — PMI typically required';
-      }
+      // Only pops up when it's actually relevant, i.e. under 20% down.
+      $('pmi-notice').classList.toggle('show', result.downPct < 20);
 
       $('b-pi').textContent = fmtMoney(result.pi);
       $('b-tax').textContent = fmtMoney(result.tax);
       $('b-ins').textContent = fmtMoney(result.ins);
       $('b-hoa').textContent = fmtMoney(result.hoa);
       $('b-pmi').textContent = fmtMoney(result.pmi);
-      $('b-total').textContent = fmtMoney(result.total);
+      $('b-total').textContent = fmtMoneyUp10(result.total);
     }
 
     // c-down-dollar, c-down-pct, c-dti and c-addr already have dedicated listeners above.
