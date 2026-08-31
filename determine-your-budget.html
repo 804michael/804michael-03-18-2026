@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 19_46                                 ║
+  ║  SITE VERSION: 26.08.31 19_53                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -163,9 +163,12 @@
 
     /* Advanced Options: all 4 fields in one row on a typical desktop
        layout, so nothing wraps down under the first 3 like it used to. */
-    .calc-adv .calc-grid{grid-template-columns:repeat(4,1fr)}
+    .calc-adv .calc-grid{grid-template-columns:1.3fr .9fr .9fr .9fr}
     @media(max-width:900px){.calc-adv .calc-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-adv .calc-grid{grid-template-columns:1fr}}
+    /* The Interest Rate hint ("current avg fixed rate") must never wrap —
+       the column above is widened (1.3fr) specifically to give it room. */
+    #c-rate-hint{white-space:nowrap}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
@@ -717,7 +720,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 19_46</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 19_53</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -730,7 +733,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 19_46';
+  const SITE_VERSION = '26.08.31 19_53';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -808,13 +811,13 @@
       }
     }
 
-    // Keeps the "(current average fixed rate = X.X%)" hint under Interest
-    // Rate synced to whichever term (15/30 yr) is currently selected.
+    // Keeps the "(current avg fixed rate X.X%)" hint under Interest Rate
+    // synced to whichever term (15/30 yr) is currently selected.
     function updateRateHint(){
       if (!liveRates) return;
       const r = termYears === 15 ? liveRates.rate15 : liveRates.rate30;
       if (Number.isFinite(r)){
-        rateHintEl.textContent = '(current average fixed rate = ' + r.toFixed(2) + '%)';
+        rateHintEl.textContent = '(current avg fixed rate ' + r.toFixed(1) + '%)';
       }
     }
 
