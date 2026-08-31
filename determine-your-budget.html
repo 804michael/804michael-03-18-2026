@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 21_33                                 ║
+  ║  SITE VERSION: 26.08.31 21_36                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -157,7 +157,7 @@
        50% left column used by the results grid below (so the two grids
        share a consistent vertical boundary down the card), Debts/PMI
        Status narrowed to make room, Loan Term/HOA Dues unchanged at 20%. */
-    .calc-grid.calc-grid-weighted{grid-template-columns:1.4fr 1.05fr .65fr}
+    .calc-grid.calc-grid-weighted{grid-template-columns:1.3fr 1.15fr .65fr}
     @media(max-width:700px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr}}
 
@@ -178,7 +178,9 @@
        each row. No forced nowrap — if a row ever gets too narrow (a laptop
        width with the sidebar still showing) it just wraps normally instead
        of overflowing. */
-    #c-debts-hint,#c-hoa-hint{display:inline;font-family:'Barlow Condensed',sans-serif}
+    #c-debts-hint,#c-hoa-hint,#c-tax-hint{
+      display:inline;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.015em;
+    }
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
@@ -543,7 +545,7 @@
              exact Loan-Term/HOA-Dues column boundary — guaranteed by the
              grid math itself, not by matching pixel widths by hand. -->
         <div class="calc-field calc-tax-primary-field" style="grid-column:1/3">
-          <label for="c-tax-county">Real Estate Tax Rate <span class="hint">(select county, or look up county with address)</span></label>
+          <label for="c-tax-county">Real Estate Tax Rate <span class="hint" id="c-tax-hint">(select county, or look up county with address)</span></label>
           <select id="c-tax-county">
             <option value="0.81" selected>Hanover County — 0.81%</option>
             <option value="0.91">Ashland (Town + Hanover County) — 0.91%</option>
@@ -759,7 +761,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_33</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_36</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -772,7 +774,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 21_33';
+  const SITE_VERSION = '26.08.31 21_36';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
