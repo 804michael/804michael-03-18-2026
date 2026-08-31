@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
-  <title>Home Affordability Calculator | Ashland &amp; Hanover County VA — 804Michael</title>
-  <meta name="description" content="Find out how much home you can afford in Ashland VA, Hanover County, Glen Allen &amp; Mechanicsville. Free, instant affordability calculator with monthly payment breakdown from 804Michael." />
+  <title>Determine Your Budget | Home Price &amp; Payment Estimator — 804Michael</title>
+  <meta name="description" content="Determine your home buying budget in Ashland VA, Hanover County, Glen Allen &amp; Mechanicsville. Free, instant home affordability estimate with monthly payment breakdown from 804Michael." />
   <meta name="keywords" content="home affordability calculator, how much house can I afford, mortgage calculator Ashland VA, Hanover County home affordability, monthly payment calculator, Michael Hottman, 804Michael" />
   <link rel="canonical" href="https://804re.com/home-affordability-calculator.html" />
   <meta name="robots" content="index, follow" />
@@ -15,7 +15,7 @@
   <meta property="og:type"        content="website" />
   <meta property="og:locale"      content="en_US" />
   <meta property="og:url"         content="https://804re.com/home-affordability-calculator.html" />
-  <meta property="og:title"       content="Home Affordability Calculator — 804Michael" />
+  <meta property="og:title"       content="Determine Your Budget — 804Michael" />
   <meta property="og:description" content="Enter your income, debts &amp; down payment to instantly see the home price and monthly payment that fit your budget in Ashland VA &amp; Hanover County." />
   <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
   <meta property="og:image:width"  content="1200" />
@@ -24,7 +24,7 @@
   <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:site"        content="@804Michael" />
-  <meta name="twitter:title"       content="Home Affordability Calculator | 804Michael" />
+  <meta name="twitter:title"       content="Determine Your Budget | 804Michael" />
   <meta name="twitter:description" content="See how much home you can afford in Ashland VA &amp; Hanover County — free instant calculator from Michael Hottman." />
   <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
 
@@ -182,6 +182,14 @@
     }
     .calc-dti-notice.show{display:block}
 
+    /* ── Property tax: county row + rate on the right ── */
+    .calc-tax-row{display:flex;align-items:center;gap:10px}
+    .calc-tax-row select{flex:1}
+    .calc-tax-rate{
+      font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--red);
+      white-space:nowrap;min-width:58px;text-align:right;flex-shrink:0;
+    }
+
     /* ── Property tax: address lookup ── */
     .calc-addr-lookup{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
     .calc-addr-lookup input{
@@ -282,7 +290,7 @@
 <!-- PAGE HERO (black bar, no image) -->
 <div class="black-hero">
   <div class="black-hero-in">
-    <h1>Home <span>Affordability</span> Calculator</h1>
+    <h1>Determine Your <span>Budget</span></h1>
     <p class="black-hero-sub">See what home price and monthly payment realistically fit your budget</p>
   </div>
 </div>
@@ -294,7 +302,7 @@
     <span class="sep">›</span>
     <a href="index.html#guides">Resources</a>
     <span class="sep">›</span>
-    <span class="cur">Home Affordability Calculator</span>
+    <span class="cur">Determine Your Budget</span>
   </div>
 </div>
 
@@ -357,29 +365,21 @@
       </div>
 
       <div class="calc-field" style="margin-top:18px">
-        <label for="c-dti">Comfort Level <span class="hint" id="c-dti-readout">36% &middot; Comfortable</span></label>
-        <div class="calc-slider-live" id="c-dti-live"></div>
-        <div class="calc-slider-wrap">
-          <input type="range" id="c-dti" min="20" max="50" step="1" value="36" class="calc-slider" />
-          <div class="calc-slider-tick" id="c-dti-tick" style="left:76.7%"><span>43% typical max</span></div>
+        <label for="c-tax-county">Property Tax <span class="hint">(county, or look one up below)</span></label>
+        <div class="calc-tax-row">
+          <select id="c-tax-county">
+            <option value="0.81" selected>Hanover County</option>
+            <option value="0.91">Ashland (Town + Hanover Co.)</option>
+            <option value="0.83">Henrico County</option>
+            <option value="1.20">City of Richmond</option>
+            <option value="0.77">Caroline County</option>
+            <option value="0.53">Goochland County</option>
+            <option value="0.77">Powhatan County</option>
+            <option value="0.89">Chesterfield County</option>
+            <option value="custom">Other / Custom Rate</option>
+          </select>
+          <span class="calc-tax-rate" id="c-tax-rate-display">0.81%</span>
         </div>
-        <div class="calc-slider-scale"><span>20% — Conservative</span><span>50% — Max (any program)</span></div>
-        <div class="calc-dti-notice" id="c-dti-notice">Exceeds recommended debt-to-income ratio — most lenders cap comfortable qualifying around 43%. Approval above this line usually requires strong compensating factors (higher credit, reserves, or a VA/FHA program).</div>
-      </div>
-
-      <div class="calc-field" style="margin-top:18px">
-        <label for="c-tax-county">Property Tax Rate <span class="hint">(choose your county — or look one up below)</span></label>
-        <select id="c-tax-county">
-          <option value="0.81" selected>Hanover County — 0.81%</option>
-          <option value="0.91">Ashland (Town + Hanover County) — 0.91%</option>
-          <option value="0.83">Henrico County — 0.83%</option>
-          <option value="1.20">City of Richmond — 1.20%</option>
-          <option value="0.77">Caroline County — 0.77%</option>
-          <option value="0.53">Goochland County — 0.53%</option>
-          <option value="0.77">Powhatan County — 0.77%</option>
-          <option value="0.89">Chesterfield County — 0.89%</option>
-          <option value="custom">Other / Custom Rate</option>
-        </select>
 
         <div class="calc-input-wrap" id="c-tax-custom-wrap" style="display:none;margin-top:8px;max-width:180px">
           <input type="text" inputmode="decimal" id="c-tax" class="pct" value="0.81" />
@@ -429,10 +429,21 @@
             <div class="sub" id="r-loan-sub">Loan amount: $0</div>
           </div>
           <div class="result-hero">
-            <div class="lbl">Estimated Monthly Payment</div>
+            <div class="lbl">Estimated Monthly Payment (PITI)</div>
             <div class="num" id="r-monthly">$0</div>
             <div class="sub">Principal, interest, taxes &amp; insurance</div>
           </div>
+        </div>
+
+        <div class="calc-field" style="margin-top:4px">
+          <label for="c-dti">Comfort Level <span class="hint" id="c-dti-readout">36% &middot; Comfortable</span></label>
+          <div class="calc-slider-live" id="c-dti-live"></div>
+          <div class="calc-slider-wrap">
+            <input type="range" id="c-dti" min="20" max="50" step="1" value="36" class="calc-slider" />
+            <div class="calc-slider-tick" id="c-dti-tick" style="left:76.7%"><span>43% typical max</span></div>
+          </div>
+          <div class="calc-slider-scale"><span>20% — Conservative</span><span>50% — Max (any program)</span></div>
+          <div class="calc-dti-notice" id="c-dti-notice">Exceeds recommended debt-to-income ratio — most lenders cap comfortable qualifying around 43%. Approval above this line usually requires strong compensating factors (higher credit, reserves, or a VA/FHA program).</div>
         </div>
 
         <div class="result-chips">
@@ -546,7 +557,7 @@
   const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
 
-  /* ── Home Affordability Calculator ─────────────────────────────────────── */
+  /* ── Determine Your Budget — home price & payment estimator ─────────────── */
   (function(){
     const $ = id => document.getElementById(id);
     const fmtMoney = n => '$' + Math.round(n).toLocaleString('en-US');
@@ -735,6 +746,7 @@
       const dtiTarget = parseFloat($('c-dti').value);
       const rate = parseNum($('c-rate'));
       const taxPct = currentTaxPct();
+      $('c-tax-rate-display').textContent = taxPct.toFixed(2) + '%';
       const insAnnual = parseNum($('c-ins'));
       const hoaMonthly = parseNum($('c-hoa'));
       const pmiPct = parseNum($('c-pmi'));
