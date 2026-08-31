@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 17_30                                 ║
+  ║  SITE VERSION: 26.08.31 17_48                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -151,6 +151,13 @@
     .calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
     @media(max-width:700px){.calc-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid{grid-template-columns:1fr}}
+    /* "Your Numbers" grid only — column 2 (Debts / PMI Status) needs more
+       room for wrapping text than column 3 (Loan Term / HOA Dues), which
+       only ever holds short pills or a short $ amount. Column 1 stays the
+       same width it always was. */
+    .calc-grid.calc-grid-weighted{grid-template-columns:1fr 1.4fr .6fr}
+    @media(max-width:700px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr 1fr}}
+    @media(max-width:420px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr}}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{font-weight:400;color:var(--gray-muted);font-size:.74rem}
@@ -194,7 +201,7 @@
        avoids that entirely. */
     .pmi-notice{
       background:var(--gray-light);color:var(--gray-muted);border:1px solid var(--gray-mid);border-radius:10px;
-      padding:11px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;font-weight:600;line-height:1.3;
+      padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:.86rem;font-weight:700;line-height:1.15;letter-spacing:.005em;
       display:flex;align-items:center;min-height:44px;
     }
     .pmi-notice.warn{background:#fff8e1;border-color:#f0d78c;color:#8a6100}
@@ -293,6 +300,15 @@
     .result-hero .num .cur{font-size:.4em;font-weight:500;line-height:1.15}
     .result-hero .num.r{color:var(--red)}
     .result-hero .sub{font-size:.85rem;color:var(--gray-muted);margin-top:4px}
+    /* Home Price sits above the two-column tally/payment row, full width. */
+    .result-hero-price{margin-bottom:24px}
+    /* Loan amount line, 50% larger than the base .sub size (.85rem → 1.275rem) —
+       an ID selector so this doesn't also bump the unrelated "Principal,
+       interest, taxes & insurance" sub-line under the monthly payment. */
+    #r-loan-sub{font-size:1.275rem}
+    /* DTI/Comfort slider now sits above the Home Price block instead of
+       inside Advanced Options. */
+    .calc-dti-field{margin-bottom:24px}
 
     .result-chips{display:flex;gap:10px;flex-wrap:wrap}
     .chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-light);border-radius:999px;padding:8px 16px;font-family:'Barlow',sans-serif;font-weight:500;font-size:1rem;color:var(--black)}
@@ -392,7 +408,7 @@
     <div class="calc-card reveal d2">
 
       <div class="calc-section-lbl">Your Numbers</div>
-      <div class="calc-grid">
+      <div class="calc-grid calc-grid-weighted">
         <div class="calc-field">
           <label for="c-income">Annual Household Income</label>
           <div class="calc-input-wrap">
@@ -445,14 +461,14 @@
         <label for="c-tax-county">Property Tax <span class="hint">(county, or look one up below)</span></label>
         <div class="calc-tax-row">
           <select id="c-tax-county">
-            <option value="0.81" selected>Hanover County</option>
-            <option value="0.91">Ashland (Town + Hanover Co.)</option>
-            <option value="0.83">Henrico County</option>
-            <option value="1.20">City of Richmond</option>
-            <option value="0.77">Caroline County</option>
-            <option value="0.53">Goochland County</option>
-            <option value="0.77">Powhatan County</option>
-            <option value="0.89">Chesterfield County</option>
+            <option value="0.81" selected>Hanover County — 0.81%</option>
+            <option value="0.91">Ashland (Town + Hanover County) — 0.91%</option>
+            <option value="0.83">Henrico County — 0.83%</option>
+            <option value="1.20">City of Richmond — 1.20%</option>
+            <option value="0.77">Caroline County — 0.77%</option>
+            <option value="0.53">Goochland County — 0.53%</option>
+            <option value="0.77">Powhatan County — 0.77%</option>
+            <option value="0.89">Chesterfield County — 0.89%</option>
             <option value="custom">Other / Custom Rate</option>
           </select>
           <span class="calc-tax-rate" id="c-tax-rate-display">0.81%</span>
@@ -495,16 +511,20 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="calc-field" style="margin-top:18px">
+      <!-- RESULTS -->
+      <div class="calc-results">
+
+        <div class="calc-field calc-dti-field">
           <label for="c-dti">DTI/Comfort Level</label>
           <div class="calc-slider-live" id="c-dti-live">36% &middot; Comfortable</div>
           <div class="calc-slider-wrap">
-            <div class="calc-slider-tick" style="left:25%">
+            <div class="calc-slider-tick" id="c-dti-tick-20" data-val="20" style="left:25%">
               <span class="calc-slider-tick-label">20% DTI</span>
               <span class="calc-slider-tick-mark"></span>
             </div>
-            <div class="calc-slider-tick" id="c-dti-tick" style="left:82.5%">
+            <div class="calc-slider-tick" id="c-dti-tick-43" data-val="43" style="left:82.5%">
               <span class="calc-slider-tick-label">43% typical max</span>
               <span class="calc-slider-tick-mark"></span>
             </div>
@@ -516,10 +536,13 @@
           </div>
           <div class="calc-dti-notice" id="c-dti-notice">Exceeds recommended debt-to-income ratio — most lenders cap comfortable qualifying around 43%. Approval above this line usually requires strong compensating factors (higher credit, reserves, or a VA/FHA program).</div>
         </div>
-      </div>
 
-      <!-- RESULTS -->
-      <div class="calc-results">
+        <div class="result-hero result-hero-price">
+          <div class="lbl">Home Price</div>
+          <div class="num r" id="r-price">$0</div>
+          <div class="sub" id="r-loan-sub">Loan amount: $0</div>
+        </div>
+
         <div class="calc-results-grid">
 
           <div class="calc-results-left">
@@ -535,23 +558,16 @@
           </div>
 
           <div class="calc-results-right">
-            <div class="result-headline">
-              <div class="result-hero">
-                <div class="lbl">Affordable Home Price</div>
-                <div class="num r" id="r-price">$0</div>
-                <div class="sub" id="r-loan-sub">Loan amount: $0</div>
-              </div>
-              <div class="result-hero">
-                <div class="lbl">Estimated Monthly Payment (PITI)</div>
-                <div class="num" id="r-monthly">$0</div>
-                <div class="sub">Principal, interest, taxes &amp; insurance</div>
-              </div>
+            <div class="result-hero">
+              <div class="lbl">Estimated Monthly Payment (PITI)</div>
+              <div class="num" id="r-monthly">$0</div>
+              <div class="sub">Principal, interest, taxes &amp; insurance</div>
             </div>
 
             <div class="result-chips">
               <span class="chip">Down payment: <b id="r-down-pct">&nbsp;0%</b></span>
-              <span class="chip" id="r-dti-chip">DTI ratio: <b id="r-dti-val">&nbsp;0%</b></span>
               <span class="chip" id="r-pmi-chip" style="display:none">Requires PMI</span>
+              <span class="chip" id="r-dti-chip">DTI ratio: <b id="r-dti-val">&nbsp;0%</b></span>
             </div>
           </div>
 
@@ -640,7 +656,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 17_30</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 17_48</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -653,7 +669,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 17_30';
+  const SITE_VERSION = '26.08.31 17_48';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -693,11 +709,6 @@
     advBtn.addEventListener('click', ()=>{
       const open = advPanel.classList.toggle('open');
       advBtn.classList.toggle('open', open);
-      // The DTI/Comfort slider now lives inside this panel, so while it's
-      // collapsed (display:none) the slider has zero measurable width —
-      // any gradient painted before now would be wrong. Repaint the moment
-      // the panel opens so the fill lines up with the thumb immediately.
-      if (open) paintSlider();
     });
 
     // Loan-term pills
@@ -806,6 +817,20 @@
       const fillEdge = visualPct(pct, trackWidth).toFixed(2);
       stops.push(`var(--gray-mid) ${fillEdge}%`, `var(--gray-mid) 100%`);
       dtiSlider.style.background = `linear-gradient(to right,${stops.join(',')})`;
+
+      // The "20% DTI" / "43% typical max" reference ticks were positioned
+      // at their raw value-fraction (e.g. 82.5% of the box for value 43),
+      // but the thumb never actually reaches that raw fraction — its travel
+      // is compressed by its own width (see visualPct above). That mismatch
+      // is exactly what made the dot and the "43%" marker look misaligned
+      // when dragged there. Running every tick through the same visualPct
+      // correction keeps each one dead-on with where the thumb visually
+      // sits at that value.
+      document.querySelectorAll('.calc-slider-tick[data-val]').forEach(tick => {
+        const tickVal = +tick.dataset.val;
+        const tickRawPct = ((tickVal - min) / (max - min)) * 100;
+        tick.style.left = visualPct(tickRawPct, trackWidth).toFixed(2) + '%';
+      });
     }
     window.addEventListener('resize', paintSlider);
     dtiSlider.addEventListener('input', ()=>{
