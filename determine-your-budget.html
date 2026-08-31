@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 18_53                                 ║
+  ║  SITE VERSION: 26.08.31 19_46                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -134,6 +134,7 @@
     .breadcrumb a:hover{color:var(--red)}
     .breadcrumb .sep{color:rgba(255,255,255,.25)}
     .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
 
     /* ── Main Layout ── */
     .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
@@ -159,9 +160,15 @@
     .calc-grid.calc-grid-weighted{grid-template-columns:1.5fr .9fr .6fr}
     @media(max-width:700px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr}}
+
+    /* Advanced Options: all 4 fields in one row on a typical desktop
+       layout, so nothing wraps down under the first 3 like it used to. */
+    .calc-adv .calc-grid{grid-template-columns:repeat(4,1fr)}
+    @media(max-width:900px){.calc-adv .calc-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:420px){.calc-adv .calc-grid{grid-template-columns:1fr}}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
-    .calc-field .hint{font-weight:400;color:var(--gray-muted);font-size:.74rem}
+    .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
     .calc-input-wrap{position:relative}
     .calc-input-wrap .pfx,.calc-input-wrap .sfx{position:absolute;top:50%;transform:translateY(-50%);color:var(--gray-muted);font-size:.95rem;pointer-events:none}
     .calc-input-wrap .pfx{left:13px}
@@ -177,7 +184,7 @@
     .calc-adv-toggle{
       display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
-      color:var(--red);margin:1.5px 0 4px;padding:0;
+      color:var(--red);margin:16px 0 4px;padding:0;
     }
     .calc-adv-toggle .chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s}
     .calc-adv-toggle.open .chev{transform:rotate(-135deg)}
@@ -430,7 +437,7 @@
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
   <div class="breadcrumb-in">
-    <a href="index.html">Home</a>
+    <a href="index.html" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
     <span class="sep">›</span>
     <a href="index.html#guides">Resources</a>
     <span class="sep">›</span>
@@ -459,7 +466,7 @@
           </div>
         </div>
         <div class="calc-field">
-          <label for="c-debts">Total Monthly Debts <span class="hint">(loans, credit cards, child support, etc.)</span></label>
+          <label for="c-debts">All Debts <span class="hint">(monthly - loans, cards, support, etc.)</span></label>
           <div class="calc-input-wrap">
             <span class="pfx">$</span>
             <input type="text" inputmode="numeric" id="c-debts" value="400" />
@@ -533,7 +540,7 @@
       <div class="calc-adv" id="calc-adv">
         <div class="calc-grid">
           <div class="calc-field">
-            <label for="c-rate">Interest Rate</label>
+            <label for="c-rate">Interest Rate <span class="hint" id="c-rate-hint"></span></label>
             <div class="calc-input-wrap">
               <input type="text" inputmode="decimal" id="c-rate" class="pct" value="6.6" />
               <span class="sfx">%</span>
@@ -710,7 +717,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_53</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 19_46</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -723,7 +730,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 18_53';
+  const SITE_VERSION = '26.08.31 19_46';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -773,6 +780,7 @@
         btn.classList.add('active');
         termYears = parseInt(btn.dataset.term, 10);
         applyAutoRateForTerm();
+        updateRateHint();
         calculate();
       });
     });
@@ -786,6 +794,7 @@
        typed their own rate, we leave it alone — this only ever sets a
        starting default, never overwrites a manual entry. */
     const rateEl = $('c-rate');
+    const rateHintEl = $('c-rate-hint');
     let rateAutoFilled = true;
     let liveRates = null; // { rate30, rate15, asOf, source }
     rateEl.addEventListener('input', () => { rateAutoFilled = false; });
@@ -796,6 +805,16 @@
       if (Number.isFinite(r)){
         rateEl.value = r.toFixed(2);
         rateAutoFilled = true; // setting it programmatically shouldn't count as "the user typed it"
+      }
+    }
+
+    // Keeps the "(current average fixed rate = X.X%)" hint under Interest
+    // Rate synced to whichever term (15/30 yr) is currently selected.
+    function updateRateHint(){
+      if (!liveRates) return;
+      const r = termYears === 15 ? liveRates.rate15 : liveRates.rate30;
+      if (Number.isFinite(r)){
+        rateHintEl.textContent = '(current average fixed rate = ' + r.toFixed(2) + '%)';
       }
     }
 
@@ -812,6 +831,7 @@
         if (!data || !Number.isFinite(data.rate30) || !Number.isFinite(data.rate15)) return;
         liveRates = data;
         applyAutoRateForTerm();
+        updateRateHint();
         $('stat-30').textContent = '~' + data.rate30.toFixed(2) + '%';
         $('stat-15').textContent = '~' + data.rate15.toFixed(2) + '%';
         $('rate-asof').textContent = data.source === 'fallback' ? 'a recent estimate' : formatAsOf(data.asOf);
@@ -1098,7 +1118,7 @@
         pmiEl.textContent = 'PMI typically Required Under 20% down';
       } else {
         pmiEl.className = 'pmi-notice ok';
-        pmiEl.textContent = '20% or more down — no PMI needed';
+        pmiEl.textContent = '20%+ down — no PMI';
       }
 
       $('b-pi').textContent = fmtMoney(result.pi);

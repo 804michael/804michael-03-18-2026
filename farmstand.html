@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 18_51                                 ║
+  ║  SITE VERSION: 26.08.31 19_46                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -36,7 +36,7 @@
     --black:#111; --white:#fff;
     --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
     --gray-text:#555; --gray-muted:#888;
-    --nav-h:68px; --banner-h:26px; /* keep in sync with nav.css's :root --banner-h — the banner text just doubled in size, so its real height grew past the old 20px */
+    --nav-h:68px; --banner-h:34px; /* keep in sync with nav.css's :root --banner-h — the banner now has real vertical padding on top of the 1.36rem text */
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;
@@ -296,7 +296,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:1.08rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400;text-transform:uppercase">site version 26.08.31 18_51</p>
+  <p id="site-version-display" style="text-align:center;font-size:1.08rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400;text-transform:uppercase">site version 26.08.31 19_46</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -528,7 +528,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.31 18_51';
+const SITE_VERSION = '26.08.31 19_46';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

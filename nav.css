@@ -9,7 +9,7 @@
    ============================================================ */
 
 :root{
-  --nav-h:68px; --banner-h:26px; /* bumped from 20px — the banner text just doubled in size (1.36rem), so its real rendered height grew past the old 20px floor. This MUST stay >= the banner's actual content height, or #nav (positioned at top:var(--banner-h)) goes back to sitting behind the banner. */
+  --nav-h:68px; --banner-h:34px; /* bumped from 26px — the banner now has real vertical padding (see #banner padding below) on top of the 1.36rem text, so its real rendered height grew again. This MUST stay >= the banner's actual content height, or #nav (positioned at top:var(--banner-h)) goes back to sitting behind the banner. */
 }
 
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -23,7 +23,7 @@
   background-size:200% 100%;
   animation:shimmer 4s linear infinite;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:1px 16px;
+  padding:6px 16px;
 }
 #banner p{
   /* margin:0 is load-bearing here, not decoration — nav-partial.html is
