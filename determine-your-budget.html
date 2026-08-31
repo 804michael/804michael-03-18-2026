@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 19_53                                 ║
+  ║  SITE VERSION: 26.08.31 19_54                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -169,6 +169,8 @@
     /* The Interest Rate hint ("current avg fixed rate") must never wrap —
        the column above is widened (1.3fr) specifically to give it room. */
     #c-rate-hint{white-space:nowrap}
+    /* Monthly Debts' hint must also stay on one line. */
+    #c-debts-hint{white-space:nowrap}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
@@ -469,7 +471,7 @@
           </div>
         </div>
         <div class="calc-field">
-          <label for="c-debts">All Debts <span class="hint">(monthly - loans, cards, support, etc.)</span></label>
+          <label for="c-debts">Monthly Debts <span class="hint" id="c-debts-hint">(loans, cards, support, etc.)</span></label>
           <div class="calc-input-wrap">
             <span class="pfx">$</span>
             <input type="text" inputmode="numeric" id="c-debts" value="400" />
@@ -720,7 +722,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 19_53</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 19_54</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -733,7 +735,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 19_53';
+  const SITE_VERSION = '26.08.31 19_54';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
