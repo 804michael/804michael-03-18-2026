@@ -111,19 +111,21 @@
     .breadcrumb .cur{color:rgba(255,255,255,.85)}
 
     /* ── Main Layout ── */
-    .pg-body{max-width:1200px;margin:0 auto;padding:60px 24px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+    .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
     @media(max-width:900px){.pg-body{grid-template-columns:1fr;gap:40px}}
 
-    .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1;margin-bottom:14px}
+    .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1;margin-bottom:10px}
     .pg-main h2 .r{color:var(--red)}
-    .pg-main>p.lede{font-size:1.02rem;line-height:1.75;color:var(--gray-text);margin-bottom:30px;max-width:64ch}
+    .pg-main>p.lede{font-size:1.02rem;line-height:1.75;color:var(--gray-text);margin-bottom:18px;max-width:64ch}
 
-    /* ── Calculator card ── */
-    .calc-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:18px;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,.05)}
-    .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:14px}
-    .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+    /* ── Calculator "card" — kept borderless/frameless per feedback to save space;
+       the page's own gutters (pg-body's padding + the 340px sidebar column) already
+       separate it visually, so a boxed border/shadow was redundant. ── */
+    .calc-card{background:var(--white);padding:0}
+    .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
+    .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
     @media(max-width:520px){.calc-grid{grid-template-columns:1fr}}
-    .calc-field{display:flex;flex-direction:column;gap:6px}
+    .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{font-weight:400;color:var(--gray-muted);font-size:.74rem}
     .calc-input-wrap{position:relative}
@@ -141,11 +143,11 @@
     .calc-adv-toggle{
       display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
-      color:var(--red);margin:22px 0 4px;padding:0;
+      color:var(--red);margin:14px 0 4px;padding:0;
     }
     .calc-adv-toggle .chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s}
     .calc-adv-toggle.open .chev{transform:rotate(-135deg)}
-    .calc-adv{display:none;margin-top:16px;padding-top:20px;border-top:1px solid var(--gray-mid)}
+    .calc-adv{display:none;margin-top:12px;padding-top:14px;border-top:1px solid var(--gray-mid)}
     .calc-adv.open{display:block}
 
     /* ── Down payment $ / % sync ── */
@@ -159,23 +161,33 @@
     .pmi-badge.ok{background:#e8f5e9;color:#1b5e20}
     .pmi-badge.warn{background:#fff8e1;color:#8a6100}
 
-    /* ── Comfort level slider ── */
+    /* ── Comfort level slider ──
+       The tick mark + its label live ABOVE the track (in the wrap's own
+       padding-top) rather than overlapping it — a range input paints an
+       opaque background across its full box, so anything positioned inside
+       that box (even at a higher z-index) can render behind the thumb or
+       get visually clipped by it. Keeping the tick entirely outside the
+       input's box sidesteps that instead of fighting it with z-index. */
     .calc-slider-live{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;color:var(--black);margin:6px 0 2px;min-height:1.4em}
     .calc-slider-live b{color:var(--red)}
-    .calc-slider-wrap{position:relative;padding-bottom:22px;margin-top:6px}
+    .calc-slider-wrap{position:relative;padding-top:30px;margin-top:10px}
     .calc-slider{
-      -webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:999px;margin:0;
+      -webkit-appearance:none;appearance:none;display:block;width:100%;height:8px;border-radius:999px;margin:0;
       cursor:pointer;outline:none;position:relative;z-index:2;background:var(--gray-mid);
     }
     .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;margin-top:0}
     .calc-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
     .calc-slider::-moz-range-track{height:8px;border-radius:999px;background:var(--gray-mid)}
-    .calc-slider-tick{position:absolute;top:-3px;width:2px;height:14px;background:var(--black);pointer-events:none;z-index:1}
-    .calc-slider-tick span{
-      position:absolute;top:18px;left:50%;transform:translateX(-50%);white-space:nowrap;
-      font-size:.68rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;font-weight:600;
+    .calc-slider-tick{
+      position:absolute;top:0;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;pointer-events:none;
     }
-    .calc-slider-scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;margin-top:2px}
+    .calc-slider-tick-label{
+      font-size:.66rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;font-weight:700;
+      white-space:nowrap;line-height:1;margin-bottom:5px;
+    }
+    .calc-slider-tick-mark{width:2px;height:9px;background:var(--gray-muted)}
+    .calc-slider-scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;margin-top:6px}
     .calc-dti-notice{
       display:none;margin-top:12px;background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;
       padding:12px 14px;font-size:.85rem;line-height:1.5;
@@ -212,7 +224,7 @@
     .pill.active{background:var(--red);border-color:var(--red);color:#fff}
 
     /* ── Results ── */
-    .calc-results{margin-top:26px;padding-top:26px;border-top:2px solid var(--gray-mid)}
+    .calc-results{margin-top:18px;padding-top:18px;border-top:2px solid var(--gray-mid)}
     .result-headline{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:20px}
     .result-hero{flex:1;min-width:220px}
     .result-hero .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
@@ -240,7 +252,7 @@
     .calc-warn{background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;padding:14px 16px;font-size:.9rem;line-height:1.5;margin-top:16px;display:none}
     .calc-warn.show{display:block}
 
-    .calc-disclaimer{font-size:.76rem;color:var(--gray-muted);line-height:1.6;margin-top:20px}
+    .calc-disclaimer{font-size:.76rem;color:var(--gray-muted);line-height:1.6;margin-top:14px}
 
     /* ── Sidebar ── */
     .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
@@ -327,7 +339,7 @@
           </div>
         </div>
         <div class="calc-field">
-          <label for="c-debts">Monthly Debts <span class="hint">(loans, cards, alimony)</span></label>
+          <label for="c-debts">Total Monthly Debts <span class="hint">(loans, credit cards, child support)</span></label>
           <div class="calc-input-wrap">
             <span class="pfx">$</span>
             <input type="text" inputmode="numeric" id="c-debts" value="400" />
@@ -364,7 +376,7 @@
         </div>
       </div>
 
-      <div class="calc-field" style="margin-top:18px">
+      <div class="calc-field" style="margin-top:12px">
         <label for="c-tax-county">Property Tax <span class="hint">(county, or look one up below)</span></label>
         <div class="calc-tax-row">
           <select id="c-tax-county">
@@ -439,8 +451,11 @@
           <label for="c-dti">Comfort Level <span class="hint" id="c-dti-readout">36% &middot; Comfortable</span></label>
           <div class="calc-slider-live" id="c-dti-live"></div>
           <div class="calc-slider-wrap">
+            <div class="calc-slider-tick" id="c-dti-tick" style="left:76.7%">
+              <span class="calc-slider-tick-label">43% typical max</span>
+              <span class="calc-slider-tick-mark"></span>
+            </div>
             <input type="range" id="c-dti" min="20" max="50" step="1" value="36" class="calc-slider" />
-            <div class="calc-slider-tick" id="c-dti-tick" style="left:76.7%"><span>43% typical max</span></div>
           </div>
           <div class="calc-slider-scale"><span>20% — Conservative</span><span>50% — Max (any program)</span></div>
           <div class="calc-dti-notice" id="c-dti-notice">Exceeds recommended debt-to-income ratio — most lenders cap comfortable qualifying around 43%. Approval above this line usually requires strong compensating factors (higher credit, reserves, or a VA/FHA program).</div>
@@ -490,7 +505,7 @@
           <span class="stat-val">~$1,200–$1,800/yr</span>
         </div>
       </div>
-      <p style="font-size:.72rem;color:var(--gray-muted);padding:8px 16px 0;margin:0">National average rates, Freddie Mac PMMS, current as of Aug 2026 — enter your own numbers above for a personalized estimate.</p>
+      <p style="font-size:.72rem;color:var(--gray-muted);padding:2px 16px 16px;margin:0">National average rates, Freddie Mac PMMS, current as of Aug 2026 — enter your own numbers above for a personalized estimate.</p>
     </div>
 
     <!-- Next Step CTA -->
