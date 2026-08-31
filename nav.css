@@ -9,7 +9,7 @@
    ============================================================ */
 
 :root{
-  --nav-h:68px; --banner-h:26px;
+  --nav-h:68px; --banner-h:20px;
 }
 
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -22,15 +22,15 @@
   background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%);
   background-size:200% 100%;
   animation:shimmer 4s linear infinite;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:2px 16px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:1px 16px;
 }
 #banner p{
   font-family:'Barlow Condensed',sans-serif;font-weight:600;
-  font-size:.8rem;line-height:1;letter-spacing:.05em;text-transform:uppercase;
+  font-size:.68rem;line-height:1;letter-spacing:.04em;text-transform:uppercase;
   color:rgba(255,255,255,.95);text-align:center;
 }
-#banner .bd{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
+#banner .bd{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
 
 /* ── Nav bar ── */
 #nav{
