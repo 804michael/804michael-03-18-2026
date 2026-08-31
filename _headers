@@ -1,0 +1,24 @@
+# Cloudflare Pages, by default, caches static assets aggressively at the
+# edge (nav.css was observed being served with "public, max-age=14400" —
+# 4 hours — with no _headers file setting that explicitly). During active
+# development, that means a pushed fix can take up to 4 hours to actually
+# reach a visitor's browser, which reads as "the fix didn't work" even
+# though the deployed file is correct. This shortens it to 5 minutes for
+# the files that change most often (the shared nav/banner and the pages
+# actively being iterated on) so pushes show up close to immediately.
+#
+# Once the site design stabilizes, these can be safely raised again (or
+# removed, to fall back to Cloudflare's longer defaults) for better
+# caching performance.
+
+/nav.css
+  Cache-Control: public, max-age=300, must-revalidate
+
+/nav.js
+  Cache-Control: public, max-age=300, must-revalidate
+
+/nav-partial.html
+  Cache-Control: public, max-age=300, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=300, must-revalidate
