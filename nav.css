@@ -26,6 +26,17 @@
   padding:1px 16px;
 }
 #banner p{
+  /* margin:0 is load-bearing here, not decoration — nav-partial.html is
+     injected into every page, and not every page zeroes default element
+     margins itself (farmstand.html only resets box-sizing, not margin).
+     Without this, the browser's default <p> margin (~1em top+bottom,
+     computed off THIS rule's own font-size) stacks inside #banner's
+     padding, roughly doubling the bar's real height on any page that
+     doesn't already zero margins globally — while a page that does
+     (determine-your-budget.html) renders the same markup correctly thin.
+     Zeroing it here makes the shared banner render identically no matter
+     what reset the host page does or doesn't have. */
+  margin:0;
   font-family:'Barlow Condensed',sans-serif;font-weight:600;
   font-size:.68rem;line-height:1;letter-spacing:.04em;text-transform:uppercase;
   color:rgba(255,255,255,.95);text-align:center;

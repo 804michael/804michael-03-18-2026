@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 18_18                                 ║
+  ║  SITE VERSION: 26.08.31 18_32                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -148,6 +148,7 @@
        separate it visually, so a boxed border/shadow was redundant. ── */
     .calc-card{background:var(--white);padding:0}
     .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
+    .calc-tally-intro{font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--gray-text);line-height:1.4;margin-bottom:10px}
     .calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
     @media(max-width:700px){.calc-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid{grid-template-columns:1fr}}
@@ -155,7 +156,7 @@
        room for wrapping text than column 3 (Loan Term / HOA Dues), which
        only ever holds short pills or a short $ amount. Column 1 stays the
        same width it always was. */
-    .calc-grid.calc-grid-weighted{grid-template-columns:1fr 1.4fr .6fr}
+    .calc-grid.calc-grid-weighted{grid-template-columns:1.25fr 1.15fr .6fr}
     @media(max-width:700px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr}}
     .calc-field{display:flex;flex-direction:column;gap:5px}
@@ -220,7 +221,7 @@
     .calc-slider-wrap{position:relative;padding-top:30px;margin-top:10px}
     /* DTI/Comfort Level — label, slider and live readout all live together
        inside one rounded card instead of sitting bare on the page. */
-    .calc-dti-box{background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:16px;padding:20px 22px 8px}
+    .calc-dti-box{background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:16px;padding:10px 11px 4px}
     /* The generic ".calc-field input" rule (border + padding, for text
        fields) also matches this range input by tag, and at higher
        specificity than a bare ".calc-slider" class — left unchecked it was
@@ -259,12 +260,17 @@
     }
     .calc-dti-notice.show{display:block}
 
-    /* ── Property tax: county row + rate on the right ── */
+    /* ── Property tax: county row + rate on the right ──
+       .calc-tax-rate and the address lookup's "Look Up County" pill below
+       are both given the same fixed 140px flex-basis. Since the select and
+       the address input are both flex:1 in rows of otherwise-identical
+       total width, giving their trailing companions matching widths makes
+       the select and the input line up to the same width automatically. */
     .calc-tax-row{display:flex;align-items:center;gap:10px}
     .calc-tax-row select{flex:1}
     .calc-tax-rate{
       font-family:'Barlow',sans-serif;font-weight:500;font-size:1.3rem;color:var(--red);
-      white-space:nowrap;min-width:64px;text-align:right;flex-shrink:0;
+      white-space:nowrap;flex:0 0 140px;text-align:right;
     }
 
     /* ── Property tax: address lookup ── */
@@ -274,7 +280,7 @@
       font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
     }
     .calc-addr-lookup input:focus{outline:none;border-color:var(--red)}
-    .calc-addr-lookup .pill{flex-shrink:0;padding:0 18px}
+    .calc-addr-lookup .pill{flex:0 0 140px;padding:0 12px;text-align:center}
     .calc-addr-status{font-size:.8rem;color:var(--gray-muted);margin-top:4px;min-height:.9em}
     .calc-addr-status.ok{color:#1b5e20}
     .calc-addr-status.err{color:#8a1f1a}
@@ -564,6 +570,7 @@
           </div>
 
           <div class="calc-results-left">
+            <p class="calc-tally-intro">Here's how that estimated monthly payment breaks down:</p>
             <div class="calc-section-lbl">Estimated Monthly Costs</div>
             <ul class="breakdown" id="r-breakdown">
               <li><span class="k">Principal &amp; Interest</span><span class="v" id="b-pi">$0</span></li>
@@ -674,7 +681,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_18</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_32</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -687,7 +694,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 18_18';
+  const SITE_VERSION = '26.08.31 18_32';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
