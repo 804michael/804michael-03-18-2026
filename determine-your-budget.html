@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 21_27                                 ║
+  ║  SITE VERSION: 26.08.31 21_33                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -416,6 +416,12 @@
     .side-card-body{padding:20px 22px}
     .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
     .stat-row:last-child{border-bottom:none}
+    .stat-insurance-cta{padding:10px 0 2px;text-align:right}
+    .stat-insurance-cta a{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--red);text-decoration:none;transition:color .15s;
+    }
+    .stat-insurance-cta a:hover{color:var(--red-dark)}
     .stat-lbl{font-size:.82rem;color:var(--gray-muted);font-weight:500}
     .stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1rem;color:var(--black)}
     .cta-card{background:var(--red);border-radius:16px;padding:28px 22px;text-align:center}
@@ -695,6 +701,9 @@
           <span class="stat-lbl">Typical Home Insurance</span>
           <span class="stat-val">~$1,200–$1,800/yr</span>
         </div>
+        <div class="stat-insurance-cta">
+          <a href="https://www.kilgoinsurance.com/?utm_source=804michael&amp;utm_medium=referral&amp;utm_campaign=insurance-quote" target="_blank" rel="noopener">Get Insurance Quote &rarr;</a>
+        </div>
       </div>
       <p style="font-size:.72rem;color:var(--gray-muted);padding:2px 16px 16px;margin:0">National average rates, Freddie Mac PMMS, <span id="rate-asof">current as of Aug 2026</span> — enter your own numbers above for a personalized estimate.</p>
     </div>
@@ -750,7 +759,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_27</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_33</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -763,7 +772,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 21_27';
+  const SITE_VERSION = '26.08.31 21_33';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
