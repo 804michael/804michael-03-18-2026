@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 18_08                                 ║
+  ║  SITE VERSION: 26.08.31 18_18                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -176,7 +176,7 @@
     .calc-adv-toggle{
       display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
-      color:var(--red);margin:6px 0 4px;padding:0;
+      color:var(--red);margin:1.5px 0 4px;padding:0;
     }
     .calc-adv-toggle .chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s}
     .calc-adv-toggle.open .chev{transform:rotate(-135deg)}
@@ -233,13 +233,13 @@
        zero both out. */
     .calc-field input.calc-slider{border:none;padding:0}
     .calc-slider{
-      -webkit-appearance:none;appearance:none;display:block;width:100%;height:28px;border-radius:999px;margin:0;
+      -webkit-appearance:none;appearance:none;display:block;width:100%;height:14px;border-radius:999px;margin:0;
       cursor:pointer;outline:none;position:relative;z-index:2;background:var(--gray-mid);
       box-shadow:inset 0 1px 2px rgba(0,0,0,.12);
     }
     .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:36px;height:36px;border-radius:50%;background:var(--white);border:6px solid var(--black);box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;margin-top:0}
     .calc-slider::-moz-range-thumb{width:36px;height:36px;border-radius:50%;background:var(--white);border:6px solid var(--black);box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer}
-    .calc-slider::-moz-range-track{height:28px;border-radius:999px;background:var(--gray-mid)}
+    .calc-slider::-moz-range-track{height:14px;border-radius:999px;background:var(--gray-mid)}
     .calc-slider-tick{
       position:absolute;top:0;transform:translateX(-50%);
       display:flex;flex-direction:column;align-items:center;pointer-events:none;
@@ -268,7 +268,7 @@
     }
 
     /* ── Property tax: address lookup ── */
-    .calc-addr-lookup{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .calc-addr-lookup{display:flex;gap:8px;margin-top:3.6px;flex-wrap:wrap}
     .calc-addr-lookup input{
       flex:1;min-width:200px;border:1.5px solid var(--gray-mid);border-radius:10px;padding:11px 13px;font-size:.95rem;
       font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
@@ -299,7 +299,7 @@
        with each other; the cost tally sits in the left column, aligned
        with the payment row underneath Home Price. Grid-template-areas
        keeps that relationship explicit regardless of DOM order. */
-    .calc-results{margin-top:14px;padding-top:14px;border-top:10px solid var(--gray-mid)}
+    .calc-results{margin-top:14px;padding-top:14px;border-top:5px solid var(--gray-mid)}
     .calc-results-grid{
       display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;align-items:start;
       grid-template-areas:". price" "tally payment";
@@ -455,7 +455,7 @@
             </div>
             <span class="down-sync-eq">=</span>
             <div class="calc-input-wrap pct-wrap">
-              <input type="text" inputmode="decimal" id="c-down-pct" class="pct" value="0.0" aria-label="Down payment percent" />
+              <input type="text" inputmode="decimal" id="c-down-pct" class="pct" value="5.0" aria-label="Down payment percent" />
               <span class="sfx">%</span>
             </div>
           </div>
@@ -516,7 +516,7 @@
             <label for="c-ins">Homeowners Insurance <span class="hint">(annual)</span></label>
             <div class="calc-input-wrap">
               <span class="pfx">$</span>
-              <input type="text" inputmode="numeric" id="c-ins" value="1,400" />
+              <input type="text" inputmode="numeric" id="c-ins" value="1,600" />
             </div>
           </div>
           <div class="calc-field">
@@ -616,7 +616,7 @@
           <span class="stat-val" id="stat-15">~6.0%</span>
         </div>
         <div class="stat-row">
-          <span class="stat-lbl">Typical VA Insurance</span>
+          <span class="stat-lbl">Typical Home Insurance</span>
           <span class="stat-val">~$1,200–$1,800/yr</span>
         </div>
       </div>
@@ -674,7 +674,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_08</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_18</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -687,7 +687,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 18_08';
+  const SITE_VERSION = '26.08.31 18_18';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -787,7 +787,7 @@
        computed home price as the conversion basis. `downSource` tracks which
        field the person is actively driving so we never overwrite mid-keystroke. */
     let lastPrice = 0;
-    let downSource = 'dollar';
+    let downSource = 'percent';
     const downDollarEl = $('c-down-dollar'), downPctEl = $('c-down-pct');
     downDollarEl.addEventListener('input', ()=>{ downSource = 'dollar'; calculate(); });
     downPctEl.addEventListener('input', ()=>{ downSource = 'percent'; calculate(); });
