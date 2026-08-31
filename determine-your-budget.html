@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 17_29                                 ║
+  ║  SITE VERSION: 26.08.31 17_30                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -222,12 +222,13 @@
        zero both out. */
     .calc-field input.calc-slider{border:none;padding:0}
     .calc-slider{
-      -webkit-appearance:none;appearance:none;display:block;width:100%;height:8px;border-radius:999px;margin:0;
+      -webkit-appearance:none;appearance:none;display:block;width:100%;height:14px;border-radius:999px;margin:0;
       cursor:pointer;outline:none;position:relative;z-index:2;background:var(--gray-mid);
+      box-shadow:inset 0 1px 2px rgba(0,0,0,.12);
     }
-    .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;margin-top:0}
-    .calc-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
-    .calc-slider::-moz-range-track{height:8px;border-radius:999px;background:var(--gray-mid)}
+    .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--white);border:5px solid var(--black);box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;margin-top:0}
+    .calc-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--white);border:5px solid var(--black);box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer}
+    .calc-slider::-moz-range-track{height:14px;border-radius:999px;background:var(--gray-mid)}
     .calc-slider-tick{
       position:absolute;top:0;transform:translateX(-50%);
       display:flex;flex-direction:column;align-items:center;pointer-events:none;
@@ -639,7 +640,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 17_29</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 17_30</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -652,7 +653,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 17_29';
+  const SITE_VERSION = '26.08.31 17_30';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -767,7 +768,9 @@
        warning notice once the person drags past it. ── */
     const dtiSlider = $('c-dti'), dtiNotice = $('c-dti-notice');
     const RECOMMENDED_DTI_MAX = 43;
-    const GREEN = [46, 163, 63], YELLOW = [230, 178, 40], RED = [211, 45, 35];
+    // Bumped up to punchier, more saturated stops — the earlier muted
+    // tones read as washed-out against the thin gray track.
+    const GREEN = [22, 176, 78], YELLOW = [245, 166, 26], RED = [224, 34, 34];
     function lerpColor(a, b, t){
       return `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
     }
@@ -783,7 +786,7 @@
     // near the high end, dead-on only near the middle. This converts a raw
     // value-fraction into the thumb's true on-track pixel position so the
     // color fill always ends exactly at the thumb.
-    const DTI_THUMB_PX = 22;
+    const DTI_THUMB_PX = 26; // must match the thumb width/height set in .calc-slider::-webkit-slider-thumb / -moz-range-thumb below
     function visualPct(rawPct, trackWidth){
       const half = (DTI_THUMB_PX / 2 / trackWidth) * 100;
       return half + (rawPct / 100) * (100 - 2 * half);
