@@ -98,8 +98,6 @@
     }
     .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
     .black-hero-in{max-width:1200px;margin:0 auto}
-    .black-hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin:0 0 10px;display:flex;align-items:center;gap:10px}
-    .black-hero-eyebrow::before{content:'';display:inline-block;width:26px;height:2px;background:var(--red)}
     .black-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2rem,5.5vw,3.4rem);line-height:1;text-transform:uppercase;letter-spacing:-.01em;margin:0 0 10px}
     .black-hero h1 span{color:var(--red)}
     .black-hero-sub{font-family:'Barlow',sans-serif;font-size:1rem;color:rgba(255,255,255,.75);max-width:640px}
@@ -151,20 +149,38 @@
     .calc-adv.open{display:block}
 
     /* ── Down payment $ / % sync ── */
-    .down-sync-row{display:flex;align-items:center;gap:10px}
-    .down-sync-row .calc-input-wrap{flex:1}
+    .down-sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .down-sync-row .calc-input-wrap{flex:1;min-width:120px}
     .down-sync-eq{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--gray-muted);flex-shrink:0}
+    .pmi-badge{
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;
+      padding:6px 12px;border-radius:999px;white-space:nowrap;flex-shrink:0;background:var(--gray-light);color:var(--gray-muted);
+    }
+    .pmi-badge.ok{background:#e8f5e9;color:#1b5e20}
+    .pmi-badge.warn{background:#fff8e1;color:#8a6100}
 
     /* ── Comfort level slider ── */
+    .calc-slider-live{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;color:var(--black);margin:6px 0 2px;min-height:1.4em}
+    .calc-slider-live b{color:var(--red)}
+    .calc-slider-wrap{position:relative;padding-bottom:22px;margin-top:6px}
     .calc-slider{
-      -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;margin:10px 0 6px;
-      background:linear-gradient(to right,var(--red) 0%,var(--red) 71%,var(--gray-mid) 71%,var(--gray-mid) 100%);
-      cursor:pointer;outline:none;
+      -webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:999px;margin:0;
+      cursor:pointer;outline:none;position:relative;z-index:2;background:var(--gray-mid);
     }
-    .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
-    .calc-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;border-width:3px}
-    .calc-slider::-moz-range-track{height:6px;border-radius:999px;background:var(--gray-mid)}
-    .calc-slider-scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray-muted);font-family:'Barlow',sans-serif}
+    .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;margin-top:0}
+    .calc-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--black);box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer}
+    .calc-slider::-moz-range-track{height:8px;border-radius:999px;background:var(--gray-mid)}
+    .calc-slider-tick{position:absolute;top:-3px;width:2px;height:14px;background:var(--black);pointer-events:none;z-index:1}
+    .calc-slider-tick span{
+      position:absolute;top:18px;left:50%;transform:translateX(-50%);white-space:nowrap;
+      font-size:.68rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;font-weight:600;
+    }
+    .calc-slider-scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray-muted);font-family:'Barlow',sans-serif;margin-top:2px}
+    .calc-dti-notice{
+      display:none;margin-top:12px;background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;
+      padding:12px 14px;font-size:.85rem;line-height:1.5;
+    }
+    .calc-dti-notice.show{display:block}
 
     /* ── Property tax: address lookup ── */
     .calc-addr-lookup{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
@@ -266,9 +282,8 @@
 <!-- PAGE HERO (black bar, no image) -->
 <div class="black-hero">
   <div class="black-hero-in">
-    <div class="black-hero-eyebrow">Free &amp; Instant</div>
     <h1>Home <span>Affordability</span> Calculator</h1>
-    <p class="black-hero-sub">See what home price and monthly payment realistically fit your budget in Ashland, Hanover County &amp; Glen Allen.</p>
+    <p class="black-hero-sub">See what home price and monthly payment realistically fit your budget</p>
   </div>
 </div>
 
@@ -290,7 +305,7 @@
   <main class="pg-main">
 
     <h2 class="reveal">How Much Home Can <span class="r">You</span> Afford?</h2>
-    <p class="lede reveal d1">Enter your income, monthly debts and down payment to see an estimated home price and monthly payment. Open "Advanced Options" to fine-tune the interest rate, loan term, taxes, insurance and HOA for a more precise number.</p>
+    <p class="lede reveal d1">Enter your income, monthly debts and down payment to see an estimated home price and monthly payment. Open "Advanced Options" to fine-tune the interest rate, insurance and PMI for a more precise number.</p>
 
     <div class="calc-card reveal d2">
 
@@ -310,7 +325,7 @@
             <input type="text" inputmode="numeric" id="c-debts" value="400" />
           </div>
         </div>
-        <div class="calc-field">
+        <div class="calc-field" style="grid-column:1/-1">
           <label>Down Payment</label>
           <div class="down-sync-row">
             <div class="calc-input-wrap">
@@ -322,14 +337,34 @@
               <input type="text" inputmode="decimal" id="c-down-pct" class="pct" value="0.0" aria-label="Down payment percent" />
               <span class="sfx">%</span>
             </div>
+            <span class="pmi-badge" id="pmi-badge">—</span>
+          </div>
+        </div>
+        <div class="calc-field">
+          <label>Loan Term</label>
+          <div class="calc-term-pills">
+            <button type="button" class="pill" data-term="15">15 yr</button>
+            <button type="button" class="pill active" data-term="30">30 yr</button>
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="c-hoa">HOA Dues <span class="hint">(monthly)</span></label>
+          <div class="calc-input-wrap">
+            <span class="pfx">$</span>
+            <input type="text" inputmode="numeric" id="c-hoa" value="0" />
           </div>
         </div>
       </div>
 
       <div class="calc-field" style="margin-top:18px">
         <label for="c-dti">Comfort Level <span class="hint" id="c-dti-readout">36% &middot; Comfortable</span></label>
-        <input type="range" id="c-dti" min="20" max="45" step="1" value="36" class="calc-slider" />
-        <div class="calc-slider-scale"><span>20% — Conservative</span><span>45% — Aggressive</span></div>
+        <div class="calc-slider-live" id="c-dti-live"></div>
+        <div class="calc-slider-wrap">
+          <input type="range" id="c-dti" min="20" max="50" step="1" value="36" class="calc-slider" />
+          <div class="calc-slider-tick" id="c-dti-tick" style="left:76.7%"><span>43% typical max</span></div>
+        </div>
+        <div class="calc-slider-scale"><span>20% — Conservative</span><span>50% — Max (any program)</span></div>
+        <div class="calc-dti-notice" id="c-dti-notice">Exceeds recommended debt-to-income ratio — most lenders cap comfortable qualifying around 43%. Approval above this line usually requires strong compensating factors (higher credit, reserves, or a VA/FHA program).</div>
       </div>
 
       <div class="calc-field" style="margin-top:18px">
@@ -369,24 +404,10 @@
             </div>
           </div>
           <div class="calc-field">
-            <label>Loan Term</label>
-            <div class="calc-term-pills">
-              <button type="button" class="pill" data-term="15">15 yr</button>
-              <button type="button" class="pill active" data-term="30">30 yr</button>
-            </div>
-          </div>
-          <div class="calc-field">
             <label for="c-ins">Homeowners Insurance <span class="hint">(annual)</span></label>
             <div class="calc-input-wrap">
               <span class="pfx">$</span>
               <input type="text" inputmode="numeric" id="c-ins" value="1,400" />
-            </div>
-          </div>
-          <div class="calc-field">
-            <label for="c-hoa">HOA Dues <span class="hint">(monthly)</span></label>
-            <div class="calc-input-wrap">
-              <span class="pfx">$</span>
-              <input type="text" inputmode="numeric" id="c-hoa" value="0" />
             </div>
           </div>
           <div class="calc-field">
@@ -450,15 +471,15 @@
           <span class="stat-val">~6.6%</span>
         </div>
         <div class="stat-row">
-          <span class="stat-lbl">Default Tax Rate (Hanover Co.)</span>
-          <span class="stat-val">$0.81 / $100</span>
+          <span class="stat-lbl">Avg. 15-Yr Fixed Rate</span>
+          <span class="stat-val">~6.0%</span>
         </div>
         <div class="stat-row">
           <span class="stat-lbl">Typical VA Insurance</span>
           <span class="stat-val">~$1,200–$1,800/yr</span>
         </div>
       </div>
-      <p style="font-size:.72rem;color:var(--gray-muted);padding:8px 16px 0;margin:0">National average rate, Freddie Mac PMMS; Hanover County is the calculator's default tax rate — pick your own county or look up an address in the calculator above. Both current as of Aug 2026.</p>
+      <p style="font-size:.72rem;color:var(--gray-muted);padding:8px 16px 0;margin:0">National average rates, Freddie Mac PMMS, current as of Aug 2026 — enter your own numbers above for a personalized estimate.</p>
     </div>
 
     <!-- Next Step CTA -->
@@ -572,17 +593,40 @@
     downDollarEl.addEventListener('input', ()=>{ downSource = 'dollar'; calculate(); });
     downPctEl.addEventListener('input', ()=>{ downSource = 'percent'; calculate(); });
 
-    /* ── Comfort-level slider ── */
-    const dtiSlider = $('c-dti'), dtiReadout = $('c-dti-readout');
+    /* ── Comfort-level slider — green → yellow → red across the full range,
+       with a fixed tick at the conventional 43% "recommended max" and a
+       warning notice once the person drags past it. ── */
+    const dtiSlider = $('c-dti'), dtiReadout = $('c-dti-readout'), dtiNotice = $('c-dti-notice');
+    const RECOMMENDED_DTI_MAX = 43;
+    const GREEN = [46, 163, 63], YELLOW = [230, 178, 40], RED = [211, 45, 35];
+    function lerpColor(a, b, t){
+      return `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
+    }
+    function dtiColorAt(pct /* 0-100 */){
+      // 0–50% of the track: green→yellow. 50–100%: yellow→red.
+      if (pct <= 50) return lerpColor(GREEN, YELLOW, pct / 50);
+      return lerpColor(YELLOW, RED, (pct - 50) / 50);
+    }
     function paintSlider(){
       const min = +dtiSlider.min, max = +dtiSlider.max, val = +dtiSlider.value;
       const pct = ((val - min) / (max - min)) * 100;
-      dtiSlider.style.background = `linear-gradient(to right,var(--red) 0%,var(--red) ${pct}%,var(--gray-mid) ${pct}%,var(--gray-mid) 100%)`;
+      // Paint the filled portion as a fine-grained gradient sampled up to the thumb,
+      // so the color at the thumb always matches dtiColorAt(pct) exactly.
+      const stops = [];
+      const steps = 12;
+      for (let i = 0; i <= steps; i++){
+        const stopPct = (pct * i) / steps;
+        stops.push(`${dtiColorAt(stopPct)} ${stopPct}%`);
+      }
+      stops.push(`var(--gray-mid) ${pct}%`, `var(--gray-mid) 100%`);
+      dtiSlider.style.background = `linear-gradient(to right,${stops.join(',')})`;
     }
     dtiSlider.addEventListener('input', ()=>{
       paintSlider();
-      const status = statusFor(+dtiSlider.value);
-      dtiReadout.innerHTML = dtiSlider.value + '% &middot; ' + status.label;
+      const val = +dtiSlider.value;
+      const status = statusFor(val);
+      dtiReadout.innerHTML = val + '% &middot; ' + status.label;
+      dtiNotice.classList.toggle('show', val > RECOMMENDED_DTI_MAX);
       calculate();
     });
 
@@ -616,17 +660,17 @@
       addrStatus.textContent = 'Looking up…';
       addrBtn.disabled = true;
       try{
-        const url = 'https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress'
-          + '?address=' + encodeURIComponent(addr)
-          + '&benchmark=Public_AR_Current&vintage=Current_Current&layers=Counties,Incorporated%20Places&format=json';
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('geocoder_http_' + res.status);
+        // Same-origin Cloudflare Pages Function (functions/api/county-lookup.js) that
+        // proxies to the Census Bureau's geocoder server-side. Calling Census directly
+        // from the browser was unreliable — its API doesn't consistently send CORS
+        // headers, so the fetch could fail depending on the visitor's browser/network.
+        // This endpoint removes that: the browser only ever talks to 804re.com.
+        const res = await fetch('/api/county-lookup?address=' + encodeURIComponent(addr));
+        if (!res.ok) throw new Error('lookup_http_' + res.status);
         const data = await res.json();
-        const match = data && data.result && data.result.addressMatches && data.result.addressMatches[0];
-        if (!match) throw new Error('no_match');
-        const geos = match.geographies || {};
-        const placeName = ((geos['Incorporated Places'] || [])[0] || {}).NAME || '';
-        const countyName = ((geos['Counties'] || [])[0] || {}).NAME || '';
+        if (!data || !data.matched) throw new Error('no_match');
+        const placeName = data.place || '';
+        const countyName = data.county || '';
         // Ashland is a town inside Hanover County — check the place name first so it
         // wins over the plain "Hanover" county match.
         const lookupName = placeName + ' ' + countyName;
@@ -710,6 +754,9 @@
         $('r-dti-val').innerHTML = '&nbsp;0%';
         $('r-dti-chip').className = 'chip';
         $('r-pmi-chip').style.display = 'none';
+        $('c-dti-live').textContent = '';
+        $('pmi-badge').className = 'pmi-badge';
+        $('pmi-badge').textContent = '—';
         ['b-pi','b-tax','b-ins','b-hoa','b-pmi','b-total'].forEach(id => $(id).textContent = '$0');
         return;
       }
@@ -740,11 +787,26 @@
       $('r-down-pct').innerHTML = '&nbsp;' + fmtPct(result.downPct);
       $('r-dti-val').innerHTML = '&nbsp;' + fmtPct(backEndDti);
 
+      // Live feedback right at the slider — dragging it visibly moves the price
+      // and payment, the way realtyofamerica.com's slider does.
+      $('c-dti-live').innerHTML = 'At this level: <b>' + fmtMoney(price) + '</b> home &middot; <b>' + fmtMoney(result.total) + '</b>/mo';
+
       const status = statusFor(dtiTarget);
       $('r-dti-chip').className = 'chip ' + status.cls;
       $('r-dti-chip').innerHTML = 'DTI ratio: <b id="r-dti-val">&nbsp;' + fmtPct(backEndDti) + '</b> · ' + status.label;
 
       $('r-pmi-chip').style.display = result.pmi > 0 ? 'inline-flex' : 'none';
+
+      // PMI status badge next to the down payment fields — PMI is driven by
+      // loan-to-value (down payment %), not by the DTI/comfort-level slider.
+      const pmiBadgeEl = $('pmi-badge');
+      if (result.downPct >= 20){
+        pmiBadgeEl.className = 'pmi-badge ok';
+        pmiBadgeEl.textContent = '✓ 20%+ down — no PMI needed';
+      } else {
+        pmiBadgeEl.className = 'pmi-badge warn';
+        pmiBadgeEl.textContent = 'Under 20% down — PMI typically required';
+      }
 
       $('b-pi').textContent = fmtMoney(result.pi);
       $('b-tax').textContent = fmtMoney(result.tax);
