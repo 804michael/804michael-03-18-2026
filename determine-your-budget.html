@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 18_32                                 ║
+  ║  SITE VERSION: 26.08.31 18_53                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -152,11 +152,11 @@
     .calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
     @media(max-width:700px){.calc-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid{grid-template-columns:1fr}}
-    /* "Your Numbers" grid only — column 2 (Debts / PMI Status) needs more
-       room for wrapping text than column 3 (Loan Term / HOA Dues), which
-       only ever holds short pills or a short $ amount. Column 1 stays the
-       same width it always was. */
-    .calc-grid.calc-grid-weighted{grid-template-columns:1.25fr 1.15fr .6fr}
+    /* "Your Numbers" grid only — Income/Down Payment widened to match the
+       50% left column used by the results grid below (so the two grids
+       share a consistent vertical boundary down the card), Debts/PMI
+       Status narrowed to make room, Loan Term/HOA Dues unchanged at 20%. */
+    .calc-grid.calc-grid-weighted{grid-template-columns:1.5fr .9fr .6fr}
     @media(max-width:700px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr 1fr}}
     @media(max-width:420px){.calc-grid.calc-grid-weighted{grid-template-columns:1fr}}
     .calc-field{display:flex;flex-direction:column;gap:5px}
@@ -272,6 +272,14 @@
       font-family:'Barlow',sans-serif;font-weight:500;font-size:1.3rem;color:var(--red);
       white-space:nowrap;flex:0 0 140px;text-align:right;
     }
+    /* Shown only while the Advanced Options "Custom Tax Rate" field has a
+       value — makes it obvious the displayed rate isn't coming from the
+       county dropdown anymore. It isn't saved anywhere, so it (like every
+       other field) resets on a page refresh. */
+    .calc-tax-custom-note{
+      display:none;margin-top:6px;font-family:'Barlow',sans-serif;font-size:.8rem;font-weight:600;color:#8a6100;
+    }
+    .calc-tax-custom-note.show{display:block}
 
     /* ── Property tax: address lookup ── */
     .calc-addr-lookup{display:flex;gap:8px;margin-top:3.6px;flex-wrap:wrap}
@@ -302,26 +310,38 @@
     /* ── Results ──
        Home Price and Estimated Monthly Payment share the right-hand column
        (Home Price in its own row above), so they stay left-edge aligned
-       with each other; the cost tally sits in the left column, aligned
-       with the payment row underneath Home Price. Grid-template-areas
-       keeps that relationship explicit regardless of DOM order. */
+       with each other. The intro paragraph sits beside Home Price (top
+       row) so its top roughly lines up with the price number rather than
+       the whole card; the tally sits beside Estimated Monthly Payment
+       (second row), so "Estimated Monthly Costs" and "Estimated Monthly
+       Payment (PITI)" land on the same line. Grid-template-areas keeps
+       that relationship explicit regardless of DOM order. */
     .calc-results{margin-top:14px;padding-top:14px;border-top:5px solid var(--gray-mid)}
     .calc-results-grid{
       display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;align-items:start;
-      grid-template-areas:". price" "tally payment";
+      grid-template-areas:"intro price" "tally payment";
     }
     @media(max-width:640px){
-      .calc-results-grid{grid-template-columns:1fr;gap:24px;grid-template-areas:"price" "payment" "tally"}
+      .calc-results-grid{grid-template-columns:1fr;gap:24px;grid-template-areas:"price" "payment" "intro" "tally"}
     }
     .calc-results-price{grid-area:price}
     .calc-results-left{grid-area:tally}
     .calc-results-right{grid-area:payment;display:flex;flex-direction:column;gap:22px}
+    /* Offset roughly matches the "HOME PRICE" label's own height (font +
+       margin-bottom), so the intro text's top edge lines up with the price
+       NUMBER just to its right, not the label above it. */
+    .calc-tally-intro{grid-area:intro;margin-top:19px}
     .result-hero{flex:1;min-width:220px}
     .result-hero .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
     .result-hero .num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;line-height:1;letter-spacing:-.01em;display:flex;align-items:flex-start;gap:2px}
     .result-hero .num .cur{font-size:.4em;font-weight:500;line-height:1.15}
     .result-hero .num.r{color:var(--red)}
     .result-hero .sub{font-size:.85rem;color:var(--gray-muted);margin-top:4px}
+    /* Home Price grows 40%, Monthly Payment 30% — both larger, Home Price
+       a bit more since it's the primary headline figure. The "$" prefix
+       (.cur, sized in em) scales automatically with each. */
+    #r-price{font-size:3.64rem}
+    #r-monthly{font-size:3.38rem}
     /* Loan amount line — was bumped 50% larger than the base .sub size last
        round; now dialed back to 80% of that bumped size (1.275rem × .8 =
        1.02rem). An ID selector so this doesn't also resize the unrelated
@@ -480,7 +500,7 @@
       </div>
 
       <div class="calc-field" style="margin-top:12px">
-        <label for="c-tax-county">Real Estate Tax <span class="hint">(county, or look one up below)</span></label>
+        <label for="c-tax-county">Real Estate Tax Rate <span class="hint">(select county, or look up county with address)</span></label>
         <div class="calc-tax-row">
           <select id="c-tax-county">
             <option value="0.81" selected>Hanover County — 0.81%</option>
@@ -495,6 +515,7 @@
           </select>
           <span class="calc-tax-rate" id="c-tax-rate-display">0.81%</span>
         </div>
+        <p class="calc-tax-custom-note" id="c-tax-custom-note">Using your Custom Tax Rate from Advanced Options — overrides the county selection above.</p>
 
         <div class="calc-input-wrap" id="c-tax-custom-wrap" style="display:none;margin-top:8px;max-width:180px">
           <input type="text" inputmode="decimal" id="c-tax" class="pct" value="0.81" />
@@ -532,6 +553,13 @@
               <span class="sfx">%</span>
             </div>
           </div>
+          <div class="calc-field">
+            <label for="c-tax-adv">Custom Tax Rate <span class="hint">(overrides county selection)</span></label>
+            <div class="calc-input-wrap">
+              <input type="text" inputmode="decimal" id="c-tax-adv" class="pct" placeholder="Optional" />
+              <span class="sfx">%</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -563,6 +591,8 @@
 
         <div class="calc-results-grid">
 
+          <p class="calc-tally-intro">Here's the monthly payment breakdown to help you see how each item contributes to your monthly payment. Real estate taxes and Association Fees (if any) can adjust your home price. For actual numbers talk with a Licensed Lender.</p>
+
           <div class="result-hero calc-results-price">
             <div class="lbl">Home Price</div>
             <div class="num r" id="r-price">$0</div>
@@ -570,7 +600,6 @@
           </div>
 
           <div class="calc-results-left">
-            <p class="calc-tally-intro">Here's how that estimated monthly payment breaks down:</p>
             <div class="calc-section-lbl">Estimated Monthly Costs</div>
             <ul class="breakdown" id="r-breakdown">
               <li><span class="k">Principal &amp; Interest</span><span class="v" id="b-pi">$0</span></li>
@@ -681,7 +710,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_32</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 18_53</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -694,7 +723,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 18_32';
+  const SITE_VERSION = '26.08.31 18_53';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -867,11 +896,21 @@
 
     /* ── Property tax: county dropdown + custom rate ── */
     const taxCountyEl = $('c-tax-county'), taxCustomWrap = $('c-tax-custom-wrap'), taxCustomEl = $('c-tax');
+    // Advanced Options' "Custom Tax Rate" is a separate override layer on
+    // top of the county dropdown/custom-rate pair above — when it has a
+    // value, it wins regardless of what's selected in the dropdown. It's a
+    // plain input with no persistence (no localStorage/cookie), so like
+    // every other field on this page it naturally resets on a page refresh.
+    const taxAdvEl = $('c-tax-adv');
     taxCountyEl.addEventListener('change', ()=>{
       taxCustomWrap.style.display = taxCountyEl.value === 'custom' ? 'block' : 'none';
       calculate();
     });
+    function isCustomTaxActive(){
+      return parseNum(taxAdvEl) > 0;
+    }
     function currentTaxPct(){
+      if (isCustomTaxActive()) return parseNum(taxAdvEl);
       return taxCountyEl.value === 'custom' ? parseNum(taxCustomEl) : parseFloat(taxCountyEl.value);
     }
 
@@ -972,6 +1011,7 @@
       const rate = parseNum($('c-rate'));
       const taxPct = currentTaxPct();
       $('c-tax-rate-display').textContent = taxPct.toFixed(2) + '%';
+      $('c-tax-custom-note').classList.toggle('show', isCustomTaxActive());
       const insAnnual = parseNum($('c-ins'));
       const hoaMonthly = parseNum($('c-hoa'));
       const pmiPct = parseNum($('c-pmi'));
@@ -1058,7 +1098,7 @@
         pmiEl.textContent = 'PMI typically Required Under 20% down';
       } else {
         pmiEl.className = 'pmi-notice ok';
-        pmiEl.textContent = '20%+ down — no PMI needed';
+        pmiEl.textContent = '20% or more down — no PMI needed';
       }
 
       $('b-pi').textContent = fmtMoney(result.pi);

@@ -9,7 +9,7 @@
    ============================================================ */
 
 :root{
-  --nav-h:68px; --banner-h:20px;
+  --nav-h:68px; --banner-h:26px; /* bumped from 20px — the banner text just doubled in size (1.36rem), so its real rendered height grew past the old 20px floor. This MUST stay >= the banner's actual content height, or #nav (positioned at top:var(--banner-h)) goes back to sitting behind the banner. */
 }
 
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -38,7 +38,7 @@
      what reset the host page does or doesn't have. */
   margin:0;
   font-family:'Barlow Condensed',sans-serif;font-weight:600;
-  font-size:.68rem;line-height:1;letter-spacing:.04em;text-transform:uppercase;
+  font-size:1.36rem;line-height:1;letter-spacing:.04em;text-transform:uppercase;
   color:rgba(255,255,255,.95);text-align:center;
 }
 #banner .bd{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
