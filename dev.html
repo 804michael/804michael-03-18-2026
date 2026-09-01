@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 19_16                                 ║
+  ║  SITE VERSION: 26.09.01 19_28                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -85,6 +85,7 @@
     .dev-card-head{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
     .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
     .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
+    .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
     .dev-card-body p{font-size:.92rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
@@ -161,6 +162,37 @@
       </div>
     </div>
 
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Find a Home on Your Own</h3>
+        <span class="dev-badge unlinked">Built — Unlinked</span>
+      </div>
+      <div class="dev-card-body">
+        <p>The full buyer guide is done and live at its URL (robots: index, follow) — it's just not linked from the main nav or index.html's guides grid yet, so it's effectively an orphan page right now.</p>
+        <ul>
+          <li>Searching the major portals without tripping lead-gen forms</li>
+          <li>Green flags / slow-down signals, Google Maps vetting</li>
+          <li>Central VA well/septic note + Virginia Buyer Reminder</li>
+        </ul>
+        <a class="dev-card-link" href="find-a-home.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Tour a Home Like a Pro</h3>
+        <span class="dev-badge unlinked">Built — Unlinked</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Also done and live at its URL (robots: index, follow), also not linked from the main nav or index.html's guides grid yet — same orphan-page situation as Find a Home.</p>
+        <ul>
+          <li>5-step tour flow: prepare → interior → utility/mechanical → exterior/lot → write it down</li>
+          <li>After-Tour Scorecard, "Words of Caution" callout</li>
+        </ul>
+        <a class="dev-card-link" href="tour-a-home.html">View page →</a>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -175,7 +207,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_16</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_28</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -186,7 +218,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 19_16';
+  const SITE_VERSION = '26.09.01 19_28';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
