@@ -19,17 +19,25 @@
   ║  State the version BEFORE describing any changes made.       ║
   ║                                                               ║
   ║  🚧 STAGING PAGE — NOT YET LAUNCHED                           ║
-  ║  This page is intentionally NOT linked from nav-partial.html  ║
-  ║  and NOT listed in sitemap.xml yet, and <meta name="robots">  ║
-  ║  below is set to "noindex, follow" on purpose. It is linked   ║
-  ║  only from dev.html (804re.com/dev), Michael's internal       ║
-  ║  staging hub. When this page is ready to go live:             ║
-  ║    1. Add a link to it in nav-partial.html                    ║
-  ║    2. Add it to sitemap.xml                                   ║
-  ║    3. Change the robots meta tag below to "index, follow"     ║
-  ║  Also: the Schools section is a work in progress — Michael    ║
-  ║  said more school links are coming. Don't treat that list as  ║
-  ║  final; the link-grid is built to take more cards easily.     ║
+  ║  Not linked from nav-partial.html or sitemap.xml, robots is   ║
+  ║  "noindex, follow" on purpose. Linked only from dev.html.      ║
+  ║  Launch checklist: add a nav link, add to sitemap.xml, flip   ║
+  ║  robots to "index, follow".                                   ║
+  ║                                                               ║
+  ║  Michael asked (2026-09-01) for "Quick market stats and       ║
+  ║  monthly reports links," pointing to the CVMLS public         ║
+  ║  ShowingTime FastStats tool (cvmls-public.stats.showingtime.  ║
+  ║  com/reports) as an example of "using a map like" this. That  ║
+  ║  tool already has its own interactive maps/reports (Local     ║
+  ║  Market Updates, Monthly/Quarterly/Annual Indicators, Housing ║
+  ║  Supply, Showings Report) and is public with no login — this  ║
+  ║  page links out to it prominently rather than rebuilding it,  ║
+  ║  since re-embedding it would need iframe permission checks    ║
+  ║  that weren't verified. Only one report source is linked so   ║
+  ║  far — Michael said "monthly reports links" (plural), so more ║
+  ║  are likely coming; the .link-grid below is built to take     ║
+  ║  more cards easily, same pattern as due-diligence.html's      ║
+  ║  Schools section.                                             ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -39,18 +47,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
-  <title>Due Diligence Checklist | Flood, Schools &amp; Well/Septic — 804Michael</title>
-  <meta name="description" content="Flood-risk lookups, school-rating resources, and Virginia well/septic &amp; disclosure basics every seller and buyer in Ashland, Hanover County &amp; the Richmond area should check before closing." />
-  <meta name="keywords" content="due diligence checklist Virginia, flood zone lookup Hanover County, Hanover County schools ratings, Virginia well and septic disclosure, DPOR residential property disclosure, Ashland VA due diligence, 804Michael, Michael Hottman" />
-  <link rel="canonical" href="https://804re.com/due-diligence.html" />
+  <title>Quick Market Stats &amp; Monthly Reports — 804Michael</title>
+  <meta name="description" content="Fast access to Central Virginia real estate market stats — monthly indicators, local market updates, and housing supply reports for Ashland, Hanover County &amp; the Richmond area." />
+  <meta name="keywords" content="Central Virginia real estate market stats, Hanover County housing market, monthly market report, CVMLS market stats, Ashland VA home prices, 804Michael, Michael Hottman" />
+  <link rel="canonical" href="https://804re.com/market-stats.html" />
   <meta name="robots" content="noindex, follow" />
 
   <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
   <meta property="og:type"        content="article" />
   <meta property="og:locale"      content="en_US" />
-  <meta property="og:url"         content="https://804re.com/due-diligence.html" />
-  <meta property="og:title"       content="Due Diligence Checklist — 804Michael" />
-  <meta property="og:description" content="Flood-risk lookups, school resources, and Virginia well/septic & disclosure basics before you close." />
+  <meta property="og:url"         content="https://804re.com/market-stats.html" />
+  <meta property="og:title"       content="Quick Market Stats & Monthly Reports — 804Michael" />
+  <meta property="og:description" content="Fast access to Central Virginia real estate market stats and monthly reports." />
   <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
@@ -58,8 +66,8 @@
   <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:site"        content="@804Michael" />
-  <meta name="twitter:title"       content="Due Diligence Checklist | 804Michael" />
-  <meta name="twitter:description" content="Flood-risk lookups, school resources, and Virginia well/septic & disclosure basics before you close." />
+  <meta name="twitter:title"       content="Quick Market Stats & Monthly Reports | 804Michael" />
+  <meta name="twitter:description" content="Fast access to Central Virginia real estate market stats and monthly reports." />
   <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
 
   <!-- ── Local Business schema ──────────────────────────────────────────── -->
@@ -148,36 +156,23 @@
     section.stage{margin-bottom:52px}
     section.stage:last-of-type{margin-bottom:0}
 
-    /* ── Reference link grid (flood tools, school links, etc. — grows to fit any number of cards) ── */
+    /* ── Reference link grid (report cards — grows to fit any number of cards) ── */
     .link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:16px 0 22px}
     .link-card{display:block;background:var(--white);border:1.5px solid var(--gray-mid);border-radius:12px;padding:16px 18px;transition:border-color .2s,transform .2s}
     .link-card:hover{border-color:var(--red);transform:translateY(-2px)}
     .link-card strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.01em;margin-bottom:4px}
     .link-card span{display:block;font-size:.83rem;color:var(--gray-muted);line-height:1.5}
 
-    /* ── Warning / caution callouts (matches calculator's red + amber notice colors) ── */
-    .cal-warn{background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
-    .cal-warn b{color:#6e1712}
-    .cal-caution{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
-    .cal-caution b{color:#5a3f0f}
+    /* ── Featured link card (larger, for the primary report tool) ── */
+    .feature-card{display:block;background:var(--black);color:var(--white);border-radius:16px;padding:24px 26px;margin:16px 0 22px;border-left:5px solid var(--red);transition:transform .2s}
+    .feature-card:hover{transform:translateY(-2px)}
+    .feature-card strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:.01em;margin-bottom:8px;color:var(--white)}
+    .feature-card p{color:rgba(255,255,255,.75);font-size:.92rem;line-height:1.6;margin-bottom:10px}
+    .feature-card ul{margin:8px 0 10px;padding-left:20px}
+    .feature-card li{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.75)}
+    .feature-card .fc-cta{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:#ff9a90}
+
     .cal-note{font-size:.88rem;color:var(--gray-muted);font-style:italic;margin:14px 0 0}
-
-    /* ── Virginia due-diligence callout (in-content, prominent) ── */
-    .va-callout{background:var(--black);color:var(--white);border-radius:14px;padding:22px 24px;margin:22px 0 28px;border-left:5px solid var(--red)}
-    .va-callout h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:.03em;text-transform:uppercase;color:var(--white);margin-bottom:10px}
-    .va-callout h4 span{color:var(--red)}
-    .va-callout p{color:rgba(255,255,255,.78);font-size:.9rem;line-height:1.65;margin-bottom:10px}
-    .va-callout ul{margin:8px 0 14px;padding-left:20px}
-    .va-callout li{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.78);margin-bottom:5px}
-    .va-callout .va-disclaimer{font-size:.76rem;color:rgba(255,255,255,.5);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15)}
-    .va-callout a{color:#ff9a90;text-decoration:underline}
-
-    /* ── Virginia due-diligence callout (sidebar, condensed) ── */
-    .side-va{background:var(--black);border-radius:16px;padding:20px 20px 18px;border-left:5px solid var(--red)}
-    .side-va h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.03em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
-    .side-va p{color:rgba(255,255,255,.75);font-size:.84rem;line-height:1.55;margin-bottom:10px}
-    .side-va a.va-link{display:inline-block;color:#ff9a90;font-size:.82rem;font-weight:600;text-decoration:underline}
-    .side-va .va-disclaimer{display:block;font-size:.7rem;color:rgba(255,255,255,.45);font-style:italic;margin-top:10px}
 
     /* ── CTA block (in-content) ── */
     .rg-cta{background:var(--black);border-radius:16px;padding:32px 30px;margin-top:8px}
@@ -222,8 +217,8 @@
 <!-- PAGE HERO (black bar, no image) -->
 <div class="black-hero">
   <div class="black-hero-in">
-    <h1>Do Your <span>Due Diligence</span></h1>
-    <p class="black-hero-sub">Flood risk, schools, and well/septic basics every seller and buyer in Central Virginia should check before closing</p>
+    <h1>Quick <span>Market Stats</span></h1>
+    <p class="black-hero-sub">Fast access to Central Virginia real estate market data and monthly reports</p>
   </div>
 </div>
 
@@ -234,7 +229,7 @@
     <span class="sep">›</span>
     <a href="dev.html">Dev</a>
     <span class="sep">›</span>
-    <span class="cur">Due Diligence Checklist</span>
+    <span class="cur">Quick Market Stats</span>
   </div>
 </div>
 
@@ -243,101 +238,30 @@
 
   <main class="pg-main">
 
-    <h2>Verify It <span class="r">Before You Sign</span></h2>
-    <p class="lede">A listing doesn't have to tell you everything — and under Virginia's disclosure rules, it often doesn't have to. Flood risk, school assignment, and well/septic condition are three things worth checking yourself, with primary sources, before removing contingencies or listing a property.</p>
+    <h2>See the Market <span class="r">for Yourself</span></h2>
+    <p class="lede">Real, current market data — not a guess — for Ashland, Hanover County, Glen Allen, Mechanicsville and the greater Richmond area. These reports update automatically from the regional MLS, so they stay current without anyone having to manually refresh a page.</p>
 
-    <!-- FLOOD RISK -->
-    <section class="stage" id="flood">
-      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
-      <h2>Flood Risk</h2>
-      <p class="body-p">Check the exact parcel, not just the neighborhood — flood zones can change block to block, and a lender or insurer will check the official maps regardless of what a listing says.</p>
+    <!-- MARKET REPORTS -->
+    <section class="stage" id="reports">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Market Data</div>
+      <h2>Central Virginia Market Reports</h2>
+      <p class="body-p">The regional MLS publishes free, public market-statistics reports — no login required. It includes interactive map-based local market updates plus monthly, quarterly and annual indicator reports (median price, days on market, inventory, and more).</p>
 
-      <div class="link-grid">
-        <a class="link-card" href="https://msc.fema.gov/portal/search" target="_blank" rel="noopener">
-          <strong>FEMA Flood Map Service Center</strong>
-          <span>Search any address for its official FEMA flood zone and view the FIRM panel that determines whether federally regulated lenders require flood insurance.</span>
-        </a>
-        <a class="link-card" href="https://www.dcr.virginia.gov/dam-safety-and-floodplains/fpvfris" target="_blank" rel="noopener">
-          <strong>Virginia Flood Risk Information System (VFRIS)</strong>
-          <span>Virginia DCR's own flood viewer — often carries more current local data plus extra risk layers, including dam-break inundation zones.</span>
-        </a>
-      </div>
-
-      <p class="cal-note">A property outside the mapped 100-year floodplain can still flood, and flood insurance is available — sometimes worth having — even where a lender doesn't require it. Confirm current flood-zone status and insurance cost with your lender and insurance agent before removing contingencies.</p>
-    </section>
-
-    <!-- SCHOOLS -->
-    <section class="stage" id="schools">
-      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
-      <h2>Schools</h2>
-      <p class="body-p">A portal's "assigned schools" estimate isn't always current, and boundaries can shift. Verify attendance zones directly with Hanover County Public Schools, then cross-check independent ratings below.</p>
-
-      <div class="link-grid">
-        <a class="link-card" href="https://schoolquality.virginia.gov/" target="_blank" rel="noopener">
-          <strong>Virginia School Quality Profiles</strong>
-          <span>The Commonwealth's official school-by-school quality profile tool — test scores, accreditation, and other state-tracked metrics.</span>
-        </a>
-        <a class="link-card" href="https://www.doe.virginia.gov/data-policy-funding/data-reports/school-quality-profiles" target="_blank" rel="noopener">
-          <strong>VDOE Data &amp; School Quality Reports</strong>
-          <span>Virginia Department of Education's data-reports hub, for digging into a division or school beyond the headline profile.</span>
-        </a>
-        <a class="link-card" href="https://www.usnews.com/education/best-high-schools/virginia/districts/hanover-county-public-schools-101080" target="_blank" rel="noopener">
-          <strong>U.S. News — Hanover County Public Schools</strong>
-          <span>District-level ranking and overview from U.S. News' Best High Schools rankings.</span>
-        </a>
-        <a class="link-card" href="https://www.usnews.com/education/best-high-schools/virginia/districts/hanover-county-public-schools/patrick-henry-high-school-20493" target="_blank" rel="noopener">
-          <strong>U.S. News — Patrick Henry High School</strong>
-          <span>School-specific profile: ranking, academics, and student body data for Patrick Henry High School.</span>
-        </a>
-        <a class="link-card" href="https://www.niche.com/k12/d/hanover-county-public-schools-va/" target="_blank" rel="noopener">
-          <strong>Niche — Hanover County Public Schools</strong>
-          <span>Community-sourced ratings and reviews alongside Niche's own grading of the district.</span>
-        </a>
-        <a class="link-card" href="https://hcps.us/about_us/school_attendance_zones" target="_blank" rel="noopener">
-          <strong>HCPS School Attendance Zones</strong>
-          <span>Hanover County Public Schools' own attendance-zone maps — the authoritative source for which school a specific address is assigned to.</span>
-        </a>
-        <!-- MORE SCHOOL LINKS GO HERE — Michael has additional links to add; this grid auto-wraps to fit any number of cards. -->
-      </div>
-
-      <p class="cal-note">Ratings from different sites can disagree because they weigh different things — treat them as a starting point for questions, not a final verdict, and always confirm current attendance-zone assignment with the school division directly.</p>
-    </section>
-
-    <!-- WELL & SEPTIC -->
-    <section class="stage" id="well-septic">
-      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
-      <h2>Well &amp; Septic</h2>
-      <p class="body-p">In parts of Hanover, Goochland, Powhatan, and other rural areas surrounding Ashland and Richmond, a home may have a private well, septic system, or both — don't assume a listing gives you enough detail.</p>
-
-      <div class="cal-caution">
-        <b>Central Virginia Note: Well and Septic.</b> Ask about whether the home has public water, public sewer, private well, private septic, or a combination; septic permit records, drainfield location, system capacity, age, maintenance history, and pump-out history; whether the septic system supports the home's current bedroom count; well age, depth, yield, water-quality history, treatment equipment, and maintenance; and any planned additions, guest houses, pools, or lot improvements that could be affected by septic capacity, setbacks, or drainage. Virginia's disclosure notice specifically says sellers make no representation about the presence, type, size, or maintenance responsibilities of a wastewater system — buyers are advised to investigate the system and its inspection, repair, maintenance, and pump-out requirements themselves.
-      </div>
-
-      <p class="body-p">For water and sewer service in areas with public infrastructure instead of a private well/septic, see the <a href="utility-providers.html#water-sewer" style="text-decoration:underline;font-weight:600">Utility Providers page</a>.</p>
-    </section>
-
-    <!-- VIRGINIA BUYER REMINDER -->
-    <section class="stage" id="va-reminder">
-      <div class="va-callout">
-        <h4>Virginia Buyer Reminder: <span>An Omission Is Not an All-Clear</span></h4>
-        <p>In Virginia, the Residential Property Disclosure Act generally emphasizes buyer due diligence. The seller's residential property disclosure statement says owners make <b style="color:#fff">no representations or warranties</b> about the property's condition or improvements, and it specifically advises buyers to obtain whatever due diligence they consider necessary — including inspections and other appropriate evaluations — before settlement.</p>
-        <p>That means you shouldn't assume a seller has confirmed:</p>
+      <a class="feature-card" href="https://cvmls-public.stats.showingtime.com/reports" target="_blank" rel="noopener">
+        <strong>CVMLS Public Market Reports (ShowingTime FastStats)</strong>
+        <p>Six report types in one place, including a map-based Local Market Update:</p>
         <ul>
-          <li>The overall condition of the house</li>
-          <li>Lot lines, setback rules, lot coverage, or whether an addition can be built</li>
-          <li>Adjacent parcels, zoning, or future uses next door</li>
-          <li>Flood risk or flood-insurance requirements, or dam-break inundation zones</li>
-          <li>Conservation easements or other easements</li>
-          <li>Septic-system type, size, condition, maintenance needs, or pump-out requirements</li>
-          <li>Radon risk, marine clay or soil concerns, or lead-pipe concerns</li>
-          <li>Airport or aircraft noise, or military-installation impacts</li>
-          <li>Historic-district or resource-protection-area restrictions</li>
-          <li>Registered sexual-offender information</li>
+          <li>Local Market Update (map-based, community-level)</li>
+          <li>Monthly Indicators</li>
+          <li>Quarterly Indicators Report</li>
+          <li>Annual Report</li>
+          <li>Housing Supply Overview</li>
+          <li>ShowingTime Showings Report (buyer-activity trends)</li>
         </ul>
-        <p>Virginia's current disclosure statement also highlights items sellers must affirmatively disclose in writing, including pending building-code or zoning violations, lis pendens, prior methamphetamine manufacturing, privately owned stormwater-management facilities, repetitive-risk-loss status, and septic-system operating-permit validity.</p>
-        <p>A listing may not tell you everything you need to know — and under Virginia's disclosure framework, it may not have to. Ask questions, review documents, investigate the land and surrounding area, and use the appropriate contingencies and inspections before removing protections or moving forward to closing.</p>
-        <p class="va-disclaimer">This is educational information, not legal advice. The exact disclosures and protections that apply can depend on the property, transaction, contract, and circumstances. Source: <a href="https://www.dpor.virginia.gov/Consumers/Residential_Property_Disclosures" target="_blank" rel="noopener">Virginia DPOR — Residential Property Disclosures</a>.</p>
-      </div>
+        <span class="fc-cta">Open the reports tool ↗</span>
+      </a>
+
+      <p class="cal-note">More monthly report sources may get added here over time — this grid is built to take more cards as they come.</p>
     </section>
 
     <!-- CTA -->
@@ -351,8 +275,8 @@
             </picture>
           </div>
           <div class="rg-cta-text">
-            <h3>Questions About a Specific Property?</h3>
-            <p>Flood zones, septic history, and school assignment all come down to the specific parcel — I can help pull the records that matter for a home you're watching or listing before you're deep into a contract.</p>
+            <h3>Want the Numbers for Your Specific Street?</h3>
+            <p>Area-wide stats are a good starting point, but the number that actually matters is what's happening on your street or in your specific price range. Text me and I'll pull the real comps.</p>
             <div class="rg-cta-btns">
               <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
               <a href="sms:8046424235" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.3)">Text 804-Michael</a>
@@ -367,32 +291,13 @@
   <!-- SIDEBAR -->
   <aside class="pg-side">
 
-    <div class="side-va reveal">
-      <h4>Virginia Buyer Reminder</h4>
-      <p>Virginia sellers generally make <b style="color:#fff">no representations or warranties</b> about a home's condition. An omission isn't an all-clear — due diligence is on you.</p>
-      <a href="#va-reminder" class="va-link">Read what to verify ›</a>
-      <span class="va-disclaimer">Educational information, not legal advice.</span>
-    </div>
-
     <div class="side-card reveal">
-      <div class="side-card-head"><h4>On This Page</h4></div>
-      <div class="side-card-body">
-        <ul class="explore-links">
-          <li><a href="#flood">Flood Risk <span class="arr">›</span></a></li>
-          <li><a href="#schools">Schools <span class="arr">›</span></a></li>
-          <li><a href="#well-septic">Well &amp; Septic <span class="arr">›</span></a></li>
-          <li><a href="#va-reminder">VA Disclosure Basics <span class="arr">›</span></a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="side-card reveal d2">
       <div class="side-card-head"><h4>Keep Going</h4></div>
       <div class="side-card-body">
         <ul class="explore-links">
+          <li><a href="due-diligence.html">Due Diligence Checklist <span class="arr">›</span></a></li>
           <li><a href="utility-providers.html">Utility Providers <span class="arr">›</span></a></li>
-          <li><a href="find-a-home.html">Find a Home on Your Own <span class="arr">›</span></a></li>
-          <li><a href="tour-a-home.html">Tour a Home Like a Pro <span class="arr">›</span></a></li>
+          <li><a href="home-value-estimate.html">What's Your Home Worth? <span class="arr">›</span></a></li>
           <li><a href="dev.html">← Dev Hub <span class="arr">›</span></a></li>
         </ul>
       </div>

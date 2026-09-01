@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 19_45                                 ║
+  ║  SITE VERSION: 26.09.01 19_51                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -86,6 +86,16 @@
     .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
     .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
     .dev-badge.unlinked{background:var(--gray-muted)}
+    .dev-badge.review{background:#3b6ea5}
+
+    /* ── Notes & Ideas (research reminders — not built pages) ── */
+    .dev-notes{margin-top:36px;padding-top:28px;border-top:1px solid var(--gray-mid)}
+    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:14px}
+    .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+    .dev-note-item strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;margin-bottom:4px}
+    .dev-note-item p{font-size:.88rem;color:var(--gray-text);line-height:1.55}
+    .dev-note-item a{text-decoration:underline;font-weight:600}
+    .dev-note-item .dni-date{font-size:.7rem;color:var(--gray-muted);font-style:italic}
     .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
     .dev-card-body p{font-size:.92rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
@@ -223,6 +233,50 @@
       </div>
     </div>
 
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Quick Market Stats</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Links out to the CVMLS public ShowingTime FastStats tool — map-based Local Market Update plus Monthly/Quarterly/Annual Indicators, Housing Supply, and a Showings Report. No login required.</p>
+        <ul>
+          <li>Only one report source linked so far — you said "monthly reports links" (plural), so more may be coming</li>
+          <li>Links out to the existing tool rather than rebuilding it — it already has its own maps/reports</li>
+        </ul>
+        <a class="dev-card-link" href="market-stats.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Home Value Estimate</h3>
+        <span class="dev-badge review">Live — Review</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Not a new build — already live and linked in the main nav (Seller Info + Resources dropdowns). Flagged here for a content/UX review, and as a candidate for a "Part 2."</p>
+        <ul>
+          <li>Idea A: a more detailed version (more property fields, more accurate estimate)</li>
+          <li>Idea B: a "roll-up" version with no required fields at all — lower friction, for top-of-funnel visitors not ready to commit details</li>
+        </ul>
+        <a class="dev-card-link" href="home-value-estimate.html">View page →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dev-notes">
+    <h2>Notes &amp; Ideas <span style="color:var(--gray-muted);font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0">(research reminders, not built pages)</span></h2>
+
+    <div class="dev-note-item">
+      <strong>Check out askawalker.com</strong>
+      <p>Northern Virginia agent site (Abraham Walker, Samson Properties) — property search, buying/selling guides, and a stack of calculators similar to this site's. Worth a look for layout/feature ideas. <span class="dni-date">Added 2026-09-01</span></p>
+    </div>
+
+    <div class="dev-note-item">
+      <strong>Find a tool to pull Instagram/Facebook/TikTok into index.html</strong>
+      <p>Michael wants a social feed widget (IG + FB + TikTok) embedded on the homepage. Needs research — most free social-embed widgets only cover one or two platforms at once, or need a paid plan for TikTok specifically; no tool picked yet. <span class="dni-date">Added 2026-09-01</span></p>
+    </div>
   </div>
 
 </div>
@@ -237,7 +291,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_45</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_51</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -248,7 +302,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 19_45';
+  const SITE_VERSION = '26.09.01 19_51';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
