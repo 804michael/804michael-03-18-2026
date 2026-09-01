@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 21_36                                 ║
+  ║  SITE VERSION: 26.08.31 21_46                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -413,9 +413,9 @@
     /* ── Sidebar ── */
     .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
     .side-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:16px;overflow:hidden}
-    .side-card-head{background:var(--black);padding:18px 22px}
-    .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:var(--white)}
-    .side-card-body{padding:20px 22px}
+    .side-card-head{background:var(--black);padding:13px 18px}
+    .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
+    .side-card-body{padding:14px 18px}
     .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
     .stat-row:last-child{border-bottom:none}
     .stat-insurance-cta{padding:10px 0 2px;text-align:right}
@@ -424,7 +424,7 @@
       color:var(--red);text-decoration:none;transition:color .15s;
     }
     .stat-insurance-cta a:hover{color:var(--red-dark)}
-    .stat-lbl{font-size:.82rem;color:var(--gray-muted);font-weight:500}
+    .stat-lbl{font-size:.98rem;color:var(--gray-muted);font-weight:500}
     .stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1rem;color:var(--black)}
     .cta-card{background:var(--red);border-radius:16px;padding:28px 22px;text-align:center}
     .cta-card h4{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.4rem;text-transform:uppercase;color:var(--white);margin-bottom:8px}
@@ -432,7 +432,7 @@
     .btn-white{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 20px;background:var(--white);color:var(--black);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.44rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s;margin-bottom:10px;border:none;cursor:pointer}
     .btn-white:hover{background:rgba(255,255,255,.88)}
     .explore-links{list-style:none}
-    .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:.9rem;color:var(--black);transition:color .2s}
+    .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:1.35rem;color:var(--black);transition:color .2s}
     .explore-links li:last-child a{border-bottom:none}
     .explore-links li a:hover{color:var(--red)}
     .explore-links li a .arr{font-size:1.1rem;color:var(--red)}
@@ -761,7 +761,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_36</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.08.31 21_46</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -774,7 +774,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.08.31 21_36';
+  const SITE_VERSION = '26.08.31 21_46';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
