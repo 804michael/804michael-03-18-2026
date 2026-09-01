@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 19_51                                 ║
+  ║  SITE VERSION: 26.09.01 19_57                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -277,6 +277,16 @@
       <strong>Find a tool to pull Instagram/Facebook/TikTok into index.html</strong>
       <p>Michael wants a social feed widget (IG + FB + TikTok) embedded on the homepage. Needs research — most free social-embed widgets only cover one or two platforms at once, or need a paid plan for TikTok specifically; no tool picked yet. <span class="dni-date">Added 2026-09-01</span></p>
     </div>
+
+    <div class="dev-note-item">
+      <strong>Add more fields to the Home Value EmailJS template</strong>
+      <p>The live "What's Your Home Worth?" form (<code>template_valuation_request</code> in EmailJS) currently only captures address/name/contact/notes. Ties into the Home Value Estimate review card above — worth deciding which extra fields matter (property type? approx. sq ft? reason for the estimate?) before editing the template. <span class="dni-date">Added 2026-09-01</span></p>
+    </div>
+
+    <div class="dev-note-item">
+      <strong>Buyer/Seller webinar workflow to build</strong>
+      <p>Idea, not yet scoped: a webinar workflow for buyers and/or sellers. Michael already has BigMarker — confirmed (2026-09-01) that BigMarker is webinar/event software (registration, live/simulive hosting, follow-up email, CRM sync) and does <b>not</b> do 1:1 appointment scheduling, so it's a separate tool from whatever gets picked for the intake-form scheduler above. Needs real scoping before this becomes a page: webinar topic/cadence, registration flow, and how leads from it feed into the buyer/seller intake forms. <span class="dni-date">Added 2026-09-01</span></p>
+    </div>
   </div>
 
 </div>
@@ -291,7 +301,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_51</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_57</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -302,7 +312,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 19_51';
+  const SITE_VERSION = '26.09.01 19_57';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
