@@ -1,0 +1,531 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.01 01_04                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
+  <title>Seller Net Sheet Estimate | What Will I Walk Away With? — 804Michael</title>
+  <meta name="description" content="Free seller net sheet calculator for home sellers in Ashland VA &amp; Hanover County. Estimate your net proceeds and cash at closing after commissions, closing costs and your mortgage payoff." />
+  <meta name="keywords" content="seller net sheet, seller net proceeds calculator, how much will I get when I sell my house, closing costs for sellers, Michael Hottman, 804Michael" />
+  <link rel="canonical" href="https://804re.com/seller-net-sheet.html" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:locale"      content="en_US" />
+  <meta property="og:url"         content="https://804re.com/seller-net-sheet.html" />
+  <meta property="og:title"       content="Seller Net Sheet Estimate — 804Michael" />
+  <meta property="og:description" content="See roughly what you'll walk away with when you sell — enter your sale price and 804Michael's free calculator estimates your net proceeds and cash at closing." />
+  <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"   content="804Michael — Ashland VA Real Estate" />
+  <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:site"        content="@804Michael" />
+  <meta name="twitter:title"       content="Seller Net Sheet Estimate | 804Michael" />
+  <meta name="twitter:description" content="Free seller net sheet calculator — estimate your net proceeds and cash at closing from 804Michael." />
+  <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
+
+  <!-- ── Local Business + Real Estate Agent Schema (JSON-LD) ──────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "804Michael — Michael Hottman Real Estate",
+    "url": "https://804re.com",
+    "image": "https://804re.com/images/Tool-og1.png",
+    "description": "Michael Hottman is a licensed Virginia real estate broker helping buyers and sellers in Ashland VA, Hanover County, Glen Allen, and Mechanicsville.",
+    "telephone": "+18046424235",
+    "email": "michael@804michael.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ashland",
+      "addressRegion": "VA",
+      "addressCountry": "US"
+    },
+    "areaServed": [
+      { "@type": "City",   "name": "Ashland",        "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "County", "name": "Hanover County",  "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Glen Allen",      "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Mechanicsville",  "containedInPlace": { "@type": "State", "name": "Virginia" } }
+    ],
+    "sameAs": [
+      "https://www.zillow.com/profile/804Michael",
+      "https://www.realtor.com/realestateagents/56b05db30fa41701007434f7",
+      "https://www.homes.com/real-estate-agents/michael-hottman/h3njsd1/",
+      "https://x.com/804Michael"
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
+  <link rel="stylesheet" href="nav.css">
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* Nav/banner/hamburger/dropdown styling lives in nav.css (shared across every
+       page via nav-partial.html + nav.js). Do not redeclare #banner, #nav, .nav-links,
+       .nav-dropdown, .btn-connect, .connect-dropdown, .ham, #mob-menu, #backdrop, or
+       .mob-links here — duplicating those selectors is exactly the drift nav.css exists
+       to prevent. */
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.44rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s,transform .15s;cursor:pointer;border:2px solid transparent}
+    .btn-red{background:var(--red);color:var(--white);border-color:var(--red)}
+    .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
+    .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
+    .btn-outline:hover{border-color:var(--black)}
+
+    /* ── Page Hero — black bar, no image ── */
+    .black-hero{
+      background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;
+      margin-top:calc(var(--banner-h) + var(--nav-h));
+      width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+    }
+    .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .black-hero-in{}
+    .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 8px}
+    .black-hero h1 span{color:var(--red)}
+    .black-hero-sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:400;font-size:13px;color:rgba(255,255,255,.75)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{background:var(--black);padding:12px 0}
+    .breadcrumb-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    .breadcrumb a{color:rgba(255,255,255,.5);transition:color .2s}
+    .breadcrumb a:hover{color:var(--red)}
+    .breadcrumb .sep{color:rgba(255,255,255,.25)}
+    .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
+
+    /* ── Main Layout ── */
+    .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+    @media(max-width:900px){.pg-body{grid-template-columns:1fr;gap:40px}}
+
+    .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1;margin-bottom:10px}
+    .pg-main h2 .r{color:var(--red)}
+    .pg-main>p.lede{font-size:1.02rem;line-height:1.75;color:var(--gray-text);margin-bottom:18px;max-width:64ch}
+
+    /* ── Calculator card ── */
+    .calc-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:24px 22px;margin-bottom:28px}
+    .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
+    .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;margin-bottom:8px}
+    @media(max-width:520px){.calc-grid{grid-template-columns:1fr}}
+    .calc-field{display:flex;flex-direction:column;gap:5px}
+    .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
+    .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
+    .calc-input-wrap{position:relative}
+    .calc-input-wrap .pfx,.calc-input-wrap .sfx{position:absolute;top:50%;transform:translateY(-50%);color:var(--gray-muted);font-size:.95rem;pointer-events:none}
+    .calc-input-wrap .pfx{left:13px}
+    .calc-input-wrap .sfx{right:13px}
+    .calc-field input{
+      width:100%;border:1.5px solid var(--gray-mid);border-radius:10px;padding:11px 13px;font-size:.98rem;
+      font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
+    }
+    .calc-input-wrap input{padding-left:24px}
+    .calc-input-wrap input.pct{padding-left:13px;padding-right:26px}
+    .calc-field input:focus{outline:none;border-color:var(--red)}
+
+    .price-card{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 18px;margin-bottom:22px}
+    .price-card label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:8px}
+    .price-card .calc-input-wrap{max-width:320px}
+    .price-card input{font-size:1.3rem;font-weight:600;font-family:'Barlow Condensed',sans-serif;padding-left:28px}
+
+    .calc-adv-toggle{
+      display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--red);margin:4px 0 4px;padding:0;
+    }
+    .calc-adv-toggle .chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s}
+    .calc-adv-toggle.open .chev{transform:rotate(-135deg)}
+    .calc-adv{display:none;margin-top:12px;padding-top:14px;border-top:1px solid var(--gray-mid)}
+    .calc-adv.open{display:block}
+
+    /* ── Results ── */
+    .calc-results-outline{border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 18px;background:var(--gray-light);margin-top:18px}
+    .breakdown{list-style:none}
+    .breakdown li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-mid);font-size:.92rem}
+    .breakdown li:last-child{border-bottom:none}
+    .breakdown li .k{color:var(--gray-text)}
+    .breakdown li .k-sub{font-size:.76rem;color:var(--gray-muted)}
+    .breakdown li .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem}
+    .breakdown li .v.minus{color:#8a1f1a}
+    .breakdown li.total{border-top:2px solid var(--black);border-bottom:none;margin-top:4px;padding-top:12px}
+    .breakdown li.total .k{color:var(--black);font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:.86rem}
+    .breakdown li.total .v{font-size:2rem;color:var(--red);font-weight:900}
+    .breakdown li.total .v .cur{font-size:.55em;font-weight:600}
+    .breakdown li.total .v.neg{color:#8a1f1a}
+
+    .calc-warn{background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;padding:14px 16px;font-size:.9rem;line-height:1.5;margin-top:16px;display:none}
+    .calc-warn.show{display:block}
+    .calc-disclaimer{font-size:.76rem;color:var(--gray-muted);line-height:1.6;margin-top:14px}
+
+    /* ── Sidebar ── */
+    .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
+    .side-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:16px;overflow:hidden}
+    .side-card-head{background:var(--black);padding:13px 18px}
+    .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
+    .side-card-body{padding:14px 18px}
+    .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
+    .stat-row:last-child{border-bottom:none}
+    .stat-lbl{font-size:.98rem;color:var(--gray-muted);font-weight:500}
+    .stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1rem;color:var(--black)}
+    .cta-card{background:var(--red);border-radius:16px;padding:28px 22px;text-align:center}
+    .cta-card h4{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.4rem;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+    .cta-card p{font-size:.9rem;color:rgba(255,255,255,.85);margin-bottom:20px;line-height:1.6}
+    .btn-white{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 20px;background:var(--white);color:var(--black);border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.44rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s;margin-bottom:10px;border:none;cursor:pointer}
+    .btn-white:hover{background:rgba(255,255,255,.88)}
+    .explore-links{list-style:none}
+    .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:1.05rem;color:var(--black);transition:color .2s}
+    .explore-links li:last-child a{border-bottom:none}
+    .explore-links li a:hover{color:var(--red)}
+    .explore-links li a .arr{font-size:1.1rem;color:var(--red)}
+
+    /* ── CTA Band ── */
+    .cta-band{background:var(--black);padding:60px 24px;text-align:center}
+    .cta-band h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.2rem);text-transform:uppercase;color:var(--white);margin-bottom:10px}
+    .cta-band h2 span{color:var(--red)}
+    .cta-band p{color:rgba(255,255,255,.6);font-size:1rem;margin-bottom:30px}
+    .cta-band-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .btn-lg{padding:15px 34px;font-size:1.6rem}
+
+    /* ── Footer ── */
+    footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+
+    /* Reveal */
+    .reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+    .reveal.js-ready{opacity:0;transform:translateY(20px)}
+    .reveal.vis{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<!-- PAGE HERO (black bar, no image) -->
+<div class="black-hero">
+  <div class="black-hero-in">
+    <h1>Seller Net Sheet <span>Estimate</span></h1>
+    <p class="black-hero-sub">See roughly what you'll walk away with when you sell</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="index.html" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
+    <span class="sep">›</span>
+    <a href="index.html#guides">Resources</a>
+    <span class="sep">›</span>
+    <span class="cur">Seller Net Sheet</span>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="pg-body">
+
+  <!-- MAIN CONTENT -->
+  <main class="pg-main">
+
+    <h2>What Will <span class="r">You</span> Net?</h2>
+    <p class="lede">Enter your estimated sale price and a few assumptions to see a best-guess estimate of your net proceeds and approximate cash at closing. This is a planning tool only — your Settlement Agent determines the exact figures at closing.</p>
+
+    <div class="calc-card">
+
+      <div class="price-card">
+        <label for="price">Estimated Sale Price</label>
+        <div class="calc-input-wrap">
+          <span class="pfx">$</span>
+          <input type="text" inputmode="numeric" id="price" value="350,000" />
+        </div>
+      </div>
+
+      <div class="calc-section-lbl">Loan Payoff</div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label for="payoff">Current Mortgage Payoff <span class="hint">(your loan balance — 0 if owned outright)</span></label>
+          <div class="calc-input-wrap">
+            <span class="pfx">$</span>
+            <input type="text" inputmode="numeric" id="payoff" value="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-section-lbl" style="margin-top:6px">Commissions &amp; Costs</div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label for="buyer-comm-pct">Buyer's Agent Commission</label>
+          <div class="calc-input-wrap">
+            <input type="text" inputmode="decimal" id="buyer-comm-pct" class="pct" value="3.0" />
+            <span class="sfx">%</span>
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="list-comm-pct">Listing Agent Commission</label>
+          <div class="calc-input-wrap">
+            <input type="text" inputmode="decimal" id="list-comm-pct" class="pct" value="3.0" />
+            <span class="sfx">%</span>
+          </div>
+        </div>
+        <div class="calc-field">
+          <label for="closing-pct">Seller Closing Costs <span class="hint">(title work, recording, prorations)</span></label>
+          <div class="calc-input-wrap">
+            <input type="text" inputmode="decimal" id="closing-pct" class="pct" value="0.75" />
+            <span class="sfx">%</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="calc-adv-toggle" id="calc-adv-btn"><span class="chev"></span> Concessions &amp; Credits (optional)</button>
+      <div class="calc-adv" id="calc-adv">
+        <div class="calc-grid">
+          <div class="calc-field">
+            <label for="concessions">Seller-Paid Buyer Closing Costs <span class="hint">(concessions in the offer)</span></label>
+            <div class="calc-input-wrap">
+              <span class="pfx">$</span>
+              <input type="text" inputmode="numeric" id="concessions" value="0" />
+            </div>
+          </div>
+          <div class="calc-field">
+            <label for="other-credits">Other Charges / Credits <span class="hint">(home warranty, repair credits, etc.)</span></label>
+            <div class="calc-input-wrap">
+              <span class="pfx">$</span>
+              <input type="text" inputmode="numeric" id="other-credits" value="0" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-results-outline">
+        <ul class="breakdown">
+          <li><span class="k">Sale Price</span><span class="v" id="b-price">$0</span></li>
+          <li><span class="k">Buyer's Agent Commission <span class="k-sub" id="b-buyer-comm-pct"></span></span><span class="v minus" id="b-buyer-comm">−$0</span></li>
+          <li><span class="k">Listing Agent Commission <span class="k-sub" id="b-list-comm-pct"></span></span><span class="v minus" id="b-list-comm">−$0</span></li>
+          <li><span class="k">Seller Closing Costs <span class="k-sub" id="b-closing-pct"></span></span><span class="v minus" id="b-closing">−$0</span></li>
+          <li><span class="k">Concessions &amp; Credits</span><span class="v minus" id="b-credits">−$0</span></li>
+          <li><span class="k">Seller Net Proceeds</span><span class="v" id="b-net-proceeds">$0</span></li>
+          <li><span class="k">Mortgage Payoff</span><span class="v minus" id="b-payoff">−$0</span></li>
+          <li class="total"><span class="k">Approximate Cash to You at Closing</span><span class="v" id="r-cash">$0</span></li>
+        </ul>
+      </div>
+      <p class="calc-warn" id="short-warn">Your estimated payoff and costs add up to more than your sale price — based on these numbers, you may need to bring money to closing rather than receive any. Talk to 804Michael about your options before listing.</p>
+      <p class="calc-disclaimer">This is a general estimate for planning purposes only, not a guarantee. Actual net proceeds are determined by your Settlement Agent at closing and can vary based on prorations (taxes, HOA, fuel), your exact loan payoff amount and per-diem interest, and other closing-specific charges. Talk to 804Michael for a precise net sheet based on your specific property.</p>
+    </div>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="pg-side">
+
+    <!-- Today's Snapshot -->
+    <div class="side-card reveal">
+      <div class="side-card-head"><h4>Today's Snapshot</h4></div>
+      <div class="side-card-body">
+        <div class="stat-row">
+          <span class="stat-lbl">Avg. 30-Yr Fixed Rate</span>
+          <span class="stat-val" id="stat-30">~6.6%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Avg. 15-Yr Fixed Rate</span>
+          <span class="stat-val" id="stat-15">~6.0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Typical Home Insurance</span>
+          <span class="stat-val">~$1,200–$1,800/yr</span>
+        </div>
+      </div>
+      <p style="font-size:.72rem;color:var(--gray-muted);padding:2px 16px 16px;margin:0">National average rates, Freddie Mac PMMS, <span id="rate-asof">current as of Aug 2026</span>.</p>
+    </div>
+
+    <!-- Related Tools -->
+    <div class="side-card reveal d1">
+      <div class="side-card-head"><h4>Related Tools</h4></div>
+      <div class="side-card-body">
+        <ul class="explore-links">
+          <li><a href="determine-your-budget.html">Determine Your Budget <span class="arr">›</span></a></li>
+          <li><a href="cash-to-buy-a-home.html">Cash Needed to Buy <span class="arr">›</span></a></li>
+          <li><a href="map-search.html">Draw My Search <span class="arr">›</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Next Step CTA -->
+    <div class="cta-card reveal d2">
+      <h4>Thinking of Selling?</h4>
+      <p>Get an accurate, personalized net sheet from 804Michael based on your actual home and situation.</p>
+      <a href="tel:8046424235" class="btn-white" style="text-decoration:none">Call 804-642-4235</a>
+    </div>
+
+  </aside>
+</div>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2>Real Life Real Estate,<br/>Let's Chat.</h2>
+  <p>Ready to find out what your home is really worth?<br/>804-Michael is ready to help you take the next step.</p>
+  <div class="cta-band-btns">
+    <a href="tel:8046424235" class="btn btn-red btn-lg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-.46.46a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call <span style="font-family:'Barlow',sans-serif;font-weight:600;letter-spacing:.02em">804-642-4235</span></a>
+    <a href="sms:8046424235" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,.3)">💬 Text 804-Michael</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in">
+    <a href="index.html" aria-label="804Michael">
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto">
+        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="white" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="white" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
+        <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
+        <path fill="#ED1C24" d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z M408.938,71.1l1.473-4.6l1.498,4.6h4.815l-3.891,2.866l1.501,4.57l-3.924-2.812l-3.916,2.812l1.495-4.57l-3.883-2.866H408.938z"/>
+        <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+        <path fill="#ED1C24" d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
+        <path fill="#ED1C24" d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
+      </svg>
+    </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 01_04</p>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      Malcolm Real Estate, Ashland, Virginia<br/>
+      Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
+      Licensed Real Estate Broker in Virginia
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.01 01_04';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+
+  document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+  const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
+
+  /* ── Today's Snapshot — live mortgage rates (sidebar only on this page) ── */
+  function formatAsOf(dateStr){
+    if (!dateStr) return 'updated weekly';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d)) return 'updated weekly';
+    return 'current as of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  fetch('/api/rates')
+    .then(res => res.ok ? res.json() : Promise.reject(new Error('rates_http_' + res.status)))
+    .then(data => {
+      if (!data || !Number.isFinite(data.rate30) || !Number.isFinite(data.rate15)) return;
+      document.getElementById('stat-30').textContent = '~' + data.rate30.toFixed(2) + '%';
+      document.getElementById('stat-15').textContent = '~' + data.rate15.toFixed(2) + '%';
+      document.getElementById('rate-asof').textContent = data.source === 'fallback' ? 'a recent estimate' : formatAsOf(data.asOf);
+    })
+    .catch(() => { /* keep the hardcoded defaults already in the page */ });
+
+  /* ── Seller Net Sheet Estimate ───────────────────────────────────────── */
+  (function(){
+    const $ = id => document.getElementById(id);
+    const fmtMoney = n => '$' + Math.round(n).toLocaleString('en-US');
+    const fmtMoneyBig = n => '<span class="cur">$</span>' + Math.round(Math.abs(n)).toLocaleString('en-US');
+
+    function parseNum(el){
+      const v = parseFloat(String(el.value).replace(/[^0-9.]/g,''));
+      return isNaN(v) ? 0 : v;
+    }
+    function bindMoneyField(el){
+      el.addEventListener('blur', ()=>{
+        const v = parseNum(el);
+        el.value = v ? Math.round(v).toLocaleString('en-US') : '0';
+      });
+    }
+    ['price','payoff','concessions','other-credits'].forEach(id => bindMoneyField($(id)));
+
+    const advBtn = $('calc-adv-btn'), advPanel = $('calc-adv');
+    advBtn.addEventListener('click', ()=>{
+      const open = advPanel.classList.toggle('open');
+      advBtn.classList.toggle('open', open);
+    });
+
+    ['price','payoff','buyer-comm-pct','list-comm-pct','closing-pct','concessions','other-credits'].forEach(id=>{
+      $(id).addEventListener('input', calculate);
+    });
+
+    function calculate(){
+      const price = parseNum($('price'));
+      const payoff = parseNum($('payoff'));
+      const buyerCommPct = parseNum($('buyer-comm-pct'));
+      const listCommPct = parseNum($('list-comm-pct'));
+      const closingPct = parseNum($('closing-pct'));
+      const concessions = parseNum($('concessions'));
+      const otherCredits = parseNum($('other-credits'));
+
+      const buyerComm = price * buyerCommPct / 100;
+      const listComm = price * listCommPct / 100;
+      const closingCosts = price * closingPct / 100;
+      const totalCredits = concessions + otherCredits;
+
+      const netProceeds = price - buyerComm - listComm - closingCosts - totalCredits;
+      const cashAtClosing = netProceeds - payoff;
+
+      $('b-price').textContent = fmtMoney(price);
+      $('b-buyer-comm-pct').textContent = '(' + buyerCommPct.toFixed(1) + '%)';
+      $('b-buyer-comm').textContent = '−' + fmtMoney(buyerComm);
+      $('b-list-comm-pct').textContent = '(' + listCommPct.toFixed(1) + '%)';
+      $('b-list-comm').textContent = '−' + fmtMoney(listComm);
+      $('b-closing-pct').textContent = '(' + closingPct.toFixed(2) + '%)';
+      $('b-closing').textContent = '−' + fmtMoney(closingCosts);
+      $('b-credits').textContent = '−' + fmtMoney(totalCredits);
+      $('b-net-proceeds').textContent = fmtMoney(netProceeds);
+      $('b-payoff').textContent = '−' + fmtMoney(payoff);
+
+      const resultEl = $('r-cash');
+      resultEl.innerHTML = fmtMoneyBig(cashAtClosing);
+      resultEl.classList.toggle('neg', cashAtClosing < 0);
+      $('short-warn').classList.toggle('show', cashAtClosing < 0);
+    }
+
+    calculate();
+  })();
+</script>
+
+</body>
+</html>

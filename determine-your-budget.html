@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 00_38                                 ║
+  ║  SITE VERSION: 26.09.01 01_04                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -555,6 +555,8 @@
             <option value="0.53">Goochland County — 0.53%</option>
             <option value="0.77">Powhatan County — 0.77%</option>
             <option value="0.89">Chesterfield County — 0.89%</option>
+            <option value="0.60">New Kent County — 0.60%</option>
+            <option value="0.62">King William County — 0.62%</option>
           </select>
         </div>
         <div class="calc-field calc-tax-rate-field" style="grid-column:3">
@@ -761,7 +763,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 00_38</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 01_04</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -774,7 +776,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 00_38';
+  const SITE_VERSION = '26.09.01 01_04';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -988,6 +990,8 @@
       { match: /goochland/i,    value: '0.53' },
       { match: /powhatan/i,     value: '0.77' },
       { match: /chesterfield/i, value: '0.89' },
+      { match: /new kent/i,     value: '0.60' },
+      { match: /king william/i, value: '0.62' },
     ];
     const addrEl = $('c-addr'), addrBtn = $('c-addr-btn'), addrStatus = $('c-addr-status');
 
