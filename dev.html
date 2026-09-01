@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 19_28                                 ║
+  ║  SITE VERSION: 26.09.01 19_45                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -193,6 +193,36 @@
       </div>
     </div>
 
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Buyer Intake Form</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Standalone landing page (no shared nav, same style as the Home Value Estimate page). Collects timeline, budget, target areas, financing status, and whether they already have an agent.</p>
+        <ul>
+          <li>Wired to the site's existing EmailJS account — needs a new "template_buyer_intake" template created in EmailJS before it will actually send</li>
+          <li>Scheduler section is a placeholder — you hadn't picked a tool yet (mentioned 3veta or "something else")</li>
+        </ul>
+        <a class="dev-card-link" href="buyer-intake.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Seller Intake Form</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Same landing-page style as Buyer Intake. Collects property address, timeline, reason for selling, mortgage status, occupancy, and agent status.</p>
+        <ul>
+          <li>Wired to the site's existing EmailJS account — needs a new "template_seller_intake" template created in EmailJS before it will actually send</li>
+          <li>Scheduler section is a placeholder, same as Buyer Intake</li>
+        </ul>
+        <a class="dev-card-link" href="seller-intake.html">View page →</a>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -207,7 +237,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_28</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_45</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -218,7 +248,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 19_28';
+  const SITE_VERSION = '26.09.01 19_45';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

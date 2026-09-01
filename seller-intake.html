@@ -1,0 +1,517 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.01 19_45                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text at the bottom of the page║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ║                                                               ║
+  ║  ⚠ THIS IS A STANDALONE LANDING PAGE — INTENTIONALLY has NO   ║
+  ║  shared nav, matching home-value-estimate.html's pattern (no  ║
+  ║  nav.css, no nav.js, no #site-nav placeholder). If a future   ║
+  ║  edit needs the site nav here, confirm with the user first.  ║
+  ║                                                               ║
+  ║  🚧 STAGING PAGE — NOT YET LAUNCHED                           ║
+  ║  Not linked from nav-partial.html or sitemap.xml, robots is   ║
+  ║  "noindex, follow" on purpose. Linked only from dev.html.      ║
+  ║  Launch checklist: add a nav link, add to sitemap.xml, flip   ║
+  ║  robots to "index, follow".                                   ║
+  ║                                                               ║
+  ║  ⚠ EMAILJS SETUP REQUIRED BEFORE THIS FORM WILL SEND ANYTHING ║
+  ║  Reuses the site's existing EmailJS account (same public key  ║
+  ║  + service ID as home-value-estimate.html / index.html's      ║
+  ║  valuation popup) but needs its OWN template, since this is a ║
+  ║  different lead type with different fields. In the EmailJS    ║
+  ║  dashboard (dashboard.emailjs.com → Email Templates), create  ║
+  ║  a template with ID exactly:  template_seller_intake           ║
+  ║  and reference these variables in it: from_name, from_email,  ║
+  ║  phone, preferred_contact, address, city, state, zip,         ║
+  ║  timeline, reason, mortgage_status, occupancy, has_agent,     ║
+  ║  notes, preferred_time. Until that template exists,           ║
+  ║  submissions will fail with an EmailJS error (shown to the    ║
+  ║  visitor as a friendly "please call/text instead" message —   ║
+  ║  no lead is silently lost, but it won't reach your inbox).    ║
+  ║                                                               ║
+  ║  📅 SCHEDULER: placeholder only (Michael hadn't picked a tool ║
+  ║  yet as of 2026-09-01 — mentioned "3veta or something else,   ║
+  ║  not sure yet"). See the "Pick a Time to Connect" section     ║
+  ║  below and the project's site-design-notes.md for a           ║
+  ║  Calendly/Acuity/HubSpot Meetings/Google Calendar/Cal.com      ║
+  ║  pros-cons comparison. Swap the .scheduler-box placeholder    ║
+  ║  for the real embed once a tool is chosen.                    ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
+  <title>Thinking About Selling? | Seller Intake — 804Michael</title>
+  <meta name="description" content="Tell 804Michael about your property and timeline in Ashland VA, Hanover County, Glen Allen or Mechanicsville — no obligation." />
+  <meta name="keywords" content="seller intake form, sell my house questionnaire, Ashland VA real estate agent, Hanover County home seller, Michael Hottman, 804Michael" />
+  <link rel="canonical" href="https://804re.com/seller-intake.html" />
+  <meta name="robots" content="noindex, follow" />
+
+  <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:locale"      content="en_US" />
+  <meta property="og:url"         content="https://804re.com/seller-intake.html" />
+  <meta property="og:title"       content="Thinking About Selling? — 804Michael" />
+  <meta property="og:description" content="Tell 804Michael about your property and timeline — no obligation. 804Michael, Ashland VA & Hanover County." />
+  <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"   content="804Michael — Ashland VA Real Estate" />
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Thinking About Selling? | 804Michael" />
+  <meta name="twitter:description" content="Tell 804Michael about your property and timeline — no obligation." />
+  <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    @keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes slowZoom{0%{transform:scale(1.06)}100%{transform:scale(1.16)}}
+
+    /* ── Full-bleed frosted background ── */
+    .lp-wrap{position:relative;min-height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .lp-bg{position:absolute;inset:0;overflow:hidden;isolation:isolate}
+    .lp-bg img{
+      width:100%;height:100%;object-fit:cover;object-position:center;
+      filter:blur(6px) saturate(.35) brightness(.6);
+      transform:scale(1.08);
+      animation:slowZoom 20s ease-in-out infinite alternate;
+    }
+    .lp-frost{
+      position:absolute;inset:0;
+      background:linear-gradient(175deg, rgba(17,17,17,.35) 0%, rgba(17,17,17,.5) 100%);
+      backdrop-filter:blur(2px);
+      -webkit-backdrop-filter:blur(2px);
+    }
+
+    /* ── Content ── */
+    .lp-cnt{position:relative;z-index:5;width:100%;max-width:560px;animation:fadeUp .7s ease .1s both}
+    .lp-brand{display:flex;justify-content:center;margin-bottom:22px}
+    .lp-brand svg{height:34px;width:auto}
+
+    .lp-card{
+      background:rgba(255,255,255,.94);backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);
+      border:1px solid rgba(255,255,255,.7);border-radius:22px;padding:34px 30px 28px;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .lp-badge{
+      display:inline-flex;align-items:center;gap:8px;background:var(--gray-light);border-radius:100px;
+      padding:7px 16px;margin-bottom:16px;
+    }
+    .lp-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+    .lp-badge span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-text)}
+    .lp-h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(1.7rem,4.2vw,2.15rem);line-height:1.12;letter-spacing:-.01em;color:var(--black);margin-bottom:8px}
+    .lp-h1 .r{color:var(--red)}
+    .lp-sub{font-size:.98rem;line-height:1.55;color:var(--gray-text);margin-bottom:22px}
+
+    .val-field{margin-bottom:10px;flex:1}
+    .val-row{display:flex;gap:14px}
+    .val-row-3{gap:10px}
+    .val-field-sm{flex:0 0 72px}
+    .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.8rem;color:var(--black);margin-bottom:4px}
+    .val-field input,.val-field select,.val-field textarea{
+      width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:10px 12px;font-size:.95rem;
+      font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;
+    }
+    .val-field select{cursor:pointer}
+    .val-field textarea{resize:vertical;min-height:64px;font-family:'Barlow',sans-serif;line-height:1.35}
+    .val-field input:focus,.val-field select:focus,.val-field textarea:focus{outline:none;border-color:var(--red)}
+    .val-field input.invalid,.val-field textarea.invalid{border-color:#e53935}
+    @keyframes valPulse{0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,.35)}50%{box-shadow:0 0 0 6px rgba(218,41,28,0)}}
+    .val-toggle-under{
+      width:100%;margin-top:6px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+      padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;
+      animation:valPulse 2s ease-in-out infinite;
+    }
+    .val-toggle-under[data-method="email"]{animation-delay:1s}
+    .val-toggle-under:hover{border-color:var(--red)}
+    .val-toggle-under.active{background:var(--red);border-color:var(--red);color:#fff;animation:none}
+    .val-toggle-under.invalid{border-color:#e53935}
+
+    .lp-connect-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-muted);margin:6px 0 8px}
+    .lp-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-muted);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--gray-mid)}
+
+    /* ── Scheduler placeholder (no live tool wired up yet) ── */
+    .scheduler-box{border:1.5px dashed var(--gray-mid);border-radius:12px;padding:16px;text-align:center;margin-bottom:6px;background:var(--gray-light)}
+    .scheduler-box p{font-size:.86rem;color:var(--gray-text);line-height:1.5}
+    .scheduler-box .sb-icon{font-size:1.3rem;margin-bottom:4px;display:block}
+
+    .lp-status{margin:0 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:.03em;text-align:center;min-height:0}
+    .lp-status.success{color:#188038}
+    .lp-status.error{color:#e53935}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.28rem;letter-spacing:.09em;text-transform:uppercase;transition:background .2s,color .2s,transform .15s;cursor:pointer;border:2px solid transparent}
+    .btn-red{background:var(--red);color:var(--white);border-color:var(--red)}
+    .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
+    .btn-red:disabled{opacity:.7;cursor:default}
+    .lp-submit-row{display:flex;justify-content:center;margin-top:6px}
+    .lp-btn-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .lp-alt{text-align:center;margin-top:20px;font-size:.86rem;color:rgba(255,255,255,.8);text-shadow:0 1px 6px rgba(0,0,0,.6)}
+    .lp-alt a{color:#fff;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+    .lp-legal{position:relative;z-index:5;text-align:center;margin:22px auto 24px;font-size:.68rem;line-height:1.8;color:rgba(255,255,255,.55);max-width:560px}
+
+    @media(max-width:480px){
+      .lp-wrap{padding:24px 14px}
+      .lp-card{padding:26px 20px 22px;border-radius:18px}
+      .val-row{gap:10px}
+      .val-field input,.val-field select,.val-field textarea{padding:9px 10px;font-size:.9rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="lp-wrap">
+  <div class="lp-bg">
+    <img src="images/johnson-U6Q6zVDgmSs-unsplash.jpg" alt="" />
+  </div>
+  <div class="lp-frost"></div>
+
+  <div class="lp-cnt">
+    <div class="lp-brand">
+      <svg viewBox="0 0 786.329 238.272" aria-label="804Michael">
+        <path fill="#fff" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="#fff" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="#fff" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="#fff" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ff6259" d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z M408.938,71.1l1.473-4.6l1.498,4.6h4.815l-3.891,2.866l1.501,4.57l-3.924-2.812l-3.916,2.812l1.495-4.57l-3.883-2.866H408.938z"/>
+        <path fill="#ff6259" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+      </svg>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-badge"><div class="lp-badge-dot"></div><span>Free &middot; No Obligation</span></div>
+      <h1 class="lp-h1">Thinking About <span class="r">Selling</span>?</h1>
+      <p class="lp-sub">Tell 804Michael about your property and timeline — no obligation, no pressure.</p>
+
+      <form id="val-form">
+        <div class="val-field">
+          <label for="val-address">Street Address</label>
+          <input type="text" id="val-address" name="address" required />
+        </div>
+        <div class="val-row val-row-3">
+          <div class="val-field">
+            <label for="val-city">City</label>
+            <input type="text" id="val-city" name="city" required />
+          </div>
+          <div class="val-field val-field-sm">
+            <label for="val-state">State</label>
+            <input type="text" id="val-state" name="state" maxlength="2" value="VA" placeholder="VA" style="text-transform:uppercase" />
+          </div>
+          <div class="val-field val-field-sm">
+            <label for="val-zip">Zip</label>
+            <input type="text" id="val-zip" name="zip" inputmode="numeric" maxlength="10" placeholder="23005" required />
+          </div>
+        </div>
+        <div class="val-row">
+          <div class="val-field">
+            <label for="val-fname">First Name</label>
+            <input type="text" id="val-fname" name="firstName" required />
+          </div>
+          <div class="val-field">
+            <label for="val-lname">Last Name</label>
+            <input type="text" id="val-lname" name="lastName" required />
+          </div>
+        </div>
+        <p class="lp-connect-lbl">What's the best way to connect?</p>
+        <div class="val-row">
+          <div class="val-field">
+            <input type="tel" id="val-phone" name="phone" placeholder="804-642-4235" inputmode="numeric" />
+            <button type="button" class="val-toggle-opt val-toggle-under" data-method="phone">📞 Prefer Phone</button>
+          </div>
+          <div class="val-field">
+            <input type="email" id="val-email" name="email" placeholder="you@example.com" />
+            <button type="button" class="val-toggle-opt val-toggle-under" data-method="email">✉️ Prefer Email</button>
+          </div>
+        </div>
+
+        <p class="lp-section-lbl">Your Property &amp; Timeline</p>
+        <div class="val-row">
+          <div class="val-field">
+            <label for="val-timeline">Selling Timeline</label>
+            <select id="val-timeline" name="timeline">
+              <option value="">Select one…</option>
+              <option value="ASAP / already need to move">ASAP / already need to move</option>
+              <option value="1-3 months">1–3 months</option>
+              <option value="3-6 months">3–6 months</option>
+              <option value="6-12 months">6–12 months</option>
+              <option value="Just curious about value">Just curious about value</option>
+            </select>
+          </div>
+          <div class="val-field">
+            <label for="val-occupancy">Occupancy</label>
+            <select id="val-occupancy" name="occupancy">
+              <option value="">Select one…</option>
+              <option value="Owner-occupied">Owner-occupied</option>
+              <option value="Tenant-occupied">Tenant-occupied</option>
+              <option value="Vacant">Vacant</option>
+            </select>
+          </div>
+        </div>
+        <div class="val-row">
+          <div class="val-field">
+            <label for="val-reason">Reason for Selling <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;font-size:.78rem">(optional)</span></label>
+            <select id="val-reason" name="reason">
+              <option value="">Prefer not to say</option>
+              <option value="Relocating">Relocating</option>
+              <option value="Upsizing">Upsizing</option>
+              <option value="Downsizing">Downsizing</option>
+              <option value="Financial">Financial</option>
+              <option value="Investment/other">Investment / other</option>
+            </select>
+          </div>
+          <div class="val-field">
+            <label for="val-mortgage">Still Owe on the Home?</label>
+            <select id="val-mortgage" name="mortgageStatus">
+              <option value="">Select one…</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Not sure">Not sure</option>
+            </select>
+          </div>
+        </div>
+        <div class="val-field">
+          <label for="val-has-agent">Working With an Agent?</label>
+          <select id="val-has-agent" name="hasAgent">
+            <option value="">Select one…</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+        <div class="val-field">
+          <label for="val-notes">Anything Else? <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;font-size:.78rem">(optional)</span></label>
+          <textarea id="val-notes" name="notes" rows="3" placeholder="Recent updates, condition notes, or anything else that would help 804Michael prepare."></textarea>
+        </div>
+
+        <p class="lp-section-lbl">Pick a Time to Connect</p>
+        <div class="scheduler-box">
+          <span class="sb-icon">📅</span>
+          <p><b>Live scheduler coming soon.</b> For now, just tell me what generally works and I'll follow up to lock in a time.</p>
+        </div>
+        <div class="val-field">
+          <label for="val-preferred-time">Preferred Days/Times <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;font-size:.78rem">(optional)</span></label>
+          <input type="text" id="val-preferred-time" name="preferredTime" placeholder="e.g. weekday evenings, Saturday mornings" />
+        </div>
+
+        <p id="lp-status" class="lp-status"></p>
+        <div class="lp-submit-row">
+          <button type="submit" id="val-submit-btn" class="btn btn-red">Get Started</button>
+        </div>
+      </form>
+    </div>
+
+    <p class="lp-alt">Prefer to talk now? <a href="tel:8046424235">Call 804-642-4235</a> or <a href="sms:8046424235">text 804-Michael</a></p>
+  </div>
+
+</div>
+
+<p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+  <span id="site-version-display">V26.09.01 19_45</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+</p>
+
+<script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.01 19_45';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+  document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+
+  // Same EmailJS account as home-value-estimate.html / index.html's valuation
+  // popup, but its OWN template (different lead type, different fields) —
+  // see the top comment block for the exact template ID + variable names
+  // that need to exist in the EmailJS dashboard before this will send.
+  var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
+  var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
+  var SELLER_INTAKE_TEMPLATE_ID = 'template_seller_intake';
+  function _initEmailJS(){ if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', _initEmailJS); } else { _initEmailJS(); }
+
+  const valForm = document.getElementById('val-form');
+  const valStatus = document.getElementById('lp-status');
+  const valSubmitBtn = document.getElementById('val-submit-btn');
+  const valToggleBtns = document.querySelectorAll('.val-toggle-under');
+  let preferredMethod = null;
+
+  valToggleBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      preferredMethod = btn.dataset.method;
+      valToggleBtns.forEach(b=>{
+        b.classList.toggle('active', b===btn);
+        b.classList.remove('invalid');
+      });
+    });
+  });
+
+  // Auto-format phone as XXX-XXX-XXXX while typing
+  const valPhoneEl = document.getElementById('val-phone');
+  valPhoneEl.addEventListener('input', ()=>{
+    let digits = valPhoneEl.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if(digits.length > 6) formatted = digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6);
+    else if(digits.length > 3) formatted = digits.slice(0,3) + '-' + digits.slice(3);
+    valPhoneEl.value = formatted;
+  });
+
+  // Force State to uppercase, max 2 letters
+  const valStateEl = document.getElementById('val-state');
+  valStateEl.addEventListener('input', ()=>{
+    valStateEl.value = valStateEl.value.replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase();
+  });
+
+  // ── Partial-entry draft saving (own storage key) ──
+  const VAL_DRAFT_KEY = '804m_seller_intake_draft';
+  const VAL_DRAFT_FIELD_IDS = ['val-address','val-city','val-state','val-zip','val-fname','val-lname','val-phone','val-email','val-timeline','val-occupancy','val-reason','val-mortgage','val-has-agent','val-notes','val-preferred-time'];
+  let _valDraftSaveTimer = null;
+  function saveValDraft(){
+    clearTimeout(_valDraftSaveTimer);
+    _valDraftSaveTimer = setTimeout(function(){
+      try {
+        const data = { method: preferredMethod };
+        VAL_DRAFT_FIELD_IDS.forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) data[id] = el.value;
+        });
+        localStorage.setItem(VAL_DRAFT_KEY, JSON.stringify(data));
+      } catch(e) { /* localStorage unavailable — fail silently */ }
+    }, 300);
+  }
+  function restoreValDraft(){
+    let raw;
+    try { raw = localStorage.getItem(VAL_DRAFT_KEY); } catch(e) { return; }
+    if (!raw) return;
+    let data;
+    try { data = JSON.parse(raw); } catch(e) { return; }
+    let restoredAny = false;
+    VAL_DRAFT_FIELD_IDS.forEach(function(id){
+      const el = document.getElementById(id);
+      if (el && data[id] && !el.value) { el.value = data[id]; restoredAny = true; }
+    });
+    if (data.method && !preferredMethod) {
+      preferredMethod = data.method;
+      valToggleBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.method === data.method); });
+    }
+    if (restoredAny) {
+      valStatus.textContent = 'Welcome back — we saved what you started.';
+      valStatus.className = 'lp-status';
+    }
+  }
+  function clearValDraft(){
+    try { localStorage.removeItem(VAL_DRAFT_KEY); } catch(e) {}
+  }
+  valForm.addEventListener('input', saveValDraft);
+  restoreValDraft();
+
+  valForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    valForm.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
+    valStatus.textContent = '';
+    valStatus.className = 'lp-status';
+
+    const addressEl = document.getElementById('val-address');
+    const cityEl = document.getElementById('val-city');
+    const zipEl = document.getElementById('val-zip');
+    const fnameEl = document.getElementById('val-fname');
+    const lnameEl = document.getElementById('val-lname');
+    const emailEl = document.getElementById('val-email');
+    const phoneEl = document.getElementById('val-phone');
+
+    const missing = [];
+
+    [['Street Address', addressEl], ['City', cityEl], ['Zip', zipEl], ['First Name', fnameEl], ['Last Name', lnameEl]].forEach(([label, el])=>{
+      if(!el.value.trim()){ el.classList.add('invalid'); missing.push(label); }
+    });
+
+    const hasPhone = phoneEl.value.replace(/\D/g,'').length === 10;
+    const hasEmail = emailEl.value.trim() && emailEl.value.includes('@');
+    if(!hasPhone && !hasEmail){
+      phoneEl.classList.add('invalid');
+      emailEl.classList.add('invalid');
+      missing.push('Phone or Email');
+    } else if(emailEl.value.trim() && !hasEmail){
+      emailEl.classList.add('invalid');
+      missing.push('a valid Email (must include @)');
+    }
+
+    if(missing.length){
+      valStatus.textContent = 'Missing: ' + missing.join(', ') + '.';
+      valStatus.className = 'lp-status error';
+      return;
+    }
+
+    valSubmitBtn.disabled = true;
+    const originalLabel = valSubmitBtn.innerHTML;
+    valSubmitBtn.innerHTML = '<span class="lp-btn-spinner"></span>Sending…';
+
+    const state = valStateEl.value.trim() || 'VA';
+
+    emailjs.send(EMAILJS_SERVICE_ID, SELLER_INTAKE_TEMPLATE_ID, {
+      from_name: (fnameEl.value.trim() + ' ' + lnameEl.value.trim()).trim(),
+      from_email: emailEl.value.trim() || '(not provided)',
+      phone: phoneEl.value.trim() || '(not provided)',
+      preferred_contact: preferredMethod || '(not specified)',
+      address: addressEl.value.trim(),
+      city: cityEl.value.trim(),
+      state: state,
+      zip: zipEl.value.trim(),
+      timeline: document.getElementById('val-timeline').value || '(not specified)',
+      reason: document.getElementById('val-reason').value || '(not specified)',
+      mortgage_status: document.getElementById('val-mortgage').value || '(not specified)',
+      occupancy: document.getElementById('val-occupancy').value || '(not specified)',
+      has_agent: document.getElementById('val-has-agent').value || '(not specified)',
+      notes: document.getElementById('val-notes').value.trim() || '(none provided)',
+      preferred_time: document.getElementById('val-preferred-time').value.trim() || '(not specified)'
+    }).then(function(){
+      valStatus.textContent = '✓ 804Michael will be in touch about your property.';
+      valStatus.className = 'lp-status success';
+      valSubmitBtn.innerHTML = '✓ Sent!';
+      valForm.reset();
+      valStateEl.value = 'VA';
+      preferredMethod = null;
+      valToggleBtns.forEach(b=>b.classList.remove('active'));
+      clearValDraft();
+    }).catch(function(err){
+      console.error('EmailJS error:', err);
+      const detail = (err && (err.text || err.message)) ? (': ' + (err.text || err.message)) : '';
+      valStatus.textContent = 'Something went wrong sending your request' + detail + '. Please try again or call/text 804-Michael directly.';
+      valStatus.className = 'lp-status error';
+      valSubmitBtn.disabled = false;
+      valSubmitBtn.innerHTML = originalLabel;
+    });
+  });
+</script>
+</body>
+</html>
