@@ -1,0 +1,432 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.01 19_16                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ║                                                               ║
+  ║  🚧 STAGING PAGE — NOT YET LAUNCHED                           ║
+  ║  This page is intentionally NOT linked from nav-partial.html  ║
+  ║  and NOT listed in sitemap.xml yet, and <meta name="robots">  ║
+  ║  below is set to "noindex, follow" on purpose. It is linked   ║
+  ║  only from dev.html (804re.com/dev), Michael's internal       ║
+  ║  staging hub. When this page is ready to go live:             ║
+  ║    1. Add a link to it in nav-partial.html                    ║
+  ║    2. Add it to sitemap.xml                                   ║
+  ║    3. Change the robots meta tag below to "index, follow"     ║
+  ║  Also: the Schools section is a work in progress — Michael    ║
+  ║  said more school links are coming. Don't treat that list as  ║
+  ║  final; the link-grid is built to take more cards easily.     ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
+  <title>Due Diligence Checklist | Flood, Schools &amp; Well/Septic — 804Michael</title>
+  <meta name="description" content="Flood-risk lookups, school-rating resources, and Virginia well/septic &amp; disclosure basics every seller and buyer in Ashland, Hanover County &amp; the Richmond area should check before closing." />
+  <meta name="keywords" content="due diligence checklist Virginia, flood zone lookup Hanover County, Hanover County schools ratings, Virginia well and septic disclosure, DPOR residential property disclosure, Ashland VA due diligence, 804Michael, Michael Hottman" />
+  <link rel="canonical" href="https://804re.com/due-diligence.html" />
+  <meta name="robots" content="noindex, follow" />
+
+  <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
+  <meta property="og:type"        content="article" />
+  <meta property="og:locale"      content="en_US" />
+  <meta property="og:url"         content="https://804re.com/due-diligence.html" />
+  <meta property="og:title"       content="Due Diligence Checklist — 804Michael" />
+  <meta property="og:description" content="Flood-risk lookups, school resources, and Virginia well/septic & disclosure basics before you close." />
+  <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"   content="804Michael — Ashland VA Real Estate" />
+  <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:site"        content="@804Michael" />
+  <meta name="twitter:title"       content="Due Diligence Checklist | 804Michael" />
+  <meta name="twitter:description" content="Flood-risk lookups, school resources, and Virginia well/septic & disclosure basics before you close." />
+  <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
+
+  <!-- ── Local Business schema ──────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "804Michael — Michael Hottman Real Estate",
+    "url": "https://804re.com",
+    "image": "https://804re.com/images/Tool-og1.png",
+    "description": "Michael Hottman is a licensed Virginia real estate broker helping buyers and sellers in Ashland VA, Hanover County, Glen Allen, and Mechanicsville.",
+    "telephone": "+18046424235",
+    "email": "804re@804michael.com",
+    "address": { "@type": "PostalAddress", "addressLocality": "Ashland", "addressRegion": "VA", "addressCountry": "US" },
+    "areaServed": [
+      { "@type": "City",   "name": "Ashland",        "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "County", "name": "Hanover County",  "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Glen Allen",      "containedInPlace": { "@type": "State", "name": "Virginia" } },
+      { "@type": "City",   "name": "Mechanicsville",  "containedInPlace": { "@type": "State", "name": "Virginia" } }
+    ],
+    "sameAs": [
+      "https://www.zillow.com/profile/804Michael",
+      "https://www.realtor.com/realestateagents/56b05db30fa41701007434f7",
+      "https://www.homes.com/real-estate-agents/michael-hottman/h3njsd1/",
+      "https://x.com/804Michael"
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
+  <link rel="stylesheet" href="nav.css">
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.44rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s,transform .15s;cursor:pointer;border:2px solid transparent}
+    .btn-red{background:var(--red);color:var(--white);border-color:var(--red)}
+    .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
+    .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
+    .btn-outline:hover{border-color:var(--black)}
+
+    /* ── Page Hero — black bar, no image ── */
+    .black-hero{
+      background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;
+      margin-top:calc(var(--banner-h) + var(--nav-h));
+      width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+    }
+    .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 8px}
+    .black-hero h1 span{color:var(--red)}
+    .black-hero-sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:400;font-size:13px;color:rgba(255,255,255,.75)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{background:var(--black);padding:12px 0}
+    .breadcrumb-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    .breadcrumb a{color:rgba(255,255,255,.5);transition:color .2s}
+    .breadcrumb a:hover{color:var(--red)}
+    .breadcrumb .sep{color:rgba(255,255,255,.25)}
+    .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
+
+    /* ── Main Layout ── */
+    .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+    @media(max-width:900px){.pg-body{grid-template-columns:1fr;gap:40px}}
+    .pg-main,.pg-side{min-width:0}
+
+    .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.1rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1.05;margin-bottom:10px}
+    .pg-main h2 .r{color:var(--red)}
+    .pg-main>p.lede{font-size:1.02rem;line-height:1.75;color:var(--gray-text);margin-bottom:36px;max-width:64ch}
+    .pg-main h3{font-family:'Barlow',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:10px}
+    .pg-main p.body-p{font-size:.98rem;line-height:1.7;color:var(--gray-text);margin-bottom:14px;max-width:66ch}
+
+    /* ── Step label ── */
+    .step-lbl{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+    .step-lbl-line{display:inline-block;width:22px;height:2px;background:var(--red)}
+    section.stage{margin-bottom:52px}
+    section.stage:last-of-type{margin-bottom:0}
+
+    /* ── Reference link grid (flood tools, school links, etc. — grows to fit any number of cards) ── */
+    .link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:16px 0 22px}
+    .link-card{display:block;background:var(--white);border:1.5px solid var(--gray-mid);border-radius:12px;padding:16px 18px;transition:border-color .2s,transform .2s}
+    .link-card:hover{border-color:var(--red);transform:translateY(-2px)}
+    .link-card strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.01em;margin-bottom:4px}
+    .link-card span{display:block;font-size:.83rem;color:var(--gray-muted);line-height:1.5}
+
+    /* ── Warning / caution callouts (matches calculator's red + amber notice colors) ── */
+    .cal-warn{background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
+    .cal-warn b{color:#6e1712}
+    .cal-caution{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
+    .cal-caution b{color:#5a3f0f}
+    .cal-note{font-size:.88rem;color:var(--gray-muted);font-style:italic;margin:14px 0 0}
+
+    /* ── Virginia due-diligence callout (in-content, prominent) ── */
+    .va-callout{background:var(--black);color:var(--white);border-radius:14px;padding:22px 24px;margin:22px 0 28px;border-left:5px solid var(--red)}
+    .va-callout h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:.03em;text-transform:uppercase;color:var(--white);margin-bottom:10px}
+    .va-callout h4 span{color:var(--red)}
+    .va-callout p{color:rgba(255,255,255,.78);font-size:.9rem;line-height:1.65;margin-bottom:10px}
+    .va-callout ul{margin:8px 0 14px;padding-left:20px}
+    .va-callout li{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.78);margin-bottom:5px}
+    .va-callout .va-disclaimer{font-size:.76rem;color:rgba(255,255,255,.5);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15)}
+    .va-callout a{color:#ff9a90;text-decoration:underline}
+
+    /* ── Virginia due-diligence callout (sidebar, condensed) ── */
+    .side-va{background:var(--black);border-radius:16px;padding:20px 20px 18px;border-left:5px solid var(--red)}
+    .side-va h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.03em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+    .side-va p{color:rgba(255,255,255,.75);font-size:.84rem;line-height:1.55;margin-bottom:10px}
+    .side-va a.va-link{display:inline-block;color:#ff9a90;font-size:.82rem;font-weight:600;text-decoration:underline}
+    .side-va .va-disclaimer{display:block;font-size:.7rem;color:rgba(255,255,255,.45);font-style:italic;margin-top:10px}
+
+    /* ── CTA block (in-content) ── */
+    .rg-cta{background:var(--black);border-radius:16px;padding:32px 30px;margin-top:8px}
+    .rg-cta h3{color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
+    .rg-cta p{color:rgba(255,255,255,.68);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
+    .rg-cta-flex{display:flex;gap:26px;align-items:stretch}
+    .rg-cta-flex>.rg-cta-text{min-width:0;flex:1}
+    .rg-cta-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:150px}
+    .rg-cta-photo picture,.rg-cta-photo img{display:block;height:100%;width:auto;max-width:150px;object-fit:contain;border-radius:12px}
+    @media(max-width:640px){.rg-cta-photo{max-width:100%}.rg-cta-photo picture,.rg-cta-photo img{height:auto;max-height:220px;width:auto;margin:0 auto}}
+    .rg-cta-btns{display:flex;gap:12px;flex-wrap:wrap}
+    .rg-cta-btns .btn{font-size:1.1rem;padding:11px 20px}
+    @media(max-width:640px){.rg-cta-flex{flex-direction:column;text-align:center}.rg-cta-btns{justify-content:center}}
+
+    /* ── Sidebar ── */
+    .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
+    .side-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:16px;overflow:hidden}
+    .side-card-head{background:var(--black);padding:13px 18px}
+    .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
+    .side-card-body{padding:14px 18px}
+    .explore-links{list-style:none}
+    .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:1.05rem;color:var(--black);transition:color .2s}
+    .explore-links li:last-child a{border-bottom:none}
+    .explore-links li a:hover{color:var(--red)}
+    .explore-links li a .arr{font-size:1.1rem;color:var(--red)}
+
+    /* ── Footer ── */
+    footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+
+    .reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+    .reveal.js-ready{opacity:0;transform:translateY(20px)}
+    .reveal.vis{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<!-- PAGE HERO (black bar, no image) -->
+<div class="black-hero">
+  <div class="black-hero-in">
+    <h1>Do Your <span>Due Diligence</span></h1>
+    <p class="black-hero-sub">Flood risk, schools, and well/septic basics every seller and buyer in Central Virginia should check before closing</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="index.html" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
+    <span class="sep">›</span>
+    <a href="dev.html">Dev</a>
+    <span class="sep">›</span>
+    <span class="cur">Due Diligence Checklist</span>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="pg-body">
+
+  <main class="pg-main">
+
+    <h2>Verify It <span class="r">Before You Sign</span></h2>
+    <p class="lede">A listing doesn't have to tell you everything — and under Virginia's disclosure rules, it often doesn't have to. Flood risk, school assignment, and well/septic condition are three things worth checking yourself, with primary sources, before removing contingencies or listing a property.</p>
+
+    <!-- FLOOD RISK -->
+    <section class="stage" id="flood">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
+      <h2>Flood Risk</h2>
+      <p class="body-p">Check the exact parcel, not just the neighborhood — flood zones can change block to block, and a lender or insurer will check the official maps regardless of what a listing says.</p>
+
+      <div class="link-grid">
+        <a class="link-card" href="https://msc.fema.gov/portal/search" target="_blank" rel="noopener">
+          <strong>FEMA Flood Map Service Center</strong>
+          <span>Search any address for its official FEMA flood zone and view the FIRM panel that determines whether federally regulated lenders require flood insurance.</span>
+        </a>
+        <a class="link-card" href="https://www.dcr.virginia.gov/dam-safety-and-floodplains/fpvfris" target="_blank" rel="noopener">
+          <strong>Virginia Flood Risk Information System (VFRIS)</strong>
+          <span>Virginia DCR's own flood viewer — often carries more current local data plus extra risk layers, including dam-break inundation zones.</span>
+        </a>
+      </div>
+
+      <p class="cal-note">A property outside the mapped 100-year floodplain can still flood, and flood insurance is available — sometimes worth having — even where a lender doesn't require it. Confirm current flood-zone status and insurance cost with your lender and insurance agent before removing contingencies.</p>
+    </section>
+
+    <!-- SCHOOLS -->
+    <section class="stage" id="schools">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
+      <h2>Schools</h2>
+      <p class="body-p">A portal's "assigned schools" estimate isn't always current, and boundaries can shift. Verify attendance zones directly with Hanover County Public Schools, then cross-check independent ratings below.</p>
+
+      <div class="link-grid">
+        <a class="link-card" href="https://schoolquality.virginia.gov/" target="_blank" rel="noopener">
+          <strong>Virginia School Quality Profiles</strong>
+          <span>The Commonwealth's official school-by-school quality profile tool — test scores, accreditation, and other state-tracked metrics.</span>
+        </a>
+        <a class="link-card" href="https://www.doe.virginia.gov/data-policy-funding/data-reports/school-quality-profiles" target="_blank" rel="noopener">
+          <strong>VDOE Data &amp; School Quality Reports</strong>
+          <span>Virginia Department of Education's data-reports hub, for digging into a division or school beyond the headline profile.</span>
+        </a>
+        <a class="link-card" href="https://www.usnews.com/education/best-high-schools/virginia/districts/hanover-county-public-schools-101080" target="_blank" rel="noopener">
+          <strong>U.S. News — Hanover County Public Schools</strong>
+          <span>District-level ranking and overview from U.S. News' Best High Schools rankings.</span>
+        </a>
+        <a class="link-card" href="https://www.usnews.com/education/best-high-schools/virginia/districts/hanover-county-public-schools/patrick-henry-high-school-20493" target="_blank" rel="noopener">
+          <strong>U.S. News — Patrick Henry High School</strong>
+          <span>School-specific profile: ranking, academics, and student body data for Patrick Henry High School.</span>
+        </a>
+        <a class="link-card" href="https://www.niche.com/k12/d/hanover-county-public-schools-va/" target="_blank" rel="noopener">
+          <strong>Niche — Hanover County Public Schools</strong>
+          <span>Community-sourced ratings and reviews alongside Niche's own grading of the district.</span>
+        </a>
+        <!-- MORE SCHOOL LINKS GO HERE — Michael has additional links to add; this grid auto-wraps to fit any number of cards. -->
+      </div>
+
+      <p class="cal-note">Ratings from different sites can disagree because they weigh different things — treat them as a starting point for questions, not a final verdict, and always confirm current attendance-zone assignment with the school division directly.</p>
+    </section>
+
+    <!-- WELL & SEPTIC -->
+    <section class="stage" id="well-septic">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Due Diligence</div>
+      <h2>Well &amp; Septic</h2>
+      <p class="body-p">In parts of Hanover, Goochland, Powhatan, and other rural areas surrounding Ashland and Richmond, a home may have a private well, septic system, or both — don't assume a listing gives you enough detail.</p>
+
+      <div class="cal-caution">
+        <b>Central Virginia Note: Well and Septic.</b> Ask about whether the home has public water, public sewer, private well, private septic, or a combination; septic permit records, drainfield location, system capacity, age, maintenance history, and pump-out history; whether the septic system supports the home's current bedroom count; well age, depth, yield, water-quality history, treatment equipment, and maintenance; and any planned additions, guest houses, pools, or lot improvements that could be affected by septic capacity, setbacks, or drainage. Virginia's disclosure notice specifically says sellers make no representation about the presence, type, size, or maintenance responsibilities of a wastewater system — buyers are advised to investigate the system and its inspection, repair, maintenance, and pump-out requirements themselves.
+      </div>
+
+      <p class="body-p">For water and sewer service in areas with public infrastructure instead of a private well/septic, see the <a href="utility-providers.html#water-sewer" style="text-decoration:underline;font-weight:600">Utility Providers page</a>.</p>
+    </section>
+
+    <!-- VIRGINIA BUYER REMINDER -->
+    <section class="stage" id="va-reminder">
+      <div class="va-callout">
+        <h4>Virginia Buyer Reminder: <span>An Omission Is Not an All-Clear</span></h4>
+        <p>In Virginia, the Residential Property Disclosure Act generally emphasizes buyer due diligence. The seller's residential property disclosure statement says owners make <b style="color:#fff">no representations or warranties</b> about the property's condition or improvements, and it specifically advises buyers to obtain whatever due diligence they consider necessary — including inspections and other appropriate evaluations — before settlement.</p>
+        <p>That means you shouldn't assume a seller has confirmed:</p>
+        <ul>
+          <li>The overall condition of the house</li>
+          <li>Lot lines, setback rules, lot coverage, or whether an addition can be built</li>
+          <li>Adjacent parcels, zoning, or future uses next door</li>
+          <li>Flood risk or flood-insurance requirements, or dam-break inundation zones</li>
+          <li>Conservation easements or other easements</li>
+          <li>Septic-system type, size, condition, maintenance needs, or pump-out requirements</li>
+          <li>Radon risk, marine clay or soil concerns, or lead-pipe concerns</li>
+          <li>Airport or aircraft noise, or military-installation impacts</li>
+          <li>Historic-district or resource-protection-area restrictions</li>
+          <li>Registered sexual-offender information</li>
+        </ul>
+        <p>Virginia's current disclosure statement also highlights items sellers must affirmatively disclose in writing, including pending building-code or zoning violations, lis pendens, prior methamphetamine manufacturing, privately owned stormwater-management facilities, repetitive-risk-loss status, and septic-system operating-permit validity.</p>
+        <p>A listing may not tell you everything you need to know — and under Virginia's disclosure framework, it may not have to. Ask questions, review documents, investigate the land and surrounding area, and use the appropriate contingencies and inspections before removing protections or moving forward to closing.</p>
+        <p class="va-disclaimer">This is educational information, not legal advice. The exact disclosures and protections that apply can depend on the property, transaction, contract, and circumstances. Source: <a href="https://www.dpor.virginia.gov/Consumers/Residential_Property_Disclosures" target="_blank" rel="noopener">Virginia DPOR — Residential Property Disclosures</a>.</p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="stage" style="margin-bottom:0">
+      <div class="rg-cta">
+        <div class="rg-cta-flex">
+          <div class="rg-cta-photo">
+            <picture>
+              <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
+              <img src="images/804michael_headshot-web.png" alt="Michael Hottman" loading="lazy" onerror="this.closest('.rg-cta-photo').style.display='none'" />
+            </picture>
+          </div>
+          <div class="rg-cta-text">
+            <h3>Questions About a Specific Property?</h3>
+            <p>Flood zones, septic history, and school assignment all come down to the specific parcel — I can help pull the records that matter for a home you're watching or listing before you're deep into a contract.</p>
+            <div class="rg-cta-btns">
+              <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
+              <a href="sms:8046424235" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.3)">Text 804-Michael</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="pg-side">
+
+    <div class="side-va reveal">
+      <h4>Virginia Buyer Reminder</h4>
+      <p>Virginia sellers generally make <b style="color:#fff">no representations or warranties</b> about a home's condition. An omission isn't an all-clear — due diligence is on you.</p>
+      <a href="#va-reminder" class="va-link">Read what to verify ›</a>
+      <span class="va-disclaimer">Educational information, not legal advice.</span>
+    </div>
+
+    <div class="side-card reveal">
+      <div class="side-card-head"><h4>On This Page</h4></div>
+      <div class="side-card-body">
+        <ul class="explore-links">
+          <li><a href="#flood">Flood Risk <span class="arr">›</span></a></li>
+          <li><a href="#schools">Schools <span class="arr">›</span></a></li>
+          <li><a href="#well-septic">Well &amp; Septic <span class="arr">›</span></a></li>
+          <li><a href="#va-reminder">VA Disclosure Basics <span class="arr">›</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="side-card reveal d2">
+      <div class="side-card-head"><h4>Keep Going</h4></div>
+      <div class="side-card-body">
+        <ul class="explore-links">
+          <li><a href="utility-providers.html">Utility Providers <span class="arr">›</span></a></li>
+          <li><a href="find-a-home.html">Find a Home on Your Own <span class="arr">›</span></a></li>
+          <li><a href="tour-a-home.html">Tour a Home Like a Pro <span class="arr">›</span></a></li>
+          <li><a href="dev.html">← Dev Hub <span class="arr">›</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in">
+    <a href="index.html" aria-label="804Michael">
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto">
+        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+      </svg>
+    </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_16</p>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      Malcolm Real Estate, Ashland, Virginia<br/>
+      Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas<br/>
+      Licensed Real Estate Broker in Virginia
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.01 19_16';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+
+  document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+  const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
+</script>
+</body>
+</html>

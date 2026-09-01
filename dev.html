@@ -1,0 +1,195 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.01 19_16                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ║                                                               ║
+  ║  🚧 THIS IS THE INTERNAL STAGING HUB — 804re.com/dev          ║
+  ║  Deliberately NOT linked from nav-partial.html and NOT in     ║
+  ║  sitemap.xml. robots meta below is "noindex, nofollow" on     ║
+  ║  purpose — this page has no public-facing value and its only  ║
+  ║  job is to help Michael find in-progress pages before they're ║
+  ║  wired into the main nav.                                     ║
+  ║  When a project below ships: remove its card from this page,  ║
+  ║  add it to nav-partial.html + sitemap.xml, and flip that       ║
+  ║  page's own robots meta to "index, follow".                   ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Dev — Projects in Motion — 804Michael</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
+  <link rel="stylesheet" href="nav.css">
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    /* ── Page Hero — black bar, no image ── */
+    .black-hero{
+      background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;
+      margin-top:calc(var(--banner-h) + var(--nav-h));
+      width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+    }
+    .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 8px}
+    .black-hero h1 span{color:var(--red)}
+    .black-hero-sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:400;font-size:13px;color:rgba(255,255,255,.75)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{background:var(--black);padding:12px 0}
+    .breadcrumb-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    .breadcrumb a{color:rgba(255,255,255,.5);transition:color .2s}
+    .breadcrumb a:hover{color:var(--red)}
+    .breadcrumb .sep{color:rgba(255,255,255,.25)}
+    .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
+
+    /* ── Body ── */
+    .dev-body{max-width:1000px;margin:0 auto;padding:12px 24px 70px}
+    .dev-note{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:0 0 32px}
+    .dev-note b{color:#5a3f0f}
+
+    .dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:700px){.dev-grid{grid-template-columns:1fr}}
+    .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+    .dev-card:hover{border-color:var(--red);transform:translateY(-2px)}
+    .dev-card-head{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
+    .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
+    .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
+    .dev-card-body p{font-size:.92rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
+    .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
+    .dev-card-body li{font-size:.85rem;color:var(--gray-muted);padding:5px 0 5px 16px;position:relative}
+    .dev-card-body li::before{content:"";position:absolute;left:0;top:12px;width:6px;height:6px;background:var(--red);border-radius:2px}
+    .dev-card-link{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;color:var(--red)}
+    .dev-card-link:hover{color:var(--red-dark)}
+
+    /* ── Footer ── */
+    footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<!-- PAGE HERO -->
+<div class="black-hero">
+  <div class="black-hero-in">
+    <h1>Dev — <span>Projects in Motion</span></h1>
+    <p class="black-hero-sub">Internal staging hub — these pages aren't linked from the main site nav yet</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="index.html" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
+    <span class="sep">›</span>
+    <span class="cur">Dev</span>
+  </div>
+</div>
+
+<div class="dev-body">
+
+  <div class="dev-note">
+    <b>For Michael only.</b> This page is unlinked from the main nav and blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
+  </div>
+
+  <div class="dev-grid">
+
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Due Diligence</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Flood-risk lookups, school-rating resources, and the Virginia well/septic + DPOR disclosure basics — one page to send a seller or buyer before they close.</p>
+        <ul>
+          <li>Flood: FEMA Map Service Center, VA VFRIS</li>
+          <li>Schools: 5 links added — more coming</li>
+          <li>Well/septic + Virginia Buyer Reminder callout reused from the buyer guides</li>
+        </ul>
+        <a class="dev-card-link" href="due-diligence.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-head">
+        <h3>Utility Providers</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Electric, water &amp; sewer, gas, internet and trash providers for the Ashland / Hanover County / Richmond area, with notes on where coverage is split by address.</p>
+        <ul>
+          <li>Electric: Dominion Energy + REC</li>
+          <li>Water/sewer: Hanover Co. Public Utilities + well/septic</li>
+          <li>Gas, internet (incl. Connect Hanover), trash haulers</li>
+        </ul>
+        <a class="dev-card-link" href="utility-providers.html">View page →</a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in">
+    <a href="index.html" aria-label="804Michael">
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto">
+        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+      </svg>
+    </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_16</p>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      Internal staging page — not part of the public site navigation
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.01 19_16';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+  document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+</script>
+</body>
+</html>
