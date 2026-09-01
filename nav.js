@@ -56,10 +56,30 @@
     // below it) every time the banner text or font size changed. This makes
     // it self-correcting instead of something that has to be hand-tuned
     // across every page again on the next banner change.
+    //
+    // IMPORTANT: #banner itself is sized with `min-height:var(--banner-h)`
+    // (see nav.css), so measuring banner.getBoundingClientRect().height
+    // directly is circular — it can just be reading back whatever the CSS
+    // fallback forced it to, not the text's real height, and then locks
+    // that (possibly wrong) number in permanently. That's what caused the
+    // banner to render taller on some pages than others even with identical
+    // promo text: pages without a page-local --banner-h override inherited
+    // nav.css's mobile fallback (70px), which is bigger than the true
+    // 2-line content height (~39px), so the container's min-height won and
+    // this function just kept re-measuring — and re-confirming — that
+    // inflated 70px. Measuring the inner <p> instead sidesteps this: the
+    // banner's min-height never constrains its child's natural height, so
+    // this always reflects the text's real wrapped height regardless of
+    // whatever --banner-h currently is.
     let bannerSyncRaf = null;
     function syncBannerHeight() {
       if (!banner) return;
-      const h = Math.ceil(banner.getBoundingClientRect().height);
+      const textEl = banner.querySelector('p') || banner;
+      const bcs = getComputedStyle(banner);
+      const padTop = parseFloat(bcs.paddingTop) || 0;
+      const padBottom = parseFloat(bcs.paddingBottom) || 0;
+      const contentH = textEl.getBoundingClientRect().height;
+      const h = Math.ceil(contentH + padTop + padBottom);
       if (h > 0) document.documentElement.style.setProperty('--banner-h', h + 'px');
     }
     function scheduleBannerSync() {

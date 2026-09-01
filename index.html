@@ -179,7 +179,11 @@
       --black:#111; --white:#fff;
       --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
       --gray-text:#555; --gray-muted:#888;
-      --nav-h:68px; --banner-h:34px; /* keep in sync with nav.css's :root --banner-h — the banner now has real vertical padding on top of the 1.36rem text */
+      /* --nav-h/--banner-h intentionally NOT redeclared here — they live in
+         nav.css's :root and are kept accurate at runtime by nav.js. A local
+         override here previously masked a real bug (see nav.js's
+         syncBannerHeight comment) instead of fixing it, and is exactly the
+         per-page drift nav.css's own header comment warns against. */
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}

@@ -49,7 +49,7 @@
    for the instant before that JS runs. */
 @media(max-width:700px){
   #banner p{font-size:.82rem}
-  :root{--banner-h:70px}
+  :root{--banner-h:40px} /* fallback only, for the instant before nav.js measures the real 2-line height (~39px) — nav.js's syncBannerHeight() now measures the banner's <p> directly rather than the container, so this no longer needs to be a worst-case guess */
 }
 
 /* ── Nav bar ── */
