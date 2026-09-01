@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0062)file:///C:/Users/Micha/Downloads/tour-a-home-like-a-pro_4.html -->
+<!-- saved from url=(0062)file:///C:/Users/Micha/Downloads/tour-a-home-like-a-pro_5.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -205,9 +205,11 @@
     .rg-cta{background:var(--black);border-radius:16px;padding:32px 30px;margin-top:8px}
     .rg-cta h3{color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
     .rg-cta p{color:rgba(255,255,255,.68);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
-    .rg-cta-flex{display:flex;gap:26px;align-items:center}
-    .rg-cta-photo{width:104px;height:104px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid var(--red)}
-    .rg-cta-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .rg-cta-flex{display:flex;gap:26px;align-items:stretch}
+    .rg-cta-flex>.rg-cta-text{min-width:0;flex:1}
+    .rg-cta-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:150px}
+    .rg-cta-photo picture,.rg-cta-photo img{display:block;height:100%;width:auto;max-width:150px;object-fit:contain;border-radius:12px}
+    @media(max-width:640px){.rg-cta-photo{max-width:100%}.rg-cta-photo picture,.rg-cta-photo img{height:auto;max-height:220px;width:auto;margin:0 auto}}
     .rg-cta-btns{display:flex;gap:12px;flex-wrap:wrap}
     .rg-cta-btns .btn{font-size:1.1rem;padding:11px 20px}
     @media(max-width:640px){.rg-cta-flex{flex-direction:column;text-align:center}.rg-cta-btns{justify-content:center}}
@@ -238,10 +240,12 @@
     .cta-band h2 span{color:var(--red)}
     .cta-band p{color:rgba(255,255,255,.6);font-size:1rem;margin-bottom:30px}
     .cta-band-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-    .cta-band-flex{display:flex;gap:26px;align-items:center;justify-content:center;max-width:1020px;margin:0 auto;text-align:left}
-    .cta-band-photo{width:110px;height:110px;border-radius:50%;overflow:hidden;flex-shrink:0;border:4px solid var(--red)}
-    .cta-band-photo img{width:100%;height:100%;object-fit:cover;display:block}
-    @media(max-width:640px){.cta-band-flex{flex-direction:column;text-align:center}}
+    .cta-band-flex{display:flex;gap:26px;align-items:stretch;justify-content:center;max-width:1020px;margin:0 auto;text-align:left}
+    .cta-band-flex>.cta-band-text{min-width:0;flex:1}
+    .cta-band-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:160px}
+    .cta-band-photo picture,.cta-band-photo img{display:block;height:100%;width:auto;max-width:160px;object-fit:contain;border-radius:12px}
+    @media(max-width:900px){.cta-band-flex{flex-wrap:wrap;justify-content:center}}
+    @media(max-width:640px){.cta-band-flex{flex-direction:column;text-align:center}.cta-band-photo{max-width:100%}.cta-band-photo picture,.cta-band-photo img{height:auto;max-height:220px;width:auto;margin:0 auto}}
 
     /* ── Footer ── */
     footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
@@ -557,10 +561,10 @@
           <div class="rg-cta-photo">
             <picture>
               <source srcset="images/804michael_headshot-web.webp" type="image/webp">
-              <img src="file:///C:/Users/Micha/Downloads/images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" loading="lazy">
+              <img src="file:///C:/Users/Micha/Downloads/images/804michael_headshot-web.png" alt="Michael Hottman" loading="lazy" onerror="this.closest(&#39;.rg-cta-photo&#39;).style.display=&#39;none&#39;">
             </picture>
           </div>
-          <div>
+          <div class="rg-cta-text">
             <h3>Found a Home You May Want to See?</h3>
             <p>Text me the address before you go — or after your tour — and I'll help you think through the home, the location, the tradeoffs, and the next best step. This material is educational, not a substitute for professional due diligence; inspections, disclosures, title work, and appraisal are where these questions get formal answers.</p>
             <div class="rg-cta-btns">
@@ -626,10 +630,10 @@
     <div class="cta-band-photo">
       <picture>
         <source srcset="images/804michael_headshot-web.webp" type="image/webp">
-        <img src="file:///C:/Users/Micha/Downloads/images/804michael_headshot-web.png" alt="Michael Hottman, Ashland VA real estate broker with Malcolm Real Estate" loading="lazy">
+        <img src="file:///C:/Users/Micha/Downloads/images/804michael_headshot-web.png" alt="Michael Hottman" loading="lazy" onerror="this.closest(&#39;.cta-band-photo&#39;).style.display=&#39;none&#39;">
       </picture>
     </div>
-    <div>
+    <div class="cta-band-text">
       <h2>Real Life Real Estate,<br>Let's <span class="r">Chat.</span></h2>
       <p>Found a home you may want to see? Text me the address before you go — or after your tour.<br>804-Michael is ready to help you take the next step.</p>
       <div class="cta-band-btns">
@@ -658,7 +662,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:&#39;Barlow Condensed&#39;,sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 20_10</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:&#39;Barlow Condensed&#39;,sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 20_50</p>
     <p class="ft-copy">
       © <span class="yr">2026</span> 804Michael | Michael Hottman Real Estate<br>
       Malcolm Real Estate, Ashland, Virginia<br>
@@ -671,7 +675,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 20_10';
+  const SITE_VERSION = '26.09.01 20_50';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
