@@ -94,6 +94,7 @@
     .breadcrumb a:hover{color:var(--red)}
     .breadcrumb .sep{color:rgba(255,255,255,.25)}
     .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
 
     /* ── Main Layout ── */
     .pg-body{max-width:1200px;margin:0 auto;padding:60px 24px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
@@ -285,7 +286,7 @@
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
   <div class="breadcrumb-in">
-    <a href="index.html">Home</a>
+    <a href="index.html" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
     <span class="sep">›</span>
     <a href="index.html#guides">Local Areas</a>
     <span class="sep">›</span>
