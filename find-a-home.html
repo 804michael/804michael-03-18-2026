@@ -185,6 +185,11 @@
     .pro-tip b{color:#123d2f}
     .pro-tip a{color:#123d2f;text-decoration:underline;font-weight:600}
     .pro-tip .pt-lbl{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f;margin-bottom:6px}
+    .pro-tip .pt-flex{display:flex;gap:14px;align-items:flex-start}
+    /* Sized to match .warn-icon in the "Avoid clicking" callout above, for
+       visual consistency between the two boxes — kept as its own rule
+       (rather than sharing that class) so the two can be resized independently. */
+    .pro-tip .pt-icon{width:34px;height:34px;flex-shrink:0;margin-top:2px}
 
     /* ── Virginia due-diligence callout (in-content, prominent) ── */
     .va-callout{background:var(--black);color:var(--white);border-radius:14px;padding:22px 24px;margin:22px 0 28px;border-left:5px solid var(--red)}
@@ -360,7 +365,10 @@
 
       <div class="pro-tip">
         <span class="pt-lbl">Pro Tip</span>
-        <b>Pre-approval helps you search with clarity.</b> It does not obligate you to buy at the top of your approved range. Not sure where to start? <a href="determine-your-budget.html">Run the numbers with my budget calculator</a> before you start scrolling listings.
+        <div class="pt-flex">
+          <img class="pt-icon" src="images/logos/Pulse_ProTip.gif" alt="" aria-hidden="true">
+          <div>Getting a Pre-approval letter helps you search with clarity. You are not obligated to buy at the top of your approved range nor are you obligated to using that lender when it comes to purchase. It's like a pre-check on your financial position used to avoid future problems. Not sure what your budget looks like? <a href="determine-your-budget.html">Use my budget calculator</a> before you start scrolling listings to get a good idea, but you'll need to talk to a lender for a real letter - I can recommend some great ones.</div>
+        </div>
       </div>
     </section>
 
