@@ -176,6 +176,14 @@
   display:none;position:fixed;inset:0 0 0 auto;width:300px;z-index:6000;
   background:var(--white,#fff);flex-direction:column;padding:80px 32px 40px;
   box-shadow:-8px 0 40px rgba(0,0,0,.15);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  /* The menu is fixed to the full viewport height (inset:0 0 0 auto), but its
+     content (Local Areas / Buyer Info / Seller Info / Resources link groups +
+     CTAs + socials) is taller than a phone screen. Without a scroll rule here,
+     anything past the viewport's bottom edge was simply cut off and
+     unreachable — body scroll is deliberately locked while the menu is open
+     (see openMob() in nav.js), so there was no way to reach it. This makes
+     the panel itself the scroll container. */
 }
 #mob-menu.open{display:flex;animation:slideInRight .32s ease forwards}
 #mob-close{position:absolute;top:16px;right:20px;font-size:2rem;background:none;border:none;cursor:pointer;color:var(--black,#111);transition:color .2s}
