@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 01_04                                 ║
+  ║  SITE VERSION: 26.09.01 02_07                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -193,6 +193,11 @@
     .calc-warn.show{display:block}
     .calc-disclaimer{font-size:.76rem;color:var(--gray-muted);line-height:1.6;margin-top:14px}
 
+    .xls-export{margin-top:18px;padding-top:16px;border-top:1px solid var(--gray-mid);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+    .xls-export .btn{font-size:1.05rem;padding:11px 20px}
+    .xls-export .btn:disabled{opacity:.6;cursor:default}
+    .xls-export-note{font-size:.78rem;color:var(--gray-muted);line-height:1.5;max-width:52ch}
+
     /* ── Sidebar ── */
     .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
     .side-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:16px;overflow:hidden}
@@ -237,6 +242,8 @@
 
 <div id="site-nav"></div>
 <script src="nav.js" defer></script>
+<!-- Client-side .xlsx builder for the "Download as Excel" button below (formulas + formatting preserved) -->
+<script src="https://unpkg.com/xlsx-populate@1.21.0/browser/xlsx-populate.min.js" defer></script>
 
 <!-- PAGE HERO (black bar, no image) -->
 <div class="black-hero">
@@ -346,6 +353,14 @@
       </div>
       <p class="calc-warn" id="short-warn">Your estimated payoff and costs add up to more than your sale price — based on these numbers, you may need to bring money to closing rather than receive any. Talk to 804Michael about your options before listing.</p>
       <p class="calc-disclaimer">This is a general estimate for planning purposes only, not a guarantee. Actual net proceeds are determined by your Settlement Agent at closing and can vary based on prorations (taxes, HOA, fuel), your exact loan payoff amount and per-diem interest, and other closing-specific charges. Talk to 804Michael for a precise net sheet based on your specific property.</p>
+
+      <div class="xls-export">
+        <button type="button" class="btn btn-outline" id="xls-download-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+          Download as Excel (.xlsx)
+        </button>
+        <p class="xls-export-note" id="xls-export-note">Downloads a spreadsheet pre-filled with the numbers above, plus 2 blank columns to compare other offers.</p>
+      </div>
     </div>
 
   </main>
@@ -423,7 +438,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 01_04</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 02_07</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -436,7 +451,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 01_04';
+  const SITE_VERSION = '26.09.01 02_07';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
 
@@ -524,6 +539,242 @@
     }
 
     calculate();
+
+    /* ── Download as Excel (.xlsx) — builds a real spreadsheet client-side ──
+       Uses xlsx-populate (loaded above) so the file keeps live formulas and
+       full formatting, not just a static values dump. Offer A is pre-filled
+       with whatever is currently in the calculator; Offer B and Offer C are
+       left blank so the seller can compare two more offers side by side. */
+    const xlsBtn = $('xls-download-btn');
+    const xlsNote = $('xls-export-note');
+    const xlsNoteDefault = xlsNote ? xlsNote.textContent : '';
+
+    if (xlsBtn) xlsBtn.addEventListener('click', downloadNetSheetXlsx);
+
+    function downloadNetSheetXlsx(){
+      if (typeof XlsxPopulate === 'undefined') {
+        if (xlsNote) xlsNote.textContent = 'Still loading the Excel export tool — give it a second and try again.';
+        return;
+      }
+
+      const inputs = {
+        price: parseNum($('price')),
+        payoff: parseNum($('payoff')),
+        buyerPct: parseNum($('buyer-comm-pct')),
+        listPct: parseNum($('list-comm-pct')),
+        closingPct: parseNum($('closing-pct')),
+        concessions: parseNum($('concessions')),
+        otherCredits: parseNum($('other-credits'))
+      };
+
+      xlsBtn.disabled = true;
+      const originalLabel = xlsBtn.innerHTML;
+      xlsBtn.innerHTML = 'Building your spreadsheet…';
+      if (xlsNote) xlsNote.textContent = xlsNoteDefault;
+
+      XlsxPopulate.fromBlankAsync()
+        .then(workbook => {
+          buildNetSheetWorkbook(workbook, inputs);
+          return workbook.outputAsync();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          const d = new Date();
+          const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+          a.href = url;
+          a.download = '804Michael-Seller-Net-Sheet-' + stamp + '.xlsx';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(err => {
+          console.error('xlsx export failed:', err);
+          if (xlsNote) xlsNote.textContent = 'Something went wrong building the file — please try again.';
+        })
+        .then(() => {
+          xlsBtn.disabled = false;
+          xlsBtn.innerHTML = originalLabel;
+        });
+    }
+
+    function buildNetSheetWorkbook(workbook, inputs){
+      const MONEY_FMT = '$#,##0;($#,##0);"-"';
+      const PCT_FMT = '0.00%;(0.00%);"-"';
+      const MONEY_DIFF_FMT = '+$#,##0;-$#,##0;"-"';
+      const PCT_DIFF_FMT = '+0.00%;-0.00%;"-"';
+      const BLACK = '111111', WHITE = 'FFFFFF', RED = 'DA291C', RED_DARK = '8A1F1A';
+      const GRAY_TEXT = '555555', GRAY_LIGHT = 'F5F5F5';
+      const YELLOW_FILL = 'FFF9C4', BLANK_FILL = 'FDF3F3', DIFF_FILL = 'EAF3EA';
+      const HEADER_FILL = '333333', SECTION_FILL = '111111';
+
+      const ws = workbook.sheet(0);
+      ws.name('Seller Net Sheet');
+      ['A','B','C','D','E','F'].forEach((col, i) => {
+        ws.column(col).width([34,16,16,16,15,15][i]);
+      });
+
+      let row = 1;
+
+      ws.range(`A${row}:F${row}`).merged(true);
+      ws.cell(`A${row}`).value('Seller Net Sheet — Compare Up to 3 Offers')
+        .style({ bold: true, fontSize: 18, fontColor: BLACK, fontFamily: 'Arial' });
+      ws.row(row).height(26);
+      row++;
+
+      ws.range(`A${row}:F${row}`).merged(true);
+      ws.cell(`A${row}`).value('804Michael — Michael Hottman Real Estate  |  Generated from your entries at https://804re.com/seller-net-sheet.html')
+        .style({ italic: true, fontSize: 10, fontColor: GRAY_TEXT, fontFamily: 'Arial' });
+      row += 2;
+
+      ws.cell(`A${row}`).value('HOW TO USE:').style({ bold: true, fontSize: 9.5, fontColor: BLACK, fontFamily: 'Arial' });
+      row++;
+      ws.range(`A${row}:F${row}`).merged(true);
+      ws.cell(`A${row}`).value('Offer A is pre-filled with the numbers you entered on the site. Offer B and Offer C are blank — enter two more offers to compare. Edit any yellow/rose cell; everything else recalculates automatically. Columns E and F compare Offer B and Offer C to Offer A.')
+        .style({ fontSize: 9.5, fontColor: GRAY_TEXT, fontFamily: 'Arial', wrapText: true, verticalAlignment: 'top' });
+      ws.row(row).height(30);
+      row += 2;
+
+      ['', 'Offer A (from site)', 'Offer B', 'Offer C', 'Diff B − A', 'Diff C − A'].forEach((h, i) => {
+        const ref = String.fromCharCode(65 + i) + row;
+        ws.cell(ref).value(h).style({
+          bold: true, fontColor: WHITE, fontFamily: 'Arial', fontSize: 11,
+          fill: HEADER_FILL, horizontalAlignment: i > 0 ? 'center' : 'left', verticalAlignment: 'center'
+        });
+      });
+      ws.row(row).height(20);
+      row++;
+
+      function section(title){
+        ws.range(`A${row}:F${row}`).merged(true);
+        ws.cell(`A${row}`).value(title).style({
+          bold: true, fontColor: WHITE, fontFamily: 'Arial', fontSize: 11,
+          fill: SECTION_FILL, verticalAlignment: 'center', indent: 1
+        });
+        ws.row(row).height(20);
+        row++;
+      }
+
+      function inputRow(label, sub, a, fmt, diffFmt){
+        ws.cell(`A${row}`).value(sub ? `${label}\n${sub}` : label)
+          .style({ fontFamily: 'Arial', fontSize: 10.5, fontColor: BLACK, verticalAlignment: 'center', wrapText: !!sub });
+        ws.row(row).height(sub ? (sub.length > 30 ? 46 : 30) : 18);
+
+        [['B', a], ['C', null], ['D', null]].forEach(([col, val]) => {
+          const cell = ws.cell(`${col}${row}`);
+          if (val !== null && val !== undefined) cell.value(val);
+          cell.style({
+            bold: true, fontColor: '0000FF', fontFamily: 'Arial', fontSize: 11,
+            fill: (val !== null && val !== undefined) ? YELLOW_FILL : BLANK_FILL,
+            numberFormat: fmt, horizontalAlignment: 'center', verticalAlignment: 'center'
+          });
+        });
+
+        ['E', 'F'].forEach((col, idx) => {
+          const srcCol = idx === 0 ? 'C' : 'D';
+          ws.cell(`${col}${row}`).formula(`${srcCol}${row}-B${row}`).style({
+            fontFamily: 'Arial', fontSize: 11, fontColor: BLACK, fill: DIFF_FILL,
+            numberFormat: diffFmt, horizontalAlignment: 'center', verticalAlignment: 'center'
+          });
+        });
+
+        const r = row;
+        row++;
+        return r;
+      }
+
+      function calcRow(label, fA, fB, fC, fmt, diffFmt, opts){
+        opts = opts || {};
+        ws.cell(`A${row}`).value(label).style({
+          bold: !!opts.bold, fontFamily: 'Arial', fontSize: 10.5, fontColor: BLACK, verticalAlignment: 'center'
+        });
+        ws.row(row).height(18);
+
+        [['B', fA], ['C', fB], ['D', fC]].forEach(([col, f]) => {
+          ws.cell(`${col}${row}`).formula(f).style({
+            bold: !!opts.bold, fontFamily: 'Arial', fontSize: 11,
+            fontColor: opts.minus ? RED_DARK : BLACK, fill: GRAY_LIGHT,
+            numberFormat: fmt, horizontalAlignment: 'center', verticalAlignment: 'center'
+          });
+        });
+
+        ['E', 'F'].forEach((col, idx) => {
+          const srcCol = idx === 0 ? 'C' : 'D';
+          ws.cell(`${col}${row}`).formula(`${srcCol}${row}-B${row}`).style({
+            fontFamily: 'Arial', fontSize: 11, fontColor: BLACK, fill: DIFF_FILL,
+            numberFormat: diffFmt, horizontalAlignment: 'center', verticalAlignment: 'center'
+          });
+        });
+
+        const r = row;
+        row++;
+        return r;
+      }
+
+      section('YOUR INPUTS  (edit the yellow / rose cells)');
+      const rPrice = inputRow('Estimated Sale Price', null, inputs.price, MONEY_FMT, MONEY_DIFF_FMT);
+      const rPayoff = inputRow('Current Mortgage Payoff', '(your loan balance — 0 if owned outright)', inputs.payoff, MONEY_FMT, MONEY_DIFF_FMT);
+      const rBuyerPct = inputRow("Buyer's Agent Commission", null, inputs.buyerPct / 100, PCT_FMT, PCT_DIFF_FMT);
+      const rListPct = inputRow('Listing Agent Commission', null, inputs.listPct / 100, PCT_FMT, PCT_DIFF_FMT);
+      const rClosingPct = inputRow('Seller Closing Costs', '(title work, recording, prorations)', inputs.closingPct / 100, PCT_FMT, PCT_DIFF_FMT);
+      const rConcessions = inputRow('Seller-Paid Buyer Closing Costs', '(concessions in the offer)', inputs.concessions, MONEY_FMT, MONEY_DIFF_FMT);
+      const rOtherCredits = inputRow('Other Charges / Credits', '(home warranty, repair credits, etc.)', inputs.otherCredits, MONEY_FMT, MONEY_DIFF_FMT);
+      row++;
+
+      section('CALCULATED BREAKDOWN');
+      const rBuyerComm = calcRow("Buyer's Agent Commission ($)",
+        `B${rPrice}*B${rBuyerPct}`, `C${rPrice}*C${rBuyerPct}`, `D${rPrice}*D${rBuyerPct}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { minus: true });
+      const rListComm = calcRow('Listing Agent Commission ($)',
+        `B${rPrice}*B${rListPct}`, `C${rPrice}*C${rListPct}`, `D${rPrice}*D${rListPct}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { minus: true });
+      const rClosingCosts = calcRow('Seller Closing Costs ($)',
+        `B${rPrice}*B${rClosingPct}`, `C${rPrice}*C${rClosingPct}`, `D${rPrice}*D${rClosingPct}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { minus: true });
+      const rTotalCredits = calcRow('Total Concessions & Credits',
+        `B${rConcessions}+B${rOtherCredits}`, `C${rConcessions}+C${rOtherCredits}`, `D${rConcessions}+D${rOtherCredits}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { minus: true });
+      const rNetProceeds = calcRow('Seller Net Proceeds',
+        `B${rPrice}-B${rBuyerComm}-B${rListComm}-B${rClosingCosts}-B${rTotalCredits}`,
+        `C${rPrice}-C${rBuyerComm}-C${rListComm}-C${rClosingCosts}-C${rTotalCredits}`,
+        `D${rPrice}-D${rBuyerComm}-D${rListComm}-D${rClosingCosts}-D${rTotalCredits}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { bold: true });
+      const rPayoffOut = calcRow('Mortgage Payoff',
+        `-B${rPayoff}`, `-C${rPayoff}`, `-D${rPayoff}`,
+        MONEY_FMT, MONEY_DIFF_FMT, { minus: true });
+      row++;
+
+      ws.cell(`A${row}`).value('APPROXIMATE CASH TO YOU AT CLOSING').style({
+        bold: true, fontColor: WHITE, fontFamily: 'Arial', fontSize: 12, fill: RED,
+        verticalAlignment: 'center', wrapText: true, indent: 1
+      });
+      [['B', `B${rNetProceeds}+B${rPayoffOut}`], ['C', `C${rNetProceeds}+C${rPayoffOut}`], ['D', `D${rNetProceeds}+D${rPayoffOut}`]].forEach(([col, f]) => {
+        ws.cell(`${col}${row}`).formula(f).style({
+          bold: true, fontColor: WHITE, fontFamily: 'Arial', fontSize: 14, fill: RED,
+          numberFormat: MONEY_FMT, horizontalAlignment: 'center', verticalAlignment: 'center'
+        });
+      });
+      ['E', 'F'].forEach((col, idx) => {
+        const srcCol = idx === 0 ? 'C' : 'D';
+        ws.cell(`${col}${row}`).formula(`${srcCol}${row}-B${row}`).style({
+          bold: true, fontColor: WHITE, fontFamily: 'Arial', fontSize: 14, fill: RED,
+          numberFormat: MONEY_DIFF_FMT, horizontalAlignment: 'center', verticalAlignment: 'center'
+        });
+      });
+      ws.row(row).height(30);
+      row += 2;
+
+      ws.range(`A${row}:F${row}`).merged(true);
+      ws.cell(`A${row}`).value('This is a general estimate for planning purposes only, not a guarantee. Actual net proceeds are determined by your Settlement Agent at closing and can vary based on prorations (taxes, HOA, fuel), your exact loan payoff amount and per-diem interest, and other closing-specific charges. Talk to 804Michael for a precise net sheet based on your specific property and offer.')
+        .style({ italic: true, fontSize: 8.5, fontColor: GRAY_TEXT, fontFamily: 'Arial', wrapText: true, verticalAlignment: 'top' });
+      ws.row(row).height(42);
+      row += 2;
+
+      ws.range(`A${row}:F${row}`).merged(true);
+      ws.cell(`A${row}`).value('804Michael | Michael Hottman Real Estate — Licensed Real Estate Broker in Virginia — 804-642-4235')
+        .style({ italic: true, fontSize: 8.5, fontColor: GRAY_TEXT, fontFamily: 'Arial' });
+    }
   })();
 </script>
 
