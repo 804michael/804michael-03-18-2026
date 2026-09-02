@@ -163,7 +163,7 @@
         .val-modal-hint{font-family:'Barlow',sans-serif;font-size:.92rem;color:var(--gray-muted);margin-bottom:14px;}
         .val-modal-close{position:absolute;top:14px;right:18px;font-size:1.6rem;background:none;border:none;cursor:pointer;color:var(--gray-muted);transition:color .2s;}
         .val-modal-close:hover{color:var(--red);}
-        .val-field{margin-bottom:11px;flex:1;}
+        .val-field{margin-bottom:8px;flex:1;}
         .val-row{display:flex;gap:14px;}
         .val-row-3{gap:10px;}
         .val-field-sm{flex:0 0 72px;}
@@ -264,7 +264,7 @@
         </div>
       </div>
       <p id="val-modal-status" class="val-modal-status"></p>
-      <button type="submit" id="val-submit-btn" class="btn btn-red" style="width:100%;justify-content:center">Get My Custom Report</button>
+      <button type="submit" id="val-submit-btn" class="btn btn-red" style="display:flex;width:fit-content;max-width:100%;margin:0 auto;justify-content:center">Get My Custom Report</button>
     </form>
   </div>
 </div>
@@ -477,12 +477,59 @@
     valStateEl.value = valStateEl.value.replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase();
   });
 
+  // ── Partial-entry draft saving ──────────────────────────────────────────
+  // Auto-saves the valuation form to localStorage as the person types, so if
+  // they close the modal (or the tab) partway through, their answers are
+  // still there next time they open "Get My Custom Report." Cleared only on
+  // a successful send.
+  const VAL_DRAFT_KEY = '804m_valuation_draft';
+  const VAL_DRAFT_FIELD_IDS = ['val-notes','val-address','val-city','val-state','val-zip','val-fname','val-lname','val-phone','val-email'];
+  let _valDraftSaveTimer = null;
+  function saveValDraft(){
+    clearTimeout(_valDraftSaveTimer);
+    _valDraftSaveTimer = setTimeout(function(){
+      try {
+        const data = { method: preferredMethod };
+        VAL_DRAFT_FIELD_IDS.forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) data[id] = el.value;
+        });
+        localStorage.setItem(VAL_DRAFT_KEY, JSON.stringify(data));
+      } catch(e) { /* localStorage unavailable (private browsing, etc.) — fail silently */ }
+    }, 300);
+  }
+  function restoreValDraft(){
+    let raw;
+    try { raw = localStorage.getItem(VAL_DRAFT_KEY); } catch(e) { return; }
+    if (!raw) return;
+    let data;
+    try { data = JSON.parse(raw); } catch(e) { return; }
+    let restoredAny = false;
+    VAL_DRAFT_FIELD_IDS.forEach(function(id){
+      const el = document.getElementById(id);
+      if (el && data[id] && !el.value) { el.value = data[id]; restoredAny = true; }
+    });
+    if (data.method && !preferredMethod) {
+      preferredMethod = data.method;
+      valToggleBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.method === data.method); });
+    }
+    if (restoredAny) {
+      valStatus.textContent = 'Welcome back — we saved what you started.';
+      valStatus.className = 'val-modal-status';
+    }
+  }
+  function clearValDraft(){
+    try { localStorage.removeItem(VAL_DRAFT_KEY); } catch(e) {}
+  }
+  valForm.addEventListener('input', saveValDraft);
+
   document.getElementById('openValuationModal').addEventListener('click', ()=>{
     valStatus.textContent = '';
     valStatus.className = 'val-modal-status';
     valForm.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
     valOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    restoreValDraft();
   });
   function closeValModal(){
     valOverlay.classList.remove('open');
@@ -553,6 +600,7 @@
       valStateEl.value = 'VA';
       preferredMethod = null;
       valToggleBtns.forEach(b=>b.classList.remove('active'));
+      clearValDraft();
       setTimeout(closeValModal, 2200);
     }).catch(function(err){
       console.error('EmailJS error:', err);

@@ -1,8 +1,7 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 23-11                                 ║
-  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
-  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
+  ║  SITE VERSION: 26.09.02 17_59                                 ║
+  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -10,13 +9,13 @@
   ║    1. The SITE VERSION line above (in this comment block)     ║
   ║    2. const SITE_VERSION in the main <script> block           ║
   ║    3. The visible site-version text above the footer copy     ║
-  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
+  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: vYY.MM.DD HH-MM                                ║
+  ║    📌 Version: YY.MM.DD HH_MM                                ║
   ║  State the version BEFORE describing any changes made.       ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
@@ -26,7 +25,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hanover Farmstand Trail | 804Michael</title>
-<link rel="canonical" href="https://804re.com/farmstand.html" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
@@ -37,11 +35,7 @@
     --black:#111; --white:#fff;
     --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
     --gray-text:#555; --gray-muted:#888;
-    /* --nav-h/--banner-h intentionally NOT redeclared here — they live in
-       nav.css's :root and are kept accurate at runtime by nav.js. A local
-       override here previously masked a real bug (see nav.js's
-       syncBannerHeight comment) instead of fixing it, and is exactly the
-       per-page drift nav.css's own header comment warns against. */
+    --nav-h:68px; --banner-h:38px;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;
@@ -60,27 +54,15 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{
-    background:var(--black);color:var(--white);padding:19px 28px 16px;position:relative;overflow:hidden;
-    /* .page (the parent) is max-width:1100px & centered, which was clipping
-       the hero to that same centered box instead of reaching the true
-       viewport edges on wider screens. This is the standard "full-bleed
-       inside a centered container" trick: stretch to 100vw and pull back
-       with negative margins equal to half the viewport minus half the
-       hero's own width, so it spans edge-to-edge regardless of .page's
-       constraint while everything else inside .page stays centered as before. */
-    width:100vw;
-    margin-left:calc(50% - 50vw);
-    margin-right:calc(50% - 50vw);
-  }
+  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--red);margin:0 0 9px;display:flex;align-items:center;gap:10px;}
+    text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
   .eyebrow::before{content:'';display:inline-block;width:26px;height:2px;background:var(--red);}
-  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,42px);line-height:1.05;
-    letter-spacing:-.01em;margin:0 0 8px;}
+  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(32px,5.6vw,52px);line-height:1.05;
+    letter-spacing:-.01em;margin:0 0 10px;}
   h1 span{color:var(--red);}
-  .sub{display:flex;gap:14px;flex-wrap:wrap;font-weight:400;font-size:13px;color:rgba(255,255,255,.75);}
+  .sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
   .sub b{color:var(--white);}
 
   .status-bar{margin:14px 20px 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
@@ -181,12 +163,9 @@
   .stand-card .hours{font-size:17px;color:var(--gray-muted);margin-bottom:6px;}
   .stand-card .dist{font-size:17px;color:var(--red);font-weight:700;margin-bottom:6px;}
   .stand-card .desc{font-size:19px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;padding-right:4px;}
-  .stand-card .card-links{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;}
-  .stand-card .website{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
-  .stand-card .website:hover{text-decoration:underline;}
-  .stand-card .card-dir{display:inline-flex;align-items:center;gap:5px;color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
-  .stand-card .card-dir svg{flex-shrink:0;}
-  .stand-card .card-dir:hover{text-decoration:underline;}
+  .stand-card .website{margin-top:6px;}
+  .stand-card .website a{color:var(--red);font-weight:700;font-size:16px;text-decoration:none;}
+  .stand-card .website a:hover{text-decoration:underline;}
   .hidden{display:none !important;}
   .empty-state{margin:20px;padding:30px;text-align:center;color:var(--gray-muted);font-size:14px;
     background:var(--gray-light);border:1px dashed var(--gray-mid);border-radius:12px;}
@@ -233,8 +212,22 @@
   }
   .day-chip:hover{border-color:var(--red);}
   .day-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .loc-chip{white-space:normal;text-align:center;font-size:.78rem;padding:10px 8px;}
   .time-row{display:flex;gap:12px;}
   .time-row>div{flex:1;}
+  .hours-group{border:1.5px solid var(--gray-mid);border-radius:10px;padding:10px 10px 12px;margin-bottom:8px;position:relative;}
+  .hours-group .time-row{margin-top:8px;}
+  .hours-group .remove-range{
+    position:absolute;top:8px;right:8px;background:none;border:none;color:var(--gray-muted);
+    font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:5px;
+  }
+  .hours-group .remove-range:hover{color:var(--red);background:var(--gray-light);}
+  .btn-add-range{
+    width:100%;border:1.5px dashed var(--gray-mid);background:#fff;color:var(--gray-muted);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
+    padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;margin-top:2px;
+  }
+  .btn-add-range:hover{border-color:var(--red);color:var(--red);}
   .geo-status{font-size:12.5px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
   .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
   .geo-status.ok{background:#eef6ee;color:#2f6b30;}
@@ -246,13 +239,6 @@
   .submit-note{font-size:11.5px;color:var(--gray-muted);margin-top:10px;text-align:center;}
   @media(max-width:480px){
     .leaflet-popup-content-wrapper{max-width:265px;}
-    /* Leaflet's popup-tip triangle adds ~10-12px of extra visual space below
-       the content box that has no equivalent on the right side. At this
-       narrower mobile width that asymmetry becomes noticeable around the
-       Directions button — desktop popups are wide enough that it's not
-       obvious. Trim the bottom margin here (right stays 20px, matching
-       desktop) so the two gaps read as equal once the tip is factored in. */
-    .leaflet-popup-content{margin:16px 20px 9px !important;}
     #map{height:380px;}
   }
 </style>
@@ -296,12 +282,12 @@
   <div class="sponsor-block">
     <p class="sponsor-label">Sponsored by</p>
     <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Real Estate" class="sponsor-logo">
-    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="sms:8046424235">Text</a> or <a href="tel:8046424235">Call 804-Michael</a> (804-642-4235)</p>
+    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Call 804-Michael</a> or <a href="sms:8046424235">text 804-642-4235</a></p>
     <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
-  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:1.08rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">site version v26.09.01 23-11</p>
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 17_59</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -310,11 +296,19 @@
   <div class="modal">
     <button class="close-x" id="closeModal">✕</button>
     <h3>Add a Stand</h3>
-    <p class="hint">Stand at the farmstand and submit — we'll use your phone's location instead of an address.</p>
+    <p class="hint">Add the stand you're standing at, or one you know about from anywhere.</p>
 
-    <div class="geo-status waiting" id="geoStatus">📡 Locating you…</div>
+    <div class="field">
+      <label>Location</label>
+      <div class="day-toggle" id="fLocationChoice">
+        <button type="button" class="day-chip loc-chip" data-mode="gps" style="flex:1;min-width:0;">📍 Use My Location</button>
+        <button type="button" class="day-chip loc-chip" data-mode="address" style="flex:1;min-width:0;">✏️ Enter an Address</button>
+      </div>
+    </div>
+
+    <div class="geo-status waiting hidden" id="geoStatus">📡 Locating you…</div>
     <div class="field hidden" id="fAddressWrap">
-      <label for="fAddress">Address <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(location wasn't available — enter it manually)</span></label>
+      <label for="fAddress">Address</label>
       <input type="text" id="fAddress" placeholder="e.g. 13580 Ashland Road, Ashland, VA">
     </div>
 
@@ -333,32 +327,15 @@
       </div>
     </div>
     <div class="field">
-      <label>Days Available</label>
-      <div class="day-toggle" id="fDays">
-        <button type="button" class="day-chip" data-day="Sun">Sun</button>
-        <button type="button" class="day-chip" data-day="Mon">Mon</button>
-        <button type="button" class="day-chip" data-day="Tue">Tue</button>
-        <button type="button" class="day-chip" data-day="Wed">Wed</button>
-        <button type="button" class="day-chip" data-day="Thu">Thu</button>
-        <button type="button" class="day-chip" data-day="Fri">Fri</button>
-        <button type="button" class="day-chip" data-day="Sat">Sat</button>
-      </div>
+      <label>Days &amp; Hours <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(add a separate row if hours differ by day — e.g. Fri/Sat 9–7, Sun 9–4)</span></label>
+      <div id="fHoursGroups"></div>
+      <button type="button" class="btn-add-range" id="fAddRange">+ Add another time range</button>
     </div>
     <div class="field">
       <label class="cat-check"><input type="checkbox" id="fUnmanned"> Open all the time / unmanned stand (no set hours)</label>
       <label class="cat-check"><input type="checkbox" id="fVaries"> Hours vary, check site</label>
     </div>
-    <div class="field time-row hidden" id="fHoursWrap">
-      <div>
-        <label for="fOpen">Opens</label>
-        <input type="time" id="fOpen">
-      </div>
-      <div>
-        <label for="fClose">Closes</label>
-        <input type="time" id="fClose">
-      </div>
-    </div>
-    <div class="field">
+    <div class="field desc-field">
       <label for="fDesc">What do they sell?</label>
       <textarea id="fDesc" placeholder="Short description of goods"></textarea>
     </div>
@@ -533,8 +510,8 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.01 23-11';
-(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'site version v' + SITE_VERSION; })();
+const SITE_VERSION = '26.09.02 17_59';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -656,13 +633,7 @@ function cardHtml(s, catInfo){
     ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
     <div class="desc">${s.desc || ''}</div>
-    <div class="card-links">
-      ${s.website ? `<a class="website" href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Website</a>` : ''}
-      <a class="card-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        Directions
-      </a>
-    </div>
+    ${s.website ? `<div class="website"><a href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a></div>` : ''}
   `;
 }
 
@@ -825,51 +796,99 @@ const modalOverlay = document.getElementById('modalOverlay');
 const geoStatus = document.getElementById('geoStatus');
 const submitBtn = document.getElementById('submitAdd');
 let capturedCoords = null;
-let selectedDays = [];
 
-function updateHoursVisibility(){
-  const unmanned = document.getElementById('fUnmanned').checked;
-  const varies = document.getElementById('fVaries').checked;
-  const show = !unmanned && !varies && selectedDays.length > 0;
-  document.getElementById('fHoursWrap').classList.toggle('hidden', !show);
+// ---- Days & Hours: repeatable groups, each with its own days + open/close time ----
+const hoursGroupsEl = document.getElementById('fHoursGroups');
+const DAY_LIST = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+let hoursGroups = []; // [{ id, days:Set, open:'', close:'' }, ...]
+let groupCounter = 0;
+
+function addHoursGroup(){
+  const id = ++groupCounter;
+  hoursGroups.push({ id, days: new Set(), open: '', close: '' });
+  renderHoursGroups();
 }
-
-document.getElementById('fDays').querySelectorAll('.day-chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    const day = chip.dataset.day;
-    if(selectedDays.includes(day)){
-      selectedDays = selectedDays.filter(d=>d!==day);
-      chip.classList.remove('active');
-    } else {
-      selectedDays.push(day);
-      chip.classList.add('active');
-    }
-    updateHoursVisibility();
+function removeHoursGroup(id){
+  hoursGroups = hoursGroups.filter(g => g.id !== id);
+  if(hoursGroups.length === 0) addHoursGroup(); // always keep at least one row
+  else renderHoursGroups();
+}
+function renderHoursGroups(){
+  hoursGroupsEl.innerHTML = '';
+  hoursGroups.forEach(group => {
+    const row = document.createElement('div');
+    row.className = 'hours-group';
+    row.dataset.groupId = group.id;
+    row.innerHTML = `
+      ${hoursGroups.length > 1 ? `<button type="button" class="remove-range" title="Remove this time range">✕</button>` : ''}
+      <div class="day-toggle">
+        ${DAY_LIST.map(d => `<button type="button" class="day-chip${group.days.has(d) ? ' active' : ''}" data-day="${d}">${d}</button>`).join('')}
+      </div>
+      <div class="time-row">
+        <div>
+          <label>Opens</label>
+          <input type="time" class="group-open" value="${group.open}">
+        </div>
+        <div>
+          <label>Closes</label>
+          <input type="time" class="group-close" value="${group.close}">
+        </div>
+      </div>
+    `;
+    row.querySelectorAll('.day-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const day = chip.dataset.day;
+        if(group.days.has(day)) group.days.delete(day); else group.days.add(day);
+        chip.classList.toggle('active');
+      });
+    });
+    row.querySelector('.group-open').addEventListener('input', e => { group.open = e.target.value; });
+    row.querySelector('.group-close').addEventListener('input', e => { group.close = e.target.value; });
+    const removeBtn = row.querySelector('.remove-range');
+    if(removeBtn) removeBtn.addEventListener('click', () => removeHoursGroup(group.id));
+    hoursGroupsEl.appendChild(row);
   });
-});
+}
+document.getElementById('fAddRange').addEventListener('click', addHoursGroup);
+function resetHoursGroups(){
+  hoursGroups = [];
+  groupCounter = 0;
+  addHoursGroup();
+}
+resetHoursGroups(); // seed one empty row on page load
 
 document.getElementById('fUnmanned').addEventListener('change', ()=>{
   if(document.getElementById('fUnmanned').checked) document.getElementById('fVaries').checked = false;
-  updateHoursVisibility();
+  document.getElementById('fHoursGroups').closest('.field').classList.toggle('hidden',
+    document.getElementById('fUnmanned').checked || document.getElementById('fVaries').checked);
 });
 document.getElementById('fVaries').addEventListener('change', ()=>{
   if(document.getElementById('fVaries').checked) document.getElementById('fUnmanned').checked = false;
-  updateHoursVisibility();
+  document.getElementById('fHoursGroups').closest('.field').classList.toggle('hidden',
+    document.getElementById('fUnmanned').checked || document.getElementById('fVaries').checked);
 });
 
-function openModal(){
-  modalOverlay.classList.add('show');
-  capturedCoords = null;
-  submitBtn.disabled = true;
+// Builds the full multi-range display string, e.g. "Fri, Sat 9 AM–7 PM · Sun 9 AM–4 PM"
+function formatAllHoursGroups(groups){
+  const parts = groups
+    .filter(g => g.days.size > 0 && g.open && g.close)
+    .map(g => formatHoursSummary(Array.from(g.days), g.open, g.close));
+  return parts.join(' · ');
+}
+
+
+let locationMode = null; // 'gps' | 'address'
+const locChipBtns = document.querySelectorAll('.loc-chip');
+
+function runGeolocation(){
+  geoStatus.classList.remove('hidden');
   geoStatus.className = 'geo-status waiting';
   geoStatus.textContent = '📡 Locating you…';
-  document.getElementById('fAddressWrap').classList.add('hidden');
-  document.getElementById('fAddress').value = '';
+  submitBtn.disabled = true;
 
   if(!navigator.geolocation){
     geoStatus.className = 'geo-status fail';
-    geoStatus.textContent = '⚠️ Location not supported on this browser — enter the address below instead.';
-    document.getElementById('fAddressWrap').classList.remove('hidden');
+    geoStatus.textContent = '⚠️ Location not supported on this browser — try "Enter an Address" instead.';
     submitBtn.disabled = false;
     return;
   }
@@ -880,24 +899,55 @@ function openModal(){
     submitBtn.disabled = false;
   }, err=>{
     geoStatus.className = 'geo-status fail';
-    geoStatus.textContent = '⚠️ Could not get your location — enter the address below instead.';
-    document.getElementById('fAddressWrap').classList.remove('hidden');
+    geoStatus.textContent = '⚠️ Could not get your location — try "Enter an Address" instead.';
     submitBtn.disabled = false;
   }, {enableHighAccuracy:true, timeout:10000});
+}
+
+locChipBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    locationMode = btn.dataset.mode;
+    locChipBtns.forEach(b=>b.classList.toggle('active', b===btn));
+
+    if(locationMode === 'gps'){
+      document.getElementById('fAddressWrap').classList.add('hidden');
+      document.getElementById('fAddress').value = '';
+      runGeolocation();
+    } else {
+      capturedCoords = null;
+      geoStatus.classList.add('hidden');
+      document.getElementById('fAddressWrap').classList.remove('hidden');
+      submitBtn.disabled = false;
+    }
+  });
+});
+
+function openModal(){
+  modalOverlay.classList.add('show');
+  capturedCoords = null;
+  locationMode = null;
+  submitBtn.disabled = true;
+  geoStatus.classList.add('hidden');
+  locChipBtns.forEach(b=>b.classList.remove('active'));
+  document.getElementById('fAddressWrap').classList.add('hidden');
+  document.getElementById('fAddress').value = '';
 }
 function closeModalFn(){
   modalOverlay.classList.remove('show');
   document.getElementById('fName').value = '';
-  document.getElementById('fOpen').value = '';
-  document.getElementById('fClose').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fWebsite').value = '';
   document.getElementById('fUnmanned').checked = false;
   document.getElementById('fVaries').checked = false;
-  document.getElementById('fHoursWrap').classList.add('hidden');
+  document.getElementById('fHoursGroups').closest('.field').classList.remove('hidden');
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
-  selectedDays = [];
-  document.getElementById('fDays').querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
+  resetHoursGroups();
+  locationMode = null;
+  capturedCoords = null;
+  locChipBtns.forEach(b=>b.classList.remove('active'));
+  geoStatus.classList.add('hidden');
+  document.getElementById('fAddressWrap').classList.add('hidden');
+  document.getElementById('fAddress').value = '';
 }
 
 document.getElementById('addStandBtn').addEventListener('click', openModal);
@@ -911,24 +961,28 @@ submitBtn.addEventListener('click', async ()=>{
 
   const manualAddress = document.getElementById('fAddress').value.trim();
   if(!capturedCoords && !manualAddress){
-    alert('Location wasn\'t captured — please enter an address so this stand can be placed on the map.');
+    alert('Please choose "Use My Location" or "Enter an Address" above so this stand can be placed on the map.');
     return;
   }
-
-  const openTime = document.getElementById('fOpen').value;
-  const closeTime = document.getElementById('fClose').value;
 
   const isUnmanned = document.getElementById('fUnmanned').checked;
   const isVaries = document.getElementById('fVaries').checked;
   const noSetHours = isUnmanned || isVaries;
 
+  const validGroups = hoursGroups.filter(g => g.days.size > 0 && g.open && g.close);
+  const singleGroup = validGroups.length === 1 ? validGroups[0] : null;
+
   const payload = {
     name,
     category: Array.from(document.querySelectorAll('#fCatGroup input:checked')).map(el=>el.value).join(', '),
-    days: noSetHours ? '' : selectedDays.join(', '),
-    openTime: noSetHours ? '' : openTime,
-    closeTime: noSetHours ? '' : closeTime,
-    hours: isUnmanned ? 'Open all the time' : isVaries ? 'Hours vary, check site' : formatHoursSummary(selectedDays, openTime, closeTime), // legacy display fallback
+    // Structured columns only get populated for the simple single-range case, preserving
+    // backward compatibility with the Sheet's Days Available/Open Time/Close Time columns.
+    // Multiple ranges (e.g. Fri/Sat 9–7, Sun 9–4) can't fit those three flat columns, so they
+    // rely entirely on the combined "hours" display string below instead.
+    days: noSetHours || !singleGroup ? '' : Array.from(singleGroup.days).join(', '),
+    openTime: noSetHours || !singleGroup ? '' : singleGroup.open,
+    closeTime: noSetHours || !singleGroup ? '' : singleGroup.close,
+    hours: isUnmanned ? 'Open all the time' : isVaries ? 'Hours vary, check site' : formatAllHoursGroups(validGroups),
     description: document.getElementById('fDesc').value.trim(),
     website: document.getElementById('fWebsite').value.trim(),
     address: manualAddress || "",
@@ -961,29 +1015,6 @@ submitBtn.addEventListener('click', async ()=>{
     submitBtn.textContent = 'Submit';
   }
 });
-</script>
-
-<script>
-// ── Keep the black hero bar flush against the real nav bar ─────────────────
-// body's padding-top (which pushes .hero down below the fixed nav) was a
-// static calc() off --banner-h/--nav-h. If the actual rendered promo banner
-// doesn't match that assumed height (or isn't there at all on load yet),
-// that leaves a visible white gap between the nav and the hero — same root
-// cause as the equivalent fix on the Draw-Your-Search map page. Measuring
-// #nav's real, live position sidesteps the mismatch entirely, and a
-// ResizeObserver catches the nav's own 68px→56px scroll-shrink too.
-function _fixHeroOffset() {
-  var navEl = document.getElementById('nav');
-  if (navEl) document.body.style.paddingTop = navEl.getBoundingClientRect().bottom + 'px';
-}
-window.addEventListener('navReady', function() {
-  _fixHeroOffset();
-  var navEl = document.getElementById('nav');
-  if (navEl && window.ResizeObserver) {
-    new ResizeObserver(_fixHeroOffset).observe(navEl);
-  }
-});
-window.addEventListener('resize', _fixHeroOffset);
 </script>
 </body>
 </html>
