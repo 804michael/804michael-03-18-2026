@@ -1,7 +1,8 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 02_00                                 ║
-  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║  SITE VERSION: 26.09.01 23-11                                 ║
+  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
+  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -9,13 +10,13 @@
   ║    1. The SITE VERSION line above (in this comment block)     ║
   ║    2. const SITE_VERSION in the main <script> block           ║
   ║    3. The visible site-version text at the bottom of the page║
-  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║    📌 Version: vYY.MM.DD HH-MM                                ║
   ║  State the version BEFORE describing any changes made.       ║
   ║                                                                 ║
   ║  ⚠ THIS IS A STANDALONE LANDING PAGE — INTENTIONALLY has NO   ║
@@ -242,17 +243,17 @@
 </div>
 
 <p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
-  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <span id="site-version-display">V26.09.01 02_00</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
+  <span id="site-version-display">v26.09.01 23-11</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
 </p>
 
 <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 02_00';
+  const SITE_VERSION = '26.09.01 23-11';
   var _siteVersionEl = document.getElementById('site-version-display');
-  if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
+  if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
   // Same EmailJS account + valuation template as the "Get My Custom Report"

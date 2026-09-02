@@ -204,15 +204,16 @@
 #mob-close:hover{color:var(--red,#DA291C)}
 .mob-links{list-style:none;margin-bottom:16px;padding:0}
 .mob-links li{border-bottom:1px solid var(--gray-mid,#e0e0e0)}
-/* Small-caps trial (2026-09-02, per Michael's "wonder what that would look
-   like" question): switched from ALL-CAPS (text-transform:uppercase) to
-   font-variant:small-caps. Small-caps only has a visible effect on text
-   that isn't already forced uppercase, so text-transform had to come off —
-   the link labels in nav-partial.html are already written in normal mixed
-   case ("Ashland", "Determine Your Budget", etc.), so no HTML changes were
-   needed. Easy one-line revert if it doesn't land: swap font-variant back
-   out for text-transform:uppercase. */
-.mob-links a{display:block;padding:10px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;font-variant:small-caps;color:var(--black,#111);transition:color .2s;text-decoration:none}
+/* Case-treatment history (2026-09-02): started as ALL-CAPS
+   (text-transform:uppercase), briefly tried font-variant:small-caps as a
+   trial Michael asked to see, but that read as basically invisible in
+   practice (webfont small-caps glyphs are often just synthesized/subtle) —
+   he asked to drop it in favor of standard Title Case instead, matching how
+   the DESKTOP dropdown links already render (.nav-dropdown a below has no
+   text-transform at all, so it just shows the mixed-case text as written in
+   nav-partial.html — "Ashland", "Determine Your Budget", etc.). Settled on
+   no text-transform / no font-variant here either, for the same effect. */
+.mob-links a{display:block;padding:10px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;color:var(--black,#111);transition:color .2s;text-decoration:none}
 .mob-links a:hover{color:var(--red,#DA291C)}
 /* Section dividers ("Local Areas", "Buyer Tools", etc.) — was a repeated
    inline style on 4 spans in nav-partial.html; pulled into one class here

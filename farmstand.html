@@ -1,7 +1,8 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.08.31 19_46                                 ║
-  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║  SITE VERSION: 26.09.01 23-11                                 ║
+  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
+  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -9,13 +10,13 @@
   ║    1. The SITE VERSION line above (in this comment block)     ║
   ║    2. const SITE_VERSION in the main <script> block           ║
   ║    3. The visible site-version text above the footer copy     ║
-  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║    📌 Version: vYY.MM.DD HH-MM                                ║
   ║  State the version BEFORE describing any changes made.       ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
@@ -299,8 +300,8 @@
     <p class="sponsor-form-link">Know a stand we're missing? <a href="http://804michael.link/FarmStand" target="_blank" rel="noopener">Add it via our form →</a></p>
   </div>
 
-  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:1.08rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400;text-transform:uppercase">site version 26.08.31 19_46</p>
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
+  <p id="site-version-display" style="text-align:center;font-size:1.08rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400;text-transform:uppercase">site version v26.09.01 23-11</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -532,8 +533,8 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.08.31 19_46';
-(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
+const SITE_VERSION = '26.09.01 23-11';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'site version v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

@@ -1,7 +1,8 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.09.01 23_01                                 ║
-  ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
+  ║  MAP VERSION: 26.09.01 23-11                                 ║
+  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
+  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -9,13 +10,13 @@
   ║    1. The MAP VERSION line above (in this comment block)      ║
   ║    2. const MAP_VERSION in the main <script> block            ║
   ║    3. The visible map-version text in the share panel         ║
-  ║  Use the actual current date and time in YY.MM.DD HH_MM.     ║
+  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: YY.MM.DD HH_MM                                ║
+  ║    📌 Version: vYY.MM.DD HH-MM                                ║
   ║  State the version BEFORE describing any changes made.       ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
@@ -1148,8 +1149,8 @@
         Load a Shared Map
       </button>
     </div>
-    <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.09.01 23_01</p>
+    <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version v26.09.01 23-11</p>
   </div>
 </div>
 
@@ -1186,11 +1187,11 @@
 
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
-// In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.09.01 23_01';
+// In chat, begin the status reply with: "📌 Version: v" + MAP_VERSION
+const MAP_VERSION = '26.09.01 23-11';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
-if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
+if (_mapVersionEl) _mapVersionEl.textContent = 'map version v' + MAP_VERSION;
 
 // ── Nav boilerplate ──────────────────────────────────────────────────────────
 // Hamburger, Connect dropdown, and nav scroll-shrink are all handled internally
