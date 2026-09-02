@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 15-15                                 ║
+  ║  SITE VERSION: 26.09.02 15-32                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -38,7 +38,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
-  <title>Freeze Your Financial Picture | Protect Your Loan Approval — 804Michael</title>
+  <title>Freeze Your Financial Picture | Protect Your Loan Approval | 804Michael</title>
   <meta name="description" content="Ten simple rules to protect your mortgage approval between contract and closing. Learn how to freeze your financial picture so a new car, credit card, or job change doesn't cost you the house." />
   <meta name="keywords" content="freeze your financial picture, 10 commandments of financing, mortgage approval rules, don't open new credit before closing, protect your loan approval, Ashland VA home buyer tips, 804Michael, Michael Hottman" />
   <link rel="canonical" href="https://804re.com/financing-commandments.html" />
@@ -48,8 +48,8 @@
   <meta property="og:type"        content="article" />
   <meta property="og:locale"      content="en_US" />
   <meta property="og:url"         content="https://804re.com/financing-commandments.html" />
-  <meta property="og:title"       content="Freeze Your Financial Picture — 804Michael" />
-  <meta property="og:description" content="Ten simple rules to protect your mortgage approval between contract and closing — freeze your financial picture until you have the keys." />
+  <meta property="og:title"       content="Freeze Your Financial Picture | 804Michael" />
+  <meta property="og:description" content="Ten simple rules to protect your mortgage approval between contract and closing. Freeze your financial picture until you have the keys." />
   <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
@@ -58,7 +58,7 @@
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:site"        content="@804Michael" />
   <meta name="twitter:title"       content="Freeze Your Financial Picture | 804Michael" />
-  <meta name="twitter:description" content="Ten simple rules to protect your mortgage approval between contract and closing — freeze your financial picture until you have the keys." />
+  <meta name="twitter:description" content="Ten simple rules to protect your mortgage approval between contract and closing. Freeze your financial picture until you have the keys." />
   <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
 
   <!-- ── Local Business schema ──────────────────────────────────────────── -->
@@ -183,7 +183,7 @@
     .cmd-num{flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem}
     .cmd-item.cmd-last .cmd-num{background:var(--red)}
     .cmd-text{min-width:0}
-    .cmd-text strong{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:1.08rem;color:var(--black);margin-bottom:4px}
+    .cmd-text strong{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:1.3rem;color:var(--black);margin-bottom:4px} /* was 1.08rem, +20% per Michael's request */
     .cmd-text p{font-size:.95rem;line-height:1.65;color:var(--gray-text)}
 
     /* ── Freeze-it callout (in-content, prominent — matches va-callout pattern) ── */
@@ -193,6 +193,17 @@
     .va-callout p{color:rgba(255,255,255,.78);font-size:.9rem;line-height:1.65;margin-bottom:10px}
     .va-callout .va-disclaimer{font-size:.76rem;color:rgba(255,255,255,.5);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15)}
     .va-callout a{color:#ff9a90;text-decoration:underline}
+
+    /* ── Pro Tip callout (matches find-a-home.html pattern) ── */
+    .pro-tip{background:#eef6f3;border:1px solid #bfe0d2;border-left:4px solid #2e9e6f;color:#1c4d3c;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:22px 0 28px}
+    .pro-tip b{color:#123d2f}
+    .pro-tip a{color:#123d2f;text-decoration:underline;font-weight:600}
+    .pro-tip .pt-lbl{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f}
+    .pro-tip .pt-flex{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+    .pro-tip .pt-icon{width:28px;height:28px;flex-shrink:0}
+    .pro-tip .pt-body p{margin-bottom:10px}
+    .pro-tip .pt-body p:last-child{margin-bottom:0}
+    .pro-tip .pt-disclaimer{font-size:.8rem;color:#3c6657;font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid #bfe0d2}
 
     /* ── Freeze-it callout (sidebar, condensed — matches side-va pattern) ── */
     .side-va{background:var(--black);border-radius:16px;padding:20px 20px 18px;border-left:5px solid var(--red)}
@@ -208,9 +219,9 @@
     .side-quickref li::before{content:counter(qr);flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--gray-light);border:1px solid var(--gray-mid);color:var(--gray-text);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center}
 
     /* ── CTA block (in-content) ── */
-    .rg-cta{background:var(--black);border-radius:16px;padding:32px 30px;margin-top:8px}
-    .rg-cta h3{color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
-    .rg-cta p{color:rgba(255,255,255,.68);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
+    .rg-cta{background:transparent;border-top:2px solid var(--gray-mid);border-bottom:2px solid var(--gray-mid);padding:28px 0;margin-top:8px}
+    .rg-cta h3{color:var(--black);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
+    .rg-cta p{color:var(--gray-text);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
     .rg-cta-flex{display:flex;gap:26px;align-items:stretch}
     .rg-cta-flex>.rg-cta-text{min-width:0;flex:1}
     .rg-cta-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:150px}
@@ -251,7 +262,7 @@
 <div class="black-hero">
   <div class="black-hero-in">
     <h1>Freeze Your <span>Financial Picture</span></h1>
-    <p class="black-hero-sub">The 10 commandments of financing — simple rules to protect your mortgage approval between contract and closing</p>
+    <p class="black-hero-sub">The 10 commandments of financing: simple rules to protect your mortgage approval between contract and closing</p>
   </div>
 </div>
 
@@ -272,68 +283,68 @@
   <main class="pg-main">
 
     <h2>From Pre-Approval to <span class="r">Settlement</span></h2>
-    <p class="lede">Once you get a pre-approval, it may feel like you can relax — but getting pre-approved isn't the finish line, it's a snapshot. Most lenders re-check your credit, income, and bank statements again right before closing, and anything that changes your financial picture in between can delay or even cost you the loan. The rule is simple: once you're pre-approved and under contract, don't do anything that changes how you look on paper — without talking to your lender first — until you have the keys in hand.</p>
+    <p class="lede">Once you get a pre-approval, it may feel like you can relax, but getting pre-approved isn't the finish line, it's a snapshot in time of your financial picture, and it's important for that to stay the same until you buy your home. Most lenders re-check your credit, income, and bank statements again right before closing, and anything that changes your financial picture in between can delay or even cost you the loan. The rule is simple: once you're pre-approved and under contract, don't do anything that changes how you look on paper without talking to your lender first, not until you have the keys in hand.</p>
 
     <section class="stage" id="commandments">
       <div class="step-lbl"><span class="step-lbl-line"></span>The Rules</div>
       <h2>10 Things Not to Do</h2>
-      <p class="body-p">Loan officers see the same handful of mistakes derail closings over and over. None of these are complicated — they just require patience for a few weeks.</p>
+      <p class="body-p">Loan officers see the same handful of mistakes derail closings over and over. None of these are complicated. They just require patience for a few weeks.</p>
 
       <div class="cmd-list">
         <div class="cmd-item">
           <div class="cmd-num">1</div>
           <div class="cmd-text">
             <strong>Don't Change Jobs or Income</strong>
-            <p>No quitting, no switching to self-employed or 1099 work, no accepting new positions, and no unexplained gaps or drops in income — even a "better" job can require re-underwriting your entire file from scratch.</p>
+            <p>No quitting, no switching to self-employed or 1099 work, no accepting new positions, and no unexplained gaps or drops in income. Even a "better" job can require re-underwriting your entire file from scratch.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">2</div>
           <div class="cmd-text">
             <strong>Don't Open New Credit or Finance Anything</strong>
-            <p>No new car, furniture, appliances on credit, or new credit cards — even at 0% interest, or to get a discount at checkout. New debt or new accounts can cause the lender to deny your loan because you no longer qualify.</p>
+            <p>No new car, furniture, appliances on credit, or new credit cards, even at 0% interest or to get a discount at checkout. New debt or new accounts can cause the lender to deny your loan because you no longer qualify.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">3</div>
           <div class="cmd-text">
             <strong>Don't Miss a Payment or Run Up Balances</strong>
-            <p>Keep every account current and keep existing credit card balances where they were when you got pre-approved. A higher utilization can lower your score enough to matter.</p>
+            <p>Keep every account current and keep existing credit card balances where they were when you got pre-approved. A higher account balance can lower your score enough to matter.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">4</div>
           <div class="cmd-text">
             <strong>Don't Move Money Without Telling Your Lender First</strong>
-            <p>Large, unexplained deposits or transfers — even a job bonus, a gift, or a payback from a friend — can stall your loan approval until you can document exactly where the money came from. If a family member wants to help with your home purchase, there are specific procedures to follow — ask your lender how to handle this generosity the right way.</p>
+            <p>Large, unexplained deposits or transfers, even a job bonus, a gift, or a payback from a friend, can stall your loan approval until you can document exactly where the money came from. If a family member wants to help with your home purchase, there are specific procedures to follow. Ask your lender how to handle this generosity the right way.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">5</div>
           <div class="cmd-text">
             <strong>Don't Close or Open Bank or Credit Card Accounts</strong>
-            <p>Your lender is tracking specific accounts and balances. Switching banks or consolidating accounts mid-process just creates new paperwork and new questions — and closing an account can lower your credit score even though that seems backwards. Credit scores don't always make sense.</p>
+            <p>Your lender is tracking specific accounts and balances. Switching banks or consolidating accounts mid-process just creates new paperwork and new questions, and closing an account can lower your credit score even though that seems backwards. Credit scores don't always make sense.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">6</div>
           <div class="cmd-text">
             <strong>Don't Co-Sign for Anyone</strong>
-            <p>Co-signing a car, apartment, or other loan for anyone adds that debt to your financial picture — even though you're not the one making the payments.</p>
+            <p>Co-signing a car, apartment, or other loan for anyone adds that debt to your financial picture, even though you're not the one making the payments.</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">7</div>
           <div class="cmd-text">
             <strong>Don't Let Anyone Run Your Credit</strong>
-            <p>Skip the "0% off your first purchase" card at checkout — hard inquiries raise questions and can lower your score. One exception: any number of hard credit pulls for a mortgage within a 45-day window count as a single pull, so shopping multiple lenders for your home loan is safe. (<a href="https://www.consumerfinance.gov/ask-cfpb/what-exactly-happens-when-a-mortgage-lender-checks-my-credit-en-2005/" target="_blank" rel="noopener">Source: Consumer Financial Protection Bureau</a>)</p>
+            <p>Skip the "0% off your first purchase" card at checkout. Hard inquiries raise questions and can lower your score. One exception: any number of hard credit pulls for a mortgage within a 45-day window count as a single pull, so shopping multiple lenders for your home loan is safe. (<a href="https://www.consumerfinance.gov/ask-cfpb/what-exactly-happens-when-a-mortgage-lender-checks-my-credit-en-2005/" target="_blank" rel="noopener">Source: Consumer Financial Protection Bureau</a>)</p>
           </div>
         </div>
         <div class="cmd-item">
           <div class="cmd-num">8</div>
           <div class="cmd-text">
             <strong>Don't Spend Your Closing-Cost or Down-Payment Funds</strong>
-            <p>The money you set aside for closing needs to stay exactly where it is, untouched, until settlement. If you need to move money between accounts — or from an investment account to your local bank — talk with your lender first about the best way and timing to do it.</p>
+            <p>The money you set aside for closing needs to stay exactly where it is, untouched, until settlement. If you need to move money between accounts, or from an investment account to your local bank, talk with your lender first about the best way and timing to do it.</p>
           </div>
         </div>
         <div class="cmd-item">
@@ -352,16 +363,21 @@
         </div>
       </div>
 
-      <p class="cal-note">This is general guidance, not financial or lending advice — every lender's exact requirements can differ. When in doubt about a specific purchase, transfer, or life change, call your loan officer before you do it, not after.</p>
+      <p class="cal-note">This is general guidance, not financial or lending advice. Every lender's exact requirements can differ. When in doubt about a specific purchase, transfer, or life change, call your loan officer before you do it, not after.</p>
     </section>
 
     <!-- FREEZE-IT CALLOUT -->
     <section class="stage" id="freeze-it">
-      <div class="va-callout">
-        <h4>Bottom Line: <span>When In Doubt, Ask First</span></h4>
-        <p>Loan officers would much rather get a two-minute phone call asking "can I do this?" than find out about a new car loan or a mystery deposit during final underwriting. A quick question almost never causes a problem — a surprise almost always does.</p>
-        <p>If anything about your financial picture is about to change between now and closing — job, income, debt, bank accounts, or a large deposit — check with your lender first.</p>
-        <p class="va-disclaimer">This is educational information, not financial or legal advice. Every loan program and lender has its own specific underwriting requirements — confirm anything time-sensitive directly with your loan officer.</p>
+      <div class="pro-tip">
+        <div class="pt-flex">
+          <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
+          <span class="pt-lbl">Bottom Line: Ask First</span>
+        </div>
+        <div class="pt-body">
+          <p>Loan officers would much rather get a two-minute phone call asking "can I do this?" than find out about a new car loan or a mystery deposit during final underwriting. A quick question almost never causes a problem. A surprise almost always does.</p>
+          <p>If anything about your financial picture is about to change between now and closing (job, income, debt, bank accounts, or a large deposit), check with your lender first.</p>
+          <p class="pt-disclaimer">This is educational information, not financial or legal advice. Every loan program and lender has its own specific underwriting requirements. Confirm anything time-sensitive directly with your loan officer.</p>
+        </div>
       </div>
     </section>
 
@@ -376,11 +392,12 @@
             </picture>
           </div>
           <div class="rg-cta-text">
+            <div class="step-lbl"><span class="step-lbl-line"></span>Questions?</div>
             <h3>Not Sure If Something Is Safe to Do?</h3>
-            <p>If you're mid-contract and something's about to change — a job offer, a big purchase, a large deposit — I can help you think through the timing and point you to your loan officer before it becomes a problem instead of after.</p>
+            <p>If you're mid-contract and something's about to change (a job offer, a big purchase, a large deposit), I can help you think through the timing and point you to your loan officer before it becomes a problem instead of after.</p>
             <div class="rg-cta-btns">
               <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
-              <a href="sms:8046424235" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.3)">Text 804-Michael</a>
+              <a href="sms:8046424235" class="btn btn-outline">Text 804-Michael</a>
             </div>
           </div>
         </div>
@@ -394,7 +411,7 @@
 
     <div class="side-va reveal">
       <h4>Freeze It Until Closing</h4>
-      <p>Pre-approval is a snapshot, not a guarantee. Many lenders re-check credit and finances again right before closing — don't give them a reason to say no.</p>
+      <p>Pre-approval is a snapshot, not a guarantee. Many lenders re-check credit and finances again right before closing. Don't give them a reason to say no.</p>
       <a href="#freeze-it" class="va-link">Read the bottom line ›</a>
       <span class="va-disclaimer">Educational information, not financial or legal advice.</span>
     </div>
@@ -450,7 +467,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 15-15</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 15-32</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -463,7 +480,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 15-15';
+  const SITE_VERSION = '26.09.02 15-32';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
