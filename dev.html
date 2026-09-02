@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 21_58                                 ║
+  ║  SITE VERSION: 26.09.01 22_14                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -74,14 +74,24 @@
     .breadcrumb-home{display:inline-flex;align-items:center}
 
     /* ── Body ── */
-    .dev-body{max-width:1000px;margin:0 auto;padding:12px 24px 70px}
+    .dev-body{max-width:1360px;margin:0 auto;padding:12px 24px 70px}
     .dev-note{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:1.1rem;line-height:1.6;margin:0 0 32px}
     .dev-note b{color:#5a3f0f}
 
+    /* ── Two-column layout: card grid + Notes & Ideas sidebar ── */
+    .dev-layout{display:flex;gap:32px;align-items:flex-start}
+    .dev-main{flex:1 1 0;min-width:0}
+    .dev-aside{flex:0 0 340px;min-width:0;position:sticky;top:24px}
+    @media(max-width:980px){
+      .dev-layout{flex-direction:column}
+      .dev-aside{flex:1 1 auto;width:100%;position:static}
+    }
+
     .dev-drag-hint{font-size:.9rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
 
-    .dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    @media(max-width:700px){.dev-grid{grid-template-columns:1fr}}
+    .dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    @media(max-width:980px){.dev-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.dev-grid{grid-template-columns:1fr}}
     .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s;cursor:grab}
     .dev-card:hover{border-color:var(--red);transform:translateY(-2px)}
     .dev-card.dragging{opacity:.4;cursor:grabbing}
@@ -92,9 +102,10 @@
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
 
-    /* ── Notes & Ideas (research reminders — not built pages) ── */
-    .dev-notes{margin-top:36px;padding-top:28px;border-top:1px solid var(--gray-mid)}
-    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:14px}
+    /* ── Notes & Ideas (research reminders — not built pages) — right-side panel ── */
+    .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 8px}
+    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
+    .dev-notes-sub{color:#666;font-size:.95rem;margin:0 0 16px}
     .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px}
     .dev-note-item strong{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.15rem;color:var(--black);margin-bottom:5px}
     .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.6}
@@ -141,6 +152,9 @@
   <div class="dev-note">
     <b>For Michael only.</b> This page is unlinked from the main nav and blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
   </div>
+
+  <div class="dev-layout">
+    <div class="dev-main">
 
   <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
 
@@ -271,8 +285,12 @@
 
   </div>
 
+    </div>
+
+    <aside class="dev-aside">
   <div class="dev-notes">
-    <h2>Notes &amp; Ideas <span style="color:#666;font-size:1.05rem;font-weight:400;text-transform:none;letter-spacing:0">(research reminders, not built pages)</span></h2>
+    <h2>Notes &amp; Ideas</h2>
+    <p class="dev-notes-sub">(research reminders, not built pages)</p>
 
     <div class="dev-note-item">
       <strong>Check out askawalker.com</strong>
@@ -294,6 +312,8 @@
       <p>Idea, not yet scoped: a webinar workflow for buyers and/or sellers. Michael already has BigMarker — confirmed (2026-09-01) that BigMarker is webinar/event software (registration, live/simulive hosting, follow-up email, CRM sync) and does <b>not</b> do 1:1 appointment scheduling, so it's a separate tool from whatever gets picked for the intake-form scheduler above. Needs real scoping before this becomes a page: webinar topic/cadence, registration flow, and how leads from it feed into the buyer/seller intake forms. <span class="dni-date">Added 2026-09-01</span></p>
     </div>
   </div>
+    </aside>
+  </div>
 
 </div>
 
@@ -307,7 +327,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 21_58</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 22_14</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -318,7 +338,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 21_58';
+  const SITE_VERSION = '26.09.01 22_14';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

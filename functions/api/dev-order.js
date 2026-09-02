@@ -8,10 +8,15 @@
 // REQUIRES a KV namespace bound to this Pages project as "DEV_ORDER_KV".
 // One-time setup Michael needs to do in the Cloudflare dashboard (this
 // can't be done from the repo/code side):
-//   1. Workers & Pages → KV → Create a namespace (e.g. name it
-//      "dev-hub-order").
+//   1. In the Cloudflare dashboard, go to "Workers KV" (as of 2026-09-02
+//      this is its OWN item in the left sidebar / dashboard search — NOT
+//      nested under "Workers & Pages", which is where people expect to
+//      find it). Easiest: use the dashboard's search bar and type
+//      "Workers KV", or go directly to
+//      dash.cloudflare.com/?to=/:account/workers/kv/namespaces
+//      Click "Create instance" and name it (e.g. "dev-hub-order").
 //   2. Workers & Pages → [this Pages project, 804re.com] → Settings →
-//      Functions → KV namespace bindings → Add binding:
+//      Bindings → Add → KV namespace:
 //        Variable name: DEV_ORDER_KV
 //        KV namespace:  the one created in step 1
 //      Do this for the Production environment (and Preview too, if you
