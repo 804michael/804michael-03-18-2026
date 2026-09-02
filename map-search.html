@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  MAP VERSION: 26.09.01 13_46                                 ║
+  ║  MAP VERSION: 26.09.01 23_01                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -125,7 +125,11 @@
        with just: background:var(--black);  and remove the two backdrop-filter lines. ── */
     .pg-header{position:fixed;top:calc(var(--banner-h) + var(--nav-h));left:0;right:0;z-index:850;background:rgba(17,17,17,.88);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);padding:4px 16px 5px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;transition:padding .4s ease}
     .pg-header.compact{padding:3px 16px 3px}
-    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.15rem,2.2vw,1.45rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
+    /* Mobile size bumped ~10% (was clamp(1.15rem,2.2vw,1.45rem)) per Michael's
+       2026-09-02 request, at the same time the heading text was shortened
+       from "Draw Your Search Area" to "Draw Search Area". Desktop size is
+       set separately below in the @media(min-width:769px) block. */
+    .pg-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.27rem,2.42vw,1.6rem);color:var(--white);text-transform:uppercase;letter-spacing:-.01em;line-height:1;white-space:nowrap;flex-shrink:0}
     .pg-header h1 span{color:var(--red)}
     .pg-header p{color:rgba(255,255,255,.85);font-size:clamp(.78rem,1.3vw,1rem);line-height:1.2;margin:0;overflow:hidden;transition:opacity .35s ease}
     /* Desktop only: match the (slimmed) Local Farm Stand Map hero — taller
@@ -555,17 +559,17 @@
     }
     .map-scale-tick{
       width:2px;background:var(--black);flex-shrink:0;
-      height:12px;border-radius:1px;
+      height:7px;border-radius:1px; /* 60% of original 12px, per Michael's 2026-09-02 request */
     }
     .map-scale-bar{
-      flex:1;height:3px;
+      flex:1;height:2px; /* 60% of original 3px */
       background:var(--black);
       margin:0;
       transition:none; /* ruler width set by JS directly */
     }
     /* Draggable resize handle at right end */
     .map-scale-handle{
-      width:10px;height:22px;flex-shrink:0;
+      width:10px;height:13px;flex-shrink:0; /* 60% of original 22px */
       cursor:ew-resize;
       display:flex;align-items:center;justify-content:center;
       margin-left:2px;
@@ -855,7 +859,7 @@
 <script src="nav.js" defer></script>
 
 <div class="pg-header">
-  <h1>Draw Your <span>Search Area</span></h1>
+  <h1>Draw <span>Search Area</span></h1>
   <p>Draw areas you prefer in green🟢. Places you'd rather not be in 🟡or 🔴- You can Pin locations too 📍</p>
 </div>
 
@@ -1145,7 +1149,7 @@
       </button>
     </div>
     <!-- ⚠ AI: Update MAP_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.09.01 13_46</p>
+    <p id="map-version-display" style="font-size:1.05rem;color:rgba(255,255,255,.68);letter-spacing:.12em;font-family:'Barlow Condensed',sans-serif;margin-top:8px;font-weight:800;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.35)">map version 26.09.01 23_01</p>
   </div>
 </div>
 
@@ -1183,7 +1187,7 @@
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update MAP_VERSION and the top comment's MAP VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + MAP_VERSION
-const MAP_VERSION = '26.09.01 13_46';
+const MAP_VERSION = '26.09.01 23_01';
 const STABILITY_MODE = false; // Re-enabled 26.08.26 — schools/publix stability fixes applied
 var _mapVersionEl = document.getElementById('map-version-display');
 if (_mapVersionEl) _mapVersionEl.textContent = 'map version ' + MAP_VERSION;
@@ -3944,7 +3948,12 @@ function goToMyLocation() {
       });
 
       // Animate lines: fade in, then animate dash-offset to march toward center
-      // We do this by manipulating the SVG path elements Leaflet creates
+      // We do this by manipulating the SVG path elements Leaflet creates.
+      // Delay/transition shortened 2026-09-02 (was 100ms delay + 0.4s fade) —
+      // Michael flagged the crosshair/radar indicator as feeling slow to
+      // appear after tapping "Go to my location." The 100ms here was just
+      // waiting for Leaflet to attach the SVG <path> elements to the DOM —
+      // trimmed to the minimum that still reliably works, with a snappier fade.
       var lineEls = [];
       setTimeout(function() {
         radarLines.forEach(function(line) {
@@ -3952,7 +3961,7 @@ function goToMyLocation() {
           if (!el) return;
           lineEls.push(el);
           el.style.opacity = '0.6';
-          el.style.transition = 'opacity 0.4s';
+          el.style.transition = 'opacity 0.15s';
           // Set dashoffset and animate it — march dashes toward center (positive direction)
           var len = el.getTotalLength ? el.getTotalLength() : 300;
           el.style.strokeDasharray = '8 6';
@@ -3968,7 +3977,7 @@ function goToMyLocation() {
             if (prog < 1) requestAnimationFrame(march);
           })(performance.now());
         });
-      }, 100);
+      }, 20);
 
       // Pulse ring
       L.circle([lat, lng], {
@@ -3995,11 +4004,19 @@ function goToMyLocation() {
     }
   }
 
-  // 1. Fast: use cached position (maximumAge=60s, low accuracy) — immediate response
+  // 1. Fast: use cached position, low accuracy — immediate response.
+  // maximumAge bumped from 60s to 5 minutes (2026-09-02, per Michael's "speed
+  // up the crosshair delay" request) — a location fix from a few minutes ago
+  // is still plenty accurate for panning the map, and accepting an older
+  // cached fix makes it far more likely this call resolves instantly instead
+  // of forcing the device to acquire a brand-new low-accuracy reading (which
+  // is what was actually causing the perceptible delay — not anything in our
+  // own animation code). The high-accuracy call below still runs in parallel
+  // and will refine/replace this with a fresh precise fix once it lands.
   navigator.geolocation.getCurrentPosition(
     function(pos) { onPosition(pos, false); },
     function() {}, // ignore errors from fast attempt
-    { enableHighAccuracy: false, timeout: 2000, maximumAge: 60000 }
+    { enableHighAccuracy: false, timeout: 2000, maximumAge: 300000 }
   );
 
   // 2. Accurate: high-accuracy with longer timeout — updates if significantly different

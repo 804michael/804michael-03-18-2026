@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 22_14                                 ║
+  ║  SITE VERSION: 26.09.01 22_49                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -106,11 +106,24 @@
     .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 8px}
     .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
     .dev-notes-sub{color:#666;font-size:.95rem;margin:0 0 16px}
-    .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+    .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px;position:relative}
     .dev-note-item strong{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.15rem;color:var(--black);margin-bottom:5px}
-    .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.6}
+    .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.6;padding-right:20px}
     .dev-note-item a{text-decoration:underline;font-weight:600}
     .dev-note-item .dni-date{font-size:.8rem;color:var(--gray-muted);font-style:italic}
+    .dev-note-item .dni-del{position:absolute;top:8px;right:10px;background:none;border:none;font-size:1.3rem;line-height:1;color:var(--gray-muted);cursor:pointer;padding:2px 6px;border-radius:6px}
+    .dev-note-item .dni-del:hover{color:var(--white);background:var(--red)}
+
+    /* ── Quick "add a note" box — jot a note from any browser (2026-09-02) ── */
+    .dev-note-form{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+    .dev-note-form textarea{width:100%;resize:vertical;min-height:56px;padding:10px 12px;border:1.5px solid var(--gray-mid);border-radius:10px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);background:var(--white)}
+    .dev-note-form textarea:focus{outline:none;border-color:var(--red)}
+    .dev-note-form button{align-self:flex-end;background:var(--red);color:var(--white);border:none;border-radius:999px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .dev-note-form button:hover{background:var(--red-dark)}
+    .dev-note-form button:disabled{background:var(--gray-muted);cursor:default}
+    .dev-note-sync-hint{font-size:.82rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
+    #dev-notes-dynamic:empty{display:none}
+    .dev-notes-divider{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin:4px 0 10px;padding-top:14px;border-top:1px solid var(--gray-mid)}
     .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
@@ -292,6 +305,16 @@
     <h2>Notes &amp; Ideas</h2>
     <p class="dev-notes-sub">(research reminders, not built pages)</p>
 
+    <form id="dev-note-form" class="dev-note-form">
+      <textarea id="dev-note-input" placeholder="Jot a quick note — syncs across your devices…" rows="2" maxlength="2000"></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+    <p class="dev-note-sync-hint" id="dev-note-sync-hint">Notes sync across your devices.</p>
+
+    <div id="dev-notes-dynamic"></div>
+
+    <div class="dev-notes-divider">Earlier notes</div>
+
     <div class="dev-note-item">
       <strong>Check out askawalker.com</strong>
       <p>Northern Virginia agent site (Abraham Walker, Samson Properties) — property search, buying/selling guides, and a stack of calculators similar to this site's. Worth a look for layout/feature ideas. <span class="dni-date">Added 2026-09-01</span></p>
@@ -327,7 +350,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 22_14</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 22_49</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -338,7 +361,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 22_14';
+  const SITE_VERSION = '26.09.01 22_49';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -436,6 +459,117 @@
           grid.insertBefore(dragEl, card);
         }
       });
+    });
+  })();
+
+  // ── Notes & Ideas: quick-add notes from any browser, synced via
+  // Cloudflare KV (same DEV_ORDER_KV binding as the card-order sync
+  // above, just a different key) — added 2026-09-02. Falls back to a
+  // localStorage-only list if the KV binding isn't reachable, same
+  // graceful-degradation pattern as the drag order.
+  (function(){
+    var form = document.getElementById('dev-note-form');
+    var input = document.getElementById('dev-note-input');
+    var listEl = document.getElementById('dev-notes-dynamic');
+    var hintEl = document.getElementById('dev-note-sync-hint');
+    if(!form || !input || !listEl) return;
+
+    var API_URL = '/api/dev-notes';
+    var CACHE_KEY = '804m_dev_notes_cache';
+    var DEFAULT_HINT = 'Notes sync across your devices.';
+    var LOCAL_ONLY_HINT = 'Notes save in this browser only (server sync unavailable).';
+    var cache = [];
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function render(notes){
+      if(!Array.isArray(notes)) notes = [];
+      listEl.innerHTML = notes.map(function(n){
+        var text = escapeHtml(n.text || '').replace(/\n/g, '<br>');
+        var date = escapeHtml(n.date || '');
+        var id = escapeHtml(n.id || '');
+        return '<div class="dev-note-item" data-note-id="' + id + '">' +
+          '<button type="button" class="dni-del" aria-label="Delete note">&times;</button>' +
+          '<p>' + text + ' <span class="dni-date">Added ' + date + '</span></p>' +
+          '</div>';
+      }).join('');
+    }
+
+    function saveCache(notes){
+      cache = notes;
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(notes)); }catch(e){}
+    }
+
+    function addLocalOnly(text){
+      var note = { id: 'local-' + Date.now(), text: text, date: new Date().toISOString().slice(0,10) };
+      var updated = [note].concat(cache);
+      render(updated);
+      saveCache(updated);
+    }
+
+    // 1) Instant local restore
+    try{ cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); }catch(e){ cache = []; }
+    render(cache);
+
+    // 2) Authoritative fetch — the server copy wins if it differs (e.g. a
+    // note was added from another device since this browser last synced)
+    fetch(API_URL).then(function(r){ return r.ok ? r.json() : null; }).then(function(data){
+      if(data && Array.isArray(data.notes)){
+        render(data.notes);
+        saveCache(data.notes);
+      }else if(hintEl && data && data.error === 'KV not bound'){
+        hintEl.textContent = LOCAL_ONLY_HINT;
+      }
+    }).catch(function(){
+      if(hintEl) hintEl.textContent = LOCAL_ONLY_HINT;
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var text = (input.value || '').trim();
+      if(!text) return;
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ text: text })
+      }).then(function(r){
+        return r.json().catch(function(){ return null; }).then(function(data){ return {ok:r.ok, data:data}; });
+      }).then(function(res){
+        if(res.ok && res.data && Array.isArray(res.data.notes)){
+          render(res.data.notes);
+          saveCache(res.data.notes);
+          if(hintEl) hintEl.textContent = DEFAULT_HINT;
+        }else{
+          addLocalOnly(text);
+          if(hintEl) hintEl.textContent = LOCAL_ONLY_HINT;
+        }
+      }).catch(function(){
+        addLocalOnly(text);
+        if(hintEl) hintEl.textContent = LOCAL_ONLY_HINT;
+      });
+      input.value = '';
+    });
+
+    listEl.addEventListener('click', function(e){
+      var btn = e.target.closest ? e.target.closest('.dni-del') : null;
+      if(!btn) return;
+      var item = btn.closest('.dev-note-item');
+      var id = item && item.getAttribute('data-note-id');
+      if(!id) return;
+      item.remove();
+      if(id.indexOf('local-') === 0){
+        saveCache(cache.filter(function(n){ return n.id !== id; }));
+        return;
+      }
+      fetch(API_URL + '?id=' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(data){
+          if(data && Array.isArray(data.notes)) saveCache(data.notes);
+        }).catch(function(){});
     });
   })();
 </script>
