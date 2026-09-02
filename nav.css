@@ -174,11 +174,20 @@
 /* ── Mobile menu ── */
 #mob-menu{
   display:none;position:fixed;inset:0 0 0 auto;width:300px;z-index:6000;
-  background:var(--white,#fff);flex-direction:column;padding:80px 32px 40px;
+  background:var(--white,#fff);flex-direction:column;
+  /* Top padding is tied to --banner-h (the real, JS-measured banner height)
+     plus just enough room to clear #mob-close below it, instead of a flat
+     guess — keeps this tight and correct even if the banner's height
+     changes (wraps to 2 lines on a narrow phone, promo text edited, etc).
+     Fixed 2026-09-02: previously a flat 80px, which (a) was more empty
+     space at the top than needed and (b) had nothing to do with the
+     banner's real height, which is how #mob-close ended up sitting UNDER
+     the banner instead of clear of it — see #mob-close below. */
+  padding:calc(var(--banner-h) + 34px) 28px 32px;
   box-shadow:-8px 0 40px rgba(0,0,0,.15);
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   /* The menu is fixed to the full viewport height (inset:0 0 0 auto), but its
-     content (Local Areas / Buyer Info / Seller Info / Resources link groups +
+     content (Local Areas / Buyer Tools / Seller Tools / Resources link groups +
      CTAs + socials) is taller than a phone screen. Without a scroll rule here,
      anything past the viewport's bottom edge was simply cut off and
      unreachable — body scroll is deliberately locked while the menu is open
@@ -186,13 +195,32 @@
      the panel itself the scroll container. */
 }
 #mob-menu.open{display:flex;animation:slideInRight .32s ease forwards}
-#mob-close{position:absolute;top:16px;right:20px;font-size:2rem;background:none;border:none;cursor:pointer;color:var(--black,#111);transition:color .2s}
+/* #mob-close used to sit at a flat top:16px, which is INSIDE the space the
+   fixed, higher-z-index #banner (z-index:9999) occupies at the very top of
+   the viewport — the banner painted over it, so the × was invisible/dead
+   until you tapped blind. Anchoring to --banner-h puts it just below the
+   banner regardless of the banner's actual height. Fixed 2026-09-02. */
+#mob-close{position:absolute;top:calc(var(--banner-h) + 8px);right:16px;font-size:1.6rem;background:none;border:none;cursor:pointer;color:var(--black,#111);transition:color .2s}
 #mob-close:hover{color:var(--red,#DA291C)}
-.mob-links{list-style:none;margin-bottom:24px;padding:0}
+.mob-links{list-style:none;margin-bottom:16px;padding:0}
 .mob-links li{border-bottom:1px solid var(--gray-mid,#e0e0e0)}
-.mob-links a{display:block;padding:13px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black,#111);transition:color .2s;text-decoration:none}
+.mob-links a{display:block;padding:10px 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--black,#111);transition:color .2s;text-decoration:none}
 .mob-links a:hover{color:var(--red,#DA291C)}
-.mob-ctas{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+/* Section dividers ("Local Areas", "Buyer Tools", etc.) — was a repeated
+   inline style on 4 spans in nav-partial.html; pulled into one class here
+   so it's a single place to adjust, and bumped 50% (0.7rem → 1.05rem) per
+   Michael's 2026-09-02 request that these read too small next to the links
+   under them. */
+.mob-section-title{display:block;padding:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-muted,#888)}
+.mob-ctas{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+/* Mobile Call/Text pills were inheriting the page-level .btn base size
+   (1.44rem — meant for a full-width desktop CTA button), which is why
+   "💬 Text 804-Michael" wrapped to 2 lines in this 300px-wide panel while
+   "Call [icon] 804-642-4235" just barely didn't. Sized down to fit this
+   context specifically, and icons dropped from both pills per Michael's
+   2026-09-02 request (see nav-partial.html for the swapped label text —
+   Call pill now reads "Call 804-Michael", Text pill "Text 804-642-4235"). */
+.mob-ctas .btn{font-size:1.05rem;padding:12px 18px;white-space:nowrap}
 .mob-socials{display:flex;gap:12px;justify-content:center;margin-top:auto}
 #backdrop{display:none;position:fixed;inset:0;z-index:5999;background:rgba(0,0,0,.35);backdrop-filter:blur(4px)}
 #backdrop.open{display:block}
