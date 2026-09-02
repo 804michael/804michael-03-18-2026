@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 19_57                                 ║
+  ║  SITE VERSION: 26.09.01 20_03                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -75,33 +75,37 @@
 
     /* ── Body ── */
     .dev-body{max-width:1000px;margin:0 auto;padding:12px 24px 70px}
-    .dev-note{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:0 0 32px}
+    .dev-note{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:1.1rem;line-height:1.6;margin:0 0 32px}
     .dev-note b{color:#5a3f0f}
+
+    .dev-drag-hint{font-size:.9rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
 
     .dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
     @media(max-width:700px){.dev-grid{grid-template-columns:1fr}}
-    .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+    .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s;cursor:grab}
     .dev-card:hover{border-color:var(--red);transform:translateY(-2px)}
+    .dev-card.dragging{opacity:.4;cursor:grabbing}
+    .dev-card.drag-over{border-color:var(--red);border-style:dashed}
     .dev-card-head{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
-    .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
+    .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
 
     /* ── Notes & Ideas (research reminders — not built pages) ── */
     .dev-notes{margin-top:36px;padding-top:28px;border-top:1px solid var(--gray-mid)}
-    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:14px}
+    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:14px}
     .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px}
-    .dev-note-item strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;margin-bottom:4px}
-    .dev-note-item p{font-size:.88rem;color:var(--gray-text);line-height:1.55}
+    .dev-note-item strong{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.15rem;color:var(--black);margin-bottom:5px}
+    .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.6}
     .dev-note-item a{text-decoration:underline;font-weight:600}
-    .dev-note-item .dni-date{font-size:.7rem;color:var(--gray-muted);font-style:italic}
+    .dev-note-item .dni-date{font-size:.8rem;color:var(--gray-muted);font-style:italic}
     .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
-    .dev-card-body p{font-size:.92rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
+    .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
-    .dev-card-body li{font-size:.85rem;color:var(--gray-muted);padding:5px 0 5px 16px;position:relative}
-    .dev-card-body li::before{content:"";position:absolute;left:0;top:12px;width:6px;height:6px;background:var(--red);border-radius:2px}
-    .dev-card-link{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;color:var(--red)}
+    .dev-card-body li{font-size:1.05rem;color:var(--gray-muted);padding:5px 0 5px 16px;position:relative}
+    .dev-card-body li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;background:var(--red);border-radius:2px}
+    .dev-card-link{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase;color:var(--red)}
     .dev-card-link:hover{color:var(--red-dark)}
 
     /* ── Footer ── */
@@ -138,9 +142,11 @@
     <b>For Michael only.</b> This page is unlinked from the main nav and blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
   </div>
 
+  <p class="dev-drag-hint">Drag cards to reorder — the order is saved in this browser only.</p>
+
   <div class="dev-grid">
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="due-diligence">
       <div class="dev-card-head">
         <h3>Due Diligence</h3>
         <span class="dev-badge">In Progress</span>
@@ -156,7 +162,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="utility-providers">
       <div class="dev-card-head">
         <h3>Utility Providers</h3>
         <span class="dev-badge">In Progress</span>
@@ -172,7 +178,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="find-a-home">
       <div class="dev-card-head">
         <h3>Find a Home on Your Own</h3>
         <span class="dev-badge unlinked">Built — Unlinked</span>
@@ -188,7 +194,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="tour-a-home">
       <div class="dev-card-head">
         <h3>Tour a Home Like a Pro</h3>
         <span class="dev-badge unlinked">Built — Unlinked</span>
@@ -203,7 +209,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="buyer-intake">
       <div class="dev-card-head">
         <h3>Buyer Intake Form</h3>
         <span class="dev-badge">In Progress</span>
@@ -218,7 +224,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="seller-intake">
       <div class="dev-card-head">
         <h3>Seller Intake Form</h3>
         <span class="dev-badge">In Progress</span>
@@ -233,7 +239,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="market-stats">
       <div class="dev-card-head">
         <h3>Quick Market Stats</h3>
         <span class="dev-badge">In Progress</span>
@@ -248,7 +254,7 @@
       </div>
     </div>
 
-    <div class="dev-card">
+    <div class="dev-card" data-id="home-value">
       <div class="dev-card-head">
         <h3>Home Value Estimate</h3>
         <span class="dev-badge review">Live — Review</span>
@@ -301,7 +307,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 19_57</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 20_03</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -312,10 +318,74 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 19_57';
+  const SITE_VERSION = '26.09.01 20_03';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+
+  // ── Drag-to-reorder dev cards — order saved per-browser via localStorage ──
+  (function(){
+    var grid = document.querySelector('.dev-grid');
+    if(!grid) return;
+    var ORDER_KEY = '804m_dev_card_order';
+
+    // Restore any previously saved order
+    try{
+      var saved = JSON.parse(localStorage.getItem(ORDER_KEY) || 'null');
+      if(Array.isArray(saved) && saved.length){
+        saved.forEach(function(id){
+          var card = grid.querySelector('.dev-card[data-id="' + id + '"]');
+          if(card) grid.appendChild(card);
+        });
+      }
+    }catch(e){}
+
+    function saveOrder(){
+      try{
+        var ids = Array.prototype.slice.call(grid.querySelectorAll('.dev-card'))
+          .map(function(c){ return c.getAttribute('data-id'); });
+        localStorage.setItem(ORDER_KEY, JSON.stringify(ids));
+      }catch(e){}
+    }
+
+    var dragEl = null;
+    Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(function(card){
+      card.setAttribute('draggable', 'true');
+
+      card.addEventListener('dragstart', function(e){
+        dragEl = card;
+        card.classList.add('dragging');
+        if(e.dataTransfer){ e.dataTransfer.effectAllowed = 'move'; }
+      });
+      card.addEventListener('dragend', function(){
+        card.classList.remove('dragging');
+        Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(function(c){
+          c.classList.remove('drag-over');
+        });
+        saveOrder();
+      });
+      card.addEventListener('dragover', function(e){
+        e.preventDefault();
+        if(card !== dragEl) card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', function(){
+        card.classList.remove('drag-over');
+      });
+      card.addEventListener('drop', function(e){
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if(!dragEl || dragEl === card) return;
+        var cards = Array.prototype.slice.call(grid.children);
+        var dragIdx = cards.indexOf(dragEl);
+        var dropIdx = cards.indexOf(card);
+        if(dragIdx < dropIdx){
+          grid.insertBefore(dragEl, card.nextSibling);
+        }else{
+          grid.insertBefore(dragEl, card);
+        }
+      });
+    });
+  })();
 </script>
 </body>
 </html>
