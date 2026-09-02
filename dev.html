@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.01 20_07                                 ║
+  ║  SITE VERSION: 26.09.01 21_58                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -142,7 +142,7 @@
     <b>For Michael only.</b> This page is unlinked from the main nav and blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
   </div>
 
-  <p class="dev-drag-hint">Drag cards to reorder — the order is saved in this browser only.</p>
+  <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
 
   <div class="dev-grid">
 
@@ -307,7 +307,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 20_07</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400;text-transform:uppercase">V26.09.01 21_58</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -318,34 +318,66 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.01 20_07';
+  const SITE_VERSION = '26.09.01 21_58';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'V' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
-  // ── Drag-to-reorder dev cards — order saved per-browser via localStorage ──
+  // ── Drag-to-reorder dev cards ──────────────────────────────────────────
+  // Order is cached instantly to localStorage (so there's no flash of the
+  // default order on load) AND synced to Cloudflare KV via /api/dev-order.js
+  // so the same order shows up on any device/browser. If that function
+  // isn't deployed yet, or the KV binding hasn't been set up, this falls
+  // back gracefully to the localStorage-only behavior with a note in the
+  // hint text — dragging still works either way.
   (function(){
     var grid = document.querySelector('.dev-grid');
     if(!grid) return;
     var ORDER_KEY = '804m_dev_card_order';
+    var API_URL = '/api/dev-order';
+    var hintEl = document.getElementById('dev-drag-hint');
+    var DEFAULT_HINT = 'Drag cards to reorder — order syncs across your devices.';
+    var LOCAL_ONLY_HINT = 'Drag cards to reorder — saved in this browser only (server sync unavailable).';
 
-    // Restore any previously saved order
+    function applyOrder(ids){
+      if(!Array.isArray(ids) || !ids.length) return;
+      ids.forEach(function(id){
+        var card = grid.querySelector('.dev-card[data-id="' + id + '"]');
+        if(card) grid.appendChild(card);
+      });
+    }
+
+    // 1) Instant local restore so there's no flash of the default order
     try{
-      var saved = JSON.parse(localStorage.getItem(ORDER_KEY) || 'null');
-      if(Array.isArray(saved) && saved.length){
-        saved.forEach(function(id){
-          var card = grid.querySelector('.dev-card[data-id="' + id + '"]');
-          if(card) grid.appendChild(card);
-        });
-      }
+      applyOrder(JSON.parse(localStorage.getItem(ORDER_KEY) || 'null'));
     }catch(e){}
 
+    // 2) Ask the server for the authoritative order (may differ if it was
+    //    changed from another device since this browser last synced)
+    fetch(API_URL).then(function(r){ return r.ok ? r.json() : null; }).then(function(data){
+      if(data && Array.isArray(data.order) && data.order.length){
+        applyOrder(data.order);
+        try{ localStorage.setItem(ORDER_KEY, JSON.stringify(data.order)); }catch(e){}
+      }else if(hintEl && data && data.error === 'KV not bound'){
+        hintEl.textContent = LOCAL_ONLY_HINT;
+      }
+    }).catch(function(){
+      if(hintEl) hintEl.textContent = LOCAL_ONLY_HINT;
+    });
+
     function saveOrder(){
-      try{
-        var ids = Array.prototype.slice.call(grid.querySelectorAll('.dev-card'))
-          .map(function(c){ return c.getAttribute('data-id'); });
-        localStorage.setItem(ORDER_KEY, JSON.stringify(ids));
-      }catch(e){}
+      var ids = Array.prototype.slice.call(grid.querySelectorAll('.dev-card'))
+        .map(function(c){ return c.getAttribute('data-id'); });
+      try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){}
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ order: ids })
+      }).then(function(r){
+        if(hintEl) hintEl.textContent = r.ok ? DEFAULT_HINT : LOCAL_ONLY_HINT;
+      }).catch(function(){
+        if(hintEl) hintEl.textContent = LOCAL_ONLY_HINT;
+      });
     }
 
     var dragEl = null;
