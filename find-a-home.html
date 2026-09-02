@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 13-05                                 ║
+  ║  SITE VERSION: 26.09.02 13-32                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 12-37  ║
   ║                                                               ║
@@ -90,7 +90,7 @@
       { "@type": "HowToStep", "name": "Evaluate the listing itself", "text": "Look for clear recent photos, floor plans and specific improvement details, and watch for vague or missing information." },
       { "@type": "HowToStep", "name": "Explore the area, virtually", "text": "Check satellite view for lot shape, privacy and nearby land use, and Street View to walk the approach and the block." },
       { "@type": "HowToStep", "name": "Check the real-world fit", "text": "Verify commute, errands, internet and cell service, utilities, flood risk, schools and any signs of future change nearby." },
-      { "@type": "HowToStep", "name": "Build a shortlist worksheet", "text": "Capture the same details for every home so you can compare them fairly, then send your shortlist to your agent before requesting tours." }
+      { "@type": "HowToStep", "name": "Build a shortlist", "text": "Capture the same details for every home so you can compare them fairly, then send your shortlist to your agent before requesting tours." }
     ]
   }
   </script>
@@ -227,12 +227,13 @@
     .pro-tip{background:#eef6f3;border:1px solid #bfe0d2;border-left:4px solid #2e9e6f;color:#1c4d3c;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
     .pro-tip b{color:#123d2f}
     .pro-tip a{color:#123d2f;text-decoration:underline;font-weight:600}
-    .pro-tip .pt-lbl{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f;margin-bottom:6px} /* was .72rem — bumped 50% per site-wide readability note, see project notes */
-    .pro-tip .pt-flex{display:flex;gap:14px;align-items:flex-start}
+    .pro-tip .pt-lbl{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f} /* was .72rem — bumped 50% per site-wide readability note, see project notes */
+    .pro-tip .pt-flex{display:flex;gap:10px;align-items:center;margin-bottom:8px}
     /* Sized to match .warn-icon in the "Avoid clicking" callout above, for
        visual consistency between the two boxes — kept as its own rule
        (rather than sharing that class) so the two can be resized independently. */
-    .pro-tip .pt-icon{width:34px;height:34px;flex-shrink:0;margin-top:2px}
+    .pro-tip .pt-icon{width:28px;height:28px;flex-shrink:0}
+    .pro-tip .pt-body{margin:0}
 
     /* ── Virginia due-diligence callout (in-content, prominent) ── */
     .va-callout{background:var(--black);color:var(--white);border-radius:14px;padding:22px 24px;margin:22px 0 28px;border-left:5px solid var(--red)}
@@ -385,7 +386,7 @@
     </div>
 
     <details class="faq-box">
-      <summary>Disclaimer &amp; First Visit Tips (click to view)</summary>
+      <summary><span>First Visit Tips and a Few Things to Know <span style="font-weight:400;font-size:.8em">(click to view)</span></span></summary>
       <div class="faq-box-body">
         <p class="faq-a">Your contact information is very valuable, and one of my responsibilities and goals is to help protect it. I will never share or sell your contact information — but lots of places will, especially real estate search sites. To prevent this and be better prepared for your home search, sign up at these three sites at least a week before making a call to a lender.</p>
         <ul class="faq-link-list">
@@ -432,7 +433,7 @@
     <section class="stage">
       <div class="step-lbl"><span class="step-lbl-line"></span>Before You Search</div>
       <h2>Know Your Budget</h2>
-      <p class="body-p">Before you fall in love with a home based on how it looks online, get clear on what a comfortable monthly payment looks like. A lender can help you understand what you may qualify to borrow, but your financial comfort level matters just as much. Your total monthly housing cost includes more than the loan payment:</p>
+      <p class="body-p">Before you start looking at homes, get clear on what a comfortable monthly payment looks like. A lender can help you understand what you may qualify to borrow, but your financial comfort level matters just as much. Your total monthly housing cost includes more than the loan payment:</p>
       <ul class="rg-plain">
         <li>Principal and interest</li>
         <li>Property taxes</li>
@@ -463,11 +464,11 @@
       </div>
 
       <div class="pro-tip">
-        <span class="pt-lbl">Pro Tip</span>
         <div class="pt-flex">
           <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
-          <div>Getting a Pre-approval letter helps you search with clarity. You are not obligated to buy at the top of your approved range, nor are you obligated to use that lender when it comes to purchase. It's like a pre-check on your financial position, used to avoid future problems. Not sure what your budget looks like? <a href="determine-your-budget.html">Use my budget calculator</a> before you start scrolling listings to get a good idea — but you'll still need to talk to a lender for a real letter. I can recommend some great ones.</div>
+          <span class="pt-lbl">Pro Tip</span>
         </div>
+        <div class="pt-body">Getting a Pre-approval letter helps you search with clarity. You are not obligated to buy at the top of your approved range, nor are you obligated to use that lender when it comes to purchase. It's like a pre-check on your financial position, used to avoid future problems. Not sure what your budget looks like? <a href="determine-your-budget.html">Use my budget calculator</a> before you start scrolling listings to get a good idea — but you'll still need to talk to a lender for a real letter. I can recommend some great ones.</div>
       </div>
     </section>
 
@@ -491,7 +492,7 @@
         <a class="tool" href="https://www.redfin.com/" target="_blank" rel="noopener"><img class="tool-logo" src="images/logos/Logo_redfin.svg" alt="Redfin" onerror="this.outerHTML='<strong style=color:#a02021>Redfin</strong>'"><span>Map-based search & tools for comparing homes</span></a>
       </div>
 
-      <h3 id="filters">Set Your First Filters</h3>
+      <h3 id="filters">Size Your Search</h3>
       <p class="body-p">Begin broad enough that you don't accidentally hide a good match, and don't use too many criteria to limit your options. You're also relying on agents or sellers entering data about a home correctly, and some make errors or omit information — don't let a lack of data unnecessarily limit your search.</p>
       <div class="rg-card">
         <h4>Starting filters</h4>
@@ -520,7 +521,7 @@
         <div class="warn-flex">
           <img class="warn-icon" src="images/logos/Pulse_Caution.gif" alt="" aria-hidden="true">
           <div><b>Note on Criteria.</b> There are certain features that significantly limit home searches and should be used with caution, especially when combined:
-            <ul style="margin:8px 0 0;padding-left:20px">
+            <ul style="margin:8px 0 0;padding-left:20px;columns:2;column-gap:24px">
               <li>First-floor bedroom</li>
               <li>Garage</li>
               <li>Basement</li>
@@ -545,11 +546,11 @@
       </div>
 
       <div class="pro-tip">
-        <span class="pt-lbl">Pro Tip</span>
         <div class="pt-flex">
           <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
-          <div>Don't save 75 "favorites." Keep a focused list of 5–15 active possibilities, and revisit it often. Inventory is constantly changing — some homes will get an accepted offer while new homes come on the market on a constant basis. New listings often appear on Thursday or Friday, but they can show up any time.</div>
+          <span class="pt-lbl">Pro Tip</span>
         </div>
+        <div class="pt-body">Don't save 75 "favorites." Keep a focused list of 5–15 active possibilities, and revisit your search often. Inventory is constantly changing — some homes will get an accepted offer while new homes come on the market on a constant basis. New homes for sale often appear on Thursday or Friday, but they can show up any time.</div>
       </div>
     </section>
 
@@ -680,7 +681,7 @@
     <!-- STEP 5 -->
     <section class="stage">
       <div class="step-lbl"><span class="step-lbl-line"></span>Step 5</div>
-      <h2>Build a Shortlist Worksheet</h2>
+      <h2>Build a Shortlist</h2>
       <p class="body-p">For each home, capture the same information so you can compare homes fairly:</p>
       <div class="rg-card">
         <h4>Shortlist fields</h4>
@@ -804,7 +805,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 13-05</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 13-32</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -817,7 +818,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 13-05';
+  const SITE_VERSION = '26.09.02 13-32';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
