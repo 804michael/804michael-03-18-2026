@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 12-37                                 ║
+  ║  SITE VERSION: 26.09.02 13-05                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 12-37  ║
   ║                                                               ║
@@ -82,7 +82,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": "How to Find a Home on Your Own",
+    "name": "Keys to Finding a Great Home",
     "description": "A step-by-step guide to researching homes independently before scheduling a tour: searching the major portals, evaluating listings, using Google Maps, checking real-world fit, and building a shortlist.",
     "step": [
       { "@type": "HowToStep", "name": "Know your budget", "text": "Talk with a lender early, understand your likely loan options, and get pre-approved so you can search with clarity before you fall in love with a home online." },
@@ -200,6 +200,13 @@
     .faq-a{font-size:.94rem;line-height:1.7;color:var(--gray-text)}
     .faq-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-mid)}
     .faq-links a{font-size:.86rem;font-weight:600;color:var(--red);text-decoration:underline}
+    .faq-link-list{list-style:none;margin:14px 0 0;padding:0}
+    .faq-link-list>li{padding:12px 0;border-top:1px solid var(--gray-mid)}
+    .faq-link-list>li:first-child{border-top:none;padding-top:0}
+    .faq-link-list>li>a{font-size:.98rem;font-weight:700;color:var(--red);text-decoration:underline}
+    .faq-link-list>li>.faq-a{margin:6px 0 0}
+    .faq-link-list>li>ul{margin:6px 0 0;padding-left:18px}
+    .faq-link-list>li>ul>li{font-size:.86rem;line-height:1.6;color:var(--gray-text);margin-bottom:4px}
 
     /* ── Info-pop — small inline "more info" disclosure for an aside that would
        otherwise bloat a checklist line. Native <details>, no JS. ── */
@@ -378,17 +385,34 @@
     </div>
 
     <details class="faq-box">
-      <summary>Before We Get Started — FAQ</summary>
+      <summary>Disclaimer &amp; First Visit Tips (click to view)</summary>
       <div class="faq-box-body">
+        <p class="faq-a">Your contact information is very valuable, and one of my responsibilities and goals is to help protect it. I will never share or sell your contact information — but lots of places will, especially real estate search sites. To prevent this and be better prepared for your home search, sign up at these three sites at least a week before making a call to a lender.</p>
+        <ul class="faq-link-list">
+          <li>
+            <a href="https://www.optoutprescreen.com/" target="_blank" rel="noopener">Opt out of pre-screened loan offers — OptOutPrescreen.com</a>
+            <p class="faq-a">Prevents your info from being sold to competing firms when you inquire about a home loan, for five years.</p>
+            <ul>
+              <li>For a permanent opt-out, start the request there and return the signed Permanent Opt-Out Election form.</li>
+            </ul>
+          </li>
+          <li>
+            <a href="https://www.donotcall.gov/" target="_blank" rel="noopener">National Do Not Call List — DoNotCall.gov</a>
+            <p class="faq-a">Not super effective and takes at least 30 days to implement, but worthwhile.</p>
+          </li>
+          <li>
+            <a href="https://www.annualcreditreport.com/" target="_blank" rel="noopener">Pull your credit report — AnnualCreditReport.com</a>
+            <p class="faq-a">Take a look at your credit for free, once a year, from every reporting agency. Tip: pull one agency every four months and monitor your credit all year long.</p>
+          </li>
+        </ul>
+        <div class="idea-flag" style="margin:14px 0 18px">
+          <span class="if-lbl">🎨 Design Idea — For Discussion (remove after we talk)</span>
+          Flagged to refine — this intro + link copy came in as a quick draft; wording, ordering, and how much detail each link needs may want another pass once you see it live.
+        </div>
         <p class="faq-q">Won't my agent find my perfect home?</p>
         <p class="faq-a">Unlikely — with tools like these, you're really in the driver's seat in finding the homes you look at and the one you'll eventually purchase. A couple of reasons why: first, you'll search for homes on your coffee break, at lunch, while you're watching TV, or any other time you have a few minutes — your agent isn't searching that often on your behalf alone. Second, as you look at homes online and in person and see what's actually available, you make micro-adjustments — sometimes without even realizing it. Or you come to understand that the ideal home you had in your mind doesn't exist in real life, or not at your price — it only existed in your mind, and you adjust. Many people end up buying a home that doesn't quite match the picture they started with, and that's normal. Your agent can still set up an automatic search — see <a href="#filters">search criteria</a> below — which can send you homes as soon as they hit the market, or on a regular batch schedule.</p>
         <p class="faq-q">What am I paying an agent for, then?</p>
         <p class="faq-a">Their skills in contract management and negotiation, tracking deadlines, managing the transaction, offering advice, and helping manage the emotions and emotional separation that come with one of the biggest purchases of your life.</p>
-        <div class="faq-links">
-          <a href="https://www.optoutprescreen.com/" target="_blank" rel="noopener">Opt out of pre-screened offers — OptOutPrescreen.com</a>
-          <a href="https://www.donotcall.gov/" target="_blank" rel="noopener">National Do Not Call List — DoNotCall.gov</a>
-          <a href="https://www.annualcreditreport.com/" target="_blank" rel="noopener">Pull your credit report — AnnualCreditReport.com</a>
-        </div>
       </div>
     </details>
     <p class="idea-flag" style="margin-top:-10px">
@@ -495,7 +519,14 @@
       <div class="cal-caution">
         <div class="warn-flex">
           <img class="warn-icon" src="images/logos/Pulse_Caution.gif" alt="" aria-hidden="true">
-          <div><b>Note on Criteria.</b> There are certain features that significantly limit home searches and should be used with caution, especially when combined: first-floor bedroom, garage, basement, and accessory dwelling unit (ADU).</div>
+          <div><b>Note on Criteria.</b> There are certain features that significantly limit home searches and should be used with caution, especially when combined:
+            <ul style="margin:8px 0 0;padding-left:20px">
+              <li>First-floor bedroom</li>
+              <li>Garage</li>
+              <li>Basement</li>
+              <li>Accessory dwelling unit (ADU)</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -773,7 +804,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 12-37</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 13-05</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -786,7 +817,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 12-37';
+  const SITE_VERSION = '26.09.02 13-05';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
