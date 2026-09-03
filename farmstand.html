@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 21_37                                 ║
+  ║  SITE VERSION: 26.09.02 21_42                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -212,7 +212,7 @@
   }
   .day-chip:hover{border-color:var(--red);}
   .day-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
-  .hours-mode-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+  .hours-mode-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px;}
   .hours-mode-chip{
     flex:1;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
     font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.03em;text-transform:uppercase;
@@ -227,7 +227,7 @@
     width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 11px;font-size:14.9px;
     font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;
   }
-  .hours-group{padding:10px 0 12px;margin-bottom:8px;position:relative;}
+  .hours-group{padding:4px 0;margin-bottom:2px;position:relative;}
   .hours-group .time-row{margin-top:8px;}
   .hours-group .remove-range{
     position:absolute;top:8px;right:8px;background:none;border:none;color:var(--gray-muted);
@@ -240,7 +240,7 @@
     padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;margin-top:2px;
   }
   .btn-add-range:hover{border-color:var(--red);color:var(--red);}
-  #fHoursField{margin-bottom:2px;}
+  #fHoursField{margin-bottom:18px;}
   .geo-status{font-size:13.8px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
   .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
   .geo-status.ok{background:#eef6ee;color:#2f6b30;}
@@ -301,7 +301,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_37</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_42</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -526,7 +526,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 21_37';
+const SITE_VERSION = '26.09.02 21_42';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
