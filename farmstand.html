@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 22_53                                 ║
+  ║  SITE VERSION: 26.09.03 13_27                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -54,7 +54,8 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
+  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
+    width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
@@ -101,7 +102,7 @@
   .chip.active{background:var(--black);border-color:var(--black);color:#fff;}
   .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
 
-  #map{height:480px;margin:16px 20px 0;border-radius:14px;border:1px solid var(--gray-mid);
+  #map{height:480px;width:90vw;margin:16px calc(50% - 45vw) 0;border-radius:14px;border:1px solid var(--gray-mid);
     box-shadow:0 6px 20px rgba(0,0,0,.08);}
   .leaflet-top,.leaflet-bottom{z-index:400 !important;}
   .leaflet-control-attribution{
@@ -301,7 +302,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 22_53</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 13_27</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -526,7 +527,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 22_53';
+const SITE_VERSION = '26.09.03 13_27';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
