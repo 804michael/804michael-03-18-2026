@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 17_12                                 ║
+  ║  SITE VERSION: 26.09.03 17_40                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -66,7 +66,7 @@
   .sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
   .sub b{color:var(--white);}
 
-  .status-bar{margin:14px 20px 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
+  .status-bar{width:90vw;margin:14px calc(50% - 45vw) 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
     display:none;align-items:center;gap:8px;}
   .status-bar.show{display:flex;}
   .status-bar.demo{background:#fdf1ee;color:#b0451f;border:1px solid #f3d2c6;}
@@ -74,14 +74,12 @@
   .status-bar.loading{background:var(--gray-light);color:var(--gray-text);border:1px solid var(--gray-mid);}
   .status-bar.locating{background:#eef6ee;color:#2f6b30;border:1px solid #cfe6cf;}
 
-  /* Pending-submissions badge — separate from .status-bar since it needs to persist
-     independently of the loading/error/locating states above (those get cleared once
-     data loads; this stays up as long as there are unreviewed rows in the Sheet). */
-  .review-pill{margin:10px 20px 0;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;
-    background:#fff6e6;color:#8a5a00;border:1px solid #f0dca6;display:inline-flex;align-items:center;gap:6px;}
-
-  /* Action row */
-  .action-row{margin:14px 20px 0;display:flex;flex-wrap:wrap;gap:10px;}
+  /* Action row — width/margin now match #map's own "breakout of container" trick
+     (same calc(50% - 45vw) math as #map below) so the buttons row lines up flush
+     with the map's real left/right edges instead of sitting inside the narrower
+     1100px .page container. .toolbar and .list-wrap get the same treatment below,
+     for the same reason — everything should line up with the map, per Michael. */
+  .action-row{width:90vw;margin:14px calc(50% - 45vw) 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
   .btn{
     border:none;border-radius:100px;padding:11px 20px;
     font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;
@@ -96,7 +94,17 @@
   .btn-ghost:hover{border-color:var(--red);color:var(--red);}
   .btn-large{font-size:1.42rem;padding:15px 26px;}
 
-  .toolbar{background:#fff;margin:14px 20px 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
+  /* Icon-only bell button for pending-submission review — sits at the right edge
+     of .action-row (margin-left:auto pushes it there, past the other buttons)
+     rather than as a separate full-width text banner. Small red count badge
+     overlaps its corner, same "notification bell" pattern as a phone app icon;
+     hidden entirely (not just emptied) when there's nothing pending. */
+  .btn-icon{margin-left:auto;position:relative;padding:11px 15px;font-size:1.35rem;line-height:1;}
+  .badge-count{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;
+    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.68rem;min-width:19px;height:19px;
+    border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 0 2px #fff;}
+
+  .toolbar{background:#fff;width:90vw;margin:14px calc(50% - 45vw) 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
     padding:10px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
     border:1px solid var(--gray-mid);}
   .toolbar-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;
@@ -152,7 +160,7 @@
     font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;}
   .divider::before,.divider::after{content:'';display:inline-block;width:40px;height:1px;background:var(--gray-mid);vertical-align:middle;margin:0 12px;}
 
-  .list-wrap{margin:8px 20px 0;}
+  .list-wrap{width:90vw;margin:8px calc(50% - 45vw) 0;}
   .list-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(1.6rem,3vw,2rem);color:var(--black);margin:6px 0 14px;}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
   .stand-card{background:#fff;border:1px solid var(--gray-mid);border-left:5px solid var(--red);
@@ -285,9 +293,10 @@
     <button class="btn btn-secondary" id="addStandBtn">➕ Add a Stand</button>
     <button class="btn btn-ghost" id="resetBtn">Reset View</button>
     <button class="btn btn-ghost" id="shareMapBtn">📤 Share this Map</button>
+    <button class="btn btn-ghost btn-icon hidden" id="reviewBtn" title="" aria-label="Pending stand submissions">
+      🔔<span class="badge-count" id="reviewBadgeCount">0</span>
+    </button>
   </div>
-
-  <div class="review-pill hidden" id="reviewPill"></div>
 
   <div class="toolbar" id="toolbar">
     <span class="toolbar-label">Filter:</span>
@@ -310,7 +319,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 17_12</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 17_40</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -535,7 +544,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.03 17_12';
+const SITE_VERSION = '26.09.03 17_40';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -718,13 +727,15 @@ function countPending(rows){
   return {pending, needsFix};
 }
 function renderReviewPill(pending, needsFix){
-  const el = document.getElementById('reviewPill');
-  if(!el) return;
-  if(!pending){ el.classList.add('hidden'); el.textContent = ''; return; }
-  const parts = [`🔔 ${pending} submission${pending===1?'':'s'} pending review`];
+  const btn = document.getElementById('reviewBtn');
+  const countEl = document.getElementById('reviewBadgeCount');
+  if(!btn || !countEl) return;
+  if(!pending){ btn.classList.add('hidden'); return; }
+  countEl.textContent = pending;
+  const parts = [`${pending} submission${pending===1?'':'s'} pending review`];
   if(needsFix) parts.push(`${needsFix} need${needsFix===1?'s':''} an address fix`);
-  el.textContent = parts.join(' · ');
-  el.classList.remove('hidden');
+  btn.title = parts.join(' · ');
+  btn.classList.remove('hidden');
 }
 
 async function loadData(){
