@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 21_31                                 ║
+  ║  SITE VERSION: 26.09.02 21_37                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -301,7 +301,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_31</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_37</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -526,7 +526,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 21_31';
+const SITE_VERSION = '26.09.02 21_37';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -986,7 +986,13 @@ submitBtn.addEventListener('click', async ()=>{
 
   const manualAddress = document.getElementById('fAddress').value.trim();
   if(!capturedCoords && !manualAddress){
-    alert('Please choose "Use My Location" or "Enter an Address" above so this stand can be placed on the map.');
+    if(locationMode === 'address'){
+      alert('Please enter an address so this stand can be placed on the map.');
+    } else if(locationMode === 'gps'){
+      alert('We weren\'t able to capture your location. Try "Enter an Address" instead, or allow location access and try "Use My Location" again.');
+    } else {
+      alert('Please choose "Use My Location" or "Enter an Address" above so this stand can be placed on the map.');
+    }
     return;
   }
 
@@ -996,6 +1002,11 @@ submitBtn.addEventListener('click', async ()=>{
 
   const validGroups = hoursGroups.filter(g => g.days.size > 0 && g.open && g.close);
   const singleGroup = validGroups.length === 1 ? validGroups[0] : null;
+
+  if(!noSetHours && validGroups.length === 0){
+    alert('Please set the Days & Hours: pick at least one day plus an open and close time for a row, or choose "Open all the time" or "Hours vary, check site."');
+    return;
+  }
 
   const payload = {
     name,
