@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 13-06                                 ║
+  ║  SITE VERSION: 26.09.03 15-53                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -164,7 +164,7 @@
 <div class="dev-body">
 
   <div class="dev-note">
-    <b>For Michael only.</b> This page is unlinked from the main nav and blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
+    Page is unlinked from main nav &amp; blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
   </div>
 
   <div class="dev-layout">
@@ -298,6 +298,22 @@
       </div>
     </div>
 
+    <div class="dev-card" data-id="tour-planner">
+      <div class="dev-card-head">
+        <h3>Home Tour Route Planner</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Enter up to 12 stops, auto-optimize the visiting order (or drag to reorder manually), then send a no-hosting-required Maps link to a client — their app starts from wherever they are, no fixed origin baked in.</p>
+        <ul>
+          <li>Real driving order/geometry via OpenRouteService once ORS_API_KEY is set in Cloudflare — falls back to a straight-line nearest-neighbor estimate until then</li>
+          <li>Per-stop time budget (default 20 min), running arrival-time estimates, total drive time/distance</li>
+          <li>Client-facing blurb + private notes per stop, QR code, SMS share, Google/Apple/Outlook calendar links, printable itinerary, saved tours (this browser)</li>
+        </ul>
+        <a class="dev-card-link" href="tour-planner.html">View page →</a>
+      </div>
+    </div>
+
     <div class="dev-card" data-id="home-value">
       <div class="dev-card-head">
         <h3>Home Value Estimate</h3>
@@ -375,7 +391,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 13-06</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.03 15-53</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -386,7 +402,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 13-06';
+  const SITE_VERSION = '26.09.03 15-53';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
