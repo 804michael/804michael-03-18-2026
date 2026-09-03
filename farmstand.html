@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 20_48                                 ║
+  ║  SITE VERSION: 26.09.02 21_02                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -212,10 +212,18 @@
   }
   .day-chip:hover{border-color:var(--red);}
   .day-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .hours-mode-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .hours-mode-chip{
+    border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;
+    padding:8px 14px;border-radius:7px;cursor:pointer;transition:all .15s ease;
+  }
+  .hours-mode-chip:hover{border-color:var(--red);}
+  .hours-mode-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
   .loc-chip{white-space:normal;text-align:center;font-size:.78rem;padding:10px 8px;}
   .time-row{display:flex;gap:12px;}
   .time-row>div{flex:1;}
-  .hours-group{border:1.5px solid var(--gray-mid);border-radius:10px;padding:10px 10px 12px;margin-bottom:8px;position:relative;}
+  .hours-group{padding:10px 10px 12px;margin-bottom:8px;position:relative;}
   .hours-group .time-row{margin-top:8px;}
   .hours-group .remove-range{
     position:absolute;top:8px;right:8px;background:none;border:none;color:var(--gray-muted);
@@ -287,7 +295,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 20_48</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_02</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -327,13 +335,15 @@
       </div>
     </div>
     <div class="field">
-      <label>Days &amp; Hours <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(add a separate row if hours differ by day — e.g. Fri/Sat 9–7, Sun 9–4)</span></label>
-      <div id="fHoursGroups"></div>
-      <button type="button" class="btn-add-range" id="fAddRange">+ Add another time range</button>
-    </div>
-    <div class="field">
-      <label class="cat-check"><input type="checkbox" id="fUnmanned"> Open all the time / unmanned stand (no set hours)</label>
-      <label class="cat-check"><input type="checkbox" id="fVaries"> Hours vary, check site</label>
+      <label>Days &amp; Hours <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;display:block;margin-top:2px">(add a separate row if hours differ by day — e.g. Fri/Sat 9–7, Sun 9–4)</span></label>
+      <div class="hours-mode-row">
+        <button type="button" class="hours-mode-chip" id="fUnmanned">Open all the time</button>
+        <button type="button" class="hours-mode-chip" id="fVaries">Hours vary, check site</button>
+      </div>
+      <div id="fHoursGroupsWrap">
+        <div id="fHoursGroups"></div>
+        <button type="button" class="btn-add-range" id="fAddRange">+ Add another time range</button>
+      </div>
     </div>
     <div class="field desc-field">
       <label for="fDesc">What do they sell?</label>
@@ -510,7 +520,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 20_48';
+const SITE_VERSION = '26.09.02 21_02';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -857,15 +867,24 @@ function resetHoursGroups(){
 }
 resetHoursGroups(); // seed one empty row on page load
 
-document.getElementById('fUnmanned').addEventListener('change', ()=>{
-  if(document.getElementById('fUnmanned').checked) document.getElementById('fVaries').checked = false;
-  document.getElementById('fHoursGroups').closest('.field').classList.toggle('hidden',
-    document.getElementById('fUnmanned').checked || document.getElementById('fVaries').checked);
+function updateHoursModeVisibility(){
+  const anyModeActive = document.getElementById('fUnmanned').classList.contains('active') ||
+    document.getElementById('fVaries').classList.contains('active');
+  document.getElementById('fHoursGroupsWrap').classList.toggle('hidden', anyModeActive);
+}
+document.getElementById('fUnmanned').addEventListener('click', ()=>{
+  const btn = document.getElementById('fUnmanned');
+  const nowActive = !btn.classList.contains('active');
+  btn.classList.toggle('active', nowActive);
+  if(nowActive) document.getElementById('fVaries').classList.remove('active');
+  updateHoursModeVisibility();
 });
-document.getElementById('fVaries').addEventListener('change', ()=>{
-  if(document.getElementById('fVaries').checked) document.getElementById('fUnmanned').checked = false;
-  document.getElementById('fHoursGroups').closest('.field').classList.toggle('hidden',
-    document.getElementById('fUnmanned').checked || document.getElementById('fVaries').checked);
+document.getElementById('fVaries').addEventListener('click', ()=>{
+  const btn = document.getElementById('fVaries');
+  const nowActive = !btn.classList.contains('active');
+  btn.classList.toggle('active', nowActive);
+  if(nowActive) document.getElementById('fUnmanned').classList.remove('active');
+  updateHoursModeVisibility();
 });
 
 // Builds the full multi-range display string, e.g. "Fri, Sat 9 AM–7 PM · Sun 9 AM–4 PM"
@@ -937,9 +956,9 @@ function closeModalFn(){
   document.getElementById('fName').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fWebsite').value = '';
-  document.getElementById('fUnmanned').checked = false;
-  document.getElementById('fVaries').checked = false;
-  document.getElementById('fHoursGroups').closest('.field').classList.remove('hidden');
+  document.getElementById('fUnmanned').classList.remove('active');
+  document.getElementById('fVaries').classList.remove('active');
+  document.getElementById('fHoursGroupsWrap').classList.remove('hidden');
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   resetHoursGroups();
   locationMode = null;
@@ -965,8 +984,8 @@ submitBtn.addEventListener('click', async ()=>{
     return;
   }
 
-  const isUnmanned = document.getElementById('fUnmanned').checked;
-  const isVaries = document.getElementById('fVaries').checked;
+  const isUnmanned = document.getElementById('fUnmanned').classList.contains('active');
+  const isVaries = document.getElementById('fVaries').classList.contains('active');
   const noSetHours = isUnmanned || isVaries;
 
   const validGroups = hoursGroups.filter(g => g.days.size > 0 && g.open && g.close);
