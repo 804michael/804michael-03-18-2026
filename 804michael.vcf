@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Hottman;Michael;;;
+FN:Michael Hottman
+ORG:804Michael | Malcolm Real Estate
+TITLE:Licensed Real Estate Broker
+TEL;TYPE=CELL,VOICE,PREF:+18046424235
+EMAIL;TYPE=INTERNET,PREF:804re@804michael.com
+URL:https://804re.com
+ADR;TYPE=WORK:;;;Ashland;VA;;USA
+NOTE:Helping buyers and sellers in Ashland, Hanover County, Glen Allen & Me
+ chanicsville, Virginia.
+PHOTO;VALUE=URI:https://804re.com/images/804michael_headshot-web.png
+REV:2026-09-03T00:00:00Z
+END:VCARD
