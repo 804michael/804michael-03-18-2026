@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 17-59                                 ║
+  ║  SITE VERSION: 26.09.03 00-17                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
@@ -110,6 +110,8 @@
     .val-row{display:flex;gap:14px}
     .val-row-3{gap:10px}
     .val-field-sm{flex:0 0 72px}
+    .val-field-city{flex:3 1 0}
+    .val-field-zip{flex:2 1 0}
     .val-field label{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:.8rem;color:var(--black);margin-bottom:4px}
     .val-field input,.val-field select,.val-field textarea{
       width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:10px 12px;font-size:.95rem;
@@ -196,7 +198,7 @@
           <input type="text" id="val-address" name="address" required />
         </div>
         <div class="val-row val-row-3">
-          <div class="val-field">
+          <div class="val-field val-field-city">
             <label for="val-city">City</label>
             <input type="text" id="val-city" name="city" required />
           </div>
@@ -204,7 +206,7 @@
             <label for="val-state">State</label>
             <input type="text" id="val-state" name="state" maxlength="2" value="VA" placeholder="VA" style="text-transform:uppercase" />
           </div>
-          <div class="val-field val-field-sm">
+          <div class="val-field val-field-zip">
             <label for="val-zip">Zip</label>
             <input type="text" id="val-zip" name="zip" inputmode="numeric" maxlength="10" placeholder="23005" required />
           </div>
@@ -244,7 +246,7 @@
 
 <p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-  <span id="site-version-display">v26.09.02 17-59</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+  <span id="site-version-display">v26.09.03 00-17</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
 </p>
 
 <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
@@ -252,7 +254,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 17-59';
+  const SITE_VERSION = '26.09.03 00-17';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
