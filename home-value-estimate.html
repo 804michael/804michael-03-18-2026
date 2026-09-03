@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 00-28                                 ║
+  ║  SITE VERSION: 26.09.03 00-38                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
@@ -156,6 +156,13 @@
       .lp-card{padding:26px 20px 22px;border-radius:18px}
       .val-row{gap:10px}
       .val-field input,.val-field select,.val-field textarea{padding:9px 10px;font-size:.9rem}
+      /* Narrow phones: City needs a bigger share of the row than the desktop
+         3:2 ratio gives it, so City's right edge and State's left edge line
+         up where they should relative to the row's real width here. State
+         stays a fixed 72px (comfortably fits 3 letters); Zip absorbs
+         whatever's left. */
+      .val-field-city{flex:7 1 0}
+      .val-field-zip{flex:3 1 0}
     }
   </style>
 </head>
@@ -246,7 +253,7 @@
 
 <p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-  <span id="site-version-display">v26.09.03 00-28</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+  <span id="site-version-display">v26.09.03 00-38</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
 </p>
 
 <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
@@ -254,7 +261,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.03 00-28';
+  const SITE_VERSION = '26.09.03 00-38';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

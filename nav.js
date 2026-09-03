@@ -207,6 +207,19 @@
     if (msgCancel) msgCancel.addEventListener('click', closeMsgModal);
     if (msgOverlay) msgOverlay.addEventListener('click', function (e) { if (e.target === msgOverlay) closeMsgModal(); });
 
+    // Auto-format phone as XXX-XXX-XXXX while typing — same pattern used on
+    // the val-phone fields (home value / buyer / seller intake forms).
+    const msgPhoneEl = document.getElementById('msgPhone');
+    if (msgPhoneEl) {
+      msgPhoneEl.addEventListener('input', function () {
+        let digits = msgPhoneEl.value.replace(/\D/g, '').slice(0, 10);
+        let formatted = digits;
+        if (digits.length > 6) formatted = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6);
+        else if (digits.length > 3) formatted = digits.slice(0, 3) + '-' + digits.slice(3);
+        msgPhoneEl.value = formatted;
+      });
+    }
+
     if (msgForm) {
       msgForm.addEventListener('submit', function (e) {
         e.preventDefault();
