@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 13_27                                 ║
+  ║  SITE VERSION: 26.09.03 17_12                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -73,6 +73,12 @@
   .status-bar.error{background:#fbe4de;color:#933;border:1px solid #f0bdb0;}
   .status-bar.loading{background:var(--gray-light);color:var(--gray-text);border:1px solid var(--gray-mid);}
   .status-bar.locating{background:#eef6ee;color:#2f6b30;border:1px solid #cfe6cf;}
+
+  /* Pending-submissions badge — separate from .status-bar since it needs to persist
+     independently of the loading/error/locating states above (those get cleared once
+     data loads; this stays up as long as there are unreviewed rows in the Sheet). */
+  .review-pill{margin:10px 20px 0;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;
+    background:#fff6e6;color:#8a5a00;border:1px solid #f0dca6;display:inline-flex;align-items:center;gap:6px;}
 
   /* Action row */
   .action-row{margin:14px 20px 0;display:flex;flex-wrap:wrap;gap:10px;}
@@ -281,6 +287,8 @@
     <button class="btn btn-ghost" id="shareMapBtn">📤 Share this Map</button>
   </div>
 
+  <div class="review-pill hidden" id="reviewPill"></div>
+
   <div class="toolbar" id="toolbar">
     <span class="toolbar-label">Filter:</span>
     <button class="chip active" data-cat="all">All Stops</button>
@@ -302,7 +310,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 13_27</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 17_12</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -527,7 +535,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.03 13_27';
+const SITE_VERSION = '26.09.03 17_12';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -693,6 +701,32 @@ function parseCsvRows(rows){
     .filter(s => !isNaN(s.lat) && !isNaN(s.lng));
 }
 
+// Counts rows still awaiting review (same "is this row approved?" logic as
+// parseCsvRows' filter, just inverted) plus the subset of those flagged by
+// addstand.gs/the Form's geocode script as needing an address fix, so Michael
+// can see at a glance whether the Sheet needs attention without opening it.
+function countPending(rows){
+  let pending = 0, needsFix = 0;
+  rows.forEach(r=>{
+    const hasName = !!(r["Farm Name"] || r["Name"] || r["Farm/Vendor Name"]);
+    if(!hasName) return;
+    const a = (r["Approved"]||"").toString().trim().toLowerCase();
+    if(a === "" || a === "true") return; // already approved/live — not pending
+    pending++;
+    if((r["Description"]||"").toString().includes("NEEDS ADDRESS FIX")) needsFix++;
+  });
+  return {pending, needsFix};
+}
+function renderReviewPill(pending, needsFix){
+  const el = document.getElementById('reviewPill');
+  if(!el) return;
+  if(!pending){ el.classList.add('hidden'); el.textContent = ''; return; }
+  const parts = [`🔔 ${pending} submission${pending===1?'':'s'} pending review`];
+  if(needsFix) parts.push(`${needsFix} need${needsFix===1?'s':''} an address fix`);
+  el.textContent = parts.join(' · ');
+  el.classList.remove('hidden');
+}
+
 async function loadData(){
   if(!CSV_URL){
     setStatus('demo', '📋 Showing sample data — paste your Google Sheet CSV URL into CSV_URL to go live.');
@@ -705,6 +739,8 @@ async function loadData(){
     if(!res.ok) throw new Error('Fetch failed: ' + res.status);
     const text = await res.text();
     const parsed = Papa.parse(text, {header:true, skipEmptyLines:true});
+    const {pending, needsFix} = countPending(parsed.data);
+    renderReviewPill(pending, needsFix);
     const stands = parseCsvRows(parsed.data);
     if(stands.length === 0){
       setStatus('demo', '📋 Sheet connected but no approved rows yet — showing sample data instead.');
