@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 22-59                                 ║
+  ║  SITE VERSION: 26.09.02 23-04                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
@@ -164,12 +164,17 @@
     .cal-caution{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
     .cal-caution b{color:#5a3f0f}
     .cal-note{font-size:.88rem;color:var(--gray-muted);font-style:italic;margin:14px 0 0}
+    .warn-flex{display:flex;gap:14px;align-items:flex-start}
+    .warn-icon{width:34px;height:34px;flex-shrink:0;margin-top:2px}
 
     /* ── Pro Tip callout (friendly reminder) ── */
     .pro-tip{background:#eef6f3;border:1px solid #bfe0d2;border-left:4px solid #2e9e6f;color:#1c4d3c;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
     .pro-tip b{color:#123d2f}
     .pro-tip a{color:#123d2f;text-decoration:underline;font-weight:600}
-    .pro-tip .pt-lbl{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f;margin-bottom:6px} /* was .72rem — bumped 50% per site-wide readability note, see project notes */
+    .pro-tip .pt-lbl{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:.14em;text-transform:uppercase;color:#2e9e6f} /* was .72rem — bumped 50% per site-wide readability note, see project notes */
+    .pro-tip .pt-flex{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+    .pro-tip .pt-icon{width:28px;height:28px;flex-shrink:0}
+    .pro-tip .pt-body{margin:0}
 
     /* ── Virginia due-diligence callout (sidebar, condensed) ── */
     .side-va{background:var(--black);border-radius:16px;padding:20px 20px 18px;border-left:5px solid var(--red)}
@@ -339,10 +344,18 @@
         <li><span class="chk-dot">✓</span>A simple scorecard for each house</li>
       </ul>
       <div class="pro-tip">
-        <span class="pt-lbl">Pro Tip</span>
-        When you arrive, take a quick photo of the front of the house and address so you can match your notes and photos later. Keep all photos for personal reference only and do not post or share them online.
+        <div class="pt-flex">
+          <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
+          <span class="pt-lbl">Pro Tip</span>
+        </div>
+        <div class="pt-body">When you arrive, take a quick photo of the front of the house and address so you can match your notes and photos later. Keep all photos for personal reference only and do not post or share them online.</div>
       </div>
-      <div class="cal-caution"><b>Caution — Say Cheese!</b> Assume you may be seen or heard while touring. Video doorbells, security cameras, smart speakers, and voice assistants are common, so save candid reactions and negotiation comments for after you leave.</div>
+      <div class="cal-caution">
+        <div class="warn-flex">
+          <img class="warn-icon" src="images/logos/Pulse_Caution.gif" alt="" aria-hidden="true">
+          <div><b>Caution — Say Cheese!</b> Assume you may be seen or heard while touring. Video doorbells, security cameras, smart speakers, and voice assistants are common, so save candid reactions and negotiation comments for after you leave.</div>
+        </div>
+      </div>
       <p class="cal-note">Before walking in, pause at the street for 60 seconds. Look at the house as a whole. Consider your first impressions and note any concerns.</p>
     </section>
 
@@ -392,8 +405,11 @@
           </ul>
         </div>
         <div class="pro-tip">
-          <span class="pt-lbl">Pro Tip</span>
-          Also look under area rugs and behind strategically placed objects — sometimes things may be hidden in plain sight.
+          <div class="pt-flex">
+            <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
+            <span class="pt-lbl">Pro Tip</span>
+          </div>
+          <div class="pt-body">Also look under area rugs and behind strategically placed objects — sometimes things may be hidden in plain sight.</div>
         </div>
       </div>
 
@@ -442,8 +458,11 @@
         </ul>
       </div>
       <div class="pro-tip">
-        <span class="pt-lbl">Pro Tip</span>
-        Take photos of the information plaques to determine age (804-Michael has some cool tools to help figure out how old things are). Reminder: never post photos you take online or share them — these are for your reference only.
+        <div class="pt-flex">
+          <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
+          <span class="pt-lbl">Pro Tip</span>
+        </div>
+        <div class="pt-body">Take photos of the information plaques to determine age (804-Michael has some cool tools to help figure out how old things are). Reminder: never post photos you take online or share them — these are for your reference only.</div>
       </div>
     </section>
 
@@ -584,8 +603,11 @@
         <li>Would I tour again, pursue, compare, or eliminate?</li>
       </ul>
       <div class="pro-tip">
-        <span class="pt-lbl">Pro Tip</span>
-        Fill out the scorecard before you leave the driveway. Memory fades fast when you're touring homes back to back, and the details can blur sooner than you expect.
+        <div class="pt-flex">
+          <img class="pt-icon" src="images/logos/flash_lightbulb.gif" alt="" aria-hidden="true">
+          <span class="pt-lbl">Pro Tip</span>
+        </div>
+        <div class="pt-body">Fill out the scorecard before you leave the driveway. Memory fades fast when you're touring homes back to back, and the details can blur sooner than you expect.</div>
       </div>
     </section>
 
@@ -677,7 +699,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 22-59</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 23-04</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -690,7 +712,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 22-59';
+  const SITE_VERSION = '26.09.02 23-04';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
