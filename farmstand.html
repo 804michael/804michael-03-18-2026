@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 21_13                                 ║
+  ║  SITE VERSION: 26.09.02 21_31                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -189,7 +189,7 @@
 
   /* Modal */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.6);z-index:1000;
-    align-items:center;justify-content:center;padding:20px;}
+    align-items:flex-start;justify-content:center;padding:calc(var(--banner-h) + var(--nav-h) + 20px) 20px 20px;overflow-y:auto;}
   .modal-overlay.show{display:flex;}
   .modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;}
   .modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:24.2px;color:var(--black);margin:0 0 4px;}
@@ -240,6 +240,7 @@
     padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;margin-top:2px;
   }
   .btn-add-range:hover{border-color:var(--red);color:var(--red);}
+  #fHoursField{margin-bottom:2px;}
   .geo-status{font-size:13.8px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
   .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
   .geo-status.ok{background:#eef6ee;color:#2f6b30;}
@@ -300,7 +301,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_13</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_31</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -311,6 +312,10 @@
     <h3>Add a Stand</h3>
     <p class="hint">Add the stand you're standing at, or one you know about from anywhere.</p>
 
+    <div class="field">
+      <label for="fName">Farm / Stand Name</label>
+      <input type="text" id="fName" placeholder="e.g. My Humble Stand">
+    </div>
     <div class="field">
       <label>Location</label>
       <div class="day-toggle" id="fLocationChoice">
@@ -326,10 +331,6 @@
     </div>
 
     <div class="field">
-      <label for="fName">Farm / Stand Name</label>
-      <input type="text" id="fName" placeholder="e.g. Pole Green Produce">
-    </div>
-    <div class="field">
       <label>Category <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(select all that apply)</span></label>
       <div class="cat-check-group" id="fCatGroup">
         <label class="cat-check"><input type="checkbox" value="bakery"> Bakery & Sweets</label>
@@ -339,8 +340,8 @@
         <label class="cat-check"><input type="checkbox" value="nursery"> Plants & Nursery</label>
       </div>
     </div>
-    <div class="field">
-      <label>Days &amp; Hours <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;display:block;margin-top:2px">(add a separate row if hours differ by day — e.g. Fri/Sat 9–7, Sun 9–4)</span></label>
+    <div class="field" id="fHoursField">
+      <label>Days &amp; Hours <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0;display:block;margin-top:2px">(add a row if hours differ by day — e.g. Fri/Sat 9–7, Sun 9–4)</span></label>
       <div class="hours-mode-row">
         <button type="button" class="hours-mode-chip" id="fUnmanned">Open all the time</button>
         <button type="button" class="hours-mode-chip" id="fVaries">Hours vary, check site</button>
@@ -351,12 +352,12 @@
       </div>
     </div>
     <div class="field desc-field">
-      <label for="fDesc">What do they sell?</label>
-      <textarea id="fDesc" placeholder="Short description of goods"></textarea>
+      <label for="fDesc">What is sold at this stand? <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+      <textarea id="fDesc" placeholder="share some specific items sold here"></textarea>
     </div>
     <div class="field">
       <label for="fWebsite">Website or Social Link <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
-      <input type="text" id="fWebsite" placeholder="e.g. instagram.com/yourstand">
+      <input type="text" id="fWebsite" placeholder="facebook.com/yourstand">
     </div>
 
     <div class="modal-actions">
@@ -525,7 +526,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 21_13';
+const SITE_VERSION = '26.09.02 21_31';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -1030,7 +1031,7 @@ submitBtn.addEventListener('click', async ()=>{
       headers: {'Content-Type':'text/plain'},
       body: JSON.stringify(payload)
     });
-    alert('Thanks for adding a location to the Map. Your submission will be reviewed prior to publishing it on the map, so don\'t be concerned if it takes a bit to appear.');
+    alert('Thanks for adding a stand to the map. Your submission will be reviewed prior to publishing, so don\'t be concerned if it takes a bit to appear. If you don\'t see it in a week send a quick text/call to 804-642-4235');
     closeModalFn();
   }catch(err){
     alert('Something went wrong submitting — please try again.');
