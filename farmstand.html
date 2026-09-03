@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 20_43                                 ║
+  ║  SITE VERSION: 26.09.02 20_48                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -287,7 +287,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 20_43</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 20_48</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -361,7 +361,7 @@
 // Published Google Sheet CSV URL (read pipeline — see prior setup guide).
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQllKE4SJkxkqKoY7QElipKVptQQbcCwEPHl8PvI5o0Q0HQNdFaKmYaPQztbKQ0-2xxBILTcw47Woj7/pub?gid=52146640&single=true&output=csv";
 // Apps Script Web App URL for GPS submissions (doPost) — see add-stand-webapp.gs.
-const ADD_STAND_URL = "https://script.google.com/macros/s/AKfycbw1ViCML1NaT4mVq-8_MQ0JP7bdCPT7WXiUl6-5dR2CBiVN6i4JNIBPT7Qb6MQJZwQbvQ/exec";
+const ADD_STAND_URL = "https://script.google.com/macros/s/AKfycbxAqIyppVATiw3NiwQfKJILwPNW5-x65zOFs_7Fao8_imNnHXnJcS172tbcVE3ezIj_dw/exec";
 
 const MAP_CENTER = [37.6667, -77.3358]; // Hanover County, VA
 const MAP_ZOOM = 10;
@@ -510,7 +510,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 20_43';
+const SITE_VERSION = '26.09.02 20_48';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
