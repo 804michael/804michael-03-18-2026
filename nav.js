@@ -18,6 +18,36 @@
     return;
   }
 
+  // ── EmailJS (Message modal) ──────────────────────────────────────────
+  // Same EmailJS account already used by the Home Value forms on
+  // index.html / home-value-estimate.html (EMAILJS_PUBLIC_KEY + SERVICE_ID
+  // match exactly — these are public-by-design EmailJS identifiers, not
+  // secrets). MESSAGE_TEMPLATE_ID is a NEW template that must exist in the
+  // EmailJS dashboard (dashboard.emailjs.com → Email Templates → Create
+  // New Template), with this exact Template ID and these variables used
+  // somewhere in the template body/settings:
+  //   {{from_name}}  {{from_email}}  {{phone}}  {{message}}  {{page_url}}
+  // Set "To Email" to wherever leads should land, and "Reply To" to
+  // {{from_email}} so replying from the inbox goes straight back to the
+  // visitor. Loaded lazily (only once someone opens the Message modal),
+  // not on every page load, since most visitors never click it.
+  const EMAILJS_PUBLIC_KEY = 'OKJ28y1nsaYakyCX3';
+  const EMAILJS_SERVICE_ID = 'service_wfjv62c';
+  const MESSAGE_TEMPLATE_ID = 'template_contact_message';
+  let _emailjsReady = false;
+  function loadEmailJS(cb) {
+    if (window.emailjs) {
+      if (!_emailjsReady) { emailjs.init(EMAILJS_PUBLIC_KEY); _emailjsReady = true; }
+      cb();
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/emailjs-com@3/dist/email.min.js';
+    s.onload = function () { emailjs.init(EMAILJS_PUBLIC_KEY); _emailjsReady = true; cb(); };
+    s.onerror = function () { console.error('nav.js: failed to load the EmailJS SDK — check your connection and try again.'); };
+    document.head.appendChild(s);
+  }
+
   fetch('nav-partial.html')
     .then(res => {
       if (!res.ok) throw new Error('nav-partial.html fetch failed: ' + res.status);
@@ -147,5 +177,92 @@
         a.classList.add('active');
       }
     });
+
+    // ── Message modal (Connect ▸ Message, and the mobile "Message
+    // 804-Michael" button) — see the EmailJS setup notes near the top of
+    // this file for what needs to exist in the EmailJS dashboard.
+    const msgOverlay = document.getElementById('msgModalOverlay');
+    const msgForm = document.getElementById('msgForm');
+    const msgStatus = document.getElementById('msgStatus');
+    const msgSubmitBtn = document.getElementById('msgSubmitBtn');
+    const messageTrigger = document.getElementById('message-trigger');
+    const mobMessageBtn = document.getElementById('mob-message-btn');
+    const msgModalClose = document.getElementById('msgModalClose');
+    const msgCancel = document.getElementById('msgCancel');
+
+    function openMsgModal() {
+      if (!msgOverlay) return;
+      loadEmailJS(function () {}); // warm the SDK up now so it's ready by the time they hit Send
+      msgOverlay.classList.add('open');
+      connectDd.classList.remove('open');
+      connectBtn.setAttribute('aria-expanded', 'false');
+      if (typeof window.closeMob === 'function') window.closeMob();
+    }
+    function closeMsgModal() {
+      if (msgOverlay) msgOverlay.classList.remove('open');
+    }
+    if (messageTrigger) messageTrigger.addEventListener('click', openMsgModal);
+    if (mobMessageBtn) mobMessageBtn.addEventListener('click', openMsgModal);
+    if (msgModalClose) msgModalClose.addEventListener('click', closeMsgModal);
+    if (msgCancel) msgCancel.addEventListener('click', closeMsgModal);
+    if (msgOverlay) msgOverlay.addEventListener('click', function (e) { if (e.target === msgOverlay) closeMsgModal(); });
+
+    if (msgForm) {
+      msgForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const nameEl = document.getElementById('msgName');
+        const emailEl = document.getElementById('msgEmail');
+        const phoneEl = document.getElementById('msgPhone');
+        const bodyEl = document.getElementById('msgBody');
+
+        const missing = [];
+        if (!nameEl.value.trim()) missing.push('your name');
+        if (!emailEl.value.trim() && !phoneEl.value.trim()) missing.push('an email or phone number so I can get back to you');
+        if (!bodyEl.value.trim()) missing.push('a message');
+        if (missing.length) {
+          msgStatus.textContent = 'Please add: ' + missing.join(', ') + '.';
+          msgStatus.className = 'msg-modal-status error';
+          return;
+        }
+
+        msgSubmitBtn.disabled = true;
+        const originalLabel = msgSubmitBtn.textContent;
+        msgSubmitBtn.textContent = 'Sending…';
+        msgStatus.textContent = '';
+        msgStatus.className = 'msg-modal-status';
+
+        loadEmailJS(function () {
+          emailjs.send(EMAILJS_SERVICE_ID, MESSAGE_TEMPLATE_ID, {
+            from_name: nameEl.value.trim(),
+            from_email: emailEl.value.trim() || '(not provided)',
+            phone: phoneEl.value.trim() || '(not provided)',
+            message: bodyEl.value.trim(),
+            page_url: window.location.href
+          }).then(function () {
+            msgStatus.textContent = '✓ Message sent — I\'ll get back to you soon.';
+            msgStatus.className = 'msg-modal-status success';
+            msgSubmitBtn.textContent = '✓ Sent!';
+            msgForm.reset();
+            setTimeout(closeMsgModal, 1800);
+            setTimeout(function () {
+              msgSubmitBtn.disabled = false;
+              msgSubmitBtn.textContent = originalLabel;
+              msgStatus.textContent = '';
+              msgStatus.className = 'msg-modal-status';
+            }, 2000);
+          }).catch(function (err) {
+            console.error('EmailJS error:', err);
+            // Surface the actual EmailJS error text when available (e.g. "template ID not
+            // found", "service ID not found") — fastest way to diagnose a misconfigured
+            // EmailJS template/service straight from the browser console.
+            const detail = (err && (err.text || err.message)) ? (': ' + (err.text || err.message)) : '';
+            msgStatus.textContent = 'Something went wrong sending your message' + detail + '. Please call or text 804-642-4235 instead.';
+            msgStatus.className = 'msg-modal-status error';
+            msgSubmitBtn.disabled = false;
+            msgSubmitBtn.textContent = originalLabel;
+          });
+        });
+      });
+    }
   }
 })();

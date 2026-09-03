@@ -155,15 +155,15 @@
   min-width:172px;overflow:hidden;z-index:5001;
 }
 .connect-dropdown.open{display:block}
-.connect-dropdown a{
-  display:flex;align-items:center;gap:12px;
-  padding:13px 20px;
+.connect-dropdown a,.connect-dropdown .cd-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:13px 20px;border:none;background:none;
   font-family:'Barlow',sans-serif;font-weight:600;font-size:.92rem;
-  color:var(--black,#111);white-space:nowrap;
+  color:var(--black,#111);white-space:nowrap;text-align:left;cursor:pointer;
   transition:background .15s,color .15s;
   text-decoration:none;
 }
-.connect-dropdown a:hover{background:var(--gray-light,#f5f5f5);color:var(--red,#DA291C)}
+.connect-dropdown a:hover,.connect-dropdown .cd-btn:hover{background:var(--gray-light,#f5f5f5);color:var(--red,#DA291C)}
 .connect-dropdown .cd-icon{width:17px;height:17px;flex-shrink:0;color:var(--red,#DA291C)}
 .connect-dropdown .cd-divider{height:1px;background:var(--gray-mid,#e0e0e0)}
 
@@ -240,3 +240,41 @@
   .nav-links,.nav-ctas{display:none}
   #ham-btn{display:flex}
 }
+
+/* ── Message modal (Connect ▸ Message, and the mobile "Message 804-Michael"
+   button) — replaces the old raw mailto: link, which Cloudflare's email
+   obfuscation feature rewrote into a /cdn-cgi/l/email-protection# URL that
+   only resolves if Cloudflare's injected decode script runs before the
+   click lands; when it doesn't, visitors hit Cloudflare's "Email
+   Protection" info page instead of reaching a lead form. Sends via the
+   same EmailJS account already used by the Home Value forms — see
+   MESSAGE_TEMPLATE_ID + setup notes in nav.js. Lives here (not a per-page
+   <style> block) because the Connect dropdown — and this modal — is
+   injected on every page via nav-partial.html. */
+.msg-modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.6);z-index:9000;
+  align-items:flex-start;justify-content:center;padding:calc(var(--banner-h) + var(--nav-h) + 20px) 20px 20px;overflow-y:auto;}
+.msg-modal-overlay.open{display:flex}
+.msg-modal{background:var(--white,#fff);border-radius:16px;max-width:440px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;position:relative}
+.msg-modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:1.5rem;color:var(--black,#111);margin:0 0 4px}
+.msg-modal p.msg-hint{font-size:.9rem;color:var(--gray-muted,#888);margin:0 0 16px}
+.msg-modal .close-x{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-muted,#888)}
+.msg-modal .close-x:hover{color:var(--red,#DA291C)}
+.msg-field{margin-bottom:12px}
+.msg-field label{display:block;font-size:.86rem;font-weight:700;color:var(--black,#111);margin-bottom:4px}
+.msg-field input,.msg-field textarea{
+  width:100%;border:1.5px solid var(--gray-mid,#e0e0e0);border-radius:8px;padding:9px 11px;font-size:.93rem;
+  font-family:'Barlow',sans-serif;background:#fff;color:var(--black,#111);box-sizing:border-box;
+}
+.msg-field textarea{resize:vertical;min-height:90px}
+.msg-modal-actions{display:flex;gap:10px;margin-top:16px}
+.msg-modal-actions .btn{flex:1;justify-content:center;font-size:1.05rem}
+.msg-cancel-btn{
+  flex:1;background:#fff;color:var(--black,#111);border:2px solid var(--gray-mid,#e0e0e0);
+  border-radius:100px;padding:12px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:600;
+  font-size:1.05rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.msg-cancel-btn:hover{border-color:var(--red,#DA291C);color:var(--red,#DA291C)}
+.msg-modal-status{font-size:.86rem;margin-top:10px;text-align:center;min-height:1.2em}
+.msg-modal-status.error{color:#c0392b}
+.msg-modal-status.success{color:#2f7d3a}

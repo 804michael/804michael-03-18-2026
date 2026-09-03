@@ -82,10 +82,10 @@
             Text
           </a>
           <div class="cd-divider"></div>
-          <a href="/cdn-cgi/l/email-protection#7815111b10191d143840484c0a1d561b1715" role="menuitem">
+          <button type="button" class="cd-btn" id="message-trigger" role="menuitem">
             <svg class="cd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
             Message
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -121,6 +121,7 @@
   <div class="mob-ctas">
     <a href="tel:8046424235" class="btn btn-red" style="justify-content:center">Call 804-Michael</a>
     <a href="sms:8046424235" class="btn btn-outline" style="justify-content:center">Text 804-642-4235</a>
+    <button type="button" id="mob-message-btn" class="btn btn-outline" style="justify-content:center;width:100%">Message 804-Michael</button>
   </div>
   <div class="mob-socials">
     <a href="https://tiktok.com/@804michael" target="_blank" aria-label="TikTok" class="sicon">
@@ -135,3 +136,39 @@
   </div>
 </div>
 <div id="backdrop" onclick="closeMob()"></div>
+
+<!-- Message Modal — triggered by Connect ▸ Message (desktop) and the mobile
+     "Message 804-Michael" button above. Sends via EmailJS; see nav.js for
+     MESSAGE_TEMPLATE_ID and setup notes. Replaces the old raw mailto: link,
+     which Cloudflare's email obfuscation could leave visitors stuck on a
+     Cloudflare "Email Protection" info page instead of reaching 804Michael. -->
+<div class="msg-modal-overlay" id="msgModalOverlay">
+  <div class="msg-modal">
+    <button type="button" class="close-x" id="msgModalClose" aria-label="Close">✕</button>
+    <h3>Send 804Michael a Message</h3>
+    <p class="msg-hint">I'll get back to you as soon as I can — usually the same day.</p>
+    <form id="msgForm">
+      <div class="msg-field">
+        <label for="msgName">Name</label>
+        <input type="text" id="msgName" placeholder="Your name">
+      </div>
+      <div class="msg-field">
+        <label for="msgEmail">Email</label>
+        <input type="email" id="msgEmail" placeholder="you@email.com">
+      </div>
+      <div class="msg-field">
+        <label for="msgPhone">Phone <span style="font-weight:400;color:var(--gray-muted,#888)">(optional)</span></label>
+        <input type="tel" id="msgPhone" placeholder="804-555-0123">
+      </div>
+      <div class="msg-field">
+        <label for="msgBody">Message</label>
+        <textarea id="msgBody" placeholder="What can I help with?"></textarea>
+      </div>
+      <div class="msg-modal-actions">
+        <button type="button" class="msg-cancel-btn" id="msgCancel">Cancel</button>
+        <button type="submit" class="btn btn-red" id="msgSubmitBtn">Send Message</button>
+      </div>
+      <p class="msg-modal-status" id="msgStatus"></p>
+    </form>
+  </div>
+</div>
