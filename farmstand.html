@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 21_42                                 ║
+  ║  SITE VERSION: 26.09.02 22_53                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -301,7 +301,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_42</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 22_53</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -310,7 +310,7 @@
   <div class="modal">
     <button class="close-x" id="closeModal">✕</button>
     <h3>Add a Stand</h3>
-    <p class="hint">Add the stand you're standing at, or one you know about from anywhere.</p>
+    <p class="hint">Add the stand you're currently at, or one you know about from anywhere.</p>
 
     <div class="field">
       <label for="fName">Farm / Stand Name</label>
@@ -526,7 +526,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 21_42';
+const SITE_VERSION = '26.09.02 22_53';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -982,20 +982,7 @@ modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeM
 
 submitBtn.addEventListener('click', async ()=>{
   const name = document.getElementById('fName').value.trim();
-  if(!name){ alert('Please enter a name for this stand.'); return; }
-
   const manualAddress = document.getElementById('fAddress').value.trim();
-  if(!capturedCoords && !manualAddress){
-    if(locationMode === 'address'){
-      alert('Please enter an address so this stand can be placed on the map.');
-    } else if(locationMode === 'gps'){
-      alert('We weren\'t able to capture your location. Try "Enter an Address" instead, or allow location access and try "Use My Location" again.');
-    } else {
-      alert('Please choose "Use My Location" or "Enter an Address" above so this stand can be placed on the map.');
-    }
-    return;
-  }
-
   const isUnmanned = document.getElementById('fUnmanned').classList.contains('active');
   const isVaries = document.getElementById('fVaries').classList.contains('active');
   const noSetHours = isUnmanned || isVaries;
@@ -1003,8 +990,24 @@ submitBtn.addEventListener('click', async ()=>{
   const validGroups = hoursGroups.filter(g => g.days.size > 0 && g.open && g.close);
   const singleGroup = validGroups.length === 1 ? validGroups[0] : null;
 
+  // Collect every missing/invalid field instead of stopping at the first one,
+  // so a single alert can tell the visitor everything they need to fix at once.
+  const missing = [];
+  if(!name) missing.push('Enter a name for this stand.');
+  if(!capturedCoords && !manualAddress){
+    if(locationMode === 'address'){
+      missing.push('Enter an address so this stand can be placed on the map.');
+    } else if(locationMode === 'gps'){
+      missing.push('We weren\'t able to capture your location — try "Enter an Address" instead, or allow location access and try "Use My Location" again.');
+    } else {
+      missing.push('Locate this stand on the map by entering an address or select Use My Location.');
+    }
+  }
   if(!noSetHours && validGroups.length === 0){
-    alert('Please set the Days & Hours: pick at least one day plus an open and close time for a row, or choose "Open all the time" or "Hours vary, check site."');
+    missing.push('Set the Days & Hours: pick at least one day plus an open and close time for a row, or choose "Open all the time" or "Hours vary, check site."');
+  }
+  if(missing.length){
+    alert(missing.length === 1 ? missing[0] : 'Please fix the following before submitting:\n\n• ' + missing.join('\n• '));
     return;
   }
 
