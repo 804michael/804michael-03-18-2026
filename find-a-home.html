@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 15-47                                 ║
+  ║  SITE VERSION: 26.09.02 23-16                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 12-37  ║
   ║                                                               ║
@@ -289,9 +289,9 @@
     ul.rg-plain li b{color:var(--black)}
 
     /* ── CTA block (in-content) ── */
-    .rg-cta{background:var(--black);border-radius:16px;padding:32px 30px;margin-top:8px}
-    .rg-cta h3{color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
-    .rg-cta p{color:rgba(255,255,255,.68);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
+    .rg-cta{background:none;border-top:1px solid var(--gray-mid);padding:28px 0 0;margin-top:8px}
+    .rg-cta h3{color:var(--black);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
+    .rg-cta p{color:var(--gray-text);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
     .rg-cta-flex{display:flex;gap:26px;align-items:stretch}
     .rg-cta-flex>.rg-cta-text{min-width:0;flex:1}
     .rg-cta-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:150px}
@@ -735,7 +735,7 @@
             <p>The best home-buying decisions come from combining your priorities with good information — not from rushing, guessing, or relying on listing photos. When you're ready to tour, text me the addresses you like in Ashland, Hanover, Henrico, Richmond, or the surrounding Central Virginia area. I'll help you compare them, spot the questions worth asking, and decide which homes deserve a closer look. Text me the listings you're watching before you click "Request a Tour."</p>
             <div class="rg-cta-btns">
               <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
-              <a href="sms:8046424235" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.3)">Text 804-642-4235</a>
+              <a href="sms:8046424235" class="btn btn-outline">Text 804-642-4235</a>
             </div>
           </div>
         </div>
@@ -805,7 +805,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 15-47</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 23-16</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -818,7 +818,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 15-47';
+  const SITE_VERSION = '26.09.02 23-16';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
