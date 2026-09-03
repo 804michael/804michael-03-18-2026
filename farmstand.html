@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 21_02                                 ║
+  ║  SITE VERSION: 26.09.02 21_13                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -192,59 +192,64 @@
     align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.show{display:flex;}
   .modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;}
-  .modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:22px;color:var(--black);margin:0 0 4px;}
-  .modal p.hint{font-size:13px;color:var(--gray-muted);margin:0 0 16px;}
+  .modal h3{font-family:'Barlow',sans-serif;font-weight:800;font-size:24.2px;color:var(--black);margin:0 0 4px;}
+  .modal p.hint{font-size:14.3px;color:var(--gray-muted);margin:0 0 16px;}
   .field{margin-bottom:12px;}
-  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--black);margin-bottom:4px;}
+  .field label{display:block;font-size:13.8px;font-weight:700;color:var(--black);margin-bottom:4px;}
   .field input,.field select,.field textarea{
-    width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 11px;font-size:13.5px;
+    width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 11px;font-size:14.9px;
     font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
   }
   .field textarea{resize:vertical;min-height:60px;}
   .cat-check-group{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
-  .cat-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;}
+  .cat-check{display:flex;align-items:center;gap:8px;font-size:14.9px;font-weight:500;color:var(--ink);cursor:pointer;}
   .cat-check input{width:16px;height:16px;accent-color:var(--red);cursor:pointer;margin:0;}
   .day-toggle{display:flex;flex-wrap:wrap;gap:6px;}
   .day-chip{
     flex:1;min-width:38px;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.03em;text-transform:uppercase;
     padding:8px 4px;border-radius:7px;cursor:pointer;transition:all .15s ease;
   }
   .day-chip:hover{border-color:var(--red);}
   .day-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
-  .hours-mode-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .hours-mode-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
   .hours-mode-chip{
-    border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;
+    flex:1;border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.03em;text-transform:uppercase;
     padding:8px 14px;border-radius:7px;cursor:pointer;transition:all .15s ease;
   }
   .hours-mode-chip:hover{border-color:var(--red);}
   .hours-mode-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
-  .loc-chip{white-space:normal;text-align:center;font-size:.78rem;padding:10px 8px;}
+  .loc-chip{white-space:normal;text-align:center;font-size:.86rem;padding:10px 8px;}
   .time-row{display:flex;gap:12px;}
   .time-row>div{flex:1;}
-  .hours-group{padding:10px 10px 12px;margin-bottom:8px;position:relative;}
+  .time-row input{
+    width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 11px;font-size:14.9px;
+    font-family:'Barlow',sans-serif;background:#fff;color:var(--black);box-sizing:border-box;
+  }
+  .hours-group{padding:10px 0 12px;margin-bottom:8px;position:relative;}
   .hours-group .time-row{margin-top:8px;}
   .hours-group .remove-range{
     position:absolute;top:8px;right:8px;background:none;border:none;color:var(--gray-muted);
-    font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:5px;
+    font-size:17.6px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:5px;
   }
   .hours-group .remove-range:hover{color:var(--red);background:var(--gray-light);}
   .btn-add-range{
     width:100%;border:1.5px dashed var(--gray-mid);background:#fff;color:var(--gray-muted);
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;
     padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s ease;margin-top:2px;
   }
   .btn-add-range:hover{border-color:var(--red);color:var(--red);}
-  .geo-status{font-size:12.5px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+  .geo-status{font-size:13.8px;border-radius:8px;padding:8px 10px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
   .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
   .geo-status.ok{background:#eef6ee;color:#2f6b30;}
   .geo-status.fail{background:#fbe4de;color:#933;}
   .modal-actions{display:flex;gap:10px;margin-top:16px;}
   .modal-actions .btn{flex:1;justify-content:center;}
-  .close-x{position:absolute;top:14px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-muted);}
+  .modal .btn{font-size:1.05rem;}
+  .close-x{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-muted);}
   .modal{position:relative;}
-  .submit-note{font-size:11.5px;color:var(--gray-muted);margin-top:10px;text-align:center;}
+  .submit-note{font-size:12.7px;color:var(--gray-muted);margin-top:10px;text-align:center;}
   @media(max-width:480px){
     .leaflet-popup-content-wrapper{max-width:265px;}
     #map{height:380px;}
@@ -295,7 +300,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_02</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.02 21_13</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -520,7 +525,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.02 21_02';
+const SITE_VERSION = '26.09.02 21_13';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
