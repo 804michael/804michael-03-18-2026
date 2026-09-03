@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 18_10                                 ║
+  ║  SITE VERSION: 26.09.03 19_44                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -324,7 +324,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 18_10</p>
+  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.03 19_44</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -549,7 +549,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.03 18_10';
+const SITE_VERSION = '26.09.03 19_44';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -695,7 +695,7 @@ function wireFilterChips(stands){
 function parseCsvRows(rows){
   return rows
     .filter(r => (r["Farm Name"] || r["Name"] || r["Farm/Vendor Name"]))
-    .filter(r => { const a = (r["Approved"]||"").toString().toLowerCase(); return a === "" || a === "true"; })
+    .filter(r => { const a = (r["Approved"]||"").toString().trim().toLowerCase(); return a === "" || a === "true"; })
     .map(r => {
       const days = (r["Days"] || r["Days Available"] || "").split(',').map(s=>s.trim()).filter(Boolean);
       const structuredHours = formatHoursSummary(days, r["Open"] || r["Open Time"], r["Close"] || r["Close Time"]);
