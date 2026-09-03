@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 15-53                                 ║
+  ║  SITE VERSION: 26.09.03 17-23                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -102,6 +102,17 @@
     .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
+
+    /* Small dynamic status line — currently only used for the ORS/HeiGIT
+       account-signup check on the Tour Planner card (see the script at the
+       bottom and functions/api/heigit-status.js). Reuses the same
+       checking/up/down state pattern as farmstand.html's review-pill. */
+    .ext-status{font-size:.92rem;border-radius:8px;padding:6px 10px;margin:0 0 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .ext-status.checking{background:var(--gray-light);color:var(--gray-muted)}
+    .ext-status.up{background:#eef6ee;color:#2f6b30}
+    .ext-status.down{background:#fff6e6;color:#8a5a00}
+    .ext-status.error{background:var(--gray-light);color:var(--gray-muted)}
+    .ext-status button{background:none;border:none;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
 
     /* ── Notes & Ideas (research reminders — not built pages) — right-side panel ── */
     .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 8px}
@@ -310,6 +321,7 @@
           <li>Per-stop time budget (default 20 min), running arrival-time estimates, total drive time/distance</li>
           <li>Client-facing blurb + private notes per stop, QR code, SMS share, Google/Apple/Outlook calendar links, printable itinerary, saved tours (this browser)</li>
         </ul>
+        <div class="ext-status checking" id="orsStatus">⏳ Checking account.heigit.org (needed for the ORS key signup)…</div>
         <a class="dev-card-link" href="tour-planner.html">View page →</a>
       </div>
     </div>
@@ -391,7 +403,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.03 15-53</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.03 17-23</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -402,7 +414,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.03 15-53';
+  const SITE_VERSION = '26.09.03 17-23';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -612,6 +624,53 @@
           if(data && Array.isArray(data.notes)) saveCache(data.notes);
         }).catch(function(){});
     });
+  })();
+
+  // ── account.heigit.org status check (Tour Planner card) ────────────────
+  // Backed by functions/api/heigit-status.js, which does the actual check
+  // server-side (a browser fetch straight to account.heigit.org would just
+  // get blocked by CORS) and caches the result there for about an hour, so
+  // loading this page repeatedly doesn't hammer HeiGIT's server — "check
+  // now" below forces a fresh one. See that file's top comment for detail.
+  (function(){
+    var el = document.getElementById('orsStatus');
+    if(!el) return;
+    var STATUS_URL = '/api/heigit-status';
+
+    function timeAgo(iso){
+      if(!iso) return '';
+      var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+      if(mins < 1) return 'just now';
+      if(mins < 60) return mins + ' min ago';
+      var hrs = Math.round(mins / 60);
+      return hrs + ' hr' + (hrs === 1 ? '' : 's') + ' ago';
+    }
+
+    function render(data, err){
+      if(err || !data){
+        el.className = 'ext-status error';
+        el.innerHTML = '⚠️ Could not check account.heigit.org right now &middot; <button type="button" id="orsRecheck">Check now</button>';
+      } else if(data.up){
+        el.className = 'ext-status up';
+        el.innerHTML = '🟢 account.heigit.org is back up — try the ORS signup again (checked ' + timeAgo(data.checkedAt) + ') &middot; <button type="button" id="orsRecheck">Check now</button>';
+      } else {
+        el.className = 'ext-status down';
+        el.innerHTML = '🔴 account.heigit.org still down (checked ' + timeAgo(data.checkedAt) + ') &middot; <button type="button" id="orsRecheck">Check now</button>';
+      }
+      var btn = document.getElementById('orsRecheck');
+      if(btn) btn.addEventListener('click', function(){ check(true); });
+    }
+
+    function check(force){
+      el.className = 'ext-status checking';
+      el.textContent = '⏳ Checking account.heigit.org…';
+      fetch(STATUS_URL + (force ? '?force=1' : ''))
+        .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('bad_response')); })
+        .then(function(data){ render(data, null); })
+        .catch(function(err){ render(null, err); });
+    }
+
+    check(false);
   })();
 </script>
 </body>
