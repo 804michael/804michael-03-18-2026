@@ -559,14 +559,14 @@
     });
 
     const hasPhone = phoneEl.value.replace(/\D/g,'').length === 10;
-    const hasEmail = emailEl.value.trim() && emailEl.value.includes('@');
+    const hasEmail = emailEl.value.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
     if(!hasPhone && !hasEmail){
       phoneEl.classList.add('invalid');
       emailEl.classList.add('invalid');
       missing.push('Phone or Email');
     } else if(emailEl.value.trim() && !hasEmail){
       emailEl.classList.add('invalid');
-      missing.push('a valid Email (must include @)');
+      missing.push('a valid Email (e.g. name@example.com)');
     }
 
     if(missing.length){

@@ -217,7 +217,12 @@
 
         const missing = [];
         if (!nameEl.value.trim()) missing.push('your name');
-        if (!emailEl.value.trim() && !phoneEl.value.trim()) missing.push('an email or phone number so I can get back to you');
+        const hasValidEmail = emailEl.value.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
+        if (!hasValidEmail && !phoneEl.value.trim()) {
+          missing.push('an email or phone number so I can get back to you');
+        } else if (emailEl.value.trim() && !hasValidEmail) {
+          missing.push('a valid email address (e.g. name@example.com)');
+        }
         if (!bodyEl.value.trim()) missing.push('a message');
         if (missing.length) {
           msgStatus.textContent = 'Please add: ' + missing.join(', ') + '.';

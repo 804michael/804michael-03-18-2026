@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 15-47                                 ║
+  ║  SITE VERSION: 26.09.03 00-28                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
   ║                                                               ║
@@ -960,7 +960,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 15-47</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.03 00-28</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -975,7 +975,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 15-47';
+  const SITE_VERSION = '26.09.03 00-28';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -1114,14 +1114,14 @@
     });
 
     const hasPhone = phoneEl.value.replace(/\D/g,'').length === 10;
-    const hasEmail = emailEl.value.trim() && emailEl.value.includes('@');
+    const hasEmail = emailEl.value.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
     if(!hasPhone && !hasEmail){
       phoneEl.classList.add('invalid');
       emailEl.classList.add('invalid');
       missing.push('Phone or Email');
     } else if(emailEl.value.trim() && !hasEmail){
       emailEl.classList.add('invalid');
-      missing.push('a valid Email (must include @)');
+      missing.push('a valid Email (e.g. name@example.com)');
     }
 
     if(missing.length){
