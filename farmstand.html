@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 01_07                                 ║
+  ║  SITE VERSION: 26.09.04 01_23                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -106,7 +106,7 @@
   .btn-icon{margin-left:auto;position:relative;padding:11px 15px;font-size:1.35rem;line-height:1;}
   .btn-icon:hover{transform:none;border-color:var(--gray-mid);color:var(--black);}
   .badge-count{position:absolute;top:3px;right:3px;background:var(--red);color:#fff;
-    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.6rem;min-width:16px;height:16px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.6rem;line-height:16px;min-width:16px;height:16px;
     border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 0 2px #fff;}
 
   .toolbar{background:#fff;width:90vw;margin:14px calc(50% - 45vw) 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
@@ -329,7 +329,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04 01_07</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04 01_23</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -561,7 +561,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.04 01_07';
+const SITE_VERSION = '26.09.04 01_23';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

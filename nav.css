@@ -137,19 +137,35 @@
 .nav-links>li:hover .nav-dropdown,.nav-links>li:focus-within .nav-dropdown{display:block}
 .nav-links>li:hover .nav-chevron,.nav-links>li:focus-within .nav-chevron{transform:rotate(-135deg) translateY(2px)}
 
-/* Contact icons — was a single "Connect" pill that opened a dropdown of
-   Call/Text/Message/Save Contact; now those 4 actions show as standalone
-   icon buttons directly in the nav so they're one click instead of two. */
-.nav-icons{display:flex;align-items:center;gap:8px}
-.nav-icon-btn{
-  display:flex;align-items:center;justify-content:center;
-  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+/* Connect pill */
+.connect-wrap{position:relative}
+.btn-connect{
   background:var(--red,#DA291C);color:var(--white,#fff);border:2px solid var(--red,#DA291C);
-  cursor:pointer;text-decoration:none;
+  border-radius:100px;padding:9px 20px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;
   transition:background .2s,box-shadow .2s;
 }
-.nav-icon-btn:hover{background:var(--red-dark,#b01f15);box-shadow:0 4px 16px rgba(218,41,28,.3)}
-.nav-icon-btn svg{width:17px;height:17px;flex-shrink:0}
+.btn-connect:hover{background:var(--red-dark,#b01f15);box-shadow:0 4px 16px rgba(218,41,28,.3)}
+.connect-dropdown{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--white,#fff);border-radius:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid var(--gray-mid,#e0e0e0);
+  min-width:172px;overflow:hidden;z-index:5001;
+}
+.connect-dropdown.open{display:block}
+.connect-dropdown a,.connect-dropdown .cd-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:13px 20px;border:none;background:none;
+  font-family:'Barlow',sans-serif;font-weight:600;font-size:.92rem;
+  color:var(--black,#111);white-space:nowrap;text-align:left;cursor:pointer;
+  transition:background .15s,color .15s;
+  text-decoration:none;
+}
+.connect-dropdown a:hover,.connect-dropdown .cd-btn:hover{background:var(--gray-light,#f5f5f5);color:var(--red,#DA291C)}
+.connect-dropdown .cd-icon{width:17px;height:17px;flex-shrink:0;color:var(--red,#DA291C)}
+.connect-dropdown .cd-divider{height:1px;background:var(--gray-mid,#e0e0e0)}
 
 /* ── Hamburger ── */
 #ham-btn{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:6px}
