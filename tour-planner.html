@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 02-29                                 ║
+  ║  SITE VERSION: 26.09.04 02-52                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -144,6 +144,12 @@
   .tp-bulk-hint{font-size:.8rem;color:var(--gray-text);margin-bottom:8px;line-height:1.4}
   .tp-bulk-textarea{width:100%;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem;resize:vertical;margin-bottom:10px;font-family:inherit;background:#fff}
   .tp-bulk-status{font-size:.78rem;color:var(--gray-text);margin-top:8px;line-height:1.4}
+  .tp-bulk-overlay{position:fixed;inset:0;background:rgba(17,17,17,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+  .tp-bulk-overlay[hidden]{display:none}
+  .tp-bulk-overlay-box{background:#fff;border-radius:14px;padding:28px 32px;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .tp-spinner{width:36px;height:36px;border:4px solid var(--gray-mid);border-top-color:var(--red);border-radius:50%;margin:0 auto 14px;animation:tpSpin .8s linear infinite}
+  @keyframes tpSpin{to{transform:rotate(360deg)}}
+  .tp-bulk-overlay-box p{font-size:.9rem;color:var(--gray-text);line-height:1.5;word-break:break-word}
 
   .tp-link-warn{font-size:.78rem;color:#a06000;font-weight:600;line-height:1.4;margin-top:8px}
   .tp-link-warn[hidden]{display:none}
@@ -155,16 +161,20 @@
   .tp-field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
   .tp-field label{font-size:.78rem;color:var(--gray-text);font-weight:600}
   .tp-field input,.tp-field select{padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.9rem}
-  .tp-field-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  .tp-field-row .tp-field{flex:1 1 130px;margin-bottom:12px}
-  .tp-input-suffix-wrap{display:flex;align-items:center;gap:7px}
-  .tp-input-suffix-wrap input{width:64px;flex:0 0 auto}
+  .tp-field-row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .tp-field-row .tp-field{flex:1 1 100px;margin-bottom:12px;min-width:0}
+  .tp-field-row input[type="date"]{max-width:100%;width:100%}
+  .tp-field-row input[type="time"]{max-width:100%;width:100%}
+  .tp-input-suffix-wrap{display:flex;align-items:center;gap:6px}
+  .tp-input-suffix-wrap input{width:52px;flex:0 0 auto}
   .tp-input-suffix{font-size:.85rem;color:var(--gray-text);white-space:nowrap}
   .tp-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 
   /* ── Save/load ── */
   .tp-saved-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .tp-saved-row select{flex:1 1 160px;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem}
+  .tp-store-mode{font-size:.76rem;color:var(--gray-muted);margin-bottom:10px}
+  .tp-store-mode.synced{color:var(--green)}
 
   /* ── Map + summary ── */
   #map{height:420px;width:100%;border-radius:14px;border:1px solid var(--gray-mid);box-shadow:0 6px 20px rgba(0,0,0,.08);margin-bottom:14px}
@@ -294,12 +304,19 @@
 
         <div class="tp-bulk-wrap" id="bulkAddWrap" hidden>
           <p class="tp-bulk-hint">One address per line — I'll look each one up automatically. Any I can't match get added blank so you can search that one by hand.</p>
-          <textarea id="bulkAddTextarea" class="tp-bulk-textarea" rows="5" placeholder="100 Steyland Street, Ashland, VA&#10;315 South Taylor Street, Ashland, VA&#10;215 Thorncliff Road, Ashland, VA"></textarea>
+          <textarea id="bulkAddTextarea" class="tp-bulk-textarea" rows="5" placeholder="123 Maple Grove Lane, Richmond, VA&#10;456 Willow Bend Court, Mechanicsville, VA&#10;789 Foxhollow Drive, Glen Allen, VA"></textarea>
           <div class="tp-actions-row">
             <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="bulkAddSubmitBtn">Add These Stops</button>
             <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="bulkAddCancelBtn">Cancel</button>
           </div>
           <p class="tp-bulk-status" id="bulkAddStatus"></p>
+        </div>
+
+        <div class="tp-bulk-overlay" id="bulkAddOverlay" hidden>
+          <div class="tp-bulk-overlay-box">
+            <div class="tp-spinner" aria-hidden="true"></div>
+            <p id="bulkAddOverlayText">Looking up addresses…</p>
+          </div>
         </div>
 
         <div id="stopList"></div>
@@ -332,7 +349,7 @@
             <label for="defaultBudgetInput">Default time per stop</label>
             <div class="tp-input-suffix-wrap">
               <input type="number" id="defaultBudgetInput" min="1" max="180" value="20">
-              <span class="tp-input-suffix">minutes</span>
+              <span class="tp-input-suffix">min</span>
             </div>
           </div>
         </div>
@@ -345,7 +362,8 @@
 
       <div class="tp-panel">
         <h2>Save / Reuse Tours</h2>
-        <p class="tp-panel-sub">Save this list of stops (and reload it next time) — stored in this browser only.</p>
+        <p class="tp-panel-sub">Save this list of stops and reload it any time. Load a saved tour, tweak it, and Save again under the same name to update it.</p>
+        <p class="tp-store-mode" id="storeModeNote"></p>
         <div class="tp-saved-row" style="margin-bottom:10px">
           <select id="savedToursSelect"><option value="">— Saved tours —</option></select>
           <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="loadTourBtn">Load</button>
@@ -355,6 +373,7 @@
           <input type="text" id="saveTourNameInput" placeholder="Name this tour (e.g. Smith Family — Sat)" style="flex:1 1 160px;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem">
           <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="saveTourBtn">Save Tour</button>
         </div>
+        <button type="button" class="tp-link-btn" id="clearAllToursBtn" style="margin-top:10px;margin-bottom:0;color:var(--gray-muted)">Clear all saved tours</button>
       </div>
 
     </div>
@@ -479,7 +498,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 02-29</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 02-52</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -492,7 +511,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 02-29';
+const SITE_VERSION = '26.09.04 02-52';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -815,28 +834,59 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       })
       .catch(function(){ return null; });
   }
+  // Fills the first still-empty stop row (never typed into — e.g. one of
+  // the 2 default blank rows the page starts with) instead of always
+  // appending a new one. Only falls back to a brand-new row once every
+  // existing blank is used up, so pasting a list right after loading the
+  // page doesn't leave stray blank rows sitting above the pasted ones.
+  function fillOrAddStopRow(prefill){
+    var emptyStop = stops.find(function(s){ return !s.address && s.lat==null; });
+    if(emptyStop){
+      Object.assign(emptyStop, prefill);
+      var row = stopList.querySelector('.stop-row[data-id="'+emptyStop.id+'"]');
+      if(row){
+        var addrInput = row.querySelector('.stop-address');
+        if(addrInput) addrInput.value = emptyStop.address;
+        row.classList.toggle('geo-missing', emptyStop.lat==null);
+      }
+      renumberRows();
+      resetShareAndSummary();
+      return row;
+    }
+    return addStopRow(prefill);
+  }
+
+  var bulkAddOverlay = document.getElementById('bulkAddOverlay');
+  var bulkAddOverlayText = document.getElementById('bulkAddOverlayText');
+
   bulkAddSubmitBtn.addEventListener('click', function(){
     var lines = bulkAddTextarea.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
     if(!lines.length){ bulkAddStatus.textContent = 'Paste at least one address first, one per line.'; return; }
-    var roomLeft = MAX_STOPS - stopList.querySelectorAll('.stop-row').length;
+    // Blank rows get filled in place rather than counting against the cap,
+    // so "room left" is based on how many stops are actually occupied.
+    var occupied = stops.filter(function(s){ return s.address || s.lat!=null; }).length;
+    var roomLeft = MAX_STOPS - occupied;
     if(roomLeft <= 0){ bulkAddStatus.textContent = 'Already at the ' + MAX_STOPS + '-stop limit — remove a stop first.'; return; }
     var overflow = lines.length > roomLeft;
     if(overflow) lines = lines.slice(0, roomLeft);
     bulkAddSubmitBtn.disabled = true;
+    bulkAddOverlay.hidden = false;
     var i = 0, added = 0;
     function next(){
       if(i >= lines.length){
         bulkAddSubmitBtn.disabled = false;
+        bulkAddOverlay.hidden = true;
         bulkAddStatus.textContent = 'Added ' + added + ' stop' + (added===1?'':'s') + '.' +
           (overflow ? ' Only room for ' + roomLeft + ' more, so the rest of the list was left in the box — remove a stop or paste the rest separately.' : ' You can close this box now.');
         if(!overflow) bulkAddTextarea.value = '';
         return;
       }
       var line = lines[i];
-      bulkAddStatus.textContent = 'Looking up ' + (i+1) + ' of ' + lines.length + ': ' + line + '…';
+      var progressMsg = 'Looking up ' + (i+1) + ' of ' + lines.length + ': ' + line + '…';
+      bulkAddStatus.textContent = progressMsg;
+      bulkAddOverlayText.textContent = progressMsg;
       geocodeOneLine(line).then(function(match){
-        var row = addStopRow(match ? {address:match.display, lat:match.lat, lng:match.lng} : {address:line, lat:null, lng:null});
-        if(row) row.classList.toggle('geo-missing', !match);
+        fillOrAddStopRow(match ? {address:match.display, lat:match.lat, lng:match.lng} : {address:line, lat:null, lng:null});
         added++; i++;
         setTimeout(next, 1100); // Nominatim usage policy: keep it to ~1 request/sec
       });
@@ -1048,27 +1098,40 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // ── Recalculate ──────────────────────────────────────────────────────
   document.getElementById('recalculateBtn').addEventListener('click', recalculate);
 
+  // A stop nobody has touched yet (no address typed, no coords) — the kind
+  // the page starts with 2 of, or that a bulk-paste run leaves behind once
+  // it runs out of matches to add. These are silently skipped by
+  // recalculate() instead of blocking it, since they're not really a stop
+  // yet, just an empty slot.
+  function isUntouchedStop(s){ return !!s && !s.address && s.lat==null; }
+  function usableStopsList(){ return stops.filter(function(s){ return !isUntouchedStop(s); }); }
+
   function recalculate(){
     syncStopsOrderFromDom();
-    var missing = stops.filter(function(s){ return s.lat==null || s.lng==null; });
+    var usable = usableStopsList();
+    // "missing" = a real, started stop (address typed, or otherwise touched)
+    // that's missing coordinates — e.g. typed but never picked from the
+    // dropdown. Still blocks recalculate, since dropping it silently would
+    // mean a stop the agent actually meant to include just vanishes.
+    var missing = usable.filter(function(s){ return s.lat==null || s.lng==null; });
     stopList.querySelectorAll('.stop-row').forEach(function(row){
       var id = row.getAttribute('data-id');
       var s = findStop(id);
-      row.classList.toggle('geo-missing', !!(s && (s.lat==null||s.lng==null)));
+      row.classList.toggle('geo-missing', !!(s && !isUntouchedStop(s) && (s.lat==null||s.lng==null)));
     });
     var sourceNoteEl = document.getElementById('routeSourceNote');
-    if(stops.length<2){
+    if(usable.length<2){
       // Shown both ways: as an alert() AND written into the page itself, since some
       // browsers silently swallow repeat alert() popups (e.g. after "prevent this
       // page from creating additional dialogs" gets checked), which used to make
       // this look like the button did nothing at all.
-      sourceNoteEl.textContent = 'Add at least 2 stops first.';
+      sourceNoteEl.textContent = 'Add at least 2 stops with an address first.';
       sourceNoteEl.className = 'tp-source-note warn';
-      alert('Add at least 2 stops first.');
+      alert('Add at least 2 stops with an address first.');
       return;
     }
     if(missing.length){
-      var warnMsg = 'Select an address from the dropdown suggestions for every stop before recalculating — ' + missing.length + ' stop(s) still need that (highlighted in orange below).';
+      var warnMsg = 'Select an address from the dropdown suggestions for every stop before recalculating — ' + missing.length + ' stop(s) still need that (highlighted in orange below). Blank rows with nothing typed in them are skipped automatically.';
       sourceNoteEl.textContent = warnMsg;
       sourceNoteEl.className = 'tp-source-note warn';
       alert(warnMsg);
@@ -1084,7 +1147,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       body: JSON.stringify({
         mode: mode,
         startStopId: document.getElementById('startPinSelect').value || null,
-        stops: stops.map(function(s){ return {id:s.id, lat:s.lat, lng:s.lng}; })
+        stops: usable.map(function(s){ return {id:s.id, lat:s.lat, lng:s.lng}; })
       })
     }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('http_'+r.status)); })
       .then(function(data){ applyRouteResult(data); })
@@ -1096,20 +1159,25 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   }
 
   function computeLocalFallback(){
-    var ordered = mode==='optimize' ? fallbackNearestNeighborOrder(stops) : stops.slice();
+    var usable = usableStopsList();
+    var ordered = mode==='optimize' ? fallbackNearestNeighborOrder(usable) : usable.slice();
     var f = fallbackLegs(ordered);
     return { source:'fallback-haversine', order: ordered.map(function(s){return s.id;}), legs:f.legs, geometry:null, totalDistanceMeters:f.totalDistanceMeters, totalDurationSeconds:f.totalDurationSeconds };
   }
 
   function applyRouteResult(data){
-    // Reorder our stops + the DOM rows to match the server/fallback-determined order
+    // Reorder the DOM rows for the routed stops to match the server/fallback
+    // order, then re-derive `stops` from the DOM. This is deliberately NOT
+    // `stops = orderedStops` — that would silently drop any stop that wasn't
+    // part of THIS route (e.g. a still-blank row recalculate() skipped),
+    // losing track of it even after the agent goes back and fills it in.
     var orderedIds = data.order || stops.map(function(s){return s.id;});
     var orderedStops = orderedIds.map(function(id){ return findStop(id); }).filter(Boolean);
-    stops = orderedStops;
     orderedIds.forEach(function(id){
       var row = stopList.querySelector('.stop-row[data-id="'+id+'"]');
       if(row) stopList.appendChild(row);
     });
+    syncStopsOrderFromDom();
     renumberRows();
 
     var geometry = (data.geometry && data.geometry.length) ? data.geometry : null;
@@ -1292,7 +1360,13 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var end = new Date(start.getTime() + (data.totalDurationSeconds||0)*1000 + totalBudgetSec*1000);
 
     var title = 'Home Tour — ' + orderedStops.length + ' stops';
-    var addrList = orderedStops.map(function(s,i){ return (i+1)+'. '+s.address + (s.blurb?' — '+s.blurb:''); }).join('\n');
+    // Each stop gets its own map link in the event details — a backup in
+    // case the "Full route" link ever breaks (an app that mangles the URL,
+    // a client copy/pasting it wrong, etc.), the calendar entry alone still
+    // gets them to every stop.
+    var addrList = orderedStops.map(function(s,i){
+      return (i+1)+'. '+s.address + (s.blurb?' — '+s.blurb:'') + '\nMap: ' + googleSingleStopUrl(s);
+    }).join('\n\n');
     var details = addrList + '\n\nFull route: ' + fullUrl;
 
     function toUTCStamp(d){
@@ -1364,50 +1438,133 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     }).join('');
   }
 
-  // ── Save / reuse tours (localStorage only) ──────────────────────────
+  // ── Save / reuse tours ────────────────────────────────────────────────
+  // Server-backed via /api/tours + a Cloudflare KV binding (TOURS_KV) when
+  // that's set up, so saved tours follow Michael across any device/browser.
+  // Falls back to this browser's localStorage automatically — same as
+  // before — if the KV binding isn't configured yet, or the API call fails
+  // for any reason (offline, etc.), so the feature never just stops working.
   var savedSelect = document.getElementById('savedToursSelect');
-  function loadSavedList(){
+  var storeModeNote = document.getElementById('storeModeNote');
+  var toursCache = {};
+  var storageMode = 'local'; // 'kv' once a server round-trip succeeds
+
+  function toursApi(method, body){
+    return fetch('/api/tours', {
+      method: method,
+      headers: body ? {'Content-Type':'application/json'} : undefined,
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function(r){
+      if(!r.ok) return Promise.reject(new Error('http_'+r.status));
+      return r.json();
+    });
+  }
+  function loadLocalTours(){
     var data = {}; try{ data = JSON.parse(localStorage.getItem(SAVED_KEY)||'{}'); }catch(e){}
-    savedSelect.innerHTML = '<option value="">— Saved tours —</option>' + Object.keys(data).map(function(name){
-      return '<option value="'+escapeAttr(name)+'">'+escapeHtml(name)+'</option>';
-    }).join('');
     return data;
   }
-  loadSavedList();
+  function saveLocalTours(data){
+    try{ localStorage.setItem(SAVED_KEY, JSON.stringify(data)); return true; }
+    catch(e){ return false; }
+  }
+  function renderSavedSelect(){
+    var current = savedSelect.value;
+    savedSelect.innerHTML = '<option value="">— Saved tours —</option>' + Object.keys(toursCache).sort().map(function(name){
+      return '<option value="'+escapeAttr(name)+'">'+escapeHtml(name)+'</option>';
+    }).join('');
+    if(current && toursCache[current]) savedSelect.value = current;
+    storeModeNote.textContent = storageMode==='kv'
+      ? 'Synced to your Cloudflare account — available on any device or browser.'
+      : 'Saved in this browser only — cloud sync isn\'t set up yet (ask to enable it).';
+    storeModeNote.classList.toggle('synced', storageMode==='kv');
+  }
+
+  // Initial load: try the server first, fall back to localStorage.
+  toursApi('GET').then(function(data){
+    storageMode = 'kv';
+    toursCache = (data && data.tours) || {};
+    renderSavedSelect();
+  }).catch(function(){
+    storageMode = 'local';
+    toursCache = loadLocalTours();
+    renderSavedSelect();
+  });
 
   document.getElementById('saveTourBtn').addEventListener('click', function(){
     syncStopsOrderFromDom();
     var name = document.getElementById('saveTourNameInput').value.trim();
     if(!name){ alert('Give this tour a name first.'); return; }
     if(!stops.length){ alert('Add at least one stop first.'); return; }
-    var data = {}; try{ data = JSON.parse(localStorage.getItem(SAVED_KEY)||'{}'); }catch(e){}
-    data[name] = stops.map(function(s){ return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes, budget:s.budget}; });
-    try{ localStorage.setItem(SAVED_KEY, JSON.stringify(data)); }catch(e){ alert('Could not save — your browser storage may be full or blocked.'); return; }
-    document.getElementById('saveTourNameInput').value='';
-    loadSavedList();
-    savedSelect.value = name;
+    if(toursCache[name] && !confirm('A tour named "'+name+'" already exists — overwrite it?')) return;
+    var tourStops = stops.map(function(s){ return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes, budget:s.budget}; });
+
+    function afterSave(){
+      document.getElementById('saveTourNameInput').value='';
+      renderSavedSelect();
+      savedSelect.value = name;
+    }
+    if(storageMode==='kv'){
+      toursApi('POST', {name:name, stops:tourStops}).then(function(data){
+        toursCache = (data && data.tours) || toursCache;
+        afterSave();
+      }).catch(function(){
+        // Server save failed mid-session — fall back to local so the save isn't lost.
+        storageMode = 'local';
+        toursCache = loadLocalTours();
+        toursCache[name] = tourStops;
+        if(!saveLocalTours(toursCache)){ alert('Could not save — your browser storage may be full or blocked.'); return; }
+        afterSave();
+      });
+    } else {
+      toursCache[name] = tourStops;
+      if(!saveLocalTours(toursCache)){ alert('Could not save — your browser storage may be full or blocked.'); return; }
+      afterSave();
+    }
   });
 
   document.getElementById('loadTourBtn').addEventListener('click', function(){
     var name = savedSelect.value;
     if(!name) return;
-    var data = {}; try{ data = JSON.parse(localStorage.getItem(SAVED_KEY)||'{}'); }catch(e){}
-    var list = data[name];
+    var list = toursCache[name];
     if(!list) return;
     stopList.innerHTML=''; stops=[];
     list.forEach(function(item){ addStopRow(item); });
     if(!list.length) { addStopRow(); addStopRow(); }
     resetShareAndSummary();
+    // Pre-fill the name so tweaking stops + Save Tour naturally re-saves
+    // over this same tour, rather than requiring the name be retyped exactly.
+    document.getElementById('saveTourNameInput').value = name;
   });
 
   document.getElementById('deleteTourBtn').addEventListener('click', function(){
     var name = savedSelect.value;
     if(!name) return;
     if(!confirm('Delete the saved tour "'+name+'"?')) return;
-    var data = {}; try{ data = JSON.parse(localStorage.getItem(SAVED_KEY)||'{}'); }catch(e){}
-    delete data[name];
-    try{ localStorage.setItem(SAVED_KEY, JSON.stringify(data)); }catch(e){}
-    loadSavedList();
+    if(storageMode==='kv'){
+      toursApi('DELETE', {name:name}).then(function(data){
+        toursCache = (data && data.tours) || toursCache;
+        renderSavedSelect();
+      }).catch(function(){ alert('Could not delete — try again in a moment.'); });
+    } else {
+      delete toursCache[name];
+      saveLocalTours(toursCache);
+      renderSavedSelect();
+    }
+  });
+
+  document.getElementById('clearAllToursBtn').addEventListener('click', function(){
+    if(!Object.keys(toursCache).length){ return; }
+    if(!confirm('Clear all ' + Object.keys(toursCache).length + ' saved tour(s)? This can\'t be undone.')) return;
+    if(storageMode==='kv'){
+      toursApi('DELETE', {clearAll:true}).then(function(){
+        toursCache = {};
+        renderSavedSelect();
+      }).catch(function(){ alert('Could not clear — try again in a moment.'); });
+    } else {
+      toursCache = {};
+      saveLocalTours(toursCache);
+      renderSavedSelect();
+    }
   });
 
 })();
