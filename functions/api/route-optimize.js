@@ -44,10 +44,22 @@
 // works on both domains automatically — no separate key needed for the
 // new URLs, per HeiGIT's own migration notice.
 //
-// Optimization approach: ORS's Optimization API needs a fixed vehicle
-// start, so the FIRST stop in the list you send is used as that anchor —
-// the remaining stops are reordered around it for the shortest total
-// route. This is an "open" route (no forced return to the start).
+// Optimization approach: ORS's Optimization API (VROOM) requires at least
+// one fixed end of the route (its own docs: "start and end are optional for
+// a vehicle, as long as at least one of them is present").
+//   - If the frontend sends a `startStopId`, that stop is pinned as the
+//     vehicle's fixed `start` and every other stop is reordered around it —
+//     this is a real optimizer-chosen order, just anchored where the user
+//     picked.
+//   - If no `startStopId` is sent ("let the optimizer pick the best start"),
+//     we can't leave BOTH ends free (VROOM requires one), so the LAST stop
+//     in the current list is anchored as the fixed `end` purely to satisfy
+//     that requirement — the actual START is left fully unconstrained, so
+//     the optimizer freely chooses which of your stops to begin at. For a
+//     single-vehicle open route, fixing either end and freeing the other
+//     explores the same route space, so this still gives a genuinely
+//     optimizer-chosen starting point, not an arbitrary one.
+// Either way this is an "open" route — no forced return to the start.
 
 const ORS_OPTIMIZATION_URL = 'https://api.heigit.org/vroom/v0';
 const ORS_DIRECTIONS_URL = 'https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson';
@@ -85,8 +97,19 @@ function nearestNeighborOrder(stops){
   return ordered;
 }
 
-function fallbackResult(stops, mode){
-  const ordered = mode === 'optimize' ? nearestNeighborOrder(stops) : stops.slice();
+function fallbackResult(stops, mode, pinnedStartId){
+  // Best-effort: even in the crude haversine fallback, honor a pinned start
+  // if one was given, by moving that stop to the front before ordering.
+  let orderedInput = stops;
+  if(pinnedStartId){
+    const idx = stops.findIndex(s => s.id === pinnedStartId);
+    if(idx > 0){
+      orderedInput = stops.slice();
+      const [pinned] = orderedInput.splice(idx, 1);
+      orderedInput.unshift(pinned);
+    }
+  }
+  const ordered = mode === 'optimize' ? nearestNeighborOrder(orderedInput) : orderedInput.slice();
   const legs = [];
   let totalDistanceMeters = 0, totalDurationSeconds = 0;
   for(let i = 0; i < ordered.length - 1; i++){
@@ -103,13 +126,8 @@ function fallbackResult(stops, mode){
   };
 }
 
-async function orsOptimizeOrder(stops, apiKey){
-  if(stops.length < 3) return stops.slice(); // nothing to optimize with only a start + 1 stop
-  const jobs = stops.slice(1).map((s, i) => ({ id: i + 1, location: [s.lng, s.lat] }));
-  const body = {
-    jobs,
-    vehicles: [{ id: 1, profile: 'driving-car', start: [stops[0].lng, stops[0].lat] }],
-  };
+async function callOrsOptimize(jobs, vehicle, apiKey){
+  const body = { jobs, vehicles: [vehicle] };
   const res = await fetch(ORS_OPTIMIZATION_URL, {
     method: 'POST',
     headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
@@ -119,10 +137,36 @@ async function orsOptimizeOrder(stops, apiKey){
   const data = await res.json();
   const steps = data && data.routes && data.routes[0] && data.routes[0].steps;
   if(!Array.isArray(steps)) throw new Error('ors_optimization_bad_response');
-  const jobSteps = steps.filter(st => st.type === 'job');
-  const ordered = [stops[0]];
-  jobSteps.forEach(st => { const s = stops[st.job]; if(s) ordered.push(s); });
-  // Safety net: if anything didn't map cleanly, don't silently drop stops
+  return steps.filter(st => st.type === 'job');
+}
+
+async function orsOptimizeOrder(stops, apiKey, pinnedStartId){
+  if(stops.length < 3) return stops.slice(); // nothing to optimize with only 2 stops
+
+  const pinned = pinnedStartId ? stops.find(s => s.id === pinnedStartId) : null;
+
+  if(pinned){
+    // Fixed start: the pinned stop anchors the vehicle's start; every other
+    // stop is a job VROOM can freely reorder around it.
+    const others = stops.filter(s => s.id !== pinned.id);
+    const jobs = others.map((s, i) => ({ id: i + 1, location: [s.lng, s.lat] }));
+    const jobSteps = await callOrsOptimize(jobs, { id: 1, profile: 'driving-car', start: [pinned.lng, pinned.lat] }, apiKey);
+    const ordered = [pinned];
+    jobSteps.forEach(st => { const s = others[st.job - 1]; if(s) ordered.push(s); });
+    return ordered.length === stops.length ? ordered : stops.slice();
+  }
+
+  // No pin ("let the optimizer pick the best start"): see the top-of-file
+  // comment — VROOM requires at least one of start/end, so the last stop in
+  // the current list is anchored as the route's `end` purely to satisfy
+  // that, while the actual starting stop is fully up to the optimizer.
+  const anchor = stops[stops.length - 1];
+  const others = stops.slice(0, -1);
+  const jobs = others.map((s, i) => ({ id: i + 1, location: [s.lng, s.lat] }));
+  const jobSteps = await callOrsOptimize(jobs, { id: 1, profile: 'driving-car', end: [anchor.lng, anchor.lat] }, apiKey);
+  const ordered = [];
+  jobSteps.forEach(st => { const s = others[st.job - 1]; if(s) ordered.push(s); });
+  ordered.push(anchor);
   return ordered.length === stops.length ? ordered : stops.slice();
 }
 
@@ -167,6 +211,7 @@ export async function onRequestPost(context) {
   }
 
   const mode = payload && payload.mode === 'manual' ? 'manual' : 'optimize';
+  const startStopId = payload && typeof payload.startStopId === 'string' && payload.startStopId ? payload.startStopId : null;
   const rawStops = Array.isArray(payload && payload.stops) ? payload.stops : [];
   const stops = rawStops
     .filter(s => s && typeof s.lat === 'number' && typeof s.lng === 'number' && s.id)
@@ -178,10 +223,10 @@ export async function onRequestPost(context) {
 
   let result;
   if(!env.ORS_API_KEY){
-    result = fallbackResult(stops, mode);
+    result = fallbackResult(stops, mode, startStopId);
   } else {
     try {
-      const ordered = mode === 'optimize' ? await orsOptimizeOrder(stops, env.ORS_API_KEY) : stops.slice();
+      const ordered = mode === 'optimize' ? await orsOptimizeOrder(stops, env.ORS_API_KEY, startStopId) : stops.slice();
       const dirResult = await orsDirections(ordered, env.ORS_API_KEY);
       result = {
         source: 'ORS',
@@ -192,7 +237,7 @@ export async function onRequestPost(context) {
         totalDurationSeconds: dirResult.totalDurationSeconds,
       };
     } catch (err) {
-      result = fallbackResult(stops, mode);
+      result = fallbackResult(stops, mode, startStopId);
       result.reason = err && err.message ? err.message : 'fetch_failed';
     }
   }

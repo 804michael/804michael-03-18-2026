@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 01-13                                 ║
+  ║  SITE VERSION: 26.09.04 02-20                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -138,10 +138,14 @@
   .tp-mode-toggle{display:flex;border:1.5px solid var(--gray-mid);border-radius:999px;overflow:hidden;margin-bottom:14px}
   .tp-mode-btn{flex:1;padding:9px 8px;border:none;background:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-text)}
   .tp-mode-btn.active{background:var(--red);color:var(--white)}
-  .tp-field-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-  .tp-field{display:flex;flex-direction:column;gap:4px}
+  .tp-field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
   .tp-field label{font-size:.78rem;color:var(--gray-text);font-weight:600}
   .tp-field input,.tp-field select{padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.9rem}
+  .tp-field-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .tp-field-row .tp-field{flex:1 1 130px;margin-bottom:12px}
+  .tp-input-suffix-wrap{display:flex;align-items:center;gap:7px}
+  .tp-input-suffix-wrap input{width:64px;flex:0 0 auto}
+  .tp-input-suffix{font-size:.85rem;color:var(--gray-text);white-space:nowrap}
   .tp-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 
   /* ── Save/load ── */
@@ -158,9 +162,17 @@
   .tp-summary-stat{flex:1 1 140px}
   .tp-summary-stat .val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.7rem;color:var(--black)}
   .tp-summary-stat .lbl{font-size:.78rem;color:var(--gray-muted);text-transform:uppercase;letter-spacing:.06em}
-  .tp-source-note{font-size:.78rem;color:var(--gray-muted);font-style:italic;margin-top:8px}
+  .tp-source-note{font-size:.78rem;color:var(--gray-muted);font-style:italic;margin-top:16px;padding-top:16px;border-top:1.5px solid var(--gray-mid)}
   .tp-source-note.ors{color:var(--green)}
   .tp-source-note.warn{color:#a06000;font-style:normal;font-weight:600}
+
+  /* ── Merged Route Map / Send to Client / Add to Calendar panel ── */
+  .tp-subsection{border-top:1.5px solid var(--gray-mid);padding-top:18px;margin-top:18px}
+  .tp-subhead{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;text-transform:uppercase;letter-spacing:.01em;margin-bottom:4px}
+  .tp-btn-disabled{opacity:.45;cursor:not-allowed}
+  .tp-btn-disabled:hover{background:var(--white);border-color:var(--gray-mid);color:var(--black)}
+  @keyframes tpFlash{0%,100%{color:#6b4d16}50%{color:#DA291C}}
+  #calendarHint.flash{animation:tpFlash .4s ease-in-out 3;font-weight:700}
 
   /* ── Client links panel ── */
   .client-link-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
@@ -177,23 +189,49 @@
   #qrCodeWrap img{border:1.5px solid var(--gray-mid);border-radius:10px;width:120px;height:120px}
   #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted);margin-top:4px}
 
+  .tp-short-link-row{margin-top:12px;position:relative}
+  .tp-short-link-row label{font-size:.78rem;color:var(--gray-text);font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .tp-short-link-row .row-inputs{display:flex;gap:8px}
+  .tp-short-link-row .row-inputs input{flex:1 1 auto}
+  .tp-info-btn{background:none;border:1.5px solid var(--gray-mid);border-radius:50%;width:18px;height:18px;color:var(--gray-muted);font-size:.72rem;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center}
+  .tp-info-btn:hover{color:var(--red);border-color:var(--red)}
+  .tp-short-link-popup{position:absolute;top:100%;left:0;z-index:20;margin-top:4px;width:min(320px,90vw);background:#fff;border:1.5px solid var(--gray-mid);border-radius:10px;padding:10px 12px;font-size:.8rem;line-height:1.5;color:var(--gray-text);box-shadow:0 10px 30px rgba(0,0,0,.15)}
+  .tp-short-link-popup[hidden]{display:none}
+  .tp-short-link-popup strong{color:var(--black)}
+
   .tp-hint{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:12px 14px;font-size:.85rem;line-height:1.5;margin-bottom:14px}
   .tp-empty{color:var(--gray-muted);font-size:.9rem;padding:14px 0;text-align:center}
 
   /* ── Printable itinerary (client-safe: blurb only, never agent notes) ── */
+  /* NOTE: earlier version hid everything via `visibility:hidden` on body *,
+     which still reserves each hidden element's full layout height on the
+     page — with #map (420px) and the share/calendar panels hidden-but-still
+     "occupying" space, the print engine paged that reserved empty height,
+     producing several blank pages after the one visible page of content.
+     Fix: explicitly display:none the real on-screen sections in print
+     instead, so nothing invisible is left taking up page space. */
   #printItinerary{display:none}
+  #printMapWrap{position:fixed;left:-99999px;top:0;width:780px}
+  #printMap{width:780px;height:480px;border-radius:0}
+  .pi-map-label{display:none}
   @media print{
-    body *{visibility:hidden}
-    #printItinerary,#printItinerary *{visibility:visible}
-    #printItinerary{display:block;position:absolute;top:0;left:0;width:100%;padding:20px}
+    #site-nav,.tp-hero,.breadcrumb,.tp-body,footer{display:none !important}
+    #printItinerary{display:block;padding:0}
     .pi-head{border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:16px}
+    .pi-head-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
     .pi-head h1{font-size:22px;margin-bottom:4px}
     .pi-head p{font-size:12px;color:#555}
+    .pi-qr{flex:0 0 auto;text-align:center}
+    .pi-qr img{width:90px;height:90px}
+    .pi-qr p{font-size:10px;color:#666;margin-top:2px}
     .pi-stop{border-bottom:1px solid #ccc;padding:10px 0;display:flex;gap:12px}
     .pi-num{font-weight:800;font-size:16px;width:26px}
     .pi-addr{font-weight:700;font-size:14px}
     .pi-blurb{font-size:12px;color:#444}
     .pi-eta{font-size:12px;color:#444;margin-left:auto;white-space:nowrap}
+    #printMapWrap{display:block;position:static;left:auto;top:auto;width:100%;page-break-before:always;padding-top:20px}
+    #printMap{width:100%;height:680px;border:none}
+    .pi-map-label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;margin-bottom:10px}
   }
 
   /* ── Footer ── */
@@ -242,14 +280,28 @@
           <button type="button" class="tp-mode-btn" id="modeManualBtn" data-mode="manual">Manual Order</button>
         </div>
 
+        <div class="tp-field">
+          <label for="startPinSelect">Starting point (Optimize mode)</label>
+          <select id="startPinSelect">
+            <option value="">Let the optimizer pick the best start</option>
+          </select>
+        </div>
+
         <div class="tp-field-row">
+          <div class="tp-field">
+            <label for="startDateInput">Tour date (optional)</label>
+            <input type="date" id="startDateInput">
+          </div>
           <div class="tp-field">
             <label for="startTimeInput">Start time (optional)</label>
             <input type="time" id="startTimeInput">
           </div>
           <div class="tp-field">
             <label for="defaultBudgetInput">Default time per stop</label>
-            <input type="number" id="defaultBudgetInput" min="1" max="180" value="20" style="width:70px"> minutes
+            <div class="tp-input-suffix-wrap">
+              <input type="number" id="defaultBudgetInput" min="1" max="180" value="20">
+              <span class="tp-input-suffix">minutes</span>
+            </div>
           </div>
         </div>
 
@@ -295,42 +347,55 @@
             <div class="lbl">Total Trip Time (incl. stop time)</div>
           </div>
         </div>
-        <p class="tp-source-note" id="routeSourceNote">Add stops and click Recalculate Route to see distance, drive time, and the map.</p>
-      </div>
 
-      <div class="tp-panel" id="shareSection" style="display:none">
-        <h2>Send to Client</h2>
-        <p class="tp-panel-sub">No starting point is baked into this link — when your client opens it, their phone's Maps app starts from wherever they are, and yours will too when you open it.</p>
+        <div class="tp-subsection" id="shareSection" style="display:none">
+          <h3 class="tp-subhead">Send to Client</h3>
+          <p class="tp-panel-sub">No starting point is baked into this link — when your client opens it, their phone's Maps app starts from wherever they are, and yours will too when you open it.</p>
 
-        <div class="tp-share-main">
-          <div class="tp-share-link-box">
-            <label style="font-size:.78rem;color:var(--gray-text);font-weight:600;display:block;margin-bottom:4px">Full route link (Google Maps)</label>
-            <input type="text" id="fullRouteLinkInput" readonly>
-            <div class="tp-actions-row">
-              <a class="tp-btn tp-btn-red tp-btn-sm" id="openFullRouteBtn" target="_blank" rel="noopener">Open Full Route</a>
-              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyLinkBtn">Copy Link</button>
-              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text This Link</button>
-              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printBtn">Printable Itinerary</button>
+          <div class="tp-share-main">
+            <div class="tp-share-link-box">
+              <label style="font-size:.78rem;color:var(--gray-text);font-weight:600;display:block;margin-bottom:4px">Full route link (Google Maps)</label>
+              <input type="text" id="fullRouteLinkInput" readonly>
+              <div class="tp-actions-row">
+                <a class="tp-btn tp-btn-red tp-btn-sm" id="openFullRouteBtn" target="_blank" rel="noopener">Open Full Route</a>
+                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyLinkBtn">Copy Link</button>
+                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text This Link</button>
+                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printBtn">Printable Itinerary</button>
+              </div>
+
+              <div class="tp-short-link-row">
+                <label for="shortLinkInput">Short link (for texting)
+                  <button type="button" class="tp-info-btn" id="shortLinkInfoBtn" aria-label="About short links" aria-expanded="false">ⓘ</button>
+                </label>
+                <div class="tp-short-link-popup" id="shortLinkInfoPopup" hidden>
+                  This is a free, unbranded shortener (is.gd) — no signup needed, generated automatically every time you recalculate. Want branded links like <strong>804re.link/tour7</strong> instead? Just ask — it needs a quick ElkQR signup and an API key, and this box upgrades to it automatically, same spot.
+                </div>
+                <div class="row-inputs">
+                  <input type="text" id="shortLinkInput" readonly placeholder="Shortening…">
+                  <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyShortLinkBtn">Copy</button>
+                </div>
+              </div>
             </div>
-            <p style="font-size:.75rem;color:var(--gray-muted);margin-top:8px">Tip: paste this link into replug.io or elkqr.com to make a short, disposable link for texting.</p>
+            <div id="qrCodeWrap">
+              <img id="qrCodeImg" alt="QR code for the full route link">
+              <p>Scan for full route</p>
+            </div>
           </div>
-          <div id="qrCodeWrap">
-            <img id="qrCodeImg" alt="QR code for the full route link">
-            <p>Scan for full route</p>
+
+          <div id="clientLinksList"></div>
+        </div>
+
+        <div class="tp-subsection" id="calendarSection" style="display:none">
+          <h3 class="tp-subhead">Add to Calendar</h3>
+          <p class="tp-panel-sub" id="calendarHint">Set a start time above and recalculate to enable calendar links — the whole tour is added as one block, with the stop addresses and share link in the event details.</p>
+          <div class="tp-actions-row">
+            <a class="tp-btn tp-btn-outline" id="gcalLink" target="_blank" rel="noopener">Google Calendar</a>
+            <a class="tp-btn tp-btn-outline" id="outlookLink" target="_blank" rel="noopener">Outlook (Web)</a>
+            <button type="button" class="tp-btn tp-btn-outline" id="icsDownloadBtn">Apple / Outlook Desktop (.ics)</button>
           </div>
         </div>
 
-        <div id="clientLinksList"></div>
-      </div>
-
-      <div class="tp-panel" id="calendarSection" style="display:none">
-        <h2>Add to Calendar</h2>
-        <p class="tp-panel-sub" id="calendarHint">Set a start time above and recalculate to enable calendar links — the whole tour is added as one block, with the stop addresses and share link in the event details.</p>
-        <div class="tp-actions-row">
-          <a class="tp-btn tp-btn-outline" id="gcalLink" target="_blank" rel="noopener">Google Calendar</a>
-          <a class="tp-btn tp-btn-outline" id="outlookLink" target="_blank" rel="noopener">Outlook (Web)</a>
-          <button type="button" class="tp-btn tp-btn-outline" id="icsDownloadBtn">Apple / Outlook Desktop (.ics)</button>
-        </div>
+        <p class="tp-source-note" id="routeSourceNote">Add stops and click Recalculate Route to see distance, drive time, and the map.</p>
       </div>
 
     </div>
@@ -341,10 +406,26 @@
 <!-- Printable itinerary — client-safe (blurb only, no private agent notes) -->
 <div id="printItinerary">
   <div class="pi-head">
-    <h1>Home Tour Itinerary</h1>
-    <p id="piMeta"></p>
+    <div class="pi-head-top">
+      <div>
+        <h1>Home Tour Itinerary</h1>
+        <p id="piMeta"></p>
+      </div>
+      <div class="pi-qr">
+        <img id="piQrImg" alt="QR code for the full route link">
+        <p>Scan for full route</p>
+      </div>
+    </div>
   </div>
   <div id="piStops"></div>
+</div>
+
+<!-- Print-only route map (page 2). Kept off-screen (not display:none) at all
+     times so Leaflet has real dimensions to load tiles into before printing;
+     @media print above moves it in-flow, full width, on its own page. -->
+<div id="printMapWrap">
+  <p class="pi-map-label">Route Map</p>
+  <div id="printMap"></div>
 </div>
 
 <!-- FOOTER -->
@@ -364,7 +445,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 01-13</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 02-20</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -377,7 +458,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 01-13';
+const SITE_VERSION = '26.09.04 02-20';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -425,6 +506,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   var mode = 'optimize';
   var stops = []; // {id, addressEl row DOM refs stored via data attrs; state kept in DOM + this array mirrors it}
   var uid = 0;
+  var shortLinkReqId = 0; // guards against a stale /api/shorten-link response winning a race
 
   // ── Stop model helpers ─────────────────────────────────────────────────
   function newStop(){
@@ -462,6 +544,19 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     rows.forEach(function(row,i){ row.querySelector('.stop-num').textContent = i+1; });
     stopCountEl.textContent = rows.length + ' of ' + MAX_STOPS + ' stops';
     addStopBtn.style.display = rows.length >= MAX_STOPS ? 'none' : '';
+    refreshStartPinOptions();
+  }
+
+  // ── Starting-point pin (Optimize mode) ───────────────────────────────
+  function refreshStartPinOptions(){
+    var sel = document.getElementById('startPinSelect');
+    var current = sel.value;
+    sel.innerHTML = '<option value="">Let the optimizer pick the best start</option>' +
+      stops.map(function(s,i){
+        var label = (i+1) + '. ' + (s.address || '(address not set yet)');
+        return '<option value="' + escapeAttr(s.id) + '">' + escapeHtml(label) + '</option>';
+      }).join('');
+    if(current && stops.some(function(s){ return s.id===current; })) sel.value = current;
   }
 
   function findStop(id){ return stops.find(function(s){ return s.id===id; }); }
@@ -500,6 +595,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     noteEl.className = 'tp-source-note';
     stopList.querySelectorAll('.stop-eta').forEach(function(el){ el.textContent=''; });
     clearMapRoute();
+    clearPrintMapRoute();
   }
 
   // ── Address autocomplete (generalized — Nominatim, VA-biased) ───────────
@@ -600,6 +696,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       s.lat = item.lat; s.lng = item.lng;
       row.classList.remove('geo-missing');
       resetShareAndSummary();
+      refreshStartPinOptions();
     });
     addressEl.addEventListener('input', function(){
       // Typed manually without (re)selecting a suggestion — coordinates are stale until reselected.
@@ -656,6 +753,40 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     addStopRow(); addStopRow();
   });
 
+  // ── Calendar buttons: flash a warning if clicked while still disabled ──
+  function flashCalendarHint(){
+    var hint = document.getElementById('calendarHint');
+    hint.textContent = 'Set a start time above, then click Recalculate Route — the calendar links need both before they\'ll work.';
+    hint.classList.remove('flash');
+    void hint.offsetWidth; // restart the animation if it's already mid-flash
+    hint.classList.add('flash');
+  }
+  document.getElementById('calendarHint').addEventListener('animationend', function(){ this.classList.remove('flash'); });
+  ['gcalLink','outlookLink'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(e){
+      if(!this.getAttribute('href')){ e.preventDefault(); flashCalendarHint(); }
+    });
+  });
+  document.getElementById('icsDownloadBtn').addEventListener('click', function(e){
+    if(this.disabled) flashCalendarHint();
+  }, true);
+
+  // ── Short-link info popup (is.gd now, ElkQR upgrade path noted) ────────
+  var shortLinkInfoBtn = document.getElementById('shortLinkInfoBtn');
+  var shortLinkInfoPopup = document.getElementById('shortLinkInfoPopup');
+  shortLinkInfoBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    var willShow = shortLinkInfoPopup.hidden;
+    shortLinkInfoPopup.hidden = !willShow;
+    shortLinkInfoBtn.setAttribute('aria-expanded', willShow ? 'true' : 'false');
+  });
+  document.addEventListener('click', function(e){
+    if(!shortLinkInfoPopup.hidden && e.target!==shortLinkInfoBtn && !shortLinkInfoPopup.contains(e.target)){
+      shortLinkInfoPopup.hidden = true;
+      shortLinkInfoBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
   // ── Map setup ───────────────────────────────────────────────────────
   var map = L.map('map', {scrollWheelZoom:false}).setView([37.75, -77.42], 10); // Ashland/Hanover, VA default
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -686,6 +817,52 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     }
     if(bounds.length) map.fitBounds(bounds, {padding:[30,30], maxZoom:15});
   }
+
+  // ── Print-only map (page 2 of the printable itinerary) ────────────────
+  // Kept as a *separate* Leaflet instance rather than reusing #map for print,
+  // because #map's on-screen render is sized/tiled for its normal 420px box —
+  // simply enlarging it via print CSS wouldn't backfill the newly-visible
+  // area with tiles. #printMap lives off-screen (fixed position, real pixel
+  // size, never display:none) so Leaflet loads its tiles normally the whole
+  // time; invalidateSize()+fitBounds() on "beforeprint" reflows it for the
+  // larger print-page box right before the browser paints the print output.
+  var printMap = null, printRouteMarkers = [], printRouteLine = null, lastPrintBounds = [];
+  function ensurePrintMap(){
+    if(printMap) return printMap;
+    printMap = L.map('printMap', {
+      zoomControl:false, attributionControl:false, dragging:false,
+      scrollWheelZoom:false, touchZoom:false, doubleClickZoom:false,
+      boxZoom:false, keyboard:false, tap:false
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18}).addTo(printMap);
+    return printMap;
+  }
+  function clearPrintMapRoute(){
+    if(!printMap) return;
+    printRouteMarkers.forEach(function(m){ printMap.removeLayer(m); }); printRouteMarkers=[];
+    if(printRouteLine){ printMap.removeLayer(printRouteLine); printRouteLine=null; }
+    lastPrintBounds = [];
+  }
+  function updatePrintMap(orderedStops, geometry){
+    var pm = ensurePrintMap();
+    clearPrintMapRoute();
+    var bounds = [];
+    orderedStops.forEach(function(s,i){
+      if(s.lat==null||s.lng==null) return;
+      var m = L.marker([s.lat,s.lng], {icon:numIcon(i+1)}).addTo(pm);
+      printRouteMarkers.push(m);
+      bounds.push([s.lat,s.lng]);
+    });
+    var linePts = geometry && geometry.length ? geometry : bounds;
+    if(linePts.length>1) printRouteLine = L.polyline(linePts, {color:'#DA291C', weight:4, opacity:.85}).addTo(pm);
+    lastPrintBounds = bounds;
+    if(bounds.length) pm.fitBounds(bounds, {padding:[20,20], maxZoom:15});
+  }
+  window.addEventListener('beforeprint', function(){
+    if(!printMap) return;
+    printMap.invalidateSize();
+    if(lastPrintBounds.length) printMap.fitBounds(lastPrintBounds, {padding:[20,20], maxZoom:15});
+  });
 
   // Start with 2 empty rows so the tool doesn't look empty on load. This has
   // to happen AFTER the map setup above, not before: addStopRow() calls
@@ -739,6 +916,25 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var ap = h>=12?'PM':'AM'; var h12 = h%12; if(h12===0) h12=12;
     return h12 + ':' + (m<10?'0':'') + m + ' ' + ap;
   }
+  // Combines the (optional) date picker with the start-time field. If no date
+  // was chosen, defaults to today — same behavior as before the date field existed.
+  function buildStartDateTime(startVal){
+    if(!startVal) return null;
+    var parts = startVal.split(':');
+    var dateVal = document.getElementById('startDateInput').value;
+    var d;
+    if(dateVal){
+      var dp = dateVal.split('-');
+      d = new Date(Number(dp[0]), Number(dp[1])-1, Number(dp[2]), Number(parts[0]), Number(parts[1]), 0, 0);
+    } else {
+      d = new Date();
+      d.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
+    }
+    return d;
+  }
+  function fmtDateShort(d){
+    return d.toLocaleDateString(undefined, {weekday:'short', month:'short', day:'numeric'});
+  }
 
   // ── Recalculate ──────────────────────────────────────────────────────
   document.getElementById('recalculateBtn').addEventListener('click', recalculate);
@@ -778,6 +974,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         mode: mode,
+        startStopId: document.getElementById('startPinSelect').value || null,
         stops: stops.map(function(s){ return {id:s.id, lat:s.lat, lng:s.lng}; })
       })
     }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('http_'+r.status)); })
@@ -808,6 +1005,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
     var geometry = (data.geometry && data.geometry.length) ? data.geometry : null;
     drawRoute(orderedStops, geometry);
+    updatePrintMap(orderedStops, geometry);
 
     document.getElementById('totalDistanceVal').textContent = fmtMiles(data.totalDistanceMeters||0);
     document.getElementById('totalDurationVal').textContent = fmtDuration(data.totalDurationSeconds||0);
@@ -833,9 +1031,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       etaEls.push(row ? row.querySelector('.stop-eta') : null);
     });
     if(startVal){
-      var parts = startVal.split(':');
-      var t = new Date();
-      t.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
+      var t = buildStartDateTime(startVal);
       orderedStops.forEach(function(s,i){
         if(i>0 && legs[i-1]) t = new Date(t.getTime() + legs[i-1].durationSeconds*1000);
         if(etaEls[i]) etaEls[i].textContent = 'Arrive ~' + fmtClock(t);
@@ -860,7 +1056,6 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     return url;
   }
   function googleSingleStopUrl(s){ return 'https://www.google.com/maps/dir/?api=1&destination=' + addrParam(s) + '&travelmode=driving'; }
-  function appleSingleStopUrl(s){ return 'https://maps.apple.com/?daddr=' + addrParam(s) + '&dirflg=d'; }
 
   function buildShareAndCalendar(orderedStops, data){
     var fullUrl = googleFullRouteUrl(orderedStops);
@@ -877,20 +1072,60 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       }).catch(function(){ prompt('Copy this link:', fullUrl); });
     };
     document.getElementById('smsShareBtn').onclick = function(){
-      var body = 'Here\'s our home tour route: ' + fullUrl;
+      var linkToShare = document.getElementById('shortLinkInput').value || fullUrl;
+      var body = 'Here\'s our home tour route: ' + linkToShare;
       window.location.href = 'sms:?&body=' + encodeURIComponent(body);
     };
     document.getElementById('printBtn').onclick = function(){ window.print(); };
 
-    // Per-stop open-in-maps list
+    // Auto-shorten the full route link (free, keyless is.gd — see the ⓘ next
+    // to "Short link" for the ElkQR branded-link upgrade path). Runs through
+    // our own /api/shorten-link proxy rather than calling is.gd directly
+    // from the browser, so it isn't at the mercy of is.gd's CORS support.
+    // shortLinkReqId guards against a stale response winning a race if
+    // Recalculate gets clicked again before the first shorten call returns.
+    (function(){
+      var shortInput = document.getElementById('shortLinkInput');
+      var myReqId = ++shortLinkReqId;
+      shortInput.value = '';
+      shortInput.placeholder = 'Shortening…';
+      fetch('/api/shorten-link', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({url: fullUrl})
+      }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('http_'+r.status)); })
+        .then(function(data){
+          if(myReqId!==shortLinkReqId) return; // superseded by a newer recalculate
+          if(data && data.shortUrl){ shortInput.value = data.shortUrl; }
+          else { shortInput.placeholder = 'Short link unavailable — use the full link above'; }
+        })
+        .catch(function(){
+          if(myReqId!==shortLinkReqId) return;
+          shortInput.placeholder = 'Short link unavailable — use the full link above';
+        });
+    })();
+    document.getElementById('copyShortLinkBtn').onclick = function(){
+      var val = document.getElementById('shortLinkInput').value;
+      if(!val) return;
+      navigator.clipboard.writeText(val).then(function(){
+        var btn = document.getElementById('copyShortLinkBtn');
+        var old = btn.textContent; btn.textContent='Copied!';
+        setTimeout(function(){ btn.textContent=old; }, 1500);
+      }).catch(function(){ prompt('Copy this link:', val); });
+    };
+
+    // Per-stop open-in-maps list — a single "Map It" button (Google Maps
+    // link) rather than separate Google/Apple buttons: Google Maps links
+    // already fall back to the web version and work fine cross-platform
+    // (Android, iOS, desktop), so one universal button covers everyone
+    // without the client having to know which one is "theirs."
     var listEl = document.getElementById('clientLinksList');
     listEl.innerHTML = orderedStops.map(function(s,i){
       return '<div class="client-link-row">' +
         '<div class="client-link-info"><div class="clr-name">' + (i+1) + '. ' + escapeHtml(s.address) + '</div>' +
         (s.blurb ? '<div class="clr-blurb">' + escapeHtml(s.blurb) + '</div>' : '') + '</div>' +
         '<div class="client-link-btns">' +
-          '<a class="tp-btn tp-btn-outline tp-btn-sm" href="' + googleSingleStopUrl(s) + '" target="_blank" rel="noopener">Google</a>' +
-          '<a class="tp-btn tp-btn-outline tp-btn-sm" href="' + appleSingleStopUrl(s) + '" target="_blank" rel="noopener">Apple</a>' +
+          '<a class="tp-btn tp-btn-outline tp-btn-sm" href="' + googleSingleStopUrl(s) + '" target="_blank" rel="noopener">Map It</a>' +
         '</div></div>';
     }).join('');
 
@@ -899,18 +1134,28 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var calSection = document.getElementById('calendarSection');
     var calHint = document.getElementById('calendarHint');
     calSection.style.display = '';
+    var calBtnIds = ['gcalLink','outlookLink','icsDownloadBtn'];
     if(!startVal){
       calHint.textContent = 'Set a start time above and click Recalculate Route to enable calendar links.';
+      calHint.classList.remove('flash');
       ['gcalLink','outlookLink'].forEach(function(id){ document.getElementById(id).removeAttribute('href'); });
+      calBtnIds.forEach(function(id){
+        var el = document.getElementById(id);
+        el.classList.add('tp-btn-disabled');
+        el.title = 'Set a start time above, then click Recalculate Route to enable this.';
+      });
       document.getElementById('icsDownloadBtn').disabled = true;
       return;
     }
     calHint.textContent = 'Adds the whole tour as one calendar block, with every stop address and the client link in the event details.';
+    calBtnIds.forEach(function(id){
+      var el = document.getElementById(id);
+      el.classList.remove('tp-btn-disabled');
+      el.removeAttribute('title');
+    });
     document.getElementById('icsDownloadBtn').disabled = false;
 
-    var parts = startVal.split(':');
-    var start = new Date();
-    start.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
+    var start = buildStartDateTime(startVal);
     var totalBudgetSec = orderedStops.reduce(function(a,s){return a+(s.budget||0)*60;},0);
     var end = new Date(start.getTime() + (data.totalDurationSeconds||0)*1000 + totalBudgetSec*1000);
 
@@ -959,7 +1204,16 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   }
 
   function buildPrintable(orderedStops, startVal){
-    document.getElementById('piMeta').textContent = orderedStops.length + ' stops' + (startVal ? ' — starting ' + startVal : '') + ' — printed ' + new Date().toLocaleDateString();
+    var qrSrc = document.getElementById('qrCodeImg').src;
+    var piQr = document.getElementById('piQrImg');
+    if(qrSrc) piQr.src = qrSrc;
+    piQr.closest('.pi-qr').style.display = qrSrc ? '' : 'none';
+    var whenBit = '';
+    if(startVal){
+      var dt = buildStartDateTime(startVal);
+      whenBit = ' — ' + fmtDateShort(dt) + ', starting ' + fmtClock(dt);
+    }
+    document.getElementById('piMeta').textContent = orderedStops.length + ' stops' + whenBit + ' — printed ' + new Date().toLocaleDateString();
     var etaEls = orderedStops.map(function(s){
       var row = stopList.querySelector('.stop-row[data-id="'+s.id+'"]');
       return row ? row.querySelector('.stop-eta').textContent : '';
