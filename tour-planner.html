@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 07-05                                 ║
+  ║  SITE VERSION: 26.09.04 14-38                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -98,13 +98,19 @@
   .tp-panel h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.01em;margin-bottom:4px}
   .tp-panel-sub{font-size:.88rem;color:var(--gray-muted);margin-bottom:14px;line-height:1.5}
   /* Side-by-side, top-aligned: intro text on the left (grows to fill the
-     remaining space so it wraps to 2 lines instead of running under the
-     field), Default time/stop pinned to the top-right — its right edge
-     lines up with the "+ Paste bulk address list" row below it since both
-     share the same .tp-panel right padding. */
+     remaining space so it wraps naturally), Default time/stop pinned to
+     the top-right — its right edge lines up with the "+ Paste bulk address
+     list" row below it since both share the same .tp-panel right padding.
+     The field shrink-wraps to its own content (label width) instead of a
+     fixed 150px box, so the intro text gets whatever room that frees up,
+     and its label + input row are right-justified (align-items:flex-end)
+     so both hug that same right edge instead of sitting flush-left inside
+     the field's box. */
   .tp-stops-intro{display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
-  .tp-stops-intro .tp-panel-sub{flex:1 1 220px;min-width:0;margin:0}
-  .tp-default-budget-field{flex:0 0 auto;width:150px;margin-bottom:0}
+  .tp-stops-intro .tp-panel-sub{flex:1 1 260px;min-width:0;margin:0}
+  .tp-default-budget-field{flex:0 0 auto;width:auto;margin-bottom:0;align-items:flex-end}
+  .tp-default-budget-field label{text-align:right}
+  .tp-default-budget-field .tp-input-suffix-wrap{justify-content:flex-end}
 
   /* ── Stop rows ── */
   #stopList{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
@@ -187,13 +193,18 @@
   .tp-input-suffix-wrap input{width:68px;flex:0 0 auto}
   .tp-input-suffix{font-size:.85rem;color:var(--gray-text);white-space:nowrap}
   .tp-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-  /* Google Calendar + Outlook (Web) both stack under Tour Date (column 1);
-     Apple/Outlook (.ics) sits under Start Time (column 2), tall enough to
-     match the two stacked buttons beside it, starting on the same row. */
-  .tp-cal-actions{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:10px;margin-top:6px}
-  .tp-cal-actions #gcalLink{grid-column:1;grid-row:1}
-  .tp-cal-actions #outlookLink{grid-column:1;grid-row:2}
-  .tp-cal-actions #icsDownloadBtn{grid-column:2;grid-row:1 / 3}
+  /* All three calendar buttons sit on one row now: Google Calendar +
+     Outlook (Web) side by side under Tour Date (column 1), Apple/Outlook
+     (.ics) shrunk down to fit under Start Time (column 2) on that same
+     row. The two top-level columns mirror the Tour date / Start time
+     field widths above them (.tp-field-row is also a 1fr/1fr split). */
+  .tp-cal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;align-items:stretch}
+  .tp-cal-col{display:flex;gap:8px;min-width:0}
+  .tp-cal-col .tp-btn{flex:1 1 0;min-width:0}
+  /* Apple/Outlook's label is the longest of the three, so it's shrunk
+     (smaller type, tighter padding, wrapping allowed) to fit in half the
+     row width instead of overflowing its pill. */
+  .tp-cal-col-right .tp-btn{font-size:.68rem;padding:8px 8px;letter-spacing:.02em;white-space:normal;line-height:1.15;text-align:center}
   /* All three read the same way — red outline, red text — same as every
      other red-outline control on this page. Not color-coded per button. */
   .tp-cal-actions .tp-btn{border-color:var(--red);color:var(--red)}
@@ -329,7 +340,7 @@
     .pi-qr p{font-size:10px;color:#666;margin-top:2px}
     /* Per-stop rows — city/zip dropped (street only) and the timing shares
        one row with a single ruled note line, rather than its own row plus
-       two blank lines below, so all 12 stops (the tool's max) comfortably
+       two blank lines below, so all 10 stops (the tool's max) comfortably
        fit on one page. Padding/sizing then scales further via the
        pi-density-* class buildPrintable() sets based on stop count — see
        the loose/medium/tight overrides below. */
@@ -377,7 +388,7 @@
 <!-- PAGE HERO -->
 <div class="tp-hero">
   <h1>Home Tour <span>Route Planner</span></h1>
-  <p class="tp-hero-sub">Enter up to 12 stops, get the most efficient order, then send clients a link that opens the whole tour right on their phone.</p>
+  <p class="tp-hero-sub">Enter up to 10 stops, get the most efficient order, then send clients a link that opens the whole tour right on their phone.</p>
 </div>
 
 <!-- BREADCRUMB -->
@@ -400,7 +411,7 @@
       <div class="tp-panel">
         <h2>Stops</h2>
         <div class="tp-stops-intro">
-          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on the map — up to 12 stops. Drag stops to reorder manually.</p>
+          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on map. Maximum of 10 stops. Drag stops to reorder manually. No need to choose a starting point, it's automatically current location when opening link.</p>
           <div class="tp-field tp-default-budget-field">
             <label for="defaultBudgetInput">Default time/stop</label>
             <div class="tp-input-suffix-wrap">
@@ -410,7 +421,7 @@
           </div>
         </div>
         <div class="tp-stopcount-row">
-          <p class="tp-stopcount" id="stopCount">0 of 12 stops</p>
+          <p class="tp-stopcount" id="stopCount">0 of 10 stops</p>
           <button type="button" class="tp-link-btn" id="bulkAddBtn">+ Paste bulk address list</button>
         </div>
 
@@ -556,9 +567,13 @@
             </div>
           </div>
           <div class="tp-cal-actions">
-            <a class="tp-btn tp-btn-outline tp-btn-disabled" id="gcalLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Google Calendar</a>
-            <a class="tp-btn tp-btn-outline tp-btn-disabled" id="outlookLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Outlook (Web)</a>
-            <button type="button" class="tp-btn tp-btn-outline tp-btn-disabled" id="icsDownloadBtn" disabled title="Calculate a route above to enable this.">Apple / Outlook Desktop (.ics)</button>
+            <div class="tp-cal-col tp-cal-col-left">
+              <a class="tp-btn tp-btn-outline tp-btn-disabled" id="gcalLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Google Calendar</a>
+              <a class="tp-btn tp-btn-outline tp-btn-disabled" id="outlookLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Outlook (Web)</a>
+            </div>
+            <div class="tp-cal-col tp-cal-col-right">
+              <button type="button" class="tp-btn tp-btn-outline tp-btn-disabled" id="icsDownloadBtn" disabled title="Calculate a route above to enable this.">Apple / Outlook Desktop (.ics)</button>
+            </div>
           </div>
         </div>
 
@@ -636,7 +651,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 07-05</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 14-38</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -649,14 +664,14 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 07-05';
+const SITE_VERSION = '26.09.04 14-38';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
 (function(){
   'use strict';
 
-  var MAX_STOPS = 12;
+  var MAX_STOPS = 10;
   var VA_VIEWBOX = '-83.7,39.5,-75.1,36.5';
   var NOMINATIM = 'https://nominatim.openstreetmap.org/search';
   var DEBOUNCE_MS = 300;
@@ -1252,9 +1267,9 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   }
   // Start = green, end = red, every middle stop gets its OWN unique color
   // (not just 2 alternating) so each one reads at a glance on both the map
-  // and every list that mirrors it. 10 colors covers the max case (12 stops
-  // = 10 middle stops) with zero repeats.
-  // Index 3 (stop 5 of 12) and index 7 (stop 9 of 12) were swapped —
+  // and every list that mirrors it. 10 colors covers the max case (10 stops
+  // = 8 middle stops) with room to spare.
+  // Index 3 (stop 5 of 10) and index 7 (stop 9 of 10) were swapped —
   // #C2185B was reading too close to the red end-of-route marker right
   // next to it on the map.
   var MIDDLE_STOP_COLORS = ['#E8871E','#1F6FB2','#8E44AD','#00ACC1','#00897B','#F9A825','#3949AB','#C2185B','#6D4C41','#757575'];
@@ -1698,7 +1713,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var calBtnIds = ['gcalLink','outlookLink','icsDownloadBtn'];
     calHint.textContent = startVal
       ? 'Adds the whole tour as one calendar block, with every stop address and the client link in the event details.'
-      : 'No start time entered, so this defaults to right now — adds the whole tour as one calendar block, with every stop address and the client link in the event details.';
+      : 'If no start time entered, calendar appointment defaults to current date and time and adds the whole tour as one calendar block, with every stop address, and link to both individual stop addresses and complete route in event details.';
     calBtnIds.forEach(function(id){
       var el = document.getElementById(id);
       el.classList.remove('tp-btn-disabled');
@@ -1792,7 +1807,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       return row ? row.querySelector('.stop-eta').textContent : '';
     });
     // Spacing scales with how many stops there are — roomier when there's
-    // only a few, tighter once you're closer to the 12-stop max — so a
+    // only a few, tighter once you're closer to the 10-stop max — so a
     // short tour doesn't look sparse and a full one still fits on one page.
     var density = orderedStops.length <= 6 ? 'loose' : (orderedStops.length <= 9 ? 'medium' : 'tight');
     var piEl = document.getElementById('printItinerary');
@@ -1804,7 +1819,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // "Print Client Route" always prints the client-safe version (blurb only).
     // City/zip dropped (street address only) and the ETA now shares a row
     // with a single ruled note line instead of its own row plus two blank
-    // lines below — both changes save vertical space so all 12 stops (the
+    // lines below — both changes save vertical space so all 10 stops (the
     // tool's max) fit on one printed page with room to spare.
     document.getElementById('piStops').innerHTML = orderedStops.map(function(s,i){
       var color = stopMarkerColor(i, orderedStops.length);
