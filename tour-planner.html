@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 06-05                                 ║
+  ║  SITE VERSION: 26.09.04 07-15                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -136,6 +136,8 @@
   .tp-add-row{width:100%;padding:10px;border:1.5px dashed var(--gray-mid);border-radius:10px;background:none;color:var(--gray-text);font-weight:600;font-size:.9rem;margin-bottom:16px}
   .tp-add-row:hover{border-color:var(--red);color:var(--red)}
   .tp-stopcount{font-size:.8rem;color:var(--gray-muted);margin-bottom:4px}
+  .tp-stopcount-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .tp-stopcount-row .tp-stopcount,.tp-stopcount-row .tp-link-btn{margin-bottom:4px}
 
   .tp-controls-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin-bottom:16px}
   .tp-controls-row .tp-add-row{width:auto;flex:0 0 auto;white-space:nowrap;margin-bottom:0;padding:9px 16px}
@@ -229,13 +231,17 @@
   .client-link-info .clr-blurb{font-size:.82rem;color:var(--gray-text)}
   .client-link-btns{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}
 
-  .tp-share-row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px}
-  .tp-share-link-box{flex:1 1 260px;min-width:0}
+  /* QR code + print buttons now sit at the BOTTOM of the section, below
+     the link box, rather than beside it — a horizontal strip instead of a
+     narrow side column. */
+  .tp-share-row{display:flex;flex-direction:column;gap:18px;margin-bottom:16px}
+  .tp-share-link-box{min-width:0}
   .tp-share-link-box input{width:100%;padding:9px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem;background:var(--gray-light);color:var(--gray-text)}
-  #qrCodeWrap{flex:0 0 auto;width:150px;display:flex;flex-direction:column;align-items:stretch;gap:8px;text-align:center}
-  #qrCodeWrap .tp-btn{width:100%}
-  #qrCodeWrap img{border:1.5px solid var(--gray-mid);border-radius:10px;width:120px;height:120px;margin:0 auto}
-  #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted)}
+  #qrCodeWrap{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:20px;padding-top:16px;border-top:1.5px solid var(--gray-mid)}
+  #qrCodeWrap .tp-btn{width:auto}
+  .tp-qr-block{display:flex;flex-direction:column;align-items:center;gap:4px}
+  #qrCodeWrap img{border:1.5px solid var(--gray-mid);border-radius:10px;width:100px;height:100px;margin:0}
+  #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted);margin:0}
 
   .tp-sms-wrap{position:relative;display:inline-flex;align-items:center}
   .tp-warn-icon{background:none;border:none;padding:0 0 0 6px;font-size:1.05rem;line-height:1;color:#c07a00;cursor:pointer;animation:tpWarnPulse 1.7s ease-in-out infinite}
@@ -273,6 +279,12 @@
   #printMap{width:780px;height:480px;border-radius:0}
   #printMapWrap .pi-map-footer{display:none}
   @media print{
+    /* Chrome/Safari/Firefox all drop background colors on print by default
+       (the "Background graphics" checkbox in the print dialog) — that's
+       why the per-stop number circle colors, matched to the map marker
+       colors, weren't showing up on the printout at all even though the
+       color was set correctly in the markup. Force them to print. */
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
     /* nav.js replaces (outerHTML) the #site-nav placeholder with the fetched
        nav-partial.html content, so #banner and header#nav end up as its
        SIBLINGS in the DOM, not children of it — #site-nav no longer exists
@@ -295,7 +307,7 @@
     /* Compact per-stop rows — sized to fit up to 12 stops (the tool's max)
        on one page, each with room for the rating scale, timing, and a
        couple of blank lines to jot notes by hand. */
-    .pi-stop{border-bottom:1px solid #ccc;padding:5px 0;display:flex;gap:10px;align-items:flex-start;page-break-inside:avoid}
+    .pi-stop{padding:5px 0;display:flex;gap:10px;align-items:flex-start;page-break-inside:avoid}
     .pi-num{font-weight:800;font-size:11px;width:20px;height:20px;flex:0 0 auto;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;margin-top:1px}
     .pi-stop-body{flex:1 1 auto;min-width:0}
     .pi-addr{font-weight:700;font-size:11.5px}
@@ -358,7 +370,7 @@
       <div class="tp-panel">
         <h2>Stops</h2>
         <div class="tp-stops-intro">
-          <p class="tp-panel-sub">Type an address and pick it from the suggestions so it can be placed on the map — up to 12 stops. Drag a stop to reorder it manually.</p>
+          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on the map — up to 12 stops. Drag stops to reorder manually.</p>
           <div class="tp-field tp-default-budget-field">
             <label for="defaultBudgetInput">Default time/stop</label>
             <div class="tp-input-suffix-wrap">
@@ -367,11 +379,13 @@
             </div>
           </div>
         </div>
-        <p class="tp-stopcount" id="stopCount">0 of 12 stops</p>
-        <button type="button" class="tp-link-btn" id="bulkAddBtn">+ Paste a list of addresses (one per line)</button>
+        <div class="tp-stopcount-row">
+          <p class="tp-stopcount" id="stopCount">0 of 12 stops</p>
+          <button type="button" class="tp-link-btn" id="bulkAddBtn">+ Paste address list</button>
+        </div>
 
         <div class="tp-bulk-wrap" id="bulkAddWrap" hidden>
-          <p class="tp-bulk-hint">Enter one address (partial or full) per line — each one will be looked up automatically. If a match can't be found, that line is added as a stop with what you typed still in the field, so you can click into it and pick the right address from the suggestions.</p>
+          <p class="tp-bulk-hint">Enter one address (partial or full) per line, each one will be looked up automatically. If a match is not found, that line is added as the stop's address text, so you can click into it and pick from the suggestions or make edits.</p>
           <textarea id="bulkAddTextarea" class="tp-bulk-textarea" rows="5" placeholder="123 Maple Grove Lane, Richmond, VA&#10;456 Willow Bend Court, Mechanicsville, VA&#10;789 Foxhollow Drive, Glen Allen, VA"></textarea>
           <div class="tp-actions-row">
             <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="bulkAddSubmitBtn">Add These Stops</button>
@@ -400,12 +414,12 @@
         <div class="tp-field">
           <label for="startPinSelect">Starting Location (Optimize mode)</label>
           <select id="startPinSelect">
-            <option value="">Let optimizer pick best start</option>
+            <option value="">Let optimizer pick best start Location</option>
           </select>
         </div>
 
         <div class="tp-actions-row tp-recalc-row">
-          <button type="button" class="tp-btn tp-btn-red" id="recalculateBtn">Recalculate Route</button>
+          <button type="button" class="tp-btn tp-btn-red" id="recalculateBtn">Calculate Route</button>
           <div class="tp-clear-wrap"><button type="button" class="tp-btn tp-btn-outline" id="clearAllBtn">Clear All</button></div>
         </div>
       </div>
@@ -460,7 +474,7 @@
           <div class="tp-share-row">
             <div class="tp-share-link-box">
               <h3 class="tp-subhead">Share Tour Itinerary</h3>
-              <p class="tp-panel-sub">No starting point is set on the link — when it opens, the phone's Maps app starts from the current location.</p>
+              <p class="tp-panel-sub">No starting point is set on the link — when opened on a phone, the Maps app starts from the current location.</p>
               <label style="font-size:.78rem;color:var(--gray-text);font-weight:600;display:block;margin-bottom:4px">Full route link (Google Maps)</label>
               <input type="text" id="fullRouteLinkInput" readonly>
               <div class="tp-actions-row">
@@ -487,8 +501,10 @@
             </div>
             <div id="qrCodeWrap">
               <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printBtn">Print Client Route</button>
-              <img id="qrCodeImg" alt="QR code for the full route link">
-              <p>Scan for full route</p>
+              <div class="tp-qr-block">
+                <img id="qrCodeImg" alt="QR code for the full route link">
+                <p>Scan for full route</p>
+              </div>
               <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printAgentBtn" title="Includes your private notes — for you only, never the client">Print Agent Copy</button>
             </div>
           </div>
@@ -590,7 +606,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 06-05</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 07-15</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -603,7 +619,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 06-05';
+const SITE_VERSION = '26.09.04 07-15';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -700,7 +716,14 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var zip = (a.postcode || '').split('-')[0];
     var displayParts = [street, city, state].filter(Boolean).join(', ');
     var display = zip ? displayParts + ' ' + zip : displayParts;
-    return { display:display, street:street, city:city, state:state, zip:zip, lat:parseFloat(result.lat), lng:parseFloat(result.lon) };
+    // True only when Nominatim actually matched a house number AND a road —
+    // a genuine street-level hit, as opposed to falling back to a same-named
+    // town/village/hamlet match (e.g. a search for "123 Maple" resolving to
+    // the town of Maple with no house number or road in the result at all).
+    // Used by the bulk "paste a list" lookup to catch that kind of
+    // confident-looking-but-wrong match instead of accepting it silently.
+    var hasStreetMatch = !!(houseNum && road);
+    return { display:display, street:street, city:city, state:state, zip:zip, lat:parseFloat(result.lat), lng:parseFloat(result.lon), hasStreetMatch:hasStreetMatch };
   }
 
   var stopList = document.getElementById('stopList');
@@ -754,7 +777,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   function refreshStartPinOptions(){
     var sel = document.getElementById('startPinSelect');
     var current = sel.value;
-    sel.innerHTML = '<option value="">Let optimizer pick best start</option>' +
+    sel.innerHTML = '<option value="">Let optimizer pick best start Location</option>' +
       stops.map(function(s,i){
         var label = (i+1) + '. ' + (s.address || '(address not set yet)');
         return '<option value="' + escapeAttr(s.id) + '">' + escapeHtml(label) + '</option>';
@@ -774,6 +797,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var row = wrap.firstElementChild;
     stopList.appendChild(row);
     wireRow(row, s);
+    // A prefilled row (e.g. from bulk-add running out of blank rows to
+    // reuse) that came in with an address but no coordinates is a failed
+    // match — flag it immediately rather than waiting for the next
+    // Recalculate click, same as fillOrAddStopRow already does.
+    row.classList.toggle('geo-missing', !!(s.address && s.lat==null));
     renumberRows();
     resetShareAndSummary();
     return row;
@@ -993,6 +1021,21 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         var suggestions = data.map(nominatimToSuggestion).filter(function(s){ return s.display; });
         if(!suggestions.length) return null;
         suggestions.sort(function(a,b){ return vaDistance(a.lat,a.lng) - vaDistance(b.lat,b.lng); });
+        // If the pasted line looks like it starts with a house number, a
+        // genuine street-level match (house number + road) is required —
+        // otherwise Nominatim can confidently return a same-named town or
+        // village instead (e.g. "123 Maple 23005" resolving to the town of
+        // Maple, NC — no house number or road in that result at all, but
+        // returned as if it were a fine match). Prefer the closest
+        // candidate that's an actual street match; if none of the 8
+        // candidates are, treat this as a non-match — the caller falls
+        // back to leaving the line as unmatched text so the stop gets
+        // flagged red instead of silently getting the wrong address.
+        var looksLikeStreetAddress = /^\d+\s/.test(line.trim());
+        if(looksLikeStreetAddress){
+          var streetMatch = suggestions.filter(function(s){ return s.hasStreetMatch; })[0];
+          return streetMatch || null;
+        }
         return suggestions[0];
       })
       .catch(function(){ return null; });
@@ -1675,7 +1718,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       var dt = buildStartDateTime(startVal);
       whenBit = ' — ' + fmtDateShort(dt) + ', starting ' + fmtClock(dt);
     }
-    document.getElementById('piMeta').textContent = orderedStops.length + ' stops' + whenBit + ' — printed ' + new Date().toLocaleDateString();
+    document.getElementById('piMeta').textContent = orderedStops.length + ' stops' + whenBit;
     var etaEls = orderedStops.map(function(s){
       var row = stopList.querySelector('.stop-row[data-id="'+s.id+'"]');
       return row ? row.querySelector('.stop-eta').textContent : '';
