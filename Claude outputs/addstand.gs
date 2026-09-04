@@ -28,6 +28,13 @@
  * MODERATION: every row is written with Approved = FALSE so nothing
  * appears on the public map until you flip that cell to TRUE.
  *
+ * ADDRESS NORMALIZATION: when a manually-typed address geocodes
+ * successfully, the sheet's Address cell is overwritten with Google's own
+ * formatted result ("Street, City, State Zip") instead of whatever the
+ * visitor typed — keeps the sheet consistent even from loose input like
+ * "Ashland". If geocoding fails, the visitor's original text is kept as-is
+ * (see FAILED ADDRESS LOOKUP below).
+ *
  * FAILED ADDRESS LOOKUP: if a manually-typed address can't be geocoded,
  * the row is still saved (with blank Lat/Lng) but its Description cell
  * is prefixed with "⚠️ NEEDS ADDRESS FIX" so it's obvious during review,
@@ -56,6 +63,7 @@ function doPost(e) {
     var lat = data.lat || "";
     var lng = data.lng || "";
     var geocodeFailed = false;
+    var addressForSheet = data.address || "";
 
     // Fallback: if no coordinates but an address was typed manually (GPS
     // was unavailable/denied on the visitor's device), geocode it here
@@ -68,6 +76,12 @@ function doPost(e) {
         var loc = result.results[0].geometry.location;
         lat = loc.lat;
         lng = loc.lng;
+        // Overwrite whatever the visitor typed with Google's own normalized
+        // result ("Street, City, State Zip"), so the sheet stays consistent
+        // no matter how loosely the address was entered (e.g. "Ashland").
+        if (result.results[0].formatted_address) {
+          addressForSheet = result.results[0].formatted_address;
+        }
       } else {
         geocodeFailed = true;
         Logger.log("doPost geocode failed for: " + fullAddress + " (status: " + result.status + ")");
@@ -81,7 +95,7 @@ function doPost(e) {
     var c;
     if ((c = col("Timestamp")) > 0)        row[c - 1] = new Date();
     if ((c = col("Name", "Farm Name", "Farm/Vendor Name")) > 0) row[c - 1] = data.name || "";
-    if ((c = col("Address")) > 0)          row[c - 1] = data.address || "";
+    if ((c = col("Address")) > 0)          row[c - 1] = addressForSheet;
     if ((c = col("Category", "Goods Sold", "Good Sold")) > 0) row[c - 1] = data.category || "";
     if ((c = col("Description")) > 0) {
       row[c - 1] = geocodeFailed
