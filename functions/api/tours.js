@@ -24,13 +24,15 @@
 // Storage shape: everything lives under ONE KV key ("tours"), as a single
 // JSON object keyed by tour name — the exact same shape the old localStorage
 // version used, just kept on the server instead. Simple read-modify-write;
-// fine for one person's use. Each write refreshes a generous 365-day
-// expiration as a just-in-case janitor for total abandonment — it is NOT a
-// meaningful pruning tool by itself. Use "Clear all saved tours" or the
-// per-tour Delete button on the page for actual cleanup.
+// fine for one person's use. Each write (Save) refreshes a 2-year
+// expiration — this is a just-in-case janitor for total abandonment, NOT a
+// meaningful pruning tool by itself: a tour only "expires" on its own if it
+// goes 2 full years without being saved/re-saved even once. Use the page's
+// "Select tours to delete" tool or the per-tour Delete button for actual,
+// intentional cleanup.
 
 const KV_KEY = 'tours';
-const TTL_SECONDS = 60 * 60 * 24 * 365; // 1 year, refreshed on every write
+const TTL_SECONDS = 60 * 60 * 24 * 365 * 2; // 2 years, refreshed on every Save
 
 function corsHeadersFor(request){
   const origin = request.headers.get('Origin') || '';
