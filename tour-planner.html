@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 15-10                                 ║
+  ║  SITE VERSION: 26.09.04 15-54                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -99,18 +99,15 @@
   .tp-panel-sub{font-size:.88rem;color:var(--gray-muted);margin-bottom:14px;line-height:1.5}
   /* Side-by-side, top-aligned: intro text on the left (grows to fill the
      remaining space so it wraps naturally), Default time/stop pinned to
-     the top-right — its right edge lines up with the "+ Paste bulk address
-     list" row below it since both share the same .tp-panel right padding.
-     The field shrink-wraps to its own content (label width) instead of a
-     fixed 150px box, so the intro text gets whatever room that frees up,
-     and its label + input row are right-justified (align-items:flex-end)
-     so both hug that same right edge instead of sitting flush-left inside
-     the field's box. */
+     the top-right. The label reads as two stacked lines ("Default time" /
+     "per stop"), then the number input + "minutes" below it — three lines
+     stacked, all left-aligned (align-items:flex-start) rather than hugging
+     the panel's right edge. */
   .tp-stops-intro{display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
   .tp-stops-intro .tp-panel-sub{flex:1 1 260px;min-width:0;margin:0}
-  .tp-default-budget-field{flex:0 0 auto;width:auto;margin-bottom:0;align-items:flex-end}
-  .tp-default-budget-field label{text-align:right}
-  .tp-default-budget-field .tp-input-suffix-wrap{justify-content:flex-end}
+  .tp-default-budget-field{flex:0 0 auto;width:auto;margin-bottom:0;align-items:flex-start}
+  .tp-default-budget-field label{text-align:left;line-height:1.25}
+  .tp-default-budget-field .tp-input-suffix-wrap{justify-content:flex-start}
 
   /* ── Stop rows ── */
   #stopList{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
@@ -262,13 +259,15 @@
   #calendarHint.flash{animation:tpFlash .4s ease-in-out 3;font-weight:700}
 
   /* ── Client links panel ── */
-  .client-link-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
+  .client-link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-mid)}
   .client-link-row:last-child{border-bottom:none}
   .client-link-info{min-width:0;display:flex;align-items:flex-start;gap:10px}
   .client-link-info .clr-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.82rem;display:flex;align-items:center;justify-content:center;margin-top:1px}
-  .client-link-info .clr-name{font-weight:700;font-size:.92rem}
+  /* clr-name is now the map link itself (no separate "Map It" button) —
+     styled like a normal link so it still reads as clickable. */
+  .client-link-info .clr-name{font-weight:700;font-size:.92rem;color:var(--red);text-decoration:underline;text-underline-offset:2px}
+  .client-link-info .clr-name:hover{color:var(--red-dark)}
   .client-link-info .clr-blurb{font-size:.82rem;color:var(--gray-text)}
-  .client-link-btns{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}
 
   /* Reverted back to the side-column layout (QR + print buttons beside
      the link box, top-aligned) — the bottom-strip version didn't land. */
@@ -423,10 +422,10 @@
         <div class="tp-stops-intro">
           <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on map. Maximum of 10 stops. Drag stops to reorder manually. No need to choose a starting point, it's automatically current location when opening link.</p>
           <div class="tp-field tp-default-budget-field">
-            <label for="defaultBudgetInput">Default time/stop</label>
+            <label for="defaultBudgetInput">Default time<br>per stop</label>
             <div class="tp-input-suffix-wrap">
               <input type="number" id="defaultBudgetInput" min="1" max="180" value="20">
-              <span class="tp-input-suffix">min</span>
+              <span class="tp-input-suffix">minutes</span>
             </div>
           </div>
         </div>
@@ -661,7 +660,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 15-10</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 15-54</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -674,7 +673,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 15-10';
+const SITE_VERSION = '26.09.04 15-54';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -1286,10 +1285,13 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // (not just 2 alternating) so each one reads at a glance on both the map
   // and every list that mirrors it. 10 colors covers the max case (10 stops
   // = 8 middle stops) with room to spare.
-  // Index 3 (stop 5 of 10) and index 7 (stop 9 of 10) were swapped —
-  // #C2185B was reading too close to the red end-of-route marker right
-  // next to it on the map.
-  var MIDDLE_STOP_COLORS = ['#E8871E','#1F6FB2','#8E44AD','#00ACC1','#00897B','#F9A825','#3949AB','#C2185B','#6D4C41','#757575'];
+  // Two rounds of manual color swaps, both requested after seeing the
+  // actual map/list rendering (not baked in from the start):
+  // 1) index 3 and index 7 were swapped — #C2185B was reading too close to
+  //    the red end-of-route marker right next to it on the map.
+  // 2) index 1 and index 7 (stop 3 and stop 9 of 10) were swapped — same
+  //    idea, different pair once the max dropped to 10 stops.
+  var MIDDLE_STOP_COLORS = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#F9A825','#3949AB','#1F6FB2','#6D4C41','#757575'];
   function stopMarkerColor(i, total){
     if(total<=1 || i===0) return '#1a7a3c';
     if(i===total-1) return '#DA291C';
@@ -1626,7 +1628,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       var overDesktop = waypointCount > 9;
       warnTooltip.textContent = '⚠ ' + (overDesktop ? 'Google Maps only supports up to 9 extra stops in one link, even on desktop — ' : '') +
         'On a phone, it only shows up to 3 stops beyond the destination — with ' + waypointCount + ' here, your client may not see them all. ' +
-        'The "Map It" buttons below work for any number of stops, and Print Client Route always shows every stop.';
+        'Each stop address below links to its own map for any number of stops, and Print Client Route always shows every stop.';
       warnIcon.hidden = false;
     } else {
       warnIcon.hidden = true;
@@ -1702,21 +1704,19 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       }).catch(function(){ prompt('Copy this link:', val); });
     };
 
-    // Per-stop open-in-maps list — a single "Map It" button (Google Maps
-    // link) rather than separate Google/Apple buttons: Google Maps links
-    // already fall back to the web version and work fine cross-platform
-    // (Android, iOS, desktop), so one universal button covers everyone
-    // without the client having to know which one is "theirs."
+    // Per-stop open-in-maps list — no separate "Map It" button anymore; the
+    // stop's own address text IS the map link (Google Maps, same URL the
+    // button used to point at — it already falls back to the web version
+    // and works fine cross-platform, so one universal link covers everyone
+    // without the client having to know which "Map It" button was theirs).
     var listEl = document.getElementById('clientLinksList');
     listEl.innerHTML = orderedStops.map(function(s,i){
       var color = stopMarkerColor(i, orderedStops.length);
       return '<div class="client-link-row">' +
         '<div class="client-link-info"><span class="clr-num" style="background:' + color + '">' + (i+1) + '</span>' +
-        '<div><div class="clr-name">' + escapeHtml(s.address) + '</div>' +
+        '<div><a class="clr-name" href="' + googleSingleStopUrl(s) + '" target="_blank" rel="noopener">' + escapeHtml(s.address) + '</a>' +
         (s.blurb ? '<div class="clr-blurb">' + escapeHtml(s.blurb) + '</div>' : '') + '</div></div>' +
-        '<div class="client-link-btns">' +
-          '<a class="tp-btn tp-btn-outline tp-btn-sm" href="' + googleSingleStopUrl(s) + '" target="_blank" rel="noopener">Map It</a>' +
-        '</div></div>';
+        '</div>';
     }).join('');
 
     // Calendar — the date/time fields live in this section now and are
