@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.03 17-23                                 ║
+  ║  SITE VERSION: 26.09.04 00-40                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -361,6 +361,16 @@
     <div class="dev-notes-divider">Earlier notes</div>
 
     <div class="dev-note-item">
+      <strong>Buyer Broker Agreement e-signature generator (Buyer Intake Form)</strong>
+      <p>Michael's idea: auto-generate and send the Buyer Broker Agreement for e-signature from buyer-intake.html, using Signaturely, FlexiSign, or Authentisign. Research so far — <b>Signaturely</b>: has a REST API, but full API access needs a paid tier (Gold $49/mo up to Titanium $199/mo); general-purpose template library, no real-estate-specific template confirmed, free API test available before committing. <b>FlexiSign</b>: plans run $5–49+/mo, but the pricing page doesn't disclose API access/cost directly — a Pipedream integration confirms an API exists, but auth method and full capabilities still need confirming directly with FlexiSign. <b>Authentisign</b> (Lone Wolf/Instanet): real-estate-specific ("real estate's leading eSignature solution"), documented API at apidocs.lwolf.com covering signing sessions, documents, participants, workflow, and layouts — but public access eligibility and pricing aren't disclosed; likely requires an existing Lone Wolf/Instanet account or direct contact with them. Not yet confirmed whether Michael already has an Authentisign account (commonly bundled with MLS/transaction-management tools). Needs a provider decision + confirmed API access/pricing before building. <span class="dni-date">Added 2026-09-04</span></p>
+    </div>
+
+    <div class="dev-note-item">
+      <strong>Purchase Agreement field-completeness generator</strong>
+      <p>Michael's idea, explicitly deferred: a tool that walks through the Purchase Agreement to make sure all fields are filled — possibly pulling data from MLS and the legal description, which he flagged as likely more complex. He wants to see how the Buyer Broker Agreement e-signature generator (above) goes first. Not scoped or started. <span class="dni-date">Added 2026-09-04</span></p>
+    </div>
+
+    <div class="dev-note-item">
       <strong>Check out askawalker.com</strong>
       <p>Northern Virginia agent site (Abraham Walker, Samson Properties) — property search, buying/selling guides, and a stack of calculators similar to this site's. Worth a look for layout/feature ideas. <span class="dni-date">Added 2026-09-01</span></p>
     </div>
@@ -403,7 +413,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.03 17-23</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 00-40</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -414,7 +424,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.03 17-23';
+  const SITE_VERSION = '26.09.04 00-40';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
