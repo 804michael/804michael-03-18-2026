@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 03-50                                 ║
+  ║  SITE VERSION: 26.09.04 04-28                                 ║
   ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
   ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
   ║                                                               ║
@@ -90,6 +90,9 @@
   .tp-panel{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 22px;margin-bottom:20px}
   .tp-panel h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.01em;margin-bottom:4px}
   .tp-panel-sub{font-size:.88rem;color:var(--gray-muted);margin-bottom:14px;line-height:1.5}
+  .tp-stops-intro{display:flex;gap:16px;align-items:flex-start;margin-bottom:0}
+  .tp-stops-intro .tp-panel-sub{flex:1 1 220px;min-width:0}
+  .tp-default-budget-field{flex:0 0 auto;width:150px;margin-bottom:14px}
 
   /* ── Stop rows ── */
   #stopList{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
@@ -166,6 +169,10 @@
   .tp-input-suffix-wrap input{width:68px;flex:0 0 auto}
   .tp-input-suffix{font-size:.85rem;color:var(--gray-text);white-space:nowrap}
   .tp-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  /* Google Calendar / Outlook line up under Tour date / Start time above them
+     (same 2-column grid), with the .ics button spanning both underneath. */
+  .tp-cal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+  .tp-cal-actions #icsDownloadBtn{grid-column:1 / 3}
   .tp-recalc-row{gap:10px;flex-wrap:nowrap}
   .tp-recalc-row #recalculateBtn{flex:2 1 0;width:100%}
   .tp-recalc-row .tp-clear-wrap{flex:1 1 0;display:flex;justify-content:flex-end;min-width:0}
@@ -216,15 +223,13 @@
   .client-link-info .clr-blurb{font-size:.82rem;color:var(--gray-text)}
   .client-link-btns{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}
 
-  .tp-share-top{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px}
-  .tp-share-top .tp-panel-sub{flex:1 1 260px;min-width:0;margin-bottom:0}
-  .tp-share-link-box{min-width:0}
+  .tp-share-row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px}
+  .tp-share-link-box{flex:1 1 260px;min-width:0}
   .tp-share-link-box input{width:100%;padding:9px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem;background:var(--gray-light);color:var(--gray-text)}
-  #qrCodeWrap{flex:0 0 auto;text-align:center}
-  #qrCodeWrap img{border:1.5px solid var(--gray-mid);border-radius:10px;width:120px;height:120px}
-  #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted);margin-top:4px}
-  .tp-print-btns{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-  .tp-print-btns .tp-btn{width:100%}
+  #qrCodeWrap{flex:0 0 auto;width:150px;display:flex;flex-direction:column;align-items:stretch;gap:8px;text-align:center}
+  #qrCodeWrap .tp-btn{width:100%}
+  #qrCodeWrap img{border:1.5px solid var(--gray-mid);border-radius:10px;width:120px;height:120px;margin:0 auto}
+  #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted)}
 
   .tp-sms-wrap{position:relative;display:inline-flex;align-items:center}
   .tp-warn-icon{background:none;border:none;padding:0 0 0 6px;font-size:1.05rem;line-height:1;color:#c07a00;cursor:pointer;animation:tpWarnPulse 1.4s ease-in-out infinite}
@@ -269,6 +274,8 @@
     #banner,#nav,.tp-hero,.breadcrumb,.tp-body,footer{display:none !important}
     #printItinerary{display:block;padding:0}
     .pi-head{border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:16px}
+    .pi-brand{margin-bottom:12px}
+    .pi-logo{height:24px;width:auto}
     .pi-head-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
     .pi-head h1{font-size:22px;margin-bottom:4px}
     .pi-head p{font-size:12px;color:#555}
@@ -292,8 +299,14 @@
     .pi-rating-scale{font-size:11px;color:#555;margin:3px 0}
     .pi-rating-line{border-bottom:1px solid #999;height:16px;margin-top:2px}
     #printMapWrap{display:block;position:static;left:auto;top:auto;width:100%;page-break-before:always;padding-top:20px}
-    #printMap{width:100%;height:680px;border:none}
+    #printMap{width:100%;height:600px;border:none}
     .pi-map-label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;margin-bottom:10px}
+    .pi-map-summary{display:flex;gap:24px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc}
+    .pi-map-stat{flex:1 1 auto}
+    .pi-map-stat .v{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px}
+    .pi-map-stat .l{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.04em}
+    .pi-map-legs{margin-top:10px;font-size:11px;color:#444;column-count:2;column-gap:24px}
+    .pi-map-leg{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted #ddd;break-inside:avoid}
     #printMapWrap .pi-map-footer{display:flex;align-items:center;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc}
     .pi-map-footer img{width:70px;height:70px;flex:0 0 auto}
     .pi-map-footer-label{font-size:11px;color:#666}
@@ -336,7 +349,16 @@
 
       <div class="tp-panel">
         <h2>Stops</h2>
-        <p class="tp-panel-sub">Type an address and pick it from the suggestions so it can be placed on the map — up to 12 stops. Drag a stop to reorder it manually.</p>
+        <div class="tp-stops-intro">
+          <p class="tp-panel-sub">Type an address and pick it from the suggestions so it can be placed on the map — up to 12 stops. Drag a stop to reorder it manually.</p>
+          <div class="tp-field tp-default-budget-field">
+            <label for="defaultBudgetInput">Default time/stop</label>
+            <div class="tp-input-suffix-wrap">
+              <input type="number" id="defaultBudgetInput" min="1" max="180" value="20">
+              <span class="tp-input-suffix">min</span>
+            </div>
+          </div>
+        </div>
         <p class="tp-stopcount" id="stopCount">0 of 12 stops</p>
         <button type="button" class="tp-link-btn" id="bulkAddBtn">+ Paste a list of addresses (one per line)</button>
 
@@ -372,14 +394,6 @@
           <select id="startPinSelect">
             <option value="">Let the optimizer pick the best start</option>
           </select>
-        </div>
-
-        <div class="tp-field" style="max-width:220px">
-          <label for="defaultBudgetInput">Default time per stop</label>
-          <div class="tp-input-suffix-wrap">
-            <input type="number" id="defaultBudgetInput" min="1" max="180" value="20">
-            <span class="tp-input-suffix">min</span>
-          </div>
         </div>
 
         <div class="tp-actions-row tp-recalc-row">
@@ -436,42 +450,39 @@
 
         <div class="tp-subsection" id="shareSection" style="display:none">
           <h3 class="tp-subhead">Send to Client</h3>
+          <p class="tp-panel-sub">No starting point is baked into this link — when your client opens it, their phone's Maps app starts from wherever they are, and yours will too when you open it.</p>
 
-          <div class="tp-share-top">
-            <p class="tp-panel-sub">No starting point is baked into this link — when your client opens it, their phone's Maps app starts from wherever they are, and yours will too when you open it.</p>
+          <div class="tp-share-row">
+            <div class="tp-share-link-box">
+              <label style="font-size:.78rem;color:var(--gray-text);font-weight:600;display:block;margin-bottom:4px">Full route link (Google Maps)</label>
+              <input type="text" id="fullRouteLinkInput" readonly>
+              <div class="tp-actions-row">
+                <a class="tp-btn tp-btn-red tp-btn-sm" id="openFullRouteBtn" target="_blank" rel="noopener">Open Full Route</a>
+                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyLinkBtn">Copy Link</button>
+                <span class="tp-sms-wrap">
+                  <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text This Link</button>
+                  <button type="button" class="tp-warn-icon" id="waypointWarnIcon" hidden aria-label="Waypoint limit warning" aria-expanded="false">⚠<span class="tp-warn-tooltip" id="waypointWarnTooltip"></span></button>
+                </span>
+              </div>
+
+              <div class="tp-short-link-row">
+                <label for="shortLinkInput">Short link (for texting)
+                  <button type="button" class="tp-info-btn" id="shortLinkInfoBtn" aria-label="About short links" aria-expanded="false">ⓘ</button>
+                </label>
+                <div class="tp-short-link-popup" id="shortLinkInfoPopup" hidden>
+                  This is a free, unbranded shortener (is.gd, falling back to TinyURL) — no signup needed, generated automatically every time you recalculate. Want branded links like <strong>804re.link/tour7</strong> instead? Just ask — it needs a quick ElkQR signup and an API key, and this box upgrades to it automatically, same spot.
+                </div>
+                <div class="row-inputs">
+                  <input type="text" id="shortLinkInput" readonly placeholder="Shortening…">
+                  <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyShortLinkBtn">Copy</button>
+                </div>
+              </div>
+            </div>
             <div id="qrCodeWrap">
+              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printBtn">Print Client Route</button>
               <img id="qrCodeImg" alt="QR code for the full route link">
               <p>Scan for full route</p>
-              <div class="tp-print-btns">
-                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printBtn">Print Client Route</button>
-                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printAgentBtn" title="Includes your private notes — for you only, never the client">Print Agent Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="tp-share-link-box">
-            <label style="font-size:.78rem;color:var(--gray-text);font-weight:600;display:block;margin-bottom:4px">Full route link (Google Maps)</label>
-            <input type="text" id="fullRouteLinkInput" readonly>
-            <div class="tp-actions-row">
-              <a class="tp-btn tp-btn-red tp-btn-sm" id="openFullRouteBtn" target="_blank" rel="noopener">Open Full Route</a>
-              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyLinkBtn">Copy Link</button>
-              <span class="tp-sms-wrap">
-                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text This Link</button>
-                <button type="button" class="tp-warn-icon" id="waypointWarnIcon" hidden aria-label="Waypoint limit warning" aria-expanded="false">⚠<span class="tp-warn-tooltip" id="waypointWarnTooltip"></span></button>
-              </span>
-            </div>
-
-            <div class="tp-short-link-row">
-              <label for="shortLinkInput">Short link (for texting)
-                <button type="button" class="tp-info-btn" id="shortLinkInfoBtn" aria-label="About short links" aria-expanded="false">ⓘ</button>
-              </label>
-              <div class="tp-short-link-popup" id="shortLinkInfoPopup" hidden>
-                This is a free, unbranded shortener (is.gd) — no signup needed, generated automatically every time you recalculate. Want branded links like <strong>804re.link/tour7</strong> instead? Just ask — it needs a quick ElkQR signup and an API key, and this box upgrades to it automatically, same spot.
-              </div>
-              <div class="row-inputs">
-                <input type="text" id="shortLinkInput" readonly placeholder="Shortening…">
-                <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyShortLinkBtn">Copy</button>
-              </div>
+              <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="printAgentBtn" title="Includes your private notes — for you only, never the client">Print Agent Copy</button>
             </div>
           </div>
 
@@ -491,7 +502,7 @@
               <input type="time" id="startTimeInput">
             </div>
           </div>
-          <div class="tp-actions-row">
+          <div class="tp-cal-actions">
             <a class="tp-btn tp-btn-outline tp-btn-disabled" id="gcalLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Google Calendar</a>
             <a class="tp-btn tp-btn-outline tp-btn-disabled" id="outlookLink" target="_blank" rel="noopener" title="Calculate a route above to enable this.">Outlook (Web)</a>
             <button type="button" class="tp-btn tp-btn-outline tp-btn-disabled" id="icsDownloadBtn" disabled title="Calculate a route above to enable this.">Apple / Outlook Desktop (.ics)</button>
@@ -509,6 +520,18 @@
 <!-- Printable itinerary — client-safe (blurb only, no private agent notes) -->
 <div id="printItinerary">
   <div class="pi-head">
+    <div class="pi-brand"><svg viewBox="0 0 786.329 238.272" class="pi-logo" aria-label="804Michael logo">
+        <path fill="#111" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="#111" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="#111" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="#111" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
+        <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+        <path fill="#ED1C24" d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
+        <path fill="#ED1C24" d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
+        <path fill="#ED1C24" d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z M408.938,71.1l1.473-4.6l1.498,4.6h4.815l-3.891,2.866l1.501,4.57l-3.924-2.812l-3.916,2.812l1.495-4.57l-3.883-2.866H408.938z"/>
+        <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
+      </svg></div>
     <div class="pi-head-top">
       <div>
         <h1>Home Tour Itinerary<span class="pi-agent-badge">Agent Copy</span></h1>
@@ -533,10 +556,16 @@
 <div id="printMapWrap">
   <p class="pi-map-label">Route Map</p>
   <div id="printMap"></div>
+  <div class="pi-map-summary">
+    <div class="pi-map-stat"><span class="v" id="piMapDist"></span><span class="l">Total Drive Distance</span></div>
+    <div class="pi-map-stat"><span class="v" id="piMapDur"></span><span class="l">Total Drive Time</span></div>
+    <div class="pi-map-stat"><span class="v" id="piMapTrip"></span><span class="l">Total Trip Time (incl. stop time)</span></div>
+  </div>
+  <div id="piMapLegs" class="pi-map-legs"></div>
   <div class="pi-map-footer">
     <img id="piMapQrImg" alt="QR code for the full route link">
     <div>
-      <p class="pi-map-footer-label">Scan or visit for the full route</p>
+      <p class="pi-map-footer-label" id="piMapFooterLabel">Scan or visit for the full route</p>
       <p id="piMapShortLink" class="pi-map-footer-link"></p>
     </div>
   </div>
@@ -559,7 +588,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 03-50</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 04-28</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -572,7 +601,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04 03-50';
+const SITE_VERSION = '26.09.04 04-28';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -1090,12 +1119,15 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     routeMarkers.forEach(function(m){ map.removeLayer(m); }); routeMarkers=[];
     if(routeLine){ map.removeLayer(routeLine); routeLine=null; }
   }
-  // Start = green, end = red, middle stops alternate warm/cool so the route
-  // reads at a glance on both the map and every list that mirrors it.
+  // Start = green, end = red, every middle stop gets its OWN unique color
+  // (not just 2 alternating) so each one reads at a glance on both the map
+  // and every list that mirrors it. 10 colors covers the max case (12 stops
+  // = 10 middle stops) with zero repeats.
+  var MIDDLE_STOP_COLORS = ['#E8871E','#1F6FB2','#8E44AD','#C2185B','#00897B','#F9A825','#3949AB','#00ACC1','#6D4C41','#757575'];
   function stopMarkerColor(i, total){
     if(total<=1 || i===0) return '#1a7a3c';
     if(i===total-1) return '#DA291C';
-    return (i % 2 === 1) ? '#e8871e' : '#1f6fb2';
+    return MIDDLE_STOP_COLORS[(i-1) % MIDDLE_STOP_COLORS.length];
   }
   function numIcon(n, color){
     return L.divIcon({ className:'', html:'<div class="tp-num-icon" style="background:'+color+'">'+n+'</div>', iconSize:[28,28], iconAnchor:[14,14] });
@@ -1350,9 +1382,15 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       sourceNote.className='tp-source-note';
     }
 
-    // Per-stop arrival-time chain, using each leg's duration + each stop's own
-    // time budget. buildStartDateTime() always returns a usable time now
-    // (defaulting to right now if nothing was entered), so this always runs.
+    // Per-stop timing label. With an explicit start time entered, this is a
+    // real arrival-time chain ("Arrive ~2:15 PM"). Without one, a clock time
+    // would just be fabricated (it used to silently default to "right now",
+    // which is exactly what produced a real-looking-but-meaningless "Arrive
+    // ~2:11 AM") — so instead, with nothing entered, each stop just shows
+    // how long the drive to the NEXT stop is ("18 min to next stop"), which
+    // is true regardless of when the tour actually happens. (Calendar links
+    // further down still default their event time to right now when no
+    // start time is given — that's a different, deliberate default.)
     var startVal = document.getElementById('startTimeInput').value;
     var legs = data.legs || [];
     var etaEls = [];
@@ -1360,15 +1398,26 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       var row = stopList.querySelector('.stop-row[data-id="'+s.id+'"]');
       etaEls.push(row ? row.querySelector('.stop-eta') : null);
     });
-    var t = buildStartDateTime(startVal);
-    orderedStops.forEach(function(s,i){
-      if(i>0 && legs[i-1]) t = new Date(t.getTime() + legs[i-1].durationSeconds*1000);
-      if(etaEls[i]) etaEls[i].textContent = 'Arrive ~' + fmtClock(t);
-      t = new Date(t.getTime() + (s.budget||0)*60000);
-    });
+    if(startVal){
+      var t = buildStartDateTime(startVal);
+      orderedStops.forEach(function(s,i){
+        if(i>0 && legs[i-1]) t = new Date(t.getTime() + legs[i-1].durationSeconds*1000);
+        if(etaEls[i]) etaEls[i].textContent = 'Arrive ~' + fmtClock(t);
+        t = new Date(t.getTime() + (s.budget||0)*60000);
+      });
+    } else {
+      orderedStops.forEach(function(s,i){
+        if(!etaEls[i]) return;
+        if(legs[i] && legs[i].durationSeconds!=null){
+          etaEls[i].textContent = Math.round(legs[i].durationSeconds/60) + ' min to next stop';
+        } else {
+          etaEls[i].textContent = ''; // last stop — nothing after it
+        }
+      });
+    }
 
     // Color each stop's number circle in the editor list to match its map
-    // marker (start green, end red, middle stops alternating warm/cool).
+    // marker (start green, end red, every middle stop its own unique color).
     orderedStops.forEach(function(s,i){
       var row = stopList.querySelector('.stop-row[data-id="'+s.id+'"]');
       var numEl = row ? row.querySelector('.stop-num') : null;
@@ -1376,7 +1425,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     });
 
     buildShareAndCalendar(orderedStops, data);
-    buildPrintable(orderedStops, startVal);
+    buildPrintable(orderedStops, startVal, data);
   }
 
   // ── Client share links ──────────────────────────────────────────────
@@ -1440,30 +1489,41 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       window.print();
     };
 
-    // Auto-shorten the full route link (free, keyless is.gd — see the ⓘ next
-    // to "Short link" for the ElkQR branded-link upgrade path). Runs through
-    // our own /api/shorten-link proxy rather than calling is.gd directly
-    // from the browser, so it isn't at the mercy of is.gd's CORS support.
-    // shortLinkReqId guards against a stale response winning a race if
-    // Recalculate gets clicked again before the first shorten call returns.
+    // Auto-shorten the full route link (free, keyless is.gd, falling back to
+    // TinyURL if that fails — see the ⓘ next to "Short link" for the ElkQR
+    // branded-link upgrade path). Runs through our own /api/shorten-link
+    // proxy rather than calling either shortener directly from the browser,
+    // so it isn't at the mercy of their CORS support. shortLinkReqId guards
+    // against a stale response winning a race if Recalculate gets clicked
+    // again before the first shorten call returns.
     (function(){
       var shortInput = document.getElementById('shortLinkInput');
       var myReqId = ++shortLinkReqId;
       shortInput.value = '';
+      shortInput.removeAttribute('title');
       shortInput.placeholder = 'Shortening…';
       fetch('/api/shorten-link', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({url: fullUrl})
-      }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('http_'+r.status)); })
-        .then(function(data){
-          if(myReqId!==shortLinkReqId) return; // superseded by a newer recalculate
-          if(data && data.shortUrl){ shortInput.value = data.shortUrl; }
-          else { shortInput.placeholder = 'Short link unavailable — use the full link above'; }
+      }).then(function(r){
+          // Read the body either way — a failed (non-2xx) response still
+          // carries a useful `detail` string explaining why, worth keeping
+          // around (as a hover tooltip on the field) instead of discarding.
+          return r.json().catch(function(){ return null; }).then(function(data){ return {ok:r.ok, data:data}; });
         })
-        .catch(function(){
+        .then(function(res){
+          if(myReqId!==shortLinkReqId) return; // superseded by a newer recalculate
+          if(res.ok && res.data && res.data.shortUrl){ shortInput.value = res.data.shortUrl; }
+          else {
+            shortInput.placeholder = 'Short link unavailable — use the full link above';
+            if(res.data && res.data.detail) shortInput.title = 'Why: ' + res.data.detail;
+          }
+        })
+        .catch(function(err){
           if(myReqId!==shortLinkReqId) return;
           shortInput.placeholder = 'Short link unavailable — use the full link above';
+          if(err && err.message) shortInput.title = 'Why: ' + err.message;
         });
     })();
     document.getElementById('copyShortLinkBtn').onclick = function(){
@@ -1582,7 +1642,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     return { line1: street, line2: line2 };
   }
 
-  function buildPrintable(orderedStops, startVal){
+  function buildPrintable(orderedStops, startVal, data){
     var qrSrc = document.getElementById('qrCodeImg').src;
     var piQr = document.getElementById('piQrImg');
     if(qrSrc) piQr.src = qrSrc;
@@ -1625,12 +1685,39 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         '</div>';
     }).join('');
 
+    // Route totals + a drive-time/distance line between each consecutive
+    // pair of stops, printed under the map on page 2 — the same numbers
+    // shown on-screen above the map, plus the leg-by-leg breakdown.
+    var legs = (data && data.legs) || [];
+    var totalBudgetSec = orderedStops.reduce(function(a,s){ return a+(s.budget||0)*60; }, 0);
+    document.getElementById('piMapDist').textContent = fmtMiles((data && data.totalDistanceMeters) || 0);
+    document.getElementById('piMapDur').textContent = fmtDuration((data && data.totalDurationSeconds) || 0);
+    document.getElementById('piMapTrip').textContent = fmtDuration(((data && data.totalDurationSeconds) || 0) + totalBudgetSec);
+    document.getElementById('piMapLegs').innerHTML = orderedStops.slice(0, -1).map(function(s,i){
+      var leg = legs[i];
+      var legText = leg ? (fmtMiles(leg.distanceMeters||0) + ' · ' + fmtDuration(leg.durationSeconds||0)) : '—';
+      return '<div class="pi-map-leg"><span>' + (i+1) + ' → ' + (i+2) + '</span><span>' + escapeHtml(legText) + '</span></div>';
+    }).join('');
+
     // Short link + QR repeated under the print map (page 2) as a backup in
-    // case page 1 gets separated from the rest of the printout.
+    // case page 1 gets separated from the rest of the printout. Deliberately
+    // does NOT fall back to printing the raw full Google Maps URL when no
+    // short link is ready yet (that link can run to several hundred
+    // characters with enough stops) — just the QR code and a plain label.
     var shortVal = document.getElementById('shortLinkInput').value;
     var piMapQr = document.getElementById('piMapQrImg');
     if(qrSrc) piMapQr.src = qrSrc;
-    document.getElementById('piMapShortLink').textContent = shortVal || document.getElementById('fullRouteLinkInput').value;
+    var mapLinkEl = document.getElementById('piMapShortLink');
+    var mapLabelEl = document.getElementById('piMapFooterLabel');
+    if(shortVal){
+      mapLinkEl.textContent = shortVal;
+      mapLinkEl.hidden = false;
+      mapLabelEl.textContent = 'Scan or visit for the full route';
+    } else {
+      mapLinkEl.textContent = '';
+      mapLinkEl.hidden = true;
+      mapLabelEl.textContent = 'Scan for the full route';
+    }
   }
 
   // ── Save / reuse tours ────────────────────────────────────────────────
