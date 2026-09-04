@@ -74,8 +74,6 @@
     const h3 = document.getElementById('h3');
     const hamBtn = document.getElementById('ham-btn');
     const mobClose = document.getElementById('mob-close');
-    const connectBtn = document.getElementById('connect-btn');
-    const connectDd = document.getElementById('connect-dd');
     const banner = document.getElementById('banner');
 
     // Keep --banner-h synced to the banner's ACTUAL rendered height, always.
@@ -150,18 +148,6 @@
     hamBtn.addEventListener('click', openMob);
     mobClose.addEventListener('click', window.closeMob);
 
-    // Connect dropdown toggle (click, not just hover — needed for touch)
-    connectBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const open = connectDd.classList.toggle('open');
-      connectBtn.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', function () {
-      connectDd.classList.remove('open');
-      connectBtn.setAttribute('aria-expanded', 'false');
-    });
-    connectDd.addEventListener('click', function (e) { e.stopPropagation(); });
-
     // Active-link highlighting — matches the current page's filename
     // against every nav link's href, works regardless of which page loaded this partial.
     // Links with a "#" fragment (e.g. index.html#guides) are same-page scroll shortcuts,
@@ -194,8 +180,6 @@
       if (!msgOverlay) return;
       loadEmailJS(function () {}); // warm the SDK up now so it's ready by the time they hit Send
       msgOverlay.classList.add('open');
-      connectDd.classList.remove('open');
-      connectBtn.setAttribute('aria-expanded', 'false');
       if (typeof window.closeMob === 'function') window.closeMob();
     }
     function closeMsgModal() {

@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 00_38                                 ║
+  ║  SITE VERSION: 26.09.04 01_07                                 ║
   ║  Format: YY.MM.DD HH_MM  (date + time of last revision)      ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
@@ -269,7 +269,7 @@
   .addr-ac-list{position:absolute;top:100%;left:0;right:0;z-index:1001;margin:4px 0 0;padding:6px;list-style:none;background:#fff;border:1.5px solid var(--gray-mid);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.15);max-height:180px;overflow-y:auto;font-family:'Barlow',sans-serif}
   .addr-ac-item{padding:9px 10px;border-radius:6px;font-size:.88rem;color:var(--black);cursor:pointer;line-height:1.3}
   .addr-ac-item.active,.addr-ac-item:hover{background:var(--red);color:#fff}
-  .addr-ac-hint{font-size:12.5px;color:var(--gray-muted);margin:-6px 0 12px;}
+  .addr-ac-hint{font-size:12.5px;color:var(--gray-muted);margin:6px 0 4px;line-height:1.4;}
   .modal-actions{display:flex;gap:10px;margin-top:16px;}
   .modal-actions .btn{flex:1;justify-content:center;}
   .modal .btn{font-size:1.05rem;}
@@ -329,7 +329,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.72rem;color:var(--gray-muted);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:700;text-transform:uppercase">site version 26.09.04 00_38</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04 01_07</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -385,7 +385,7 @@
       <textarea id="fDesc" placeholder="share some specific items sold here"></textarea>
     </div>
     <div class="field">
-      <label for="fWebsite">Website or Social Link <span style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+      <label for="fWebsite">Website or Social Link <span id="fWebsiteNote" style="font-weight:400;color:var(--gray-muted);text-transform:none;letter-spacing:0">(optional)</span></label>
       <input type="text" id="fWebsite" placeholder="facebook.com/yourstand">
     </div>
 
@@ -561,8 +561,8 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.04 00_38';
-(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'V' + SITE_VERSION; })();
+const SITE_VERSION = '26.09.04 01_07';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1046,6 +1046,17 @@ function updateHoursModeVisibility(){
   const anyModeActive = document.getElementById('fUnmanned').classList.contains('active') ||
     document.getElementById('fVaries').classList.contains('active');
   document.getElementById('fHoursGroupsWrap').classList.toggle('hidden', anyModeActive);
+  // "Hours vary, check site" means visitors need somewhere to go check — require the
+  // website/social link in that case, and reflect it in the field's note.
+  const variesActive = document.getElementById('fVaries').classList.contains('active');
+  const websiteNote = document.getElementById('fWebsiteNote');
+  if(variesActive){
+    websiteNote.textContent = '(required — hours vary, visitors need somewhere to check)';
+    websiteNote.style.color = 'var(--red)';
+  } else {
+    websiteNote.textContent = '(optional)';
+    websiteNote.style.color = 'var(--gray-muted)';
+  }
 }
 document.getElementById('fUnmanned').addEventListener('click', ()=>{
   const btn = document.getElementById('fUnmanned');
@@ -1141,6 +1152,7 @@ function closeModalFn(){
   document.getElementById('fUnmanned').classList.remove('active');
   document.getElementById('fVaries').classList.remove('active');
   document.getElementById('fHoursGroupsWrap').classList.remove('hidden');
+  updateHoursModeVisibility();
   document.querySelectorAll('#fCatGroup input:checked').forEach(el=>el.checked=false);
   resetHoursGroups();
   locationMode = null;
@@ -1184,6 +1196,9 @@ submitBtn.addEventListener('click', async ()=>{
   }
   if(!noSetHours && validGroups.length === 0){
     missing.push('Set the Days & Hours: pick at least one day plus an open and close time for a row, or choose "Open all the time" or "Hours vary, check site."');
+  }
+  if(isVaries && !document.getElementById('fWebsite').value.trim()){
+    missing.push('Add a website or social link — since hours vary, visitors need somewhere to go check current hours.');
   }
   if(missing.length){
     alert(missing.length === 1 ? missing[0] : 'Please fix the following before submitting:\n\n• ' + missing.join('\n• '));
