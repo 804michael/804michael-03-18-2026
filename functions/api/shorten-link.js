@@ -2,42 +2,44 @@
 // Route: POST /api/shorten-link
 //
 // Backs the automatic "Short link" box on tour-planner.html's Send-to-Client
-// card. Given a long URL (the full multi-stop Google Maps route link), calls
-// a free, keyless URL-shortening API and returns a short link.
+// card. Given a long URL (the full multi-stop Google Maps route link),
+// returns a short link the agent can text to a client.
 //
-// Why a server-side proxy instead of calling the shortener directly from the
-// browser: is.gd documents a `callback` (JSONP) param for cross-domain use,
-// but doesn't explicitly document CORS headers on the plain JSON endpoint —
-// rather than gamble on that, this Function calls it server-to-server
-// (no CORS involved at all there) and returns JSON to our own frontend with
-// our own CORS headers, same pattern as route-optimize.js.
+// UPDATE 2026-09-04 (v2): Free third-party keyless shorteners turned out to
+// be unreliable for this use case in practice:
+//   - is.gd was intermittently returning "Short link unavailable" — likely
+//     rate-limiting/blocking requests from shared cloud IP ranges (the kind
+//     a Cloudflare Function calls from), even though the same API works
+//     fine from a home connection.
+//   - TinyURL's free, keyless api-create.php endpoint now routes through a
+//     "deprecated API endpoint" interstitial/ad page before redirecting —
+//     not something to hand a client, who'd see an 8-second ad splash
+//     before ever reaching the route.
+// Rather than chase a third free provider with the same risk, this now
+// shortens links ourselves using the same Cloudflare KV namespace already
+// bound as TOURS_KV for Save/Reuse Tours (see tours.js) — no new setup
+// needed. A short code is generated, the long URL is stored under it with a
+// long TTL, and the short link is our own domain: https://804re.com/s/CODE
+// (see functions/s/[code].js for the redirect side). This is same-origin,
+// so there's no ad interstitial, no third-party rate limiting, and no risk
+// of a provider deprecating the free endpoint out from under us.
 //
-// UPDATE 2026-09-04: is.gd was reportedly returning "Short link unavailable"
-// in practice — plausible cause is that free keyless shorteners often rate-
-// limit or outright block requests coming from shared cloud/datacenter IP
-// ranges (which is exactly what a Cloudflare Function calls from), something
-// that doesn't show up when testing the same API from a home connection.
-// Two changes to make this more resilient: (1) send a real browser-style
-// User-Agent on the is.gd request, since some anti-abuse filters reject
-// requests with no/generic UA; (2) if is.gd still fails for any reason, fall
-// back to TinyURL's equally free, keyless, no-signup API before giving up —
-// two independent providers rather than a single point of failure. The
-// frontend doesn't need to change either way — it just calls
-// /api/shorten-link and displays whatever "shortUrl" comes back, and now
-// also logs which provider (or failure) actually happened via `source`/
-// `detail` in the response for easier debugging next time.
-//
-// This is intentionally the "good enough for now, zero setup" option — no
-// signup, no API key, no cost. tour-planner.html shows an ⓘ next to the
-// short link explaining the upgrade path: swap this file's calls for
-// ElkQR's API (branded 804re.link short links) once Michael has signed up
-// for ElkQR and generated an API key — add it as an ELKQR_API_KEY
-// Cloudflare env var (same pattern as ORS_API_KEY in route-optimize.js) and
-// point this file at ElkQR's shorten endpoint first, ahead of these two.
+// is.gd and TinyURL are kept as a fallback ONLY for the case where TOURS_KV
+// isn't bound yet (before the one-time KV setup described in tours.js) —
+// so short links keep working either way while KV is being set up.
 
 const ISGD_URL = 'https://is.gd/create.php';
 const TINYURL_URL = 'https://tinyurl.com/api-create.php';
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+
+// Same 2-year sliding-ish TTL as saved tours (see tours.js) — plenty long
+// for a link that's meant to be texted/printed and used within days or
+// weeks, without keeping short codes in KV forever.
+const SHORT_TTL_SECONDS = 60 * 60 * 24 * 365 * 2;
+const SHORT_CODE_LEN = 7;
+// Unambiguous alphabet — no 0/O, 1/l/I, etc, in case a code is ever read
+// off a printout instead of tapped/scanned.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
 
 function corsHeadersFor(request){
   const origin = request.headers.get('Origin') || '';
@@ -48,6 +50,33 @@ function corsHeadersFor(request){
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
+}
+
+function randomCode(len){
+  const bytes = new Uint8Array(len);
+  crypto.getRandomValues(bytes);
+  let out = '';
+  for(let i = 0; i < len; i++) out += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
+  return out;
+}
+
+// Generates a short code, stores it in TOURS_KV under a "slink_" prefix
+// (kept in the same namespace as saved tours, under its own key prefix, so
+// no second KV namespace/binding is needed), and returns our own-domain
+// short URL. Retries a handful of times on the astronomically unlikely
+// chance of a collision.
+async function tryOwnShortener(longUrl, env, request){
+  if(!env.TOURS_KV) return { ok:false, detail: 'own shortener: TOURS_KV not bound yet' };
+  const origin = new URL(request.url).origin;
+  for(let attempt = 0; attempt < 6; attempt++){
+    const code = randomCode(SHORT_CODE_LEN);
+    const key = 'slink_' + code;
+    const existing = await env.TOURS_KV.get(key);
+    if(existing) continue; // collision (extremely unlikely) — try another code
+    await env.TOURS_KV.put(key, longUrl, { expirationTtl: SHORT_TTL_SECONDS });
+    return { ok:true, shortUrl: origin + '/s/' + code };
+  }
+  return { ok:false, detail: 'own shortener: could not find a free short code after several tries' };
 }
 
 async function tryIsGd(longUrl){
@@ -68,7 +97,7 @@ async function tryTinyUrl(longUrl){
 }
 
 export async function onRequestPost(context) {
-  const { request } = context;
+  const { request, env } = context;
   const corsHeaders = corsHeadersFor(request);
   const jsonHeaders = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeaders };
 
@@ -85,6 +114,15 @@ export async function onRequestPost(context) {
   }
 
   const attempts = [];
+
+  try {
+    const ownResult = await tryOwnShortener(longUrl, env, request);
+    if(ownResult.ok) return new Response(JSON.stringify({ source: 'own', shortUrl: ownResult.shortUrl }), { headers: jsonHeaders });
+    attempts.push(ownResult.detail);
+  } catch (err) {
+    attempts.push('own shortener threw: ' + (err && err.message));
+  }
+
   try {
     const isGdResult = await tryIsGd(longUrl);
     if(isGdResult.ok) return new Response(JSON.stringify({ source: 'is.gd', shortUrl: isGdResult.shortUrl }), { headers: jsonHeaders });
@@ -101,7 +139,7 @@ export async function onRequestPost(context) {
     attempts.push('tinyurl threw: ' + (err && err.message));
   }
 
-  // Both providers failed — surface exactly why for debugging, but keep the
+  // All three failed — surface exactly why for debugging, but keep the
   // HTTP status a clean 502 so the frontend's generic "short link
   // unavailable" fallback fires regardless.
   return new Response(JSON.stringify({ error: 'shorten_failed', detail: attempts.join(' | ') }), { status: 502, headers: jsonHeaders });
