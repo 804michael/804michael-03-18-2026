@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_16-25-0050                            ║
+  ║  SITE VERSION: 26.09.04_17-20-0051                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.04_16-25-0050 ║
+  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.04_17-20-0051 ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -93,7 +93,19 @@
 
   .tp-body{max-width:1300px;margin:0 auto;padding:24px 24px 70px}
   .tp-layout{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:26px;align-items:start}
-  @media(max-width:980px){ .tp-layout{grid-template-columns:1fr} }
+  /* minmax(0, ...) here (not a bare 1fr) is load-bearing: without the
+     explicit 0 minimum, a CSS Grid track defaults to an "auto" minimum,
+     which is free to grow to fit the largest min/max-content of anything
+     inside it. A stop's address input has no min-width:0 in its own flex
+     chain, so once a LONG address (e.g. loaded from a saved tour) is set as
+     its value, the input's content-based width can exceed the viewport —
+     and with a bare 1fr track that just grows the whole single-column grid
+     (and everything in it, including the unrelated map column, since both
+     columns stack into that same track below 980px) right along with it,
+     reintroducing the horizontal scroll this pass was supposed to fix.
+     minmax(0,1fr) clamps the track back to the container's actual width, so
+     the oversized input just clips/scrolls internally instead. */
+  @media(max-width:980px){ .tp-layout{grid-template-columns:minmax(0,1fr)} }
 
   .tp-panel{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 22px;margin-bottom:20px}
   /* The right-hand column (Route Map / Share Tour Itinerary / Add to
@@ -301,13 +313,6 @@
   #qrCodeWrap p{font-size:.72rem;color:var(--gray-muted)}
 
   .tp-sms-wrap{position:relative;display:inline-flex;align-items:center}
-  /* No motion here on purpose — an earlier growing/glowing animation made
-     the "Text This Link" warning hard to actually read. Static color +
-     glow still makes it stand out next to the button without moving. */
-  .tp-warn-icon{background:none;border:none;padding:0 0 0 6px;font-size:1.15rem;line-height:1;color:#c07a00;cursor:pointer;text-shadow:0 0 5px rgba(255,180,0,.6)}
-  .tp-warn-icon[hidden]{display:none}
-  .tp-warn-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:8px;width:min(300px,80vw);background:#fff;border:1.5px solid var(--gray-mid);border-radius:10px;padding:10px 12px;font-size:.78rem;line-height:1.5;color:var(--gray-text);box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:left;white-space:normal;display:none;z-index:20}
-  .tp-warn-icon:hover .tp-warn-tooltip,.tp-warn-icon:focus .tp-warn-tooltip,.tp-warn-icon.show-tip .tp-warn-tooltip{display:block}
 
   .tp-short-link-row{margin-top:6px;position:relative}
   .tp-short-link-row label{font-size:.78rem;color:var(--gray-text);font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:4px}
@@ -357,50 +362,69 @@
     .pi-head p{font-size:12.5px;color:#555}
     .pi-agent-badge{display:none}
     #printItinerary.pi-agent-copy .pi-agent-badge{display:inline-block;background:#DA291C;color:#fff;font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;border-radius:5px;margin-left:10px;vertical-align:middle}
-    .pi-qr{flex:0 0 auto;text-align:center}
-    .pi-qr img{width:92px;height:92px}
-    .pi-qr p{font-size:10px;color:#666;margin-top:2px}
-    /* Per-stop rows — city/zip dropped (street only) and the timing shares
-       one row with a single ruled note line, rather than its own row plus
-       two blank lines below. Sized up from the pre-10-max version so a
-       full page of stops fills the sheet instead of looking sparse, but
-       tuned against an actual Agent Copy render (blurb + private note on
-       every stop — the worst case) at 10 stops with realistic 0.5in print
-       margins, not just the loose/no-margin default, so it still holds to
-       one page in that worst case. Padding then scales further via the
-       pi-density-* class buildPrintable() sets based on stop count — see
-       the loose/medium/tight overrides below. */
-    .pi-stop{padding:5px 0;display:flex;gap:10px;align-items:flex-start;page-break-inside:avoid}
+    /* Per-stop rows — city/zip dropped (street only). Reworked this round
+       (2026-09-04) to trade density for handwriting room: Michael wants the
+       stops to fill most of the printable page rather than being packed
+       tight, so there's real space to jot notes during the tour. The single
+       thin ruled line that used to share the ETA row is now a dedicated
+       .pi-notes-block below each stop, with 1–3 full-width ruled lines
+       depending on the pi-density-* tier (still keyed off stop count so 10
+       stops still holds to one page — see the tiers below). The QR code
+       that used to sit top-right of this page was dropped for the same
+       reason (also removed from the markup in printItinerary's pi-head-top). */
+    .pi-stop{padding:9px 0;display:flex;gap:10px;align-items:flex-start;page-break-inside:avoid}
     .pi-num{font-weight:800;font-size:11.5px;width:20px;height:20px;flex:0 0 auto;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;margin-top:1px}
     .pi-stop-body{flex:1 1 auto;min-width:0}
-    .pi-addr{font-weight:700;font-size:13px}
+    .pi-addr{font-weight:700;font-size:13.5px}
     .pi-rating{font-size:10px;color:#555;margin-top:1px}
     .pi-eta-row{display:flex;align-items:baseline;gap:8px;margin-top:3px}
     .pi-eta{flex:0 0 auto;white-space:nowrap;font-size:10px;color:#444}
-    .pi-eta-row .pi-notes-line{flex:1 1 auto;border-bottom:1px solid #bbb;height:9px;min-width:40px}
     .pi-blurb{font-size:10.5px;color:#444;margin-top:1px}
     .pi-private-note{display:none;font-size:10px;color:#a06000;font-style:italic;margin-top:1px}
     #printItinerary.pi-agent-copy .pi-private-note{display:block}
+    .pi-notes-block{margin-top:5px}
+    .pi-notes-block .pi-notes-line{border-bottom:1px solid #bbb;height:18px}
     /* Density tiers, set on #printItinerary by buildPrintable(): more
-       breathing room for a short list, tighter once stop count climbs.
-       Now that 10 is the hard max (not 12), "tight" only ever has to fit
-       10 rows, so it can afford a bit more padding than it used to — but
-       kept close to "medium" since medium only ever has one fewer row. */
-    #printItinerary.pi-density-loose .pi-stop{padding:11px 0}
-    #printItinerary.pi-density-medium .pi-stop{padding:6px 0}
-    #printItinerary.pi-density-tight .pi-stop{padding:2px 0}
+       breathing room (taller padding + more ruled note lines per stop) for
+       a short list, tighter once stop count climbs toward the 10-stop max
+       so it still holds to one page even in the worst case (10 stops, Agent
+       Copy with a blurb + private note on every one). */
+    #printItinerary.pi-density-loose .pi-stop{padding:22px 0}
+    #printItinerary.pi-density-loose .pi-notes-block .pi-notes-line{height:20px}
+    #printItinerary.pi-density-medium .pi-stop{padding:11px 0}
+    #printItinerary.pi-density-medium .pi-notes-block .pi-notes-line{height:15px}
+    #printItinerary.pi-density-tight .pi-stop{padding:4px 0}
+    #printItinerary.pi-density-tight .pi-notes-block .pi-notes-line{height:11px}
+    #printItinerary.pi-density-tight .pi-eta-row{margin-top:1px}
+    #printItinerary.pi-density-tight .pi-blurb,#printItinerary.pi-density-tight .pi-private-note{margin-top:0}
     #printMapWrap{display:block;position:static;left:auto;top:auto;width:100%;page-break-before:always;padding-top:20px}
-    #printMap{width:100%;height:600px;border:none}
-    .pi-map-summary{display:flex;gap:24px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc}
+    #printMap{width:100%;height:520px;border:none}
+    /* Page 2 (map page) redesign: stats/legs/QR on the left under the map,
+       the "Tips for a Successful Tour" list on the right. Both columns
+       stretch to equal height (default align-items:stretch on a row flex
+       container) so .pi-map-footer's margin-top:auto below can pin the QR
+       block to the bottom of the left column regardless of how tall the
+       tips list ends up being. */
+    .pi-map-below{display:flex;gap:28px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc;align-items:stretch}
+    .pi-map-left{flex:1 1 60%;display:flex;flex-direction:column;min-width:0}
+    .pi-map-right{flex:1 1 40%;min-width:0}
+    .pi-map-summary{display:flex;flex-wrap:wrap;gap:14px 20px}
     .pi-map-stat{flex:1 1 auto}
     .pi-map-stat .v{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px}
     .pi-map-stat .l{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.04em}
-    .pi-map-legs{margin-top:10px;font-size:11px;color:#444;column-count:2;column-gap:24px}
+    .pi-map-legs{margin-top:14px;font-size:11px;color:#444}
     .pi-map-leg{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted #ddd;break-inside:avoid}
-    #printMapWrap .pi-map-footer{display:flex;align-items:center;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc}
-    .pi-map-footer img{width:70px;height:70px;flex:0 0 auto}
+    /* Text first, QR image last + margin-left:auto on the image so the QR
+       lands at the bottom-RIGHT corner of the left column, per Michael's
+       request, rather than centered or left-aligned. margin-top:auto pins
+       this whole footer to the bottom of .pi-map-left. */
+    #printMapWrap .pi-map-footer{display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-top:auto;padding-top:16px;border-top:1px solid #ccc}
+    .pi-map-footer img{width:64px;height:64px;flex:0 0 auto}
+    .pi-map-footer-text{text-align:right}
     .pi-map-footer-label{font-size:11px;color:#666}
     .pi-map-footer-link{font-size:14px;font-weight:700;color:#111;word-break:break-all}
+    .pi-tips-head{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+    .pi-tips-list{margin:0;padding-left:18px;font-size:12px;color:#333;line-height:2}
   }
 
   /* ── Footer ── */
@@ -430,7 +454,14 @@
        #map edge-to-edge breakout just below to land flush). */
     .tp-panel:not(.tp-panel-plain){padding:16px 16px 18px}
     .tp-field-row{flex-direction:column}
-    .tp-field-row .tp-field{width:100%}
+    /* .tp-field's base flex:1 1 100px (further up) is written for the
+       desktop ROW layout, where flex-basis:100px sizes its WIDTH. Flipping
+       to flex-direction:column above swaps the main axis to vertical, so
+       that same flex-basis now sizes each field's HEIGHT instead — forcing
+       Tour date / Start time to stretch to fill the row's leftover vertical
+       space and leaving a large blank gap below each input. Reset to
+       flex:0 0 auto here so each field is just as tall as its own content. */
+    .tp-field-row .tp-field{width:100%;flex:0 0 auto}
     .tp-cal-actions{grid-template-columns:1fr}
     .tp-saved-grid-select{grid-template-columns:1fr 1fr}
     .tp-saved-grid-select select{grid-column:1 / 3}
@@ -582,8 +613,7 @@
                 <a class="tp-btn tp-btn-red tp-btn-sm" id="openFullRouteBtn" target="_blank" rel="noopener">Open Full Route</a>
                 <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyLinkBtn">Copy Link</button>
                 <span class="tp-sms-wrap">
-                  <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text This Link</button>
-                  <button type="button" class="tp-warn-icon" id="waypointWarnIcon" hidden aria-label="Waypoint limit warning" aria-expanded="false">⚠<span class="tp-warn-tooltip" id="waypointWarnTooltip"></span></button>
+                  <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="smsShareBtn">Text Link</button>
                 </span>
               </div>
 
@@ -665,10 +695,6 @@
         <h1>Home Tour Itinerary<span class="pi-agent-badge">Agent Copy</span></h1>
         <p id="piMeta"></p>
       </div>
-      <div class="pi-qr">
-        <img id="piQrImg" alt="QR code for the full route link">
-        <p>Scan for full route</p>
-      </div>
     </div>
   </div>
   <div id="piStops"></div>
@@ -679,17 +705,36 @@
      @media print above moves it in-flow, full width, on its own page. -->
 <div id="printMapWrap">
   <div id="printMap"></div>
-  <div class="pi-map-summary">
-    <div class="pi-map-stat"><span class="v" id="piMapDist"></span><span class="l">Total Drive Distance</span></div>
-    <div class="pi-map-stat"><span class="v" id="piMapDur"></span><span class="l">Total Drive Time</span></div>
-    <div class="pi-map-stat"><span class="v" id="piMapTrip"></span><span class="l">Total Trip Time (incl. stop time)</span></div>
-  </div>
-  <div id="piMapLegs" class="pi-map-legs"></div>
-  <div class="pi-map-footer">
-    <img id="piMapQrImg" alt="QR code for the full route link">
-    <div>
-      <p class="pi-map-footer-label" id="piMapFooterLabel">Scan or visit for the full route</p>
-      <p id="piMapShortLink" class="pi-map-footer-link"></p>
+  <!-- Redesigned this round (2026-09-04): mileage/drive-time/trip-time
+       stats, the per-leg travel breakdown, and the backup QR code now live
+       in a left column under the map; the "Tips for a Successful Tour"
+       list — new this round, also added to the Tour a Home card on
+       dev.html — sits in a right column alongside it. -->
+  <div class="pi-map-below">
+    <div class="pi-map-left">
+      <div class="pi-map-summary">
+        <div class="pi-map-stat"><span class="v" id="piMapDist"></span><span class="l">Total Drive Distance</span></div>
+        <div class="pi-map-stat"><span class="v" id="piMapDur"></span><span class="l">Total Drive Time</span></div>
+        <div class="pi-map-stat"><span class="v" id="piMapTrip"></span><span class="l">Total Trip Time (incl. stop time)</span></div>
+      </div>
+      <div id="piMapLegs" class="pi-map-legs"></div>
+      <div class="pi-map-footer">
+        <div class="pi-map-footer-text">
+          <p class="pi-map-footer-label" id="piMapFooterLabel">Scan or visit for the full route</p>
+          <p id="piMapShortLink" class="pi-map-footer-link"></p>
+        </div>
+        <img id="piMapQrImg" alt="QR code for the full route link">
+      </div>
+    </div>
+    <div class="pi-map-right">
+      <h3 class="pi-tips-head">Tips for a Successful Tour</h3>
+      <ol class="pi-tips-list">
+        <li>Pause outside</li>
+        <li>Tour interior, one floor at a time</li>
+        <li>Review utility &amp; mechanical areas</li>
+        <li>Walk the exterior</li>
+        <li>Take notes &amp; Rate home</li>
+      </ol>
     </div>
   </div>
 </div>
@@ -711,7 +756,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_16-25-0050</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_17-20-0051</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -724,7 +769,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04_16-25-0050';
+const SITE_VERSION = '26.09.04_17-20-0051';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -1299,21 +1344,6 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     }
   });
 
-  // ── Waypoint-limit warning icon (pulses when it applies; hover shows the
-  // tooltip on desktop, tap toggles it on touch devices) ─────────────────
-  var waypointWarnIcon = document.getElementById('waypointWarnIcon');
-  waypointWarnIcon.addEventListener('click', function(e){
-    e.stopPropagation();
-    var willShow = !waypointWarnIcon.classList.contains('show-tip');
-    waypointWarnIcon.classList.toggle('show-tip', willShow);
-    waypointWarnIcon.setAttribute('aria-expanded', willShow ? 'true' : 'false');
-  });
-  document.addEventListener('click', function(e){
-    if(!waypointWarnIcon.contains(e.target)){
-      waypointWarnIcon.classList.remove('show-tip');
-      waypointWarnIcon.setAttribute('aria-expanded', 'false');
-    }
-  });
   // Always reset to the client-safe (no private notes) print mode after any
   // print, so a stray "Print Agent Copy" click can't leave private notes
   // primed to show up next time someone hits "Print Client Route".
@@ -1666,26 +1696,10 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     document.getElementById('openFullRouteBtn').href = fullUrl;
     document.getElementById('qrCodeImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(fullUrl);
 
-    // Google Maps' consumer URL only supports so many waypoints in one link
-    // (per Google's own Maps URLs docs: up to 9 on desktop, only 3 on mobile
-    // browsers) — with more stops than that, some just won't show up when a
-    // client opens the link on their phone. Shown as a pulsing warning icon
-    // next to "Text This Link" (rather than a permanent paragraph) that only
-    // appears when it's a real risk, with the detail in a hover/tap tooltip.
-    var warnIcon = document.getElementById('waypointWarnIcon');
-    var warnTooltip = document.getElementById('waypointWarnTooltip');
-    var waypointCount = orderedStops.length - 1;
-    if(waypointCount > 3){
-      var overDesktop = waypointCount > 9;
-      warnTooltip.textContent = '⚠ ' + (overDesktop ? 'Google Maps only supports up to 9 extra stops in one link, even on desktop — ' : '') +
-        'On a phone, it only shows up to 3 stops beyond the destination — with ' + waypointCount + ' here, your client may not see them all. ' +
-        'Each stop address below links to its own map for any number of stops, and Print Client Route always shows every stop.';
-      warnIcon.hidden = false;
-    } else {
-      warnIcon.hidden = true;
-      warnTooltip.textContent = '';
-      warnIcon.classList.remove('show-tip');
-    }
+    // Waypoint-count warning removed (2026-09-04 round) — Michael confirmed
+    // Google Maps' consumer URL now carries the full 10-stop max fine, so
+    // the "may not show up on a phone" caveat this warning existed for is
+    // no longer accurate. See git history if it ever needs to come back.
 
     document.getElementById('copyLinkBtn').onclick = function(){
       navigator.clipboard.writeText(fullUrl).then(function(){
@@ -1877,10 +1891,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   }
 
   function buildPrintable(orderedStops, startVal, data){
+    // QR code on the itinerary page (page 1) was dropped this round — it ate
+    // into the handwritten-notes space per stop, and the map page (page 2)
+    // already carries its own QR code as the printed backup link. qrSrc is
+    // still grabbed here for that page-2 QR, set further down.
     var qrSrc = document.getElementById('qrCodeImg').src;
-    var piQr = document.getElementById('piQrImg');
-    if(qrSrc) piQr.src = qrSrc;
-    piQr.closest('.pi-qr').style.display = qrSrc ? '' : 'none';
     var whenBit = '';
     if(startVal){
       var dt = buildStartDateTime(startVal);
@@ -1902,10 +1917,13 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // needed to switch modes) but stay CSS-hidden unless "Print Agent Copy"
     // added the .pi-agent-copy class to #printItinerary right before print —
     // "Print Client Route" always prints the client-safe version (blurb only).
-    // City/zip dropped (street address only) and the ETA now shares a row
-    // with a single ruled note line instead of its own row plus two blank
-    // lines below — both changes save vertical space so all 10 stops (the
-    // tool's max) fit on one printed page with room to spare.
+    // City/zip dropped (street address only). Each stop now gets its own
+    // block of ruled blank lines (rather than the old single thin line
+    // shared with the ETA) so there's real room to write during the tour —
+    // more lines when there's fewer stops, per the density tier, same as
+    // the padding above.
+    var noteLineCount = density === 'loose' ? 3 : (density === 'medium' ? 2 : 1);
+    var notesBlockHtml = '<div class="pi-notes-block">' + '<div class="pi-notes-line"></div>'.repeat(noteLineCount) + '</div>';
     document.getElementById('piStops').innerHTML = orderedStops.map(function(s,i){
       var color = stopMarkerColor(i, orderedStops.length);
       var addrParts = splitAddressForPrint(s.address);
@@ -1913,9 +1931,10 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         '<div class="pi-stop-body">' +
         '<div class="pi-addr">' + escapeHtml(addrParts.line1) + '</div>' +
         '<div class="pi-rating">Rating: ○ 1 &nbsp;○ 2 &nbsp;○ 3 &nbsp;○ 4 &nbsp;○ 5</div>' +
-        '<div class="pi-eta-row"><span class="pi-eta">' + escapeHtml(etaEls[i]||'') + '</span><span class="pi-notes-line"></span></div>' +
+        '<div class="pi-eta-row"><span class="pi-eta">' + escapeHtml(etaEls[i]||'') + '</span></div>' +
         (s.blurb ? '<div class="pi-blurb">'+escapeHtml(s.blurb)+'</div>' : '') +
         (s.notes ? '<div class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</div>' : '') +
+        notesBlockHtml +
         '</div></div>';
     }).join('');
 
