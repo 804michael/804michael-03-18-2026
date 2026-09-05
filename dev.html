@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_16-43-0060                            ║
+  ║  SITE VERSION: 26.09.05_17-53-0061                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_16-43-0060    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_17-53-0061    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -105,8 +105,15 @@
     .dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
     @media(max-width:980px){.dev-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:640px){.dev-grid{grid-template-columns:1fr}}
+    /* Per-card colour (2026-09-05). A card with a colour picked in the editor
+       carries inline --card-* custom properties written by applyCardColor()
+       below; every rule that used to hard-code black/white now falls back to
+       those originals when no colour is set, so an unpainted card is byte-for
+       -byte what it always was. --card-fg-soft/-faint/-mid are the same
+       foreground at lower alpha, precomputed in JS so light-on-dark and
+       dark-on-light both keep their contrast. */
     .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
-    .dev-card:hover{border-color:var(--red);transform:translateY(-2px)}
+    .dev-card:hover{border-color:var(--card-accent,var(--red));transform:translateY(-2px)}
     .dev-card.dragging{opacity:.4}
     /* Drag moved onto an explicit handle (2026-09-04). With draggable="true"
        on the whole card, a click-and-drag across the description started a
@@ -116,21 +123,29 @@
        leaves normal text selection working everywhere else on the card. */
     /* touch-action:none is what makes dragging work on a phone: without it the
        browser claims the gesture for scrolling before pointermove ever fires. */
-    .dev-card-drag{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.85rem;line-height:1;cursor:grab;flex:0 0 auto;padding:0;user-select:none;touch-action:none}
-    .dev-card-drag:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card-drag{background:none;border:1.5px solid var(--card-fg-soft,rgba(255,255,255,.35));color:var(--card-fg,var(--white));border-radius:7px;width:24px;height:24px;font-size:.85rem;line-height:1;cursor:grab;flex:0 0 auto;padding:0;user-select:none;touch-action:none}
+    .dev-card-drag:hover{border-color:var(--card-fg,var(--white));background:var(--card-fg-faint,rgba(255,255,255,.14))}
     .dev-card-drag:active{cursor:grabbing}
     .dev-card.drag-over{border-color:var(--red);border-style:dashed}
-    .dev-card-head{background:var(--black);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;min-height:62px;cursor:pointer}
+    /* min-height 96px (was 62px, 2026-09-05): the tool stack in the top-right
+       is three 24px buttons in a column with 4px gaps and an 8px inset — 96px
+       is exactly what it needs. At 62px the ⠿/✎/▾ column spilled out of the
+       black head and over the white body, and short-titled cards sat visibly
+       shorter than their neighbours. Every collapsed head is now the same
+       three-line block. */
+    .dev-card-head{background:var(--card-bg,var(--black));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;min-height:96px;cursor:pointer}
     /* Initial caps and a lighter weight (was 800 + uppercase). Uppercase made
        every title the same visual shout, which is the opposite of what a
        scannable stack of collapsed cards needs. */
-    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:.01em;text-transform:none;color:var(--white)}
-    .dev-card-head h3 a{color:var(--white);display:inline-flex;align-items:center;gap:7px}
-    .dev-card-head h3 a:hover{color:var(--red)}
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:.01em;text-transform:none;color:var(--card-fg,var(--white))}
+    .dev-card-head h3 a{color:var(--card-fg,var(--white));display:inline-flex;align-items:center;gap:7px}
+    .dev-card-head h3 a:hover{color:var(--card-hover,var(--red))}
     /* Icon says at a glance whether there is a page behind this card. */
     .dev-card-pageicon{font-size:.78rem;opacity:.75;flex:0 0 auto}
     .dev-card-pageicon.none{opacity:.4}
-    .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
+    /* The ring keeps the badge readable when the head is painted the same
+       hue as the badge itself (a red "In Progress" pill on a red card). */
+    .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 0 0 1.5px var(--card-fg-faint,transparent)}
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
 
@@ -152,11 +167,27 @@
     .dev-add-card-btn,.dev-modal-actions button{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
     .dev-add-card-btn{flex:0 0 auto;background:var(--red);color:var(--white);border:none;padding:9px 20px;font-size:1rem}
     .dev-add-card-btn:hover{background:var(--red-dark)}
-    .dev-card-edit{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.82rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}
-    .dev-card-edit:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card-edit{background:none;border:1.5px solid var(--card-fg-soft,rgba(255,255,255,.35));color:var(--card-fg,var(--white));border-radius:7px;width:24px;height:24px;font-size:.82rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}
+    .dev-card-edit:hover{border-color:var(--card-fg,var(--white));background:var(--card-fg-faint,rgba(255,255,255,.14))}
     .dev-card-tools{position:absolute;top:8px;right:10px;display:flex;flex-direction:column;gap:4px;z-index:2}
-    .dev-card.drag-active{opacity:.55;outline:2px solid var(--red)}
-    .dev-card-dropline{border:2px dashed var(--red);border-radius:16px;background:rgba(218,41,28,.05)}
+    /* The card being dragged now lifts instead of fading out. opacity:.55 read
+       as "this card has broken" on a phone, especially when a lost pointer
+       capture left it stuck that way (see the drag rewrite at the bottom).
+       The dashed .dev-card-dropline placeholder is gone with it: the card
+       itself moves live through the grid, so a second ghost slot was only
+       ever one more thing to leave behind. */
+    .dev-card.drag-active{outline:2px solid var(--card-accent,var(--red));outline-offset:2px;box-shadow:0 12px 28px rgba(0,0,0,.22);transform:scale(1.02);transition:none}
+    /* Body-level flag while a drag is live: kills the hover lift on every
+       other card so the grid does not twitch under the finger. */
+    body.dev-dragging .dev-card:hover{transform:none}
+    body.dev-dragging{user-select:none;-webkit-user-select:none}
+
+    /* ── Card colour swatches in the editor ── */
+    .dev-swatches{display:flex;flex-wrap:wrap;gap:7px}
+    .dev-swatch{width:44px;height:32px;border-radius:9px;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);cursor:pointer;padding:0;font-family:'Barlow',sans-serif;font-weight:700;font-size:.85rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:border-color .15s,transform .15s}
+    .dev-swatch:hover{transform:translateY(-1px)}
+    .dev-swatch[aria-checked="true"]{border-color:var(--black);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18),0 0 0 2px var(--white),0 0 0 4px var(--red)}
+    .dev-swatch:focus-visible{outline:2px solid var(--red);outline-offset:2px}
     /* Adding the pencil made the head a three-item row, which pushed the
        (nowrap) status badge past the card's right edge on any card with a
        longish title — .dev-card has overflow:hidden, so it clipped rather
@@ -215,12 +246,12 @@
        them impossible. The head alone is the card now; the body rolls down. */
     .dev-card-body{padding:16px 20px 20px;flex:1;display:none;flex-direction:column}
     .dev-card.is-open .dev-card-body{display:flex}
-    .dev-card-expand{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.8rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0;transition:transform .2s}
-    .dev-card-expand:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card-expand{background:none;border:1.5px solid var(--card-fg-soft,rgba(255,255,255,.35));color:var(--card-fg,var(--white));border-radius:7px;width:24px;height:24px;font-size:.8rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0;transition:transform .2s}
+    .dev-card-expand:hover{border-color:var(--card-fg,var(--white));background:var(--card-fg-faint,rgba(255,255,255,.14))}
     .dev-card.is-open .dev-card-expand{transform:rotate(180deg)}
     /* Edited date rides at the top of the head, created at the foot of the
        card, so the two never read as one blob of small grey text. */
-    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--card-fg-mid,rgba(255,255,255,.45));margin-bottom:3px}
     .dev-card-created{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:0 20px 12px}
     .dev-card-headmain{display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex:1 1 auto;min-width:0}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
@@ -293,6 +324,11 @@
           <option value="unlinked">Grey — Built, Unlinked</option>
           <option value="review">Blue — Live, Review</option>
         </select>
+      </div>
+      <div class="dev-field">
+        <label id="dev-f-color-label">Card colour</label>
+        <div class="dev-swatches" id="dev-f-colors" role="radiogroup" aria-labelledby="dev-f-color-label"></div>
+        <p class="dev-field-hint">Colours the card's header bar. Each swatch shows its own text colour, so what you see on the chip is what the title will look like.</p>
       </div>
       <div class="dev-field">
         <label for="dev-f-desc">Description</label>
@@ -667,7 +703,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_16-43-0060</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_17-53-0061</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -678,7 +714,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_16-43-0060';
+  const SITE_VERSION = '26.09.05_17-53-0061';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -741,6 +777,63 @@
     var state = { overrides:{}, added:[], hidden:[] };
     var serverOk = false;
 
+    // ── Card colours (2026-09-05) ──────────────────────────────────────
+    // Fourteen head colours, each shipped with the text colour that actually
+    // reads on it rather than a blanket white — the light swatches (Sky, Sand,
+    // Paper, Lime) carry near-black text and clear 7:1 against their own
+    // background, the dark ones carry white. Picking one writes inline
+    // --card-* custom properties onto the card; the CSS above falls back to
+    // the original black/white when they are absent, so "Black" is stored as
+    // the empty id and clears the properties rather than setting them.
+    var DEV_COLORS = [
+      { id:'',        name:'Black',     bg:'#111111', fg:'#ffffff' },
+      { id:'slate',   name:'Slate',     bg:'#3F4A57', fg:'#ffffff' },
+      { id:'red',     name:'Red',       bg:'#DA291C', fg:'#ffffff' },
+      { id:'rust',    name:'Rust',      bg:'#9A3412', fg:'#ffffff' },
+      { id:'orange',  name:'Orange',    bg:'#C2410C', fg:'#ffffff' },
+      { id:'amber',   name:'Amber',     bg:'#F2B705', fg:'#1A1400' },
+      { id:'lime',    name:'Lime',      bg:'#C7E06B', fg:'#22300A' },
+      { id:'green',   name:'Green',     bg:'#1A7A3C', fg:'#ffffff' },
+      { id:'teal',    name:'Teal',      bg:'#0F766E', fg:'#ffffff' },
+      { id:'sky',     name:'Sky',       bg:'#8FD3F4', fg:'#0A2A3D' },
+      { id:'blue',    name:'Blue',      bg:'#1D4ED8', fg:'#ffffff' },
+      { id:'indigo',  name:'Indigo',    bg:'#4338CA', fg:'#ffffff' },
+      { id:'purple',  name:'Purple',    bg:'#7E22CE', fg:'#ffffff' },
+      { id:'pink',    name:'Pink',      bg:'#BE185D', fg:'#ffffff' },
+      { id:'sand',    name:'Sand',      bg:'#E3D4AE', fg:'#3A2E10' },
+      { id:'paper',   name:'Paper',     bg:'#F1F1F1', fg:'#1A1A1A' }
+    ];
+    function colorById(id){
+      for(var i=0;i<DEV_COLORS.length;i++){ if(DEV_COLORS[i].id === (id||'')) return DEV_COLORS[i]; }
+      return DEV_COLORS[0];
+    }
+    function rgba(hex, a){
+      var h = String(hex).replace('#','');
+      if(h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+      var n = parseInt(h, 16);
+      return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
+    }
+    // The four alpha steps mirror the rgba(255,255,255,.xx) values the head
+    // used when it was always black, so a coloured card's chrome sits at the
+    // same visual weight as the original.
+    function applyCardColor(el, id){
+      var props = ['--card-bg','--card-fg','--card-fg-soft','--card-fg-faint','--card-fg-mid','--card-hover','--card-accent'];
+      if(!id){
+        el.removeAttribute('data-color');
+        props.forEach(function(p){ el.style.removeProperty(p); });
+        return;
+      }
+      var c = colorById(id);
+      el.setAttribute('data-color', c.id);
+      el.style.setProperty('--card-bg', c.bg);
+      el.style.setProperty('--card-fg', c.fg);
+      el.style.setProperty('--card-fg-soft', rgba(c.fg, .38));
+      el.style.setProperty('--card-fg-faint', rgba(c.fg, .16));
+      el.style.setProperty('--card-fg-mid', rgba(c.fg, .5));
+      el.style.setProperty('--card-hover', rgba(c.fg, .72));
+      el.style.setProperty('--card-accent', c.bg);
+    }
+
     function setHint(msg, bad){
       if(!hintEl) return;
       hintEl.textContent = msg || '';
@@ -752,13 +845,25 @@
       var badge = el.querySelector('.dev-badge');
       var link = el.querySelector('.dev-card-link');
       var p = el.querySelector('.dev-card-body > p');
+      // decorateCard injects a ↗ / ○ page icon inside the h3, so a plain
+      // textContent read put that glyph into the Title box and baked it into
+      // the saved title — where the next decorate would add a second one.
+      // Strip the icon off a clone before reading.
+      var h3src = el.querySelector('.dev-card-head h3');
+      var titleTxt = '';
+      if(h3src){
+        var clone = h3src.cloneNode(true);
+        [].forEach.call(clone.querySelectorAll('.dev-card-pageicon'), function(n){ n.remove(); });
+        titleTxt = (clone.textContent || '').trim();
+      }
       return {
-        title: (el.querySelector('.dev-card-head h3')||{}).textContent || '',
+        title: titleTxt,
         badge: badge ? badge.textContent : '',
         badgeKind: badge && badge.classList.contains('unlinked') ? 'unlinked' : (badge && badge.classList.contains('review') ? 'review' : ''),
         desc: p ? p.textContent : '',
         bullets: [].map.call(el.querySelectorAll('.dev-card-body ul li'), function(li){ return li.textContent; }),
-        href: (link && link.tagName === 'A') ? link.getAttribute('href') : ''
+        href: (link && link.tagName === 'A') ? link.getAttribute('href') : '',
+        color: el.getAttribute('data-color') || ''
       };
     }
 
@@ -770,6 +875,7 @@
       // decorateCard call at the end of this function).
       if(d.edited) el.setAttribute('data-edited', d.edited);
       if(d.created) el.setAttribute('data-created', d.created);
+      applyCardColor(el, d.color || '');
       var badge = el.querySelector('.dev-badge');
       if(badge){
         badge.textContent = d.badge || '';
@@ -1007,16 +1113,49 @@
     var fDesc = document.getElementById('dev-f-desc');
     var fBul = document.getElementById('dev-f-bullets');
     var fHref = document.getElementById('dev-f-href');
+    var fColors = document.getElementById('dev-f-colors');
+    var pickedColor = '';
     var editingId = null;
+
+    // Swatches are painted in their own two colours and labelled "Aa", so the
+    // contrast pairing is visible in the picker itself rather than only after
+    // saving. role=radio + aria-checked keeps it a single-choice control for
+    // a screen reader without pulling in real radio inputs.
+    (function buildSwatches(){
+      if(!fColors) return;
+      DEV_COLORS.forEach(function(c){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'dev-swatch';
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', 'false');
+        b.setAttribute('aria-label', c.name);
+        b.title = c.name;
+        b.dataset.color = c.id;
+        b.style.background = c.bg;
+        b.style.color = c.fg;
+        b.textContent = 'Aa';
+        b.addEventListener('click', function(){ setPicked(c.id); });
+        fColors.appendChild(b);
+      });
+    })();
+    function setPicked(id){
+      pickedColor = id || '';
+      if(!fColors) return;
+      [].forEach.call(fColors.children, function(b){
+        b.setAttribute('aria-checked', b.dataset.color === pickedColor ? 'true' : 'false');
+      });
+    }
 
     function openModal(id){
       editingId = id;
       var isNew = !id;
       document.getElementById('dev-modal-title').textContent = isNew ? 'Add Card' : 'Edit Card';
       document.getElementById('dev-modal-remove').hidden = isNew;
-      var d = isNew ? {title:'',badge:'In Progress',badgeKind:'',desc:'',bullets:[],href:''} : readCard(cardById(id));
+      var d = isNew ? {title:'',badge:'In Progress',badgeKind:'',desc:'',bullets:[],href:'',color:''} : readCard(cardById(id));
       fTitle.value = d.title; fBadge.value = d.badge; fKind.value = d.badgeKind;
       fDesc.value = d.desc; fBul.value = (d.bullets||[]).join('\n'); fHref.value = d.href || '';
+      setPicked(d.color || '');
       modal.hidden = false;
       fTitle.focus();
     }
@@ -1029,7 +1168,8 @@
         badgeKind: fKind.value,
         desc: fDesc.value.trim(),
         bullets: fBul.value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean),
-        href: fHref.value.trim()
+        href: fHref.value.trim(),
+        color: pickedColor
       };
     }
     function makeId(title){
@@ -1117,6 +1257,8 @@
     function applyOrder(ids){
       if(!Array.isArray(ids) || !ids.length) return;
       ids.forEach(function(id){
+        if(!id) return;   // the old dropline placeholder had no data-id and
+                          // could get saved into the order as a null entry
         var card = grid.querySelector('.dev-card[data-id="' + id + '"]');
         if(card) grid.appendChild(card);
       });
@@ -1142,7 +1284,8 @@
 
     function saveOrder(){
       var ids = Array.prototype.slice.call(grid.querySelectorAll('.dev-card'))
-        .map(function(c){ return c.getAttribute('data-id'); });
+        .map(function(c){ return c.getAttribute('data-id'); })
+        .filter(Boolean);
       try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){}
       fetch(API_URL, {
         method: 'POST',
@@ -1166,8 +1309,30 @@
     // Pointer Events cover mouse, touch and stylus with one code path.
     // .dev-card-drag carries touch-action:none so the browser does not steal
     // the gesture for scrolling before pointermove fires.
+    //
+    // Second pass, 2026-09-05 — why the phone drag half-worked. The first
+    // Pointer Events version called grip.setPointerCapture() on pointerdown
+    // and listened for pointermove/pointerup ON THE GRIP. Every reorder moves
+    // the dragged card through the DOM with insertBefore, and the grip is
+    // inside that card, so the browser detaches and reattaches it — which
+    // implicitly RELEASES the pointer capture (lostpointercapture). From that
+    // moment the remaining pointer events were hit-tested to whatever was
+    // under the finger instead of the grip, so the grip's pointerup never
+    // fired and endDrag() never ran: the card kept .drag-active, the dashed
+    // placeholder stayed wedged in the grid, dragEl stayed non-null, and the
+    // page needed a reload before any card would respond again. That is the
+    // grey card with the stuck outline.
+    //
+    // The fix is to stop depending on capture at all. The move/up/cancel
+    // listeners now live on DOCUMENT for the life of one gesture, which
+    // receives the events whether they are captured to the grip or retargeted
+    // after capture is lost, because they bubble either way. The placeholder
+    // is gone (the card reorders live, so it was redundant), and endDrag is
+    // idempotent and also wired to pointercancel and window blur, so there is
+    // no path that leaves a card stuck mid-drag.
     var dragEl = null;
-    var dragPlaceholder = null;
+    var dragPointerId = null;
+    var dragMoved = false;
     var autoScrollTimer = null;
 
     function cardUnderPoint(x, y){
@@ -1191,15 +1356,52 @@
       }
     }
 
+    function onDragMove(e){
+      if(!dragEl || (dragPointerId != null && e.pointerId !== dragPointerId)) return;
+      e.preventDefault();
+      edgeScroll(e.clientY);
+
+      var over = cardUnderPoint(e.clientX, e.clientY);
+      if(!over || over === dragEl) return;
+
+      // Insert before or after the hovered card depending on which half of it
+      // the pointer is in, so the drop position matches what you can see.
+      var r = over.getBoundingClientRect();
+      var after = (e.clientY - r.top) > r.height / 2;
+      over.parentNode.insertBefore(dragEl, after ? over.nextSibling : over);
+      dragMoved = true;
+    }
+
+    function onDragEnd(e){
+      if(e && e.pointerId != null && dragPointerId != null && e.pointerId !== dragPointerId) return;
+      endDrag();
+    }
+
+    // A pointerup at the end of a drag still produces a click on whatever is
+    // under the finger — usually the card head, whose click handler would roll
+    // the card open the instant it was dropped. Swallow exactly one click in
+    // the moment after a gesture ends.
+    function swallowNextClick(){
+      var kill = function(ev){ ev.stopPropagation(); ev.preventDefault(); };
+      document.addEventListener('click', kill, true);
+      setTimeout(function(){ document.removeEventListener('click', kill, true); }, 300);
+    }
+
+    // Safe to call more than once, and from any of pointerup, pointercancel or
+    // a window blur — whichever arrives first wins and the rest no-op.
     function endDrag(){
+      document.removeEventListener('pointermove', onDragMove);
+      document.removeEventListener('pointerup', onDragEnd, true);
+      document.removeEventListener('pointercancel', onDragEnd, true);
+      window.removeEventListener('blur', endDrag);
       if(autoScrollTimer){ clearInterval(autoScrollTimer); autoScrollTimer = null; }
-      if(dragPlaceholder && dragPlaceholder.parentNode) dragPlaceholder.parentNode.removeChild(dragPlaceholder);
-      dragPlaceholder = null;
-      if(dragEl){
-        dragEl.classList.remove('drag-active');
-        dragEl = null;
-        saveOrder();
-      }
+      document.body.classList.remove('dev-dragging');
+      dragPointerId = null;
+      if(!dragEl) return;
+      dragEl.classList.remove('drag-active');
+      dragEl = null;
+      swallowNextClick();
+      if(dragMoved){ dragMoved = false; saveOrder(); }
     }
 
     function bindCardDrag(card){
@@ -1212,45 +1414,23 @@
       if(!grip) return;
 
       grip.addEventListener('pointerdown', function(e){
+        if(dragEl) endDrag();          // never let two gestures stack up
         e.preventDefault();
         e.stopPropagation();
         dragEl = card;
+        dragPointerId = e.pointerId;
+        dragMoved = false;
         card.classList.add('drag-active');
+        document.body.classList.add('dev-dragging');
 
-        dragPlaceholder = document.createElement('div');
-        dragPlaceholder.className = 'dev-card dev-card-dropline';
-        dragPlaceholder.style.height = card.offsetHeight + 'px';
-        card.parentNode.insertBefore(dragPlaceholder, card.nextSibling);
-
-        // Capture on the grip so the gesture keeps reporting even when the
-        // finger leaves the handle, which it immediately does.
-        if(grip.setPointerCapture) grip.setPointerCapture(e.pointerId);
+        // No setPointerCapture here on purpose — see the note above. Touch
+        // pointers get implicit capture on the grip anyway, and these document
+        // listeners keep receiving the gesture after the DOM move releases it.
+        document.addEventListener('pointermove', onDragMove, {passive:false});
+        document.addEventListener('pointerup', onDragEnd, true);
+        document.addEventListener('pointercancel', onDragEnd, true);
+        window.addEventListener('blur', endDrag);
       });
-
-      grip.addEventListener('pointermove', function(e){
-        if(!dragEl) return;
-        e.preventDefault();
-        edgeScroll(e.clientY);
-
-        var over = cardUnderPoint(e.clientX, e.clientY);
-        if(!over || over === dragEl || over === dragPlaceholder) return;
-
-        // Insert before or after the hovered card depending on which half of it
-        // the pointer is in, so the drop position matches what you can see.
-        var r = over.getBoundingClientRect();
-        var after = (e.clientY - r.top) > r.height / 2;
-        over.parentNode.insertBefore(dragEl, after ? over.nextSibling : over);
-        if(dragPlaceholder) dragPlaceholder.parentNode.removeChild(dragPlaceholder);
-        dragEl.parentNode.insertBefore(dragPlaceholder, dragEl.nextSibling);
-      });
-
-      grip.addEventListener('pointerup', function(e){
-        if(grip.releasePointerCapture && e.pointerId != null){
-          try { grip.releasePointerCapture(e.pointerId); } catch(err){}
-        }
-        endDrag();
-      });
-      grip.addEventListener('pointercancel', endDrag);
     }
     window.devBindCardDrag = bindCardDrag;
     Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(bindCardDrag);
