@@ -2,6 +2,59 @@
 
 Standing conventions and decisions captured here so future page work (by Claude or otherwise) stays consistent, without re-litigating them each time.
 
+## STANDING RULE: responsive floor is 320px, and Michael's real devices (added 2026-09-05)
+
+**Michael's current devices** (these replace the older `804len-book14` reference
+further down):
+
+- **Lenovo Yoga Book, product 83KJ0001US, Windows 11** - desktop work
+- **Samsung Galaxy S24 Ultra** - approx **412 x 915 CSS px** in the browser
+
+Test mobile work at **412px**, not the 375px iPhone default, because that is the
+phone actually in his pocket.
+
+**Support floor: 320px.** Every layout must work, with no sideways page scroll
+and no clipped text, from 320px up. That covers effectively every phone of the
+last five years:
+
+| Width | Devices |
+| --- | --- |
+| **320px** | iPhone SE (1st gen) - the practical floor |
+| 344px | Galaxy Z Fold cover screen (folded) |
+| 360px | Galaxy S/A series, most budget Android |
+| 375px | iPhone SE (2nd/3rd gen), iPhone 12/13 mini |
+| **412px** | **Galaxy S24 Ultra - Michael's phone** |
+| 430px | iPhone 15/16 Pro Max |
+
+Anything narrower than 320px is not supported and is not worth designing for.
+
+**Verify at 320, 344, 412 and 430 at minimum.** 320 and 412 catch the most: 320
+is where text runs out of room, 412 is what Michael will actually look at.
+
+### The specificity trap that made this necessary
+
+The mobile summary-row rules on `tour-planner.html` were originally written into
+an `@media(max-width:640px)` block that sat **above** the base
+`.tp-summary-stat` rules in the stylesheet. A media query does not add
+specificity - on a tie, the rule that comes **later in source order** wins - so
+those mobile rules never applied at any width. Nobody noticed because the flex
+layout still fit; the labels were simply rendering at the desktop size and
+wrapping to three and four lines in a 65px column.
+
+**When adding a responsive override, check where the base rule lives and put the
+override after it.** There is already a comment near line 660 of
+`tour-planner.html` warning about this exact tie-break; it was written for a
+different bug and applies generally.
+
+### Narrow-screen technique used here
+
+Rather than shrink long labels until they wrap into ribbons, each figure in the
+summary row carries two labels in the markup - `.lbl-long` and `.lbl-short` -
+and `@media(max-width:480px)` swaps which one displays. At 320px this took the
+label block from 56px tall (four wrapped lines) to 11px (one line), and the
+whole row from 79px to 62px. Prefer this over font-shrinking whenever a label
+has a natural short form.
+
 ## STANDING RULE: never read-and-rewrite these files through PowerShell or as UTF-8 (added 2026-09-05)
 
 The HTML in this repo is **not valid UTF-8**. It is mixed content with
