@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_23-45-0051                            ║
+  ║  SITE VERSION: 26.09.05_00-21-0052                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-45-0051   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-21-0052   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -61,8 +61,7 @@
      which is what caused the nav to render behind content and the mobile menu
      to jump between pages. Always scope page-local styles to a class, never
      to `header`, `nav`, `#nav`, or other tags/IDs owned by nav.css/nav-partial.html. */
-  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
-    width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);}
+  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
@@ -294,14 +293,20 @@
 <div id="site-nav"></div>
 <script src="nav.js" defer></script>
 
-<div class="page">
-  <div class="hero">
-    <h1>Local Farm <span>Stand Map</span></h1>
-    <div class="sub">
-      <span>📍 <b id="stopCount">— stops</b></span>
-      <span>🌾 Local farm stands around 804</span>
-    </div>
+<!-- Hero lives OUTSIDE .page (moved 2026-09-05). It used to sit inside the
+     centred, max-width:1100px .page and escape it with a 100vw breakout — but
+     100vw includes the scrollbar, so the bar landed ~8px left of where every
+     other page's header starts. As a direct child of body it needs no breakout
+     and lines up exactly. -->
+<div class="hero">
+  <h1>Local Farm <span>Stand Map</span></h1>
+  <div class="sub">
+    <span>📍 <b id="stopCount">— stops</b></span>
+    <span>🌾 Local farm stands around 804</span>
   </div>
+</div>
+
+<div class="page">
 
   <div class="status-bar" id="statusBar"></div>
 
@@ -336,7 +341,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04_23-45-0051</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.05_00-21-0052</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -568,7 +573,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.04_23-45-0051';
+const SITE_VERSION = '26.09.05_00-21-0052';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

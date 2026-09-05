@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_23-45-0051                            ║
+  ║  SITE VERSION: 26.09.05_00-33-0053                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-45-0051    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-33-0053    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -118,11 +118,16 @@
     .btn-outline:hover{border-color:var(--black)}
 
     /* ── Page Hero — black bar, no image ── */
+      /* No 100vw breakout: this bar is a direct child of <body>, so it already
+         spans the full content width. Using width:100vw here would include the
+         scrollbar and pull the bar ~8px left of the content box, which is what
+         used to make this header sit slightly left of map-search's fixed one.
+         See the black-hero standard in site-design-notes.md. */
     .black-hero{
       background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
       margin-top:calc(var(--banner-h) + var(--nav-h));
-      width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
     }
+
     .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
     .black-hero-in{}
     .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
@@ -142,16 +147,67 @@
     /* ── Main Layout ── */
     .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
     @media(max-width:900px){.pg-body{grid-template-columns:1fr;gap:40px}}
+    /* The "Sidebar-layout grid fix" from site-design-notes.md, which this page
+       never had (utility-providers and the other guide pages do). A grid
+       track's default minimum is min-content, so the widest unbreakable thing
+       inside .pg-main was forcing the column wider than the viewport — measured
+       400px inside 390px — and scrolling the whole page sideways on a phone.
+       Pre-dates the offer tabs; fixed here because it is the same column. */
+    .pg-main,.pg-side{min-width:0}
 
     .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.2rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1;margin-bottom:10px}
     .pg-main h2 .r{color:var(--red)}
     .pg-main>p.lede{font-size:1.02rem;line-height:1.75;color:var(--gray-text);margin-bottom:18px;max-width:64ch}
 
     /* ── Calculator card ── */
-    .calc-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:24px 22px;margin-bottom:28px}
+    /* ── Offer tabs ───────────────────────────────────────────────────
+       Real folder tabs: the active one shares the card's white fill and has
+       no bottom border, so it reads as the front of the folder; the inactive
+       ones sit 4px lower on grey, peeking out behind it. The -1.5px bottom
+       margin is what lets the active tab overlap the card's own top border. */
+    .offer-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:0;padding-left:6px;flex-wrap:wrap}
+    .offer-tab{position:relative;bottom:-1.5px;display:inline-flex;align-items:center;gap:7px;background:var(--gray-light);border:1.5px solid var(--gray-mid);border-bottom-color:var(--gray-mid);border-radius:11px 11px 0 0;padding:8px 15px;margin-top:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.98rem;letter-spacing:.04em;color:var(--gray-text);cursor:pointer;max-width:100%;transition:background .15s,color .15s,padding .15s}
+    .offer-tab:hover{color:var(--black)}
+    .offer-tab[aria-selected="true"]{background:var(--white);border-bottom-color:var(--white);color:var(--black);margin-top:0;padding:11px 18px}
+    .offer-tab .ot-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:14ch}
+    .offer-tab .ot-net{font-family:'Barlow',sans-serif;font-weight:600;font-size:.8rem;color:var(--gray-muted);font-variant-numeric:tabular-nums}
+    .offer-tab[aria-selected="true"] .ot-net{color:var(--red)}
+    .offer-tab.compare{margin-left:auto}
+    .calc-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:0 16px 16px 16px;padding:24px 22px;margin-bottom:28px}
+
+    /* Offer label + the small per-offer identity row inside the card */
+    .offer-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--gray-light)}
+    .offer-name-row label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);flex:0 0 auto}
+    .offer-name-row input{flex:1 1 180px;min-width:0;padding:8px 11px;border:1.5px solid var(--gray-mid);border-radius:9px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--black);background:var(--white)}
+    .offer-name-row input:focus{outline:none;border-color:var(--red)}
+    .offer-copy-btn{flex:0 0 auto;background:none;border:none;color:var(--red);font-size:.8rem;font-weight:600;text-decoration:underline;cursor:pointer;padding:2px 0}
+    .offer-copy-btn:hover{color:var(--red-dark)}
+
+    /* ── Compare view ── */
+    /* The Compare tab sits at the far right of the tab strip, so this card's
+       un-rounded corner belongs top-RIGHT (under its own tab), mirroring the
+       offer cards whose square corner sits top-left under theirs. */
+    #compareCard{border-radius:16px 0 16px 16px}
+    .cmp-wrap{overflow-x:auto}
+    .cmp{width:100%;border-collapse:collapse;font-size:.95rem;min-width:420px}
+    .cmp th,.cmp td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--gray-mid)}
+    .cmp th:first-child,.cmp td:first-child{text-align:left}
+    .cmp thead th{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);border-bottom:1.5px solid var(--gray-mid)}
+    .cmp td{font-variant-numeric:tabular-nums}
+    .cmp .k-sub{display:block;font-size:.78rem;color:var(--gray-muted);font-weight:400;letter-spacing:0;text-transform:none}
+    .cmp tr.total td{border-top:2px solid var(--black);border-bottom:none;font-weight:800;font-size:1.05rem;padding-top:14px}
+    .cmp .diff{font-weight:700}
+    .cmp .diff.up{color:var(--green,#1a7a3c)}
+    .cmp .diff.down{color:var(--red)}
+    .cmp .diff.same{color:var(--gray-muted)}
+    .cmp-winner{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--gray-light);border:1.5px solid var(--gray-mid);font-size:.98rem;line-height:1.5}
+    .cmp-winner strong{color:var(--black)}
     .calc-section-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:10px}
-    .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;margin-bottom:8px}
-    @media(max-width:520px){.calc-grid{grid-template-columns:1fr}}
+    /* One column at every width (2026-09-05, Michael's call). It was a 1fr 1fr
+       grid, which is also what pushed .pg-main past the viewport on a phone —
+       two money inputs plus their labels never fit 390px. A net sheet reads
+       top-to-bottom anyway: price, then what comes off it, then what's left. */
+    .calc-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:8px}
     .calc-field{display:flex;flex-direction:column;gap:5px}
     .calc-field label{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;color:var(--black)}
     .calc-field .hint{display:block;font-weight:400;color:var(--gray-muted);font-size:.74rem;margin-top:2px}
@@ -163,7 +219,11 @@
       width:100%;border:1.5px solid var(--gray-mid);border-radius:10px;padding:11px 13px;font-size:.98rem;
       font-family:'Barlow',sans-serif;background:#fff;color:var(--black);
     }
-    .calc-input-wrap input{padding-left:24px}
+    /* width:100% + min-width:0 so an input can never be wider than its column.
+       Without it the browser's default text-input width (~20 characters) won
+       on a 320px phone — #price rendered 316px inside a 228px card — and that,
+       not the tabs, was the last thing scrolling this page sideways. */
+    .calc-input-wrap input{padding-left:24px;width:100%;min-width:0}
     .calc-input-wrap input.pct{padding-left:13px;padding-right:26px}
     .calc-field input:focus{outline:none;border-color:var(--red)}
 
@@ -281,7 +341,25 @@
     <h2>What Will <span class="r">You</span> Net?</h2>
     <p class="lede">Enter your estimated sale price and a few assumptions to see a best-guess estimate of your net proceeds and approximate cash at closing. This is a planning tool only — your Settlement Agent determines the exact figures at closing.</p>
 
-    <div class="calc-card">
+    <div class="offer-tabs" role="tablist" aria-label="Offers">
+      <button type="button" class="offer-tab" role="tab" data-tab="0" aria-selected="true">
+        <span class="ot-name">Offer 1</span><span class="ot-net"></span>
+      </button>
+      <button type="button" class="offer-tab" role="tab" data-tab="1" aria-selected="false">
+        <span class="ot-name">Offer 2</span><span class="ot-net"></span>
+      </button>
+      <button type="button" class="offer-tab compare" role="tab" data-tab="cmp" aria-selected="false">
+        <span class="ot-name">Compare</span>
+      </button>
+    </div>
+
+    <div class="calc-card" id="calcCard">
+
+      <div class="offer-name-row">
+        <label for="offer-name">Offer</label>
+        <input type="text" id="offer-name" maxlength="40" placeholder="e.g. Cash — Ramirez, or 8/14 offer">
+        <button type="button" class="offer-copy-btn" id="copyOfferBtn">Copy to the other offer</button>
+      </div>
 
       <div class="price-card">
         <label for="price">Estimated Sale Price</label>
@@ -367,8 +445,23 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
           Download as Excel (.xlsx)
         </button>
-        <p class="xls-export-note" id="xls-export-note">Downloads a spreadsheet pre-filled with the numbers above, plus 2 blank columns to compare other offers.</p>
+        <p class="xls-export-note" id="xls-export-note">Downloads a spreadsheet with both offers filled in and live formulas, plus a blank column for a third.</p>
       </div>
+    </div>
+
+    <!-- Compare view. Same numbers as the two offer tabs, recomputed from
+         their saved state — nothing here is entered directly. -->
+    <div class="calc-card" id="compareCard" hidden>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead>
+            <tr><th>&nbsp;</th><th id="cmp-h1">Offer 1</th><th id="cmp-h2">Offer 2</th><th>Difference</th></tr>
+          </thead>
+          <tbody id="cmp-body"></tbody>
+        </table>
+      </div>
+      <div class="cmp-winner" id="cmp-winner"></div>
+      <p class="calc-disclaimer">Same estimate, same caveats: your Settlement Agent determines the exact figures at closing. Price isn't the whole picture either — closing date, financing type and contingencies can matter as much as the number at the bottom.</p>
     </div>
 
   </main>
@@ -446,7 +539,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_23-45-0051</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_00-33-0053</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -459,7 +552,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04_23-45-0051';
+  const SITE_VERSION = '26.09.05_00-33-0053';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -546,7 +639,171 @@
       $('short-warn').classList.toggle('show', cashAtClosing < 0);
     }
 
+    // ── Two offers, one calculator ─────────────────────────────────────
+    // Rather than duplicating the whole form, there is ONE set of inputs and
+    // two saved states. Switching tabs writes the visible values into the
+    // current offer and loads the other one. That keeps the markup, the
+    // calculate() above and the Excel export all working on a single source
+    // of truth, instead of two near-identical forms drifting apart.
+    const FIELD_IDS = ['price','payoff','buyer-comm-pct','list-comm-pct','closing-pct','concessions','other-credits'];
+    const OFFERS_KEY = '804m_net_sheet_offers';
+    const nameEl = $('offer-name');
+    const calcCard = $('calcCard'), compareCard = $('compareCard');
+    let activeTab = 0;
+
+    function readForm(){
+      const o = { name: nameEl.value };
+      FIELD_IDS.forEach(id => { o[id] = $(id).value; });
+      return o;
+    }
+    function writeForm(o){
+      nameEl.value = o.name || '';
+      FIELD_IDS.forEach(id => { if(o[id] !== undefined) $(id).value = o[id]; });
+      calculate();
+    }
+    function blankOffer(n){
+      return { name:'', price:'350,000', payoff:'0', 'buyer-comm-pct':$('buyer-comm-pct').defaultValue || '2.5',
+               'list-comm-pct':$('list-comm-pct').defaultValue || '2.5', 'closing-pct':$('closing-pct').defaultValue || '1',
+               concessions:'0', 'other-credits':'0' };
+    }
+
+    let offers = [readForm(), blankOffer(2)];
+    try{
+      const saved = JSON.parse(localStorage.getItem(OFFERS_KEY) || 'null');
+      if(saved && Array.isArray(saved.offers) && saved.offers.length === 2){
+        offers = saved.offers;
+        writeForm(offers[0]);
+      }
+    }catch(e){}
+
+    function persist(){
+      try{ localStorage.setItem(OFFERS_KEY, JSON.stringify({offers})); }catch(e){}
+    }
+
+    // Numbers for one offer without touching the DOM — used by the tab
+    // summaries and the compare table, which both need the OTHER offer's
+    // figures while its values aren't on screen.
+    function computeOffer(o){
+      const n = v => { const x = parseFloat(String(v == null ? 0 : v).replace(/[^0-9.\-]/g,'')); return isFinite(x) ? x : 0; };
+      const price = n(o.price), payoff = n(o.payoff);
+      const buyerPct = n(o['buyer-comm-pct']), listPct = n(o['list-comm-pct']), closingPct = n(o['closing-pct']);
+      const buyerComm = price * buyerPct / 100, listComm = price * listPct / 100;
+      const closing = price * closingPct / 100;
+      const credits = n(o.concessions) + n(o['other-credits']);
+      const net = price - buyerComm - listComm - closing - credits;
+      return { price, payoff, buyerPct, listPct, closingPct, buyerComm, listComm, closing, credits,
+               net, cash: net - payoff };
+    }
+
+    function offerLabel(i){
+      const nm = (offers[i].name || '').trim();
+      return nm || ('Offer ' + (i + 1));
+    }
+
+    function refreshTabs(){
+      document.querySelectorAll('.offer-tab').forEach(btn => {
+        const t = btn.dataset.tab;
+        btn.setAttribute('aria-selected', String(t) === String(activeTab));
+        if(t === 'cmp') return;
+        const i = Number(t);
+        btn.querySelector('.ot-name').textContent = offerLabel(i);
+        const c = computeOffer(i === activeTab ? readForm() : offers[i]).cash;
+        btn.querySelector('.ot-net').textContent = fmtMoney(c);
+      });
+    }
+
+    function showTab(t){
+      // Save whatever is on screen before leaving an offer tab.
+      if(activeTab !== 'cmp') offers[activeTab] = readForm();
+      activeTab = t;
+      if(t === 'cmp'){
+        calcCard.hidden = true; compareCard.hidden = false;
+        renderCompare();
+      } else {
+        compareCard.hidden = true; calcCard.hidden = false;
+        writeForm(offers[t]);
+      }
+      refreshTabs();
+      persist();
+    }
+
+    document.querySelectorAll('.offer-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tab;
+        showTab(t === 'cmp' ? 'cmp' : Number(t));
+      });
+    });
+
+    // Keep the tab summaries live as you type, and keep the saved copy current
+    // so a reload mid-entry doesn't lose the offer.
+    FIELD_IDS.concat(['offer-name']).forEach(id => {
+      $(id).addEventListener('input', () => {
+        if(activeTab !== 'cmp'){ offers[activeTab] = readForm(); refreshTabs(); persist(); }
+      });
+    });
+
+    $('copyOfferBtn').addEventListener('click', () => {
+      if(activeTab === 'cmp') return;
+      const other = activeTab === 0 ? 1 : 0;
+      if(!confirm('Copy these numbers over ' + offerLabel(other) + '?')) return;
+      const copy = readForm();
+      copy.name = offers[other].name; // keep the other tab's own label
+      offers[other] = copy;
+      refreshTabs(); persist();
+    });
+
+    function renderCompare(){
+      const a = computeOffer(offers[0]), b = computeOffer(offers[1]);
+      $('cmp-h1').textContent = offerLabel(0);
+      $('cmp-h2').textContent = offerLabel(1);
+
+      // Direction matters per row: a bigger sale price is good, a bigger
+      // commission is not. `good` says which way is better for the seller.
+      const rows = [
+        ['Sale Price', a.price, b.price, 1],
+        ["Buyer's Agent Commission", -a.buyerComm, -b.buyerComm, 1, a.buyerPct.toFixed(1)+'% vs '+b.buyerPct.toFixed(1)+'%'],
+        ['Listing Agent Commission', -a.listComm, -b.listComm, 1, a.listPct.toFixed(1)+'% vs '+b.listPct.toFixed(1)+'%'],
+        ['Seller Closing Costs', -a.closing, -b.closing, 1, a.closingPct.toFixed(2)+'% vs '+b.closingPct.toFixed(2)+'%'],
+        ['Concessions & Credits', -a.credits, -b.credits, 1],
+        ['Seller Net Proceeds', a.net, b.net, 1],
+        ['Mortgage Payoff', -a.payoff, -b.payoff, 1]
+      ];
+
+      let html = rows.map(r => {
+        const [label, va, vb, , sub] = r;
+        const d = vb - va;
+        const cls = Math.abs(d) < 0.5 ? 'same' : (d > 0 ? 'up' : 'down');
+        const dTxt = Math.abs(d) < 0.5 ? '—' : (d > 0 ? '+' : '−') + fmtMoney(Math.abs(d));
+        return '<tr><td><strong>' + label + '</strong>' + (sub ? '<span class="k-sub">' + sub + '</span>' : '') + '</td>' +
+          '<td>' + (va < 0 ? '−' : '') + fmtMoney(Math.abs(va)) + '</td>' +
+          '<td>' + (vb < 0 ? '−' : '') + fmtMoney(Math.abs(vb)) + '</td>' +
+          '<td class="diff ' + cls + '">' + dTxt + '</td></tr>';
+      }).join('');
+
+      const dc = b.cash - a.cash;
+      const ccls = Math.abs(dc) < 0.5 ? 'same' : (dc > 0 ? 'up' : 'down');
+      const cTxt = Math.abs(dc) < 0.5 ? '—' : (dc > 0 ? '+' : '−') + fmtMoney(Math.abs(dc));
+      html += '<tr class="total"><td>Approximate Cash to You</td><td>' + fmtMoney(a.cash) + '</td>' +
+              '<td>' + fmtMoney(b.cash) + '</td><td class="diff ' + ccls + '">' + cTxt + '</td></tr>';
+      $('cmp-body').innerHTML = html;
+
+      const w = $('cmp-winner');
+      if(Math.abs(dc) < 0.5){
+        w.innerHTML = 'Both offers put the same amount in your pocket. When the money is a wash, the decision usually comes down to terms — closing date, financing type, and what contingencies are attached.';
+      } else {
+        const better = dc > 0 ? offerLabel(1) : offerLabel(0);
+        const worse = dc > 0 ? offerLabel(0) : offerLabel(1);
+        w.innerHTML = '<strong>' + escapeHtmlLite(better) + '</strong> nets you about <strong>' + fmtMoney(Math.abs(dc)) +
+          '</strong> more than ' + escapeHtmlLite(worse) + '. A higher sale price doesn\'t always win once concessions and commissions come off — and the strongest offer on paper isn\'t always the one that closes.';
+      }
+    }
+
+    function escapeHtmlLite(t){
+      return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
     calculate();
+    refreshTabs();
 
     /* ── Download as Excel (.xlsx) — builds a real spreadsheet client-side ──
        Uses xlsx-populate (loaded above) so the file keeps live formulas and
@@ -565,15 +822,20 @@
         return;
       }
 
-      const inputs = {
-        price: parseNum($('price')),
-        payoff: parseNum($('payoff')),
-        buyerPct: parseNum($('buyer-comm-pct')),
-        listPct: parseNum($('list-comm-pct')),
-        closingPct: parseNum($('closing-pct')),
-        concessions: parseNum($('concessions')),
-        otherCredits: parseNum($('other-credits'))
+      // Both tabs now go into the spreadsheet — column B is Offer 1, column C
+      // is Offer 2, and column D stays blank for a third offer that arrives
+      // later. Values are read from the saved offer states, not the DOM, so
+      // the export is correct no matter which tab happens to be showing.
+      const toInputs = o => {
+        const n = v => { const x = parseFloat(String(v == null ? 0 : v).replace(/[^0-9.\-]/g,'')); return isFinite(x) ? x : 0; };
+        return { price:n(o.price), payoff:n(o.payoff), buyerPct:n(o['buyer-comm-pct']),
+                 listPct:n(o['list-comm-pct']), closingPct:n(o['closing-pct']),
+                 concessions:n(o.concessions), otherCredits:n(o['other-credits']) };
       };
+      if(activeTab !== 'cmp') offers[activeTab] = readForm();
+      const inputs = toInputs(offers[0]);
+      const inputsB = toInputs(offers[1]);
+      const offerNames = [offerLabel(0), offerLabel(1)];
 
       xlsBtn.disabled = true;
       const originalLabel = xlsBtn.innerHTML;
@@ -582,7 +844,7 @@
 
       XlsxPopulate.fromBlankAsync()
         .then(workbook => {
-          buildNetSheetWorkbook(workbook, inputs);
+          buildNetSheetWorkbook(workbook, inputs, inputsB, offerNames);
           return workbook.outputAsync();
         })
         .then(blob => {
@@ -607,7 +869,9 @@
         });
     }
 
-    function buildNetSheetWorkbook(workbook, inputs){
+    function buildNetSheetWorkbook(workbook, inputs, inputsB, offerNames){
+      inputsB = inputsB || null;
+      offerNames = offerNames || ['Offer A', 'Offer B'];
       const MONEY_FMT = '$#,##0;($#,##0);"-"';
       const PCT_FMT = '0.00%;(0.00%);"-"';
       const MONEY_DIFF_FMT = '+$#,##0;-$#,##0;"-"';
@@ -664,12 +928,12 @@
         row++;
       }
 
-      function inputRow(label, sub, a, fmt, diffFmt){
+      function inputRow(label, sub, a, fmt, diffFmt, bVal){
         ws.cell(`A${row}`).value(sub ? `${label}\n${sub}` : label)
           .style({ fontFamily: 'Arial', fontSize: 10.5, fontColor: BLACK, verticalAlignment: 'center', wrapText: !!sub });
         ws.row(row).height(sub ? (sub.length > 30 ? 46 : 30) : 18);
 
-        [['B', a], ['C', null], ['D', null]].forEach(([col, val]) => {
+        [['B', a], ['C', (bVal === undefined ? null : bVal)], ['D', null]].forEach(([col, val]) => {
           const cell = ws.cell(`${col}${row}`);
           if (val !== null && val !== undefined) cell.value(val);
           cell.style({
@@ -721,13 +985,14 @@
       }
 
       section('YOUR INPUTS  (edit the yellow / rose cells)');
-      const rPrice = inputRow('Estimated Sale Price', null, inputs.price, MONEY_FMT, MONEY_DIFF_FMT);
-      const rPayoff = inputRow('Current Mortgage Payoff', '(your loan balance — 0 if owned outright)', inputs.payoff, MONEY_FMT, MONEY_DIFF_FMT);
-      const rBuyerPct = inputRow("Buyer's Agent Commission", null, inputs.buyerPct / 100, PCT_FMT, PCT_DIFF_FMT);
-      const rListPct = inputRow('Listing Agent Commission', null, inputs.listPct / 100, PCT_FMT, PCT_DIFF_FMT);
-      const rClosingPct = inputRow('Seller Closing Costs', '(title work, recording, prorations)', inputs.closingPct / 100, PCT_FMT, PCT_DIFF_FMT);
-      const rConcessions = inputRow('Seller-Paid Buyer Closing Costs', '(concessions in the offer)', inputs.concessions, MONEY_FMT, MONEY_DIFF_FMT);
-      const rOtherCredits = inputRow('Other Charges / Credits', '(home warranty, repair credits, etc.)', inputs.otherCredits, MONEY_FMT, MONEY_DIFF_FMT);
+      const B = inputsB;
+      const rPrice = inputRow('Estimated Sale Price', null, inputs.price, MONEY_FMT, MONEY_DIFF_FMT, B ? B.price : undefined);
+      const rPayoff = inputRow('Current Mortgage Payoff', '(your loan balance — 0 if owned outright)', inputs.payoff, MONEY_FMT, MONEY_DIFF_FMT, B ? B.payoff : undefined);
+      const rBuyerPct = inputRow("Buyer's Agent Commission", null, inputs.buyerPct / 100, PCT_FMT, PCT_DIFF_FMT, B ? B.buyerPct / 100 : undefined);
+      const rListPct = inputRow('Listing Agent Commission', null, inputs.listPct / 100, PCT_FMT, PCT_DIFF_FMT, B ? B.listPct / 100 : undefined);
+      const rClosingPct = inputRow('Seller Closing Costs', '(title work, recording, prorations)', inputs.closingPct / 100, PCT_FMT, PCT_DIFF_FMT, B ? B.closingPct / 100 : undefined);
+      const rConcessions = inputRow('Seller-Paid Buyer Closing Costs', '(concessions in the offer)', inputs.concessions, MONEY_FMT, MONEY_DIFF_FMT, B ? B.concessions : undefined);
+      const rOtherCredits = inputRow('Other Charges / Credits', '(home warranty, repair credits, etc.)', inputs.otherCredits, MONEY_FMT, MONEY_DIFF_FMT, B ? B.otherCredits : undefined);
       row++;
 
       section('CALCULATED BREAKDOWN');

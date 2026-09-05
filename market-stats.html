@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_23-45-0051                            ║
+  ║  SITE VERSION: 26.09.05_00-21-0052                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-45-0051    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-21-0052    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -127,11 +127,16 @@
     .btn-outline:hover{border-color:var(--black)}
 
     /* ── Page Hero — black bar, no image ── */
+      /* No 100vw breakout: this bar is a direct child of <body>, so it already
+         spans the full content width. Using width:100vw here would include the
+         scrollbar and pull the bar ~8px left of the content box, which is what
+         used to make this header sit slightly left of map-search's fixed one.
+         See the black-hero standard in site-design-notes.md. */
     .black-hero{
       background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
       margin-top:calc(var(--banner-h) + var(--nav-h));
-      width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
     }
+
     .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
     .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
     .black-hero h1 span{color:var(--red)}
@@ -332,7 +337,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_23-45-0051</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_00-21-0052</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -345,7 +350,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04_23-45-0051';
+  const SITE_VERSION = '26.09.05_00-21-0052';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
