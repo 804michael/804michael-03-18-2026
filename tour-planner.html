@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_17-20-0051                            ║
+  ║  SITE VERSION: 26.09.04_21-17-0053                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.04_17-20-0051 ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0053    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -218,9 +218,14 @@
      (.ics) shrunk down to fit under Start Time (column 2) on that same
      row. The two top-level columns mirror the Tour date / Start time
      field widths above them (.tp-field-row is also a 1fr/1fr split). */
-  .tp-cal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;align-items:stretch}
-  .tp-cal-col{display:flex;gap:8px;min-width:0}
-  .tp-cal-col .tp-btn{flex:1 1 0;min-width:0}
+  /* Centered as a group (2026-09-04, Michael's request) rather than the
+     old 1fr/1fr grid that stretched the buttons to mirror the Tour date /
+     Start time field widths above. Now a centered flex row: each button
+     sizes to its own text and the three of them sit centered under the
+     fields, wrapping as a group on narrow widths. */
+  .tp-cal-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px;align-items:stretch}
+  .tp-cal-col{display:flex;gap:8px;min-width:0;flex:0 1 auto;justify-content:center}
+  .tp-cal-col .tp-btn{flex:0 1 auto;min-width:0}
   /* All three calendar buttons share the same text treatment (Google
      Calendar's base .tp-btn styling is the model) — none gets its own
      smaller font. Apple/Outlook's label is the longest, so it gets the
@@ -250,6 +255,15 @@
   #saveTourBtn{grid-column:2 / 4;width:100%}
   .tp-store-mode{font-size:.76rem;color:var(--gray-muted);margin-bottom:10px}
   .tp-store-mode.synced{color:var(--green)}
+  /* Portable (file + link) tour store — sits under the KV store, separated by
+     a rule so the two read as distinct mechanisms rather than one long form. */
+  .tp-portable-store{margin-top:16px;padding-top:14px;border-top:1px solid var(--gray-mid)}
+  #kvTourStore[hidden] + .tp-portable-store{margin-top:0;padding-top:0;border-top:none}
+  .tp-sub-head{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+  .tp-portable-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .tp-portable-row .tp-btn{flex:1 1 auto;min-width:0;white-space:nowrap}
+  .tp-store-mode.ok{color:var(--green)}
+  .tp-store-mode.bad{color:var(--red)}
   .tp-manage-tours{border:1.5px dashed var(--gray-mid);border-radius:10px;padding:10px 12px;margin-top:10px}
   .tp-manage-tours[hidden]{display:none}
   .tp-tour-check-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.85rem}
@@ -353,7 +367,17 @@
        That's what let the site-wide "Working to add functionality…" banner
        and header bleed into the printout. Target the real elements instead. */
     #banner,#nav,.tp-hero,.breadcrumb,.tp-body,footer{display:none !important}
-    #printItinerary{display:block;padding:0}
+    /* Page 1 fills the sheet (2026-09-04). Michael's note: "move bottom tour
+       to red line and space out others from top to bottom" — the stop list was
+       ending well short of the bottom margin, wasting the page. Making
+       #printItinerary a full-page-height flex column and #piStops a
+       space-between column distributes ALL leftover vertical space evenly
+       between stops, so the last stop lands on the bottom margin and every gap
+       above it grows equally. This is self-correcting: it fills the page for
+       any stop count without a hand-tuned padding value per tier. */
+    #printItinerary{display:flex;flex-direction:column;min-height:100vh;padding:0}
+    #printItinerary .pi-head{flex:0 0 auto}
+    #piStops{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between}
     .pi-head{padding-bottom:10px;margin-bottom:13px}
     .pi-brand{margin-bottom:11px}
     .pi-logo{height:25px;width:auto}
@@ -397,6 +421,18 @@
     #printItinerary.pi-density-tight .pi-notes-block .pi-notes-line{height:11px}
     #printItinerary.pi-density-tight .pi-eta-row{margin-top:1px}
     #printItinerary.pi-density-tight .pi-blurb,#printItinerary.pi-density-tight .pi-private-note{margin-top:0}
+    /* Agent Copy already prints a blurb line and a private-note line per stop,
+       so it drops one ruled line to buy that height back — otherwise the worst
+       case (10 stops, every field filled) pushes the last stop onto its own
+       near-empty second page. Client Route keeps the full count. */
+    #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:nth-child(n+2){display:none}
+    /* Worst case is 10 stops on Agent Copy with a blurb AND a private note on
+       every one — measured 8px over the page even after dropping a ruled line,
+       which is enough to spill the last stop onto a near-empty third page.
+       Tighten the per-stop padding for that combination only; the flex
+       space-between above reclaims the difference as evenly-spread gaps, so
+       the page still fills to the bottom margin. */
+    #printItinerary.pi-agent-copy.pi-density-tight .pi-stop{padding:2px 0}
     #printMapWrap{display:block;position:static;left:auto;top:auto;width:100%;page-break-before:always;padding-top:20px}
     #printMap{width:100%;height:520px;border:none}
     /* Page 2 (map page) redesign: stats/legs/QR on the left under the map,
@@ -407,22 +443,27 @@
        tips list ends up being. */
     .pi-map-below{display:flex;gap:28px;margin-top:16px;padding-top:16px;border-top:1px solid #ccc;align-items:stretch}
     .pi-map-left{flex:1 1 60%;display:flex;flex-direction:column;min-width:0}
-    .pi-map-right{flex:1 1 40%;min-width:0}
+    /* Right column is a flex column too, so .pi-map-footer's margin-top:auto
+       pins the QR block to the bottom of it, under the tips list. */
+    .pi-map-right{flex:1 1 40%;min-width:0;display:flex;flex-direction:column}
     .pi-map-summary{display:flex;flex-wrap:wrap;gap:14px 20px}
     .pi-map-stat{flex:1 1 auto}
     .pi-map-stat .v{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px}
     .pi-map-stat .l{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.04em}
     .pi-map-legs{margin-top:14px;font-size:11px;color:#444}
     .pi-map-leg{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted #ddd;break-inside:avoid}
-    /* Text first, QR image last + margin-left:auto on the image so the QR
-       lands at the bottom-RIGHT corner of the left column, per Michael's
-       request, rather than centered or left-aligned. margin-top:auto pins
-       this whole footer to the bottom of .pi-map-left. */
-    #printMapWrap .pi-map-footer{display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-top:auto;padding-top:16px;border-top:1px solid #ccc}
-    .pi-map-footer img{width:64px;height:64px;flex:0 0 auto}
-    .pi-map-footer-text{text-align:right}
+    /* Moved 2026-09-04: the QR block now lives at the bottom of the RIGHT
+       column (under the Tips list), stacked as a column so the hint text and
+       short link sit ABOVE the code rather than beside it. margin-top:auto
+       pins it to the bottom of .pi-map-right. */
+    #printMapWrap .pi-map-footer{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:auto;padding-top:16px;border-top:1px solid #ccc}
+    .pi-map-footer img{width:78px;height:78px;flex:0 0 auto}
+    .pi-map-footer-text{text-align:left}
     .pi-map-footer-label{font-size:11px;color:#666}
     .pi-map-footer-link{font-size:14px;font-weight:700;color:#111;word-break:break-all}
+    /* 804Michael mark, bottom-right of page 2, below both columns. */
+    .pi-map-brand{display:flex;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:1px solid #e2e2e2}
+    .pi-map-brand svg{height:22px;width:auto}
     .pi-tips-head{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
     .pi-tips-list{margin:0;padding-left:18px;font-size:12px;color:#333;line-height:2}
   }
@@ -462,7 +503,11 @@
        space and leaving a large blank gap below each input. Reset to
        flex:0 0 auto here so each field is just as tall as its own content. */
     .tp-field-row .tp-field{width:100%;flex:0 0 auto}
-    .tp-cal-actions{grid-template-columns:1fr}
+    /* .tp-cal-actions is a centered flex row now, not a grid — stack its
+       two column-wrappers vertically here and let each button fill the
+       narrow width rather than shrink-wrapping to its own text. */
+    .tp-cal-actions{flex-direction:column;align-items:stretch}
+    .tp-cal-col .tp-btn{flex:1 1 0}
     .tp-saved-grid-select{grid-template-columns:1fr 1fr}
     .tp-saved-grid-select select{grid-column:1 / 3}
     .tp-saved-grid-name{grid-template-columns:1fr}
@@ -502,7 +547,7 @@
       <div class="tp-panel">
         <h2>Stops</h2>
         <div class="tp-stops-intro">
-          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on map. Maximum of 10 stops. Drag stops to reorder manually. No need to choose a starting point, it's automatically current location when opening link.</p>
+          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on map. <strong>Maximum of 10 stops.</strong> Drag stops to reorder manually. No need to choose a starting point, it's automatically current location when opening link.</p>
           <div class="tp-field tp-default-budget-field">
             <label for="defaultBudgetInput">Default time<br>per stop</label>
             <div class="tp-input-suffix-wrap">
@@ -558,6 +603,13 @@
 
       <div class="tp-panel">
         <h2>Save / Reuse Tours</h2>
+        <!-- Cloudflare-KV-backed store. Hidden entirely when /api/tours reports
+             the KV namespace isn't bound (HTTP 501 kv_not_configured) — i.e. on
+             another agent's copy of this tool — so their build shows only the
+             portable file/link store below and nothing half-working. A plain
+             network failure does NOT hide it (see loadKvTours) so a transient
+             outage reads as an error, not as "my saved tours disappeared." -->
+        <div id="kvTourStore">
         <p class="tp-panel-sub">Save this list of stops and reload it any time. Load a saved tour, tweak it, and Save again under the same name to update it.</p>
         <p class="tp-store-mode" id="storeModeNote"></p>
         <div class="tp-saved-grid tp-saved-grid-select">
@@ -576,6 +628,23 @@
             <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="deleteSelectedToursBtn">Delete Selected</button>
             <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="cancelManageToursBtn">Cancel</button>
           </div>
+        </div>
+        </div><!-- /#kvTourStore -->
+
+        <!-- Portable store (2026-09-04): file + link, both fully self-contained.
+             Nothing is written to any server, so this works identically on a
+             copy of this tool deployed by another agent under their own
+             account. This is the future-proofing half of Save / Reuse. -->
+        <div class="tp-portable-store">
+          <h3 class="tp-sub-head">Back Up or Send a Tour</h3>
+          <p class="tp-panel-sub">Save a tour as a file on this computer (keep it as a backup, or email it to someone), or copy a link that carries the whole tour inside it. Neither one stores anything on a server. <strong>Both include your private notes</strong>, so these are for you and your team, not for clients.</p>
+          <div class="tp-portable-row">
+            <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="downloadTourBtn">Download File</button>
+            <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="importTourBtn">Load From File</button>
+            <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="copyTourLinkBtn">Copy Tour Link</button>
+          </div>
+          <input type="file" id="tourFileInput" accept=".json,application/json" hidden>
+          <p class="tp-store-mode" id="portableNote"></p>
         </div>
       </div>
 
@@ -645,7 +714,7 @@
 
         <div class="tp-subsection" id="calendarSection">
           <h3 class="tp-subhead">Add to Calendar</h3>
-          <p class="tp-panel-sub" id="calendarHint">Calculate a route above to enable calendar links — the whole tour is added as one block, with the stop addresses and share link in the event details.</p>
+          <p class="tp-panel-sub" id="calendarHint">Calculate a route to enable calendar links. Tour is added as one event, with the stop addresses and itinerary link in details.</p>
           <div class="tp-field-row" style="margin-bottom:4px">
             <div class="tp-field">
               <label for="startDateInput">Tour date (optional)</label>
@@ -718,13 +787,6 @@
         <div class="pi-map-stat"><span class="v" id="piMapTrip"></span><span class="l">Total Trip Time (incl. stop time)</span></div>
       </div>
       <div id="piMapLegs" class="pi-map-legs"></div>
-      <div class="pi-map-footer">
-        <div class="pi-map-footer-text">
-          <p class="pi-map-footer-label" id="piMapFooterLabel">Scan or visit for the full route</p>
-          <p id="piMapShortLink" class="pi-map-footer-link"></p>
-        </div>
-        <img id="piMapQrImg" alt="QR code for the full route link">
-      </div>
     </div>
     <div class="pi-map-right">
       <h3 class="pi-tips-head">Tips for a Successful Tour</h3>
@@ -735,8 +797,22 @@
         <li>Walk the exterior</li>
         <li>Take notes &amp; Rate home</li>
       </ol>
+      <!-- QR moved here (2026-09-04): it now sits UNDER the tips list in the
+           right column rather than at the bottom of the left column, with its
+           hint text stacked ABOVE the code rather than beside it. -->
+      <div class="pi-map-footer">
+        <div class="pi-map-footer-text">
+          <p class="pi-map-footer-label" id="piMapFooterLabel">Scan or visit for the full route</p>
+          <p id="piMapShortLink" class="pi-map-footer-link"></p>
+        </div>
+        <img id="piMapQrImg" alt="QR code for the full route link">
+      </div>
     </div>
   </div>
+  <!-- 804Michael mark, bottom-right of page 2. Filled at runtime by cloning
+       the print header's own logo SVG (see initPrintPageBrand below) so the
+       ~10KB of path data isn't duplicated in the markup. -->
+  <div class="pi-map-brand" id="piMapBrand" aria-hidden="true"></div>
 </div>
 
 <!-- FOOTER -->
@@ -756,7 +832,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_17-20-0051</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0053</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -769,7 +845,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04_17-20-0051';
+const SITE_VERSION = '26.09.04_21-17-0053';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -984,7 +1060,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // build the event from. Reset them to disabled here (rather than
     // hiding the whole section like before) whenever stops change.
     var calHint = document.getElementById('calendarHint');
-    calHint.textContent = 'Calculate a route above to enable calendar links — the whole tour is added as one block, with the stop addresses and share link in the event details.';
+    calHint.textContent = 'Calculate a route to enable calendar links. Tour is added as one event, with the stop addresses and itinerary link in details.';
     calHint.classList.remove('flash');
     ['gcalLink','outlookLink'].forEach(function(id){ document.getElementById(id).removeAttribute('href'); });
     ['gcalLink','outlookLink','icsDownloadBtn'].forEach(function(id){
@@ -1366,12 +1442,21 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // (not just 2 alternating) so each one reads at a glance on both the map
   // and every list that mirrors it. 10 colors covers the max case (10 stops
   // = 8 middle stops) with room to spare.
-  // Two rounds of manual color swaps, both requested after seeing the
+  // Three rounds of manual color swaps, all requested after seeing the
   // actual map/list rendering (not baked in from the start):
   // 1) index 3 and index 7 were swapped — #C2185B was reading too close to
   //    the red end-of-route marker right next to it on the map.
   // 2) index 1 and index 7 (stop 3 and stop 9 of 10) were swapped — same
   //    idea, different pair once the max dropped to 10 stops.
+  // 3) stop 5 and stop 9 (badge numbers, i.e. array index 3 and index 7)
+  //    were swapped again — #00ACC1 (teal) now shows on stop 9, #1F6FB2
+  //    (blue) now shows on stop 5.
+  // Badge number N reads MIDDLE_STOP_COLORS[N-2] (badge 1 is always the green
+  // start marker, the last badge always the red end marker), so a request to
+  // swap two *displayed* stop colors is a swap of the two array positions two
+  // below those numbers. History of swaps, newest first:
+  //   2026-09-04  badges 5 ↔ 9  (array idx 3 ↔ 7): #1F6FB2 blue ↔ #00ACC1 teal
+  //   2026-09-04  badges 3 ↔ 9  (array idx 1 ↔ 7), 12-stop era
   var MIDDLE_STOP_COLORS = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#F9A825','#3949AB','#1F6FB2','#6D4C41','#757575'];
   function stopMarkerColor(i, total){
     if(total<=1 || i===0) return '#1a7a3c';
@@ -1691,6 +1776,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   function buildShareAndCalendar(orderedStops, data){
     var fullUrl = googleFullRouteUrl(orderedStops);
+    // Set by the calendar-building code further down; called again once the
+    // short link resolves (see the /api/shorten-link fetch below) so the
+    // calendar event's "Full Route Directions" line ends up using the short
+    // link once it's ready, rather than staying on the long one forever.
+    var calendarLinkRebuild = null;
     document.getElementById('shareSection').style.display = '';
     document.getElementById('fullRouteLinkInput').value = fullUrl;
     document.getElementById('openFullRouteBtn').href = fullUrl;
@@ -1710,7 +1800,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     };
     document.getElementById('smsShareBtn').onclick = function(){
       var linkToShare = document.getElementById('shortLinkInput').value || fullUrl;
-      var body = 'Here\'s our home tour route: ' + linkToShare;
+      var body = 'Click this link to see route stops. ' + linkToShare;
       window.location.href = 'sms:?&body=' + encodeURIComponent(body);
     };
     document.getElementById('printBtn').onclick = function(){
@@ -1747,7 +1837,13 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         })
         .then(function(res){
           if(myReqId!==shortLinkReqId) return; // superseded by a newer recalculate
-          if(res.ok && res.data && res.data.shortUrl){ shortInput.value = res.data.shortUrl; }
+          if(res.ok && res.data && res.data.shortUrl){
+            shortInput.value = res.data.shortUrl;
+            // Rebuild the calendar event now that a short link exists, so
+            // its "Full Route Directions" line uses it instead of the long
+            // Google Maps URL it was built with initially.
+            if(calendarLinkRebuild) calendarLinkRebuild(res.data.shortUrl);
+          }
           else {
             shortInput.placeholder = 'Short link unavailable — use the full link above';
             if(res.data && res.data.detail) shortInput.title = 'Why: ' + res.data.detail;
@@ -1811,54 +1907,68 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var totalBudgetSec = orderedStops.reduce(function(a,s){return a+(s.budget||0)*60;},0);
     var end = new Date(start.getTime() + (data.totalDurationSeconds||0)*1000 + totalBudgetSec*1000);
 
-    var title = 'Home Tour — ' + orderedStops.length + ' stops';
-    // Each stop gets its own map link in the event details — a backup in
-    // case the "Full route" link ever breaks (an app that mangles the URL,
-    // a client copy/pasting it wrong, etc.), the calendar entry alone still
-    // gets them to every stop.
-    var addrList = orderedStops.map(function(s,i){
-      return (i+1)+'. '+s.address + (s.blurb?' — '+s.blurb:'') + '\nMap: ' + googleSingleStopUrl(s);
-    }).join('\n\n');
-    var details = addrList + '\n\nFull route: ' + fullUrl;
-
     function toUTCStamp(d){
       return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + '00Z';
     }
     function pad(n){ return n<10?'0'+n:''+n; }
 
-    var gcalUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-      '&text=' + encodeURIComponent(title) +
-      '&dates=' + toUTCStamp(start) + '/' + toUTCStamp(end) +
-      '&details=' + encodeURIComponent(details) +
-      '&location=' + encodeURIComponent(orderedStops[0].address);
-    document.getElementById('gcalLink').href = gcalUrl;
+    // Event title + details. Each stop gets its own numbered line (address,
+    // so it reads as a plain address a phone's calendar app can recognize
+    // and turn into a tappable "get directions" item on its own) followed by
+    // an explicit "Directions to <street>" map link as a backup, since not
+    // every calendar app auto-detects addresses. The full route is listed
+    // once at the end: the short link as the primary line to tap, with the
+    // long Google Maps link kept right under it as a plain-text backup once
+    // the short link is ready (see buildCalendarLinks() below — this runs
+    // twice: once immediately with the long link so the buttons work right
+    // away, then again once /api/shorten-link resolves).
+    function buildCalendarLinks(routeLinkForEvent, isShortLink){
+      var title = 'Tour Itinerary with 804-Michael - ' + orderedStops.length + ' Stops';
+      var stopsBit = orderedStops.map(function(s,i){
+        var street = splitAddressStreetVsRest(s.address).street || s.address;
+        return (i+1)+'. '+s.address + (s.blurb?' — '+s.blurb:'') +
+          '\n\nDirections to ' + street + ': ' + googleSingleStopUrl(s);
+      }).join('\n\n');
+      var routeBit = 'Full Route Directions from current location: ' + routeLinkForEvent +
+        (isShortLink ? '\n\n' + fullUrl : '');
+      var details = stopsBit + '\n\n' + routeBit;
 
-    var outlookUrl = 'https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent' +
-      '&subject=' + encodeURIComponent(title) +
-      '&startdt=' + start.toISOString() +
-      '&enddt=' + end.toISOString() +
-      '&body=' + encodeURIComponent(details) +
-      '&location=' + encodeURIComponent(orderedStops[0].address);
-    document.getElementById('outlookLink').href = outlookUrl;
+      var gcalUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+        '&text=' + encodeURIComponent(title) +
+        '&dates=' + toUTCStamp(start) + '/' + toUTCStamp(end) +
+        '&details=' + encodeURIComponent(details) +
+        '&location=' + encodeURIComponent(orderedStops[0].address);
+      document.getElementById('gcalLink').href = gcalUrl;
 
-    document.getElementById('icsDownloadBtn').onclick = function(){
-      var ics = [
-        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//804Michael//Tour Planner//EN','BEGIN:VEVENT',
-        'UID:' + Date.now() + '@804re.com',
-        'DTSTAMP:' + toUTCStamp(new Date()),
-        'DTSTART:' + toUTCStamp(start),
-        'DTEND:' + toUTCStamp(end),
-        'SUMMARY:' + title,
-        'DESCRIPTION:' + details.replace(/\n/g,'\\n'),
-        'LOCATION:' + orderedStops[0].address,
-        'END:VEVENT','END:VCALENDAR'
-      ].join('\r\n');
-      var blob = new Blob([ics], {type:'text/calendar'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'home-tour.ics';
-      document.body.appendChild(a); a.click(); a.remove();
-    };
+      var outlookUrl = 'https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent' +
+        '&subject=' + encodeURIComponent(title) +
+        '&startdt=' + start.toISOString() +
+        '&enddt=' + end.toISOString() +
+        '&body=' + encodeURIComponent(details) +
+        '&location=' + encodeURIComponent(orderedStops[0].address);
+      document.getElementById('outlookLink').href = outlookUrl;
+
+      document.getElementById('icsDownloadBtn').onclick = function(){
+        var ics = [
+          'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//804Michael//Tour Planner//EN','BEGIN:VEVENT',
+          'UID:' + Date.now() + '@804re.com',
+          'DTSTAMP:' + toUTCStamp(new Date()),
+          'DTSTART:' + toUTCStamp(start),
+          'DTEND:' + toUTCStamp(end),
+          'SUMMARY:' + title,
+          'DESCRIPTION:' + details.replace(/\n/g,'\\n'),
+          'LOCATION:' + orderedStops[0].address,
+          'END:VEVENT','END:VCALENDAR'
+        ].join('\r\n');
+        var blob = new Blob([ics], {type:'text/calendar'});
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'home-tour.ics';
+        document.body.appendChild(a); a.click(); a.remove();
+      };
+    }
+    buildCalendarLinks(fullUrl, false);
+    calendarLinkRebuild = function(shortUrl){ buildCalendarLinks(shortUrl, true); };
   }
 
   // Street on its own line, city + zip (no state) on the next — for the
@@ -1889,6 +1999,20 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var rest = parts.slice(1).filter(Boolean).join(', ');
     return { street: street, rest: rest };
   }
+
+  // Page 2 of the printout carries the 804Michael mark bottom-right. Rather
+  // than paste a second ~10KB copy of the logo's path data into the markup,
+  // clone the one already sitting in the print header (.pi-brand svg) once on
+  // load. Cheap, and the two can never drift apart.
+  (function initPrintPageBrand(){
+    var src = document.querySelector('#printItinerary .pi-brand svg');
+    var slot = document.getElementById('piMapBrand');
+    if(!src || !slot || slot.firstChild) return;
+    var clone = src.cloneNode(true);
+    clone.removeAttribute('class');
+    clone.setAttribute('aria-hidden','true');
+    slot.appendChild(clone);
+  })();
 
   function buildPrintable(orderedStops, startVal, data){
     // QR code on the itinerary page (page 1) was dropped this round — it ate
@@ -1922,7 +2046,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // shared with the ETA) so there's real room to write during the tour —
     // more lines when there's fewer stops, per the density tier, same as
     // the padding above.
-    var noteLineCount = density === 'loose' ? 3 : (density === 'medium' ? 2 : 1);
+    // Bumped one line per tier (2026-09-04) alongside the page-filling flex
+    // layout: with the last stop now pinned to the bottom margin, the slack
+    // that used to sit dead at the foot of the page becomes writing room, and
+    // real ruled lines are more useful there than plain gaps.
+    var noteLineCount = density === 'loose' ? 4 : (density === 'medium' ? 3 : 2);
     var notesBlockHtml = '<div class="pi-notes-block">' + '<div class="pi-notes-line"></div>'.repeat(noteLineCount) + '</div>';
     document.getElementById('piStops').innerHTML = orderedStops.map(function(s,i){
       var color = stopMarkerColor(i, orderedStops.length);
@@ -2015,15 +2143,31 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   }
 
   // Initial load: try the server first, fall back to localStorage.
-  toursApi('GET').then(function(data){
-    storageMode = 'kv';
-    toursCache = (data && data.tours) || {};
-    renderSavedSelect();
-  }).catch(function(){
-    storageMode = 'local';
-    toursCache = loadLocalTours();
-    renderSavedSelect();
-  });
+  //
+  // One important distinction (2026-09-04): /api/tours answers HTTP 501
+  // { error: "kv_not_configured" } when the TOURS_KV binding is genuinely
+  // absent — that's the "this is somebody else's deploy" signal, and we hide
+  // the whole KV block so their copy shows only the portable file/link store.
+  // ANY other failure (offline, 500, DNS, a Cloudflare hiccup) keeps the block
+  // visible and falls back to localStorage as before, because a transient
+  // outage must never look like the saved tours vanished.
+  (function loadKvTours(){
+    toursApi('GET').then(function(data){
+      storageMode = 'kv';
+      toursCache = (data && data.tours) || {};
+      renderSavedSelect();
+    }).catch(function(err){
+      if(err && err.message === 'http_501'){
+        var kvBlock = document.getElementById('kvTourStore');
+        if(kvBlock) kvBlock.hidden = true;
+        storageMode = 'none';
+        return;
+      }
+      storageMode = 'local';
+      toursCache = loadLocalTours();
+      renderSavedSelect();
+    });
+  })();
 
   document.getElementById('saveTourBtn').addEventListener('click', function(){
     syncStopsOrderFromDom();
@@ -2086,6 +2230,130 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       renderSavedSelect();
     }
   });
+
+  // ── Portable tour store: a file, or a self-contained link ──────────────
+  // Added 2026-09-04 as future-proofing for handing this tool to other agents.
+  // Both paths are deliberately server-free: the file is generated in the
+  // browser and the link carries the whole tour in its own hash, so neither
+  // one touches this site's Cloudflare account. An agent running their own
+  // copy gets working save/load with zero setup.
+  var TOUR_FILE_V = 1;
+  var portableNote = document.getElementById('portableNote');
+  var tourNameInput = document.getElementById('saveTourNameInput');
+
+  function setPortableNote(msg, kind){
+    portableNote.textContent = msg || '';
+    portableNote.classList.remove('ok','bad');
+    if(kind) portableNote.classList.add(kind);
+  }
+  function currentTourName(){ return (tourNameInput.value || '').trim(); }
+  function round5(n){ return (typeof n === 'number' && isFinite(n)) ? Math.round(n*1e5)/1e5 : null; }
+
+  // Positional (not keyed) encoding, and coordinates trimmed to 5 decimals
+  // (~1m precision) — both purely to keep the shareable link short enough to
+  // survive an email client's line wrapping.
+  function serializeTour(){
+    syncStopsOrderFromDom();
+    return [TOUR_FILE_V, currentTourName(), stops.map(function(s){
+      return [s.address||'', round5(s.lat), round5(s.lng), s.blurb||'', s.notes||'', s.budget==null?'':s.budget];
+    })];
+  }
+  function deserializeTour(payload){
+    if(!Array.isArray(payload) || payload[0] !== TOUR_FILE_V) throw new Error('bad_format');
+    var rows = payload[2];
+    if(!Array.isArray(rows) || !rows.length) throw new Error('no_stops');
+    return {
+      name: payload[1] || '',
+      stops: rows.slice(0, MAX_STOPS).map(function(r){
+        return { address: r[0]||'', lat: (r[1]==null?null:Number(r[1])), lng: (r[2]==null?null:Number(r[2])),
+                 blurb: r[3]||'', notes: r[4]||'', budget: (r[5]===''||r[5]==null)?null:Number(r[5]) };
+      })
+    };
+  }
+  function applyTour(t){
+    stopList.innerHTML=''; stops=[];
+    t.stops.forEach(function(item){ addStopRow(item); });
+    if(!t.stops.length){ addStopRow(); addStopRow(); }
+    resetShareAndSummary();
+    if(t.name) tourNameInput.value = t.name;
+  }
+
+  // btoa/atob are byte-oriented, so a non-ASCII address (accents, ñ) has to be
+  // UTF-8 encoded first or btoa throws. URL-safe alphabet so the payload can
+  // sit in a hash untouched.
+  function b64urlEncode(str){
+    var bytes = new TextEncoder().encode(str), bin = '';
+    for(var i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function b64urlDecode(s){
+    s = s.replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length % 4) s += '=';
+    var bin = atob(s), bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  document.getElementById('downloadTourBtn').addEventListener('click', function(){
+    syncStopsOrderFromDom();
+    if(!stops.length){ setPortableNote('Add at least one stop first.', 'bad'); return; }
+    var slug = (currentTourName() || 'tour').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-').toLowerCase() || 'tour';
+    var fileName = slug + '.804tour.json';
+    var blob = new Blob([JSON.stringify(serializeTour())], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    setPortableNote('Saved ' + fileName + ' to your downloads.', 'ok');
+  });
+
+  document.getElementById('importTourBtn').addEventListener('click', function(){
+    document.getElementById('tourFileInput').click();
+  });
+  document.getElementById('tourFileInput').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var t = deserializeTour(JSON.parse(reader.result));
+        applyTour(t);
+        setPortableNote('Loaded ' + t.stops.length + ' stop' + (t.stops.length===1?'':'s') + ' from ' + file.name + '.', 'ok');
+      }catch(err){
+        setPortableNote('That file isn’t a tour file this tool can read.', 'bad');
+      }
+    };
+    reader.onerror = function(){ setPortableNote('Could not read that file.', 'bad'); };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('copyTourLinkBtn').addEventListener('click', function(){
+    syncStopsOrderFromDom();
+    if(!stops.length){ setPortableNote('Add at least one stop first.', 'bad'); return; }
+    var url = location.origin + location.pathname + '#tour=' + b64urlEncode(JSON.stringify(serializeTour()));
+    function done(){ setPortableNote('Tour link copied (' + url.length + ' characters). Paste it into an email or a note — opening it rebuilds this tour.', 'ok'); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done).catch(function(){ prompt('Copy this tour link:', url); });
+    } else { prompt('Copy this tour link:', url); }
+  });
+
+  // A #tour= link opened in a fresh tab rebuilds the tour immediately, then
+  // strips the payload out of the address bar so a later reload can't silently
+  // re-apply it over whatever the user has since changed.
+  (function loadTourFromHash(){
+    var m = /[#&]tour=([A-Za-z0-9\-_]+)/.exec(location.hash || '');
+    if(!m) return;
+    try{
+      var t = deserializeTour(JSON.parse(b64urlDecode(m[1])));
+      applyTour(t);
+      setPortableNote('Loaded ' + t.stops.length + ' stop' + (t.stops.length===1?'':'s') + ' from a shared tour link.', 'ok');
+    }catch(err){
+      setPortableNote('That tour link couldn’t be read — it may have been cut short in the email it came from.', 'bad');
+    }
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+  })();
 
   // ── Select tours to delete (replaces the old single "Clear all" button) ─
   var manageToursBtn = document.getElementById('manageToursBtn');

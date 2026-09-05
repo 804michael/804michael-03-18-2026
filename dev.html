@@ -1,8 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04 17-16                                 ║
-  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
-  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.02 11-57  ║
+  ║  SITE VERSION: 26.09.04_21-17-0051                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0051    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -10,13 +15,14 @@
   ║    1. The SITE VERSION line above (in this comment block)     ║
   ║    2. const SITE_VERSION in the main <script> block           ║
   ║    3. The visible site-version text above the footer copy     ║
-  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
+  ║  Use the actual current date/time, format YY.MM.DD_HH-MM, and ║
+  ║  the revision number from spot #2 above, PLUS ONE.            ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: vYY.MM.DD HH-MM                                ║
+  ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                           ║
   ║  State the version BEFORE describing any changes made.       ║
   ║                                                               ║
   ║  🚧 THIS IS THE INTERNAL STAGING HUB — 804re.com/dev          ║
@@ -115,6 +121,53 @@
     .ext-status button{background:none;border:none;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
 
     /* ── Notes & Ideas (research reminders — not built pages) — right-side panel ── */
+    /* ── Card editing (added 2026-09-04) ────────────────────────────────
+       An ✎ button on every card head opens the modal below, prefilled from
+       whatever that card currently shows. "+ Add Card" opens the same modal
+       empty. Edits are stored as overrides in Cloudflare KV (see
+       functions/api/dev-cards.js) and applied over the HTML on load, so a
+       card that's never been edited from the page still reads straight from
+       the repo and can be hand-edited normally. */
+    .dev-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+    .dev-toolbar .dev-drag-hint{margin:0;flex:1 1 auto}
+    .dev-add-card-btn,.dev-modal-actions button{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+    .dev-add-card-btn{flex:0 0 auto;background:var(--red);color:var(--white);border:none;padding:9px 20px;font-size:1rem}
+    .dev-add-card-btn:hover{background:var(--red-dark)}
+    .dev-card-edit{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:8px;width:26px;height:26px;font-size:.9rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}
+    .dev-card-edit:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card-head .dev-head-right{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+    /* Adding the pencil made the head a three-item row, which pushed the
+       (nowrap) status badge past the card's right edge on any card with a
+       longish title — .dev-card has overflow:hidden, so it clipped rather
+       than spilled. Let the head wrap instead: the title takes the room it
+       needs and the badge + pencil drop to their own line when they don't
+       both fit, which never clips at any card width. */
+    .dev-card-head{flex-wrap:wrap}
+    .dev-card-head h3{flex:1 1 auto;min-width:0}
+    .dev-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px}
+    .dev-modal-overlay[hidden]{display:none}
+    .dev-modal{background:var(--white);border-radius:16px;width:100%;max-width:560px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    .dev-modal h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;margin-bottom:4px}
+    .dev-modal .dev-modal-sub{color:#666;font-size:.95rem;margin-bottom:16px}
+    .dev-field{margin-bottom:12px}
+    .dev-field label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+    .dev-field input,.dev-field textarea,.dev-field select{width:100%;padding:9px 12px;border:1.5px solid var(--gray-mid);border-radius:10px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);background:var(--white)}
+    .dev-field textarea{resize:vertical;min-height:70px}
+    .dev-field input:focus,.dev-field textarea:focus,.dev-field select:focus{outline:none;border-color:var(--red)}
+    .dev-field .dev-field-hint{font-size:.85rem;color:var(--gray-muted);margin-top:3px}
+    .dev-modal-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+    .dev-modal-actions button{border:1.5px solid var(--gray-mid);background:var(--white);color:var(--black);padding:9px 20px;font-size:1rem}
+    .dev-modal-actions .dev-save{background:var(--red);border-color:var(--red);color:var(--white);flex:1 1 auto}
+    .dev-modal-actions .dev-save:hover{background:var(--red-dark)}
+    .dev-modal-actions .dev-remove{margin-left:auto;color:var(--red);border-color:var(--red)}
+    .dev-modal-actions .dev-remove:hover{background:var(--red);color:var(--white)}
+    /* The note box when JS has hoisted it to the top of the page on mobile —
+       it lands outside the Notes panel's white card, so it needs its own
+       breathing room and a label to stop it reading as an orphan. */
+    .dev-note-form-hoisted{margin-bottom:4px}
+    .dev-note-form-hoisted::before{content:"Notes & Ideas";font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.01em;color:var(--black)}
+    .dev-cards-hint{font-size:.85rem;color:var(--gray-muted);margin:0 0 14px}
+    .dev-cards-hint.bad{color:var(--red)}
     .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 8px}
     .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
     .dev-notes-sub{color:#666;font-size:.95rem;margin:0 0 16px}
@@ -181,7 +234,54 @@
   <div class="dev-layout">
     <div class="dev-main">
 
-  <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
+  <div class="dev-toolbar">
+    <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
+    <button type="button" class="dev-add-card-btn" id="dev-add-card-btn">+ Add Card</button>
+  </div>
+  <p class="dev-cards-hint" id="dev-cards-hint"></p>
+
+  <!-- Shared editor for both "edit this card" and "+ Add Card". -->
+  <div class="dev-modal-overlay" id="dev-card-modal" hidden>
+    <div class="dev-modal" role="dialog" aria-modal="true" aria-labelledby="dev-modal-title">
+      <h2 id="dev-modal-title">Edit Card</h2>
+      <p class="dev-modal-sub">Changes save to your Cloudflare account, so they show up on any device.</p>
+      <div class="dev-field">
+        <label for="dev-f-title">Title</label>
+        <input type="text" id="dev-f-title" maxlength="120">
+      </div>
+      <div class="dev-field">
+        <label for="dev-f-badge">Badge text</label>
+        <input type="text" id="dev-f-badge" maxlength="40" placeholder="In Progress">
+      </div>
+      <div class="dev-field">
+        <label for="dev-f-badgekind">Badge colour</label>
+        <select id="dev-f-badgekind">
+          <option value="">Red — In Progress</option>
+          <option value="unlinked">Grey — Built, Unlinked</option>
+          <option value="review">Blue — Live, Review</option>
+        </select>
+      </div>
+      <div class="dev-field">
+        <label for="dev-f-desc">Description</label>
+        <textarea id="dev-f-desc" maxlength="600"></textarea>
+      </div>
+      <div class="dev-field">
+        <label for="dev-f-bullets">Bullets</label>
+        <textarea id="dev-f-bullets" rows="4" placeholder="One bullet per line"></textarea>
+        <p class="dev-field-hint">One per line. Leave empty for no bullet list.</p>
+      </div>
+      <div class="dev-field">
+        <label for="dev-f-href">Link</label>
+        <input type="text" id="dev-f-href" maxlength="300" placeholder="tour-planner.html">
+        <p class="dev-field-hint">Leave empty to show “Not built yet” instead of a link.</p>
+      </div>
+      <div class="dev-modal-actions">
+        <button type="button" class="dev-save" id="dev-modal-save">Save</button>
+        <button type="button" id="dev-modal-cancel">Cancel</button>
+        <button type="button" class="dev-remove" id="dev-modal-remove">Hide Card</button>
+      </div>
+    </div>
+  </div>
 
   <div class="dev-grid">
 
@@ -342,6 +442,38 @@
       </div>
     </div>
 
+    <div class="dev-card" data-id="system-status">
+      <div class="dev-card-head">
+        <h3>System Status</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>One page that answers "what is this site actually wired into, and is any of it broken right now?" — every third-party service, API key, and Cloudflare binding the site depends on, with a live check wherever one is possible.</p>
+        <ul>
+          <li>Live checks on every /api/ endpoint, so an unset key or missing KV binding shows up red instead of silently degrading to a fallback</li>
+          <li>Account inventory: Cloudflare, EmailJS, OpenRouteService/HeiGIT, FRED, Google Sheets/Apps Script, Nominatim, ElkQR/Replug</li>
+          <li>Names where each one is configured, so anything broken points at the exact dashboard screen that fixes it</li>
+        </ul>
+        <a class="dev-card-link" href="system-status.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="keys-to-negotiating">
+      <div class="dev-card-head">
+        <h3>Keys to Negotiating</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Not built yet — a guide-archetype resource on negotiating in real estate. Needs scoping before it becomes a page, particularly whose side it speaks to.</p>
+        <ul>
+          <li>Possible sections: what's actually negotiable beyond price, reading a counteroffer, terms that move a deal more than dollars do</li>
+          <li>Inspection and repair-request negotiation, appraisal-gap conversations</li>
+          <li>Open question: one dual-audience page, or a seller's version and a buyer's version</li>
+        </ul>
+        <span class="dev-card-link" style="color:var(--gray-muted)">Not built yet</span>
+      </div>
+    </div>
+
   </div>
 
     </div>
@@ -414,7 +546,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04 17-16</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0051</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -425,10 +557,281 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04 17-16';
+  const SITE_VERSION = '26.09.04_21-17-0051';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+
+  // ── Mobile: hoist the "jot a note" box to the top of the page ──────────
+  // On mobile the whole layout stacks and the Notes panel drops below ten-plus
+  // project cards, so jotting a quick note meant scrolling the entire page
+  // first. Below 980px (the same breakpoint where .dev-layout goes single
+  // column) the note box and its sync hint move to the very top of .dev-main,
+  // above the toolbar and card grid, and move back on the way up. A comment
+  // node marks the original spot so it always returns exactly where it was.
+  (function(){
+    var form = document.getElementById('dev-note-form');
+    var hint = document.getElementById('dev-note-sync-hint');
+    var main = document.querySelector('.dev-main');
+    if(!form || !hint || !main) return;
+    var home = document.createComment('dev-note-form-home');
+    form.parentNode.insertBefore(home, form);
+    var mq = window.matchMedia('(max-width:980px)');
+    function place(){
+      if(mq.matches){
+        if(form.parentNode !== main){
+          main.insertBefore(form, main.firstChild);
+          main.insertBefore(hint, form.nextSibling);
+          form.classList.add('dev-note-form-hoisted');
+        }
+      } else if(form.parentNode === main){
+        home.parentNode.insertBefore(form, home);
+        form.parentNode.insertBefore(hint, form.nextSibling);
+        form.classList.remove('dev-note-form-hoisted');
+      }
+    }
+    place();
+    if(mq.addEventListener) mq.addEventListener('change', place);
+    else if(mq.addListener) mq.addListener(place);
+  })();
+
+  // ── Edit / add project cards from the page ─────────────────────────────
+  // Added 2026-09-04. Card edits and brand-new cards are stored as a small
+  // state blob in the SAME Cloudflare KV namespace as the drag order and the
+  // notes (see functions/api/dev-cards.js — key "cards-state", binding
+  // DEV_ORDER_KV), so there's no extra dashboard setup if the drag order was
+  // already wired up. Same instant-local-then-reconcile pattern as those two:
+  // apply the localStorage cache synchronously first so there's no flash of
+  // un-edited cards, then let the server copy win.
+  //
+  // Overrides are applied ON TOP of the cards written into this file's HTML,
+  // and only for cards actually edited from the page — so hand-editing a card
+  // in this file still works normally unless that same card has been
+  // overridden here.
+  //
+  // Deliberately runs BEFORE the drag-order block below: cards added from the
+  // page have to exist in the DOM before a saved order is applied, or they'd
+  // always sort to the end regardless of where they were dragged.
+  var devCards = (function(){
+    var CACHE_KEY = '804m_dev_cards_cache';
+    var API_URL = '/api/dev-cards';
+    var grid = document.querySelector('.dev-grid');
+    var hintEl = document.getElementById('dev-cards-hint');
+    var state = { overrides:{}, added:[], hidden:[] };
+    var serverOk = false;
+
+    function setHint(msg, bad){
+      if(!hintEl) return;
+      hintEl.textContent = msg || '';
+      hintEl.classList.toggle('bad', !!bad);
+    }
+    function cardById(id){ return grid ? grid.querySelector('.dev-card[data-id="'+ (window.CSS && CSS.escape ? CSS.escape(id) : id) +'"]') : null; }
+
+    function readCard(el){
+      var badge = el.querySelector('.dev-badge');
+      var link = el.querySelector('.dev-card-link');
+      var p = el.querySelector('.dev-card-body > p');
+      return {
+        title: (el.querySelector('.dev-card-head h3')||{}).textContent || '',
+        badge: badge ? badge.textContent : '',
+        badgeKind: badge && badge.classList.contains('unlinked') ? 'unlinked' : (badge && badge.classList.contains('review') ? 'review' : ''),
+        desc: p ? p.textContent : '',
+        bullets: [].map.call(el.querySelectorAll('.dev-card-body ul li'), function(li){ return li.textContent; }),
+        href: (link && link.tagName === 'A') ? link.getAttribute('href') : ''
+      };
+    }
+
+    function writeCard(el, d){
+      var h3 = el.querySelector('.dev-card-head h3');
+      if(h3 && d.title) h3.textContent = d.title;
+      var badge = el.querySelector('.dev-badge');
+      if(badge){
+        badge.textContent = d.badge || '';
+        badge.className = 'dev-badge' + (d.badgeKind ? ' ' + d.badgeKind : '');
+        badge.hidden = !d.badge;
+      }
+      var p = el.querySelector('.dev-card-body > p');
+      if(p) p.textContent = d.desc || '';
+      var body = el.querySelector('.dev-card-body');
+      var ul = body ? body.querySelector('ul') : null;
+      if(body){
+        if(d.bullets && d.bullets.length){
+          if(!ul){ ul = document.createElement('ul'); body.insertBefore(ul, body.querySelector('.dev-card-link') || null); }
+          ul.innerHTML = '';
+          d.bullets.forEach(function(b){ var li = document.createElement('li'); li.textContent = b; ul.appendChild(li); });
+        } else if(ul){ ul.remove(); }
+      }
+      // The link is an <a> when there's a URL and a muted <span> when there
+      // isn't, so switching between the two means replacing the element.
+      var link = el.querySelector('.dev-card-link');
+      if(link){
+        var want = d.href ? 'A' : 'SPAN';
+        if(link.tagName !== want){
+          var repl = document.createElement(want === 'A' ? 'a' : 'span');
+          repl.className = 'dev-card-link';
+          link.parentNode.replaceChild(repl, link);
+          link = repl;
+        }
+        if(d.href){ link.setAttribute('href', d.href); link.removeAttribute('style'); link.textContent = 'View page →'; }
+        else { link.removeAttribute('href'); link.setAttribute('style','color:var(--gray-muted)'); link.textContent = 'Not built yet'; }
+      }
+    }
+
+    function buildCard(d){
+      var el = document.createElement('div');
+      el.className = 'dev-card';
+      el.setAttribute('data-id', d.id);
+      el.innerHTML = '<div class="dev-card-head"><h3></h3><span class="dev-badge"></span></div>' +
+                     '<div class="dev-card-body"><p></p><a class="dev-card-link"></a></div>';
+      writeCard(el, d);
+      return el;
+    }
+
+    function addEditButton(el){
+      var head = el.querySelector('.dev-card-head');
+      if(!head || head.querySelector('.dev-card-edit')) return;
+      var badge = head.querySelector('.dev-badge');
+      var right = document.createElement('div');
+      right.className = 'dev-head-right';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dev-card-edit';
+      btn.title = 'Edit this card';
+      btn.setAttribute('aria-label', 'Edit this card');
+      btn.textContent = '✎';
+      // Cards are draggable, so a mousedown on the pencil would start a drag
+      // instead of registering as a click — stop it at the source.
+      btn.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+      btn.addEventListener('click', function(e){ e.stopPropagation(); openModal(el.getAttribute('data-id')); });
+      if(badge) right.appendChild(badge);
+      right.appendChild(btn);
+      head.appendChild(right);
+    }
+
+    function applyState(){
+      if(!grid) return;
+      (state.hidden||[]).forEach(function(id){ var c = cardById(id); if(c) c.remove(); });
+      Object.keys(state.overrides||{}).forEach(function(id){
+        var c = cardById(id); if(c) writeCard(c, state.overrides[id]);
+      });
+      (state.added||[]).forEach(function(d){
+        if(cardById(d.id)) { writeCard(cardById(d.id), d); return; }
+        grid.appendChild(buildCard(d));
+      });
+      [].forEach.call(grid.querySelectorAll('.dev-card'), addEditButton);
+    }
+
+    function cacheLocal(){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(state)); }catch(e){} }
+
+    function persist(){
+      cacheLocal();
+      fetch(API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({state: state}) })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data && data.ok){ serverOk = true; setHint('Saved — synced across your devices.'); }
+          else { serverOk = false; setHint('Saved in this browser only — card sync isn\'t set up yet.', true); }
+        })
+        .catch(function(){ serverOk = false; setHint('Saved in this browser only — could not reach the server.', true); });
+    }
+
+    // Instant restore from cache, then reconcile with the server copy.
+    try{
+      var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if(cached && typeof cached === 'object'){ state = cached; applyState(); }
+      else { applyState(); }
+    }catch(e){ applyState(); }
+
+    fetch(API_URL).then(function(r){ return r.json(); }).then(function(data){
+      if(data && data.state){
+        serverOk = true;
+        state = data.state;
+        // Re-applying over already-edited DOM is safe: writeCard is a full
+        // overwrite of every field it manages, not an append.
+        applyState();
+        cacheLocal();
+      }
+    }).catch(function(){});
+
+    // ── Modal ──
+    var modal = document.getElementById('dev-card-modal');
+    var fTitle = document.getElementById('dev-f-title');
+    var fBadge = document.getElementById('dev-f-badge');
+    var fKind = document.getElementById('dev-f-badgekind');
+    var fDesc = document.getElementById('dev-f-desc');
+    var fBul = document.getElementById('dev-f-bullets');
+    var fHref = document.getElementById('dev-f-href');
+    var editingId = null;
+
+    function openModal(id){
+      editingId = id;
+      var isNew = !id;
+      document.getElementById('dev-modal-title').textContent = isNew ? 'Add Card' : 'Edit Card';
+      document.getElementById('dev-modal-remove').hidden = isNew;
+      var d = isNew ? {title:'',badge:'In Progress',badgeKind:'',desc:'',bullets:[],href:''} : readCard(cardById(id));
+      fTitle.value = d.title; fBadge.value = d.badge; fKind.value = d.badgeKind;
+      fDesc.value = d.desc; fBul.value = (d.bullets||[]).join('\n'); fHref.value = d.href || '';
+      modal.hidden = false;
+      fTitle.focus();
+    }
+    function closeModal(){ modal.hidden = true; editingId = null; }
+
+    function collect(){
+      return {
+        title: fTitle.value.trim(),
+        badge: fBadge.value.trim(),
+        badgeKind: fKind.value,
+        desc: fDesc.value.trim(),
+        bullets: fBul.value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean),
+        href: fHref.value.trim()
+      };
+    }
+    function makeId(title){
+      var base = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,50) || 'card';
+      var id = base, n = 2;
+      while(cardById(id)){ id = base + '-' + (n++); }
+      return id;
+    }
+
+    document.getElementById('dev-add-card-btn').addEventListener('click', function(){ openModal(null); });
+    document.getElementById('dev-modal-cancel').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+    document.getElementById('dev-modal-save').addEventListener('click', function(){
+      var d = collect();
+      if(!d.title){ setHint('Give the card a title first.', true); fTitle.focus(); return; }
+      if(editingId){
+        var existing = (state.added||[]).filter(function(c){ return c.id === editingId; })[0];
+        if(existing){ Object.keys(d).forEach(function(k){ existing[k] = d[k]; }); }
+        else { state.overrides = state.overrides || {}; state.overrides[editingId] = d; }
+        writeCard(cardById(editingId), d);
+      } else {
+        d.id = makeId(d.title);
+        state.added = state.added || [];
+        state.added.push(d);
+        var el = buildCard(d);
+        grid.appendChild(el);
+        addEditButton(el);
+        if(typeof window.devBindCardDrag === 'function') window.devBindCardDrag(el);
+      }
+      persist();
+      closeModal();
+    });
+
+    document.getElementById('dev-modal-remove').addEventListener('click', function(){
+      if(!editingId) return;
+      var wasAdded = (state.added||[]).some(function(c){ return c.id === editingId; });
+      if(!confirm(wasAdded ? 'Delete this card?' : 'Hide this card from the hub?\n\nIt stays in the page source — ask Claude to bring it back.')) return;
+      if(wasAdded){ state.added = state.added.filter(function(c){ return c.id !== editingId; }); }
+      else { state.hidden = (state.hidden||[]).concat([editingId]); }
+      var el = cardById(editingId);
+      if(el) el.remove();
+      persist();
+      closeModal();
+    });
+
+    return { applyState: applyState, addEditButton: addEditButton };
+  })();
 
   // ── Drag-to-reorder dev cards ──────────────────────────────────────────
   // Order is cached instantly to localStorage (so there's no flash of the
@@ -488,7 +891,11 @@
     }
 
     var dragEl = null;
-    Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(function(card){
+    // Pulled out of the forEach below (2026-09-04) and exposed on window so a
+    // card created from the "+ Add Card" editor can be made draggable the
+    // moment it's inserted, instead of only after a reload.
+    function bindCardDrag(card){
+      if(card.getAttribute('draggable') === 'true') return;
       card.setAttribute('draggable', 'true');
 
       card.addEventListener('dragstart', function(e){
@@ -523,7 +930,9 @@
           grid.insertBefore(dragEl, card);
         }
       });
-    });
+    }
+    window.devBindCardDrag = bindCardDrag;
+    Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(bindCardDrag);
   })();
 
   // ── Notes & Ideas: quick-add notes from any browser, synced via

@@ -1,8 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02 15-47                                 ║
-  ║  Format: YY.MM.DD HH-MM (hyphen, not underscore)              ║
-  ║  Displayed with a lowercase "v" prefix, e.g. v26.09.01 23-11  ║
+  ║  SITE VERSION: 26.09.02_15-47-0050                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.02_15-47-0050    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -10,13 +15,14 @@
   ║    1. The SITE VERSION line above (in this comment block)     ║
   ║    2. const SITE_VERSION in the main <script> block           ║
   ║    3. The visible site-version text above the footer copy     ║
-  ║  Use the actual current date/time, format YY.MM.DD HH-MM.     ║
+  ║  Use the actual current date/time, format YY.MM.DD_HH-MM, and ║
+  ║  the revision number from spot #2 above, PLUS ONE.            ║
   ║  DO NOT skip this step — it is required on every revision.   ║
   ║                                                               ║
   ║  💬 CHAT RESPONSE RULE:                                       ║
   ║  Every reply to the user MUST begin by stating the current   ║
   ║  version number in this format:                              ║
-  ║    📌 Version: vYY.MM.DD HH-MM                                ║
+  ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                           ║
   ║  State the version BEFORE describing any changes made.       ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
@@ -764,7 +770,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02 15-47</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02_15-47-0050</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -777,7 +783,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02 15-47';
+  const SITE_VERSION = '26.09.02_15-47-0050';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 

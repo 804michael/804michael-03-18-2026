@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.02_15-47-0050                            ║
+  ║  SITE VERSION: 26.09.04_21-17-0050                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.02_15-47-0050    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0050    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -25,26 +25,10 @@
   ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                           ║
   ║  State the version BEFORE describing any changes made.       ║
   ║                                                               ║
-  ║  🚧 STAGING PAGE — NOT YET LAUNCHED                           ║
-  ║  Not linked from nav-partial.html or sitemap.xml, robots is   ║
-  ║  "noindex, follow" on purpose. Linked only from dev.html.      ║
-  ║  Launch checklist: add a nav link, add to sitemap.xml, flip   ║
-  ║  robots to "index, follow".                                   ║
-  ║                                                               ║
-  ║  Michael asked (2026-09-01) for "Quick market stats and       ║
-  ║  monthly reports links," pointing to the CVMLS public         ║
-  ║  ShowingTime FastStats tool (cvmls-public.stats.showingtime.  ║
-  ║  com/reports) as an example of "using a map like" this. That  ║
-  ║  tool already has its own interactive maps/reports (Local     ║
-  ║  Market Updates, Monthly/Quarterly/Annual Indicators, Housing ║
-  ║  Supply, Showings Report) and is public with no login — this  ║
-  ║  page links out to it prominently rather than rebuilding it,  ║
-  ║  since re-embedding it would need iframe permission checks    ║
-  ║  that weren't verified. Only one report source is linked so   ║
-  ║  far — Michael said "monthly reports links" (plural), so more ║
-  ║  are likely coming; the .link-grid below is built to take     ║
-  ║  more cards easily, same pattern as due-diligence.html's      ║
-  ║  Schools section.                                             ║
+  ║  🚧 INTERNAL PAGE — 804re.com/system-status                   ║
+  ║  Hidden by convention: noindex/nofollow, no nav-partial.html  ║
+  ║  link, no sitemap.xml entry. Reachable only from dev.html.    ║
+  ║  Never flip any of those three without Michael saying so.     ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -54,18 +38,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
-  <title>Quick Market Stats &amp; Monthly Reports — 804Michael</title>
-  <meta name="description" content="Fast access to Central Virginia real estate market stats — monthly indicators, local market updates, and housing supply reports for Ashland, Hanover County &amp; the Richmond area." />
-  <meta name="keywords" content="Central Virginia real estate market stats, Hanover County housing market, monthly market report, CVMLS market stats, Ashland VA home prices, 804Michael, Michael Hottman" />
-  <link rel="canonical" href="https://804re.com/market-stats.html" />
-  <meta name="robots" content="noindex, follow" />
+  <title>System Status | 804Michael Internal</title>
+  <meta name="description" content="Internal status page: every third-party service, API key and Cloudflare binding 804re.com depends on, with a live check where one is possible." />
+  <meta name="keywords" content="804michael internal, system status" />
+  <meta name="robots" content="noindex, nofollow" />
 
   <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
   <meta property="og:type"        content="article" />
   <meta property="og:locale"      content="en_US" />
-  <meta property="og:url"         content="https://804re.com/market-stats.html" />
-  <meta property="og:title"       content="Quick Market Stats & Monthly Reports — 804Michael" />
-  <meta property="og:description" content="Fast access to Central Virginia real estate market stats and monthly reports." />
+  <meta property="og:url"         content="https://804re.com/utility-providers.html" />
+  <meta property="og:title"       content="Utility Providers — 804Michael" />
+  <meta property="og:description" content="Internal status page for 804re.com." />
   <meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
@@ -73,8 +56,8 @@
   <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:site"        content="@804Michael" />
-  <meta name="twitter:title"       content="Quick Market Stats & Monthly Reports | 804Michael" />
-  <meta name="twitter:description" content="Fast access to Central Virginia real estate market stats and monthly reports." />
+  <meta name="twitter:title"       content="Utility Providers | 804Michael" />
+  <meta name="twitter:description" content="Internal status page for 804re.com." />
   <meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
 
   <!-- ── Local Business schema ──────────────────────────────────────────── -->
@@ -163,22 +146,16 @@
     section.stage{margin-bottom:52px}
     section.stage:last-of-type{margin-bottom:0}
 
-    /* ── Reference link grid (report cards — grows to fit any number of cards) ── */
+    /* ── Reference link grid (provider cards — grows to fit any number of cards) ── */
     .link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:16px 0 22px}
     .link-card{display:block;background:var(--white);border:1.5px solid var(--gray-mid);border-radius:12px;padding:16px 18px;transition:border-color .2s,transform .2s}
     .link-card:hover{border-color:var(--red);transform:translateY(-2px)}
     .link-card strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.01em;margin-bottom:4px}
     .link-card span{display:block;font-size:.83rem;color:var(--gray-muted);line-height:1.5}
 
-    /* ── Featured link card (larger, for the primary report tool) ── */
-    .feature-card{display:block;background:var(--black);color:var(--white);border-radius:16px;padding:24px 26px;margin:16px 0 22px;border-left:5px solid var(--red);transition:transform .2s}
-    .feature-card:hover{transform:translateY(-2px)}
-    .feature-card strong{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:.01em;margin-bottom:8px;color:var(--white)}
-    .feature-card p{color:rgba(255,255,255,.75);font-size:.92rem;line-height:1.6;margin-bottom:10px}
-    .feature-card ul{margin:8px 0 10px;padding-left:20px}
-    .feature-card li{font-size:.85rem;line-height:1.6;color:rgba(255,255,255,.75)}
-    .feature-card .fc-cta{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:#ff9a90}
-
+    /* ── Warning / caution callouts (matches calculator's red + amber notice colors) ── */
+    .cal-caution{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
+    .cal-caution b{color:#5a3f0f}
     .cal-note{font-size:.88rem;color:var(--gray-muted);font-style:italic;margin:14px 0 0}
 
     /* ── CTA block (in-content) ── */
@@ -200,6 +177,10 @@
     .side-card-head{background:var(--black);padding:13px 18px}
     .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
     .side-card-body{padding:14px 18px}
+    .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid);gap:12px}
+    .stat-row:last-child{border-bottom:none}
+    .stat-lbl{font-size:.98rem;color:var(--black);font-weight:600}
+    .stat-val{font-family:'Barlow',sans-serif;font-weight:400;font-size:.86rem;color:var(--gray-muted);text-align:right}
     .explore-links{list-style:none}
     .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:1.05rem;color:var(--black);transition:color .2s}
     .explore-links li:last-child a{border-bottom:none}
@@ -214,8 +195,34 @@
     .reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
     .reveal.js-ready{opacity:0;transform:translateY(20px)}
     .reveal.vis{opacity:1;transform:none}
+
+    /* ── System Status page ─────────────────────────────────────────────
+       Status rows are a plain definition-style grid, not a <table>, so the
+       label/value/where columns can collapse to stacked blocks on a phone
+       without the usual table-overflow gymnastics. */
+    .st-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--gray-text);margin:0 0 18px}
+    .st-legend span{display:inline-flex;align-items:center;gap:6px}
+    .st-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:var(--gray-muted)}
+    .st-dot.ok{background:#1a7a3c}.st-dot.warn{background:#c98a00}.st-dot.bad{background:var(--red)}
+    .st-dot.checking{background:var(--gray-mid)}
+    .st-row{display:grid;grid-template-columns:14px 1fr 200px;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--gray-mid)}
+    .st-row:last-child{border-bottom:none}
+    .st-row .st-dot{margin-top:6px}
+    .st-name{font-weight:700;font-size:1.02rem;color:var(--black)}
+    .st-name code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92rem;background:var(--gray-light);padding:1px 5px;border-radius:4px}
+    .st-what{font-size:.94rem;color:#3d3d3d;margin-top:2px}
+    .st-msg{font-size:.9rem;color:var(--gray-text);margin-top:3px}
+    .st-msg.bad{color:var(--red)}.st-msg.warn{color:#a06f00}.st-msg.ok{color:#1a7a3c}
+    .st-where{font-size:.86rem;color:var(--gray-muted);line-height:1.5}
+    @media(max-width:700px){
+      .st-row{grid-template-columns:14px 1fr}
+      .st-where{grid-column:2;margin-top:4px}
+    }
+    .st-recheck{background:var(--red);color:var(--white);border:none;border-radius:999px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    .st-recheck:hover{background:var(--red-dark)}
+    .st-checked{font-size:.85rem;color:var(--gray-muted);margin-left:12px}
+    .st-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:6px 0 22px}
   </style>
-</head>
 <body>
 
 <div id="site-nav"></div>
@@ -224,8 +231,8 @@
 <!-- PAGE HERO (black bar, no image) -->
 <div class="black-hero">
   <div class="black-hero-in">
-    <h1>Quick <span>Market Stats</span></h1>
-    <p class="black-hero-sub">Fast access to Central Virginia real estate market data and monthly reports</p>
+    <h1>System <span>Status</span></h1>
+    <p class="black-hero-sub">Everything 804re.com is wired into, what it powers, where it's configured, and whether it's working right now</p>
   </div>
 </div>
 
@@ -236,7 +243,7 @@
     <span class="sep">›</span>
     <a href="dev.html">Dev</a>
     <span class="sep">›</span>
-    <span class="cur">Quick Market Stats</span>
+    <span class="cur">System Status</span>
   </div>
 </div>
 
@@ -245,53 +252,108 @@
 
   <main class="pg-main">
 
-    <h2>See the Market <span class="r">for Yourself</span></h2>
-    <p class="lede">Real, current market data — not a guess — for Ashland, Hanover County, Glen Allen, Mechanicsville and the greater Richmond area. These reports update automatically from the regional MLS, so they stay current without anyone having to manually refresh a page.</p>
+    <h2>What This Page <span class="r">Is</span></h2>
+    <p class="lede">Every piece of this site that depends on something outside the repo — an API key, a Cloudflare binding, a third-party account — plus a live check on each one that can be checked from the browser. When something on the site quietly stops working, the cause is almost always one of the rows below.</p>
 
-    <!-- MARKET REPORTS -->
-    <section class="stage" id="reports">
-      <div class="step-lbl"><span class="step-lbl-line"></span>Market Data</div>
-      <h2>Central Virginia Market Reports</h2>
-      <p class="body-p">The regional MLS publishes free, public market-statistics reports — no login required. It includes interactive map-based local market updates plus monthly, quarterly and annual indicator reports (median price, days on market, inventory, and more).</p>
+    <div class="cal-note">
+      <p><strong>Most failures here are silent by design.</strong> The site's server functions fall back rather than break: no <code>ORS_API_KEY</code> and the Tour Planner quietly switches to straight-line estimates; no KV binding and saved tours drop to one browser only. That's good for visitors and bad for noticing, which is what this page is for.</p>
+    </div>
 
-      <a class="feature-card" href="https://cvmls-public.stats.showingtime.com/reports" target="_blank" rel="noopener">
-        <strong>CVMLS Public Market Reports (ShowingTime FastStats)</strong>
-        <p>Six report types in one place, including a map-based Local Market Update:</p>
-        <ul>
-          <li>Local Market Update (map-based, community-level)</li>
-          <li>Monthly Indicators</li>
-          <li>Quarterly Indicators Report</li>
-          <li>Annual Report</li>
-          <li>Housing Supply Overview</li>
-          <li>ShowingTime Showings Report (buyer-activity trends)</li>
-        </ul>
-        <span class="fc-cta">Open the reports tool ↗</span>
-      </a>
+    <h2 id="live">Live <span class="r">Checks</span></h2>
+    <p>Run from your browser against this site's own <code>/api/</code> endpoints. A red row means the thing genuinely isn't working; an amber row means it responded but is running on a fallback rather than the real service.</p>
 
-      <p class="cal-note">More monthly report sources may get added here over time — this grid is built to take more cards as they come.</p>
-    </section>
+    <div class="st-legend">
+      <span><i class="st-dot ok"></i> Working</span>
+      <span><i class="st-dot warn"></i> Responding, but on a fallback or degraded</span>
+      <span><i class="st-dot bad"></i> Not configured or unreachable</span>
+      <span><i class="st-dot checking"></i> Checking</span>
+    </div>
 
-    <!-- CTA -->
-    <section class="stage" style="margin-bottom:0">
-      <div class="rg-cta">
-        <div class="rg-cta-flex">
-          <div class="rg-cta-photo">
-            <picture>
-              <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
-              <img src="images/804michael_headshot-web.png" alt="Michael Hottman" loading="lazy" onerror="this.closest('.rg-cta-photo').style.display='none'" />
-            </picture>
-          </div>
-          <div class="rg-cta-text">
-            <h3>Want the Numbers for Your Specific Street?</h3>
-            <p>Area-wide stats are a good starting point, but the number that actually matters is what's happening on your street or in your specific price range. Text me and I'll pull the real comps.</p>
-            <div class="rg-cta-btns">
-              <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
-              <a href="sms:8046424235" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.3)">Text 804-642-4235</a>
-            </div>
-          </div>
+    <div class="st-actions">
+      <button type="button" class="st-recheck" id="stRecheck">Re-check All</button>
+      <span class="st-checked" id="stChecked"></span>
+    </div>
+
+    <div id="stRows"></div>
+
+    <h2 id="accounts">Accounts &amp; <span class="r">Services</span></h2>
+    <p>The full inventory, including the ones that can't be probed from here because they run entirely in the visitor's browser or on someone else's schedule.</p>
+
+    <div class="cmd-list">
+      <div class="cmd-item">
+        <div class="cmd-num">1</div>
+        <div class="cmd-body">
+          <h4>Cloudflare</h4>
+          <p>Hosts and deploys the whole site (Pages project, git-connected), serves every <code>/api/</code> function, and holds the KV namespace behind saved tours, the dev hub's card order, notes and card edits, and the short-link redirector. Deploys run when you run <code>push-live.bat</code>. <strong>Where:</strong> Workers &amp; Pages → the 804re.com project. KV namespaces live under their own "Workers KV" item, not nested under Workers &amp; Pages.</p>
         </div>
       </div>
-    </section>
+      <div class="cmd-item">
+        <div class="cmd-num">2</div>
+        <div class="cmd-body">
+          <h4>EmailJS</h4>
+          <p>Every lead form on the site. Called straight from the page, no server function involved, so it can't be checked from here — a broken template only shows up when a real visitor submits. <strong>Templates in use:</strong> <code>template_valuation_request</code> (Home Value + the index popup). <strong>Still not created:</strong> <code>template_buyer_intake</code>, <code>template_seller_intake</code>, <code>template_contact_message</code> — until each exists, that form shows a "please call or text instead" error rather than silently losing the lead. <strong>Where:</strong> dashboard.emailjs.com → Email Templates.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">3</div>
+        <div class="cmd-body">
+          <h4>OpenRouteService / HeiGIT</h4>
+          <p>Real driving order and route geometry for the Tour Planner. Free tier covers both the Optimization and Directions calls at this volume. The API moved to <code>api.heigit.org</code> — the old <code>api.openrouteservice.org</code> domain shut down. <strong>Where:</strong> the key is <code>ORS_API_KEY</code> in Workers &amp; Pages → Settings → Environment variables; the account itself is at account.heigit.org.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">4</div>
+        <div class="cmd-body">
+          <h4>FRED (St. Louis Fed)</h4>
+          <p>Live mortgage-rate figures. Falls back to a hardcoded recent rate if the key is missing, so a stale rate on the site is the symptom. <strong>Where:</strong> <code>FRED_API_KEY</code> in the same Environment variables screen.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">5</div>
+        <div class="cmd-body">
+          <h4>Google Sheets + Apps Script</h4>
+          <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails. <strong>Where:</strong> script.google.com, plus the Sheet itself.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">6</div>
+        <div class="cmd-body">
+          <h4>Nominatim (OpenStreetMap)</h4>
+          <p>Address autocomplete and geocoding on the Tour Planner and the valuation forms. Free, no key, no account — but it is a shared public service with usage limits, so heavy automated use would get rate-limited. Nothing to configure.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">7</div>
+        <div class="cmd-body">
+          <h4>Short links</h4>
+          <p>Now self-hosted: <code>/api/shorten-link</code> writes a code into the same KV namespace and <code>/s/&lt;code&gt;</code> redirects. No third party in the path. ElkQR and Replug accounts still exist and remain an option if a shorter branded domain (804re.link) is ever wanted on top of this.</p>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">8</div>
+        <div class="cmd-body">
+          <h4>CDNs</h4>
+          <p>Leaflet (maps) from cdnjs, the EmailJS SDK from unpkg, QR images from api.qrserver.com, Google Fonts for Barlow. All keyless. If a map or a QR code fails to render and everything else on the page works, suspect one of these rather than anything of ours.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="setup">Cloudflare Keys &amp; <span class="r">Bindings</span></h2>
+    <p>The complete list of what has to exist in the Cloudflare dashboard for the site to run at full capability. A new key or binding only takes effect on a <strong>new deployment</strong> — either push a commit, or use Deployments → ⋯ → Retry deployment.</p>
+
+    <ul class="check-list">
+      <li><strong><code>ORS_API_KEY</code></strong> — environment variable, encrypted. Powers route optimization and driving directions in the Tour Planner.</li>
+      <li><strong><code>FRED_API_KEY</code></strong> — environment variable. Powers live mortgage rates.</li>
+      <li><strong><code>TOURS_KV</code></strong> — KV namespace binding. Saved tours, and the short-link store.</li>
+      <li><strong><code>DEV_ORDER_KV</code></strong> — KV namespace binding. The dev hub's card order, its notes, and card edits — all three share this one binding.</li>
+    </ul>
+
+    <div class="cal-warn">
+      <div class="warn-flex">
+        <img src="images/logos/Pulse_Caution.gif" alt="" class="warn-icon">
+        <p>None of the <code>/api/</code> endpoints require authentication. That's a deliberate call: they hold no lead data or personal information, only internal labels and route stops, and the pages using them are unlinked and noindexed. If any of them ever starts holding client information, add a shared-secret check before trusting a request body.</p>
+      </div>
+    </div>
 
   </main>
 
@@ -299,12 +361,33 @@
   <aside class="pg-side">
 
     <div class="side-card reveal">
+      <div class="side-card-head"><h4>At a Glance</h4></div>
+      <div class="side-card-body" id="stSummary">
+        <div class="stat-row"><span class="stat-lbl">Checks passing</span><span class="stat-val" id="stCountOk">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">On a fallback</span><span class="stat-val" id="stCountWarn">—</span></div>
+        <div class="stat-row"><span class="stat-lbl">Failing</span><span class="stat-val" id="stCountBad">—</span></div>
+      </div>
+      <p style="font-size:.72rem;color:var(--gray-muted);padding:2px 18px 16px;margin:0">Checks run in your browser against this site, so they reflect whatever deployment you're currently viewing.</p>
+    </div>
+
+    <div class="side-card reveal d2">
+      <div class="side-card-head"><h4>Fixing Something</h4></div>
+      <div class="side-card-body">
+        <ul class="explore-links">
+          <li><a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare dashboard <span class="arr">›</span></a></li>
+          <li><a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener">EmailJS templates <span class="arr">›</span></a></li>
+          <li><a href="https://account.heigit.org/" target="_blank" rel="noopener">HeiGIT account (ORS key) <span class="arr">›</span></a></li>
+          <li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script <span class="arr">›</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="side-card reveal d2">
       <div class="side-card-head"><h4>Keep Going</h4></div>
       <div class="side-card-body">
         <ul class="explore-links">
-          <li><a href="due-diligence.html">Due Diligence Checklist <span class="arr">›</span></a></li>
-          <li><a href="utility-providers.html">Utility Providers <span class="arr">›</span></a></li>
-          <li><a href="home-value-estimate.html">What's Your Home Worth? <span class="arr">›</span></a></li>
+          <li><a href="tour-planner.html">Home Tour Route Planner <span class="arr">›</span></a></li>
+          <li><a href="farmstand.html">Farm Stand Map <span class="arr">›</span></a></li>
           <li><a href="dev.html">← Dev Hub <span class="arr">›</span></a></li>
         </ul>
       </div>
@@ -331,7 +414,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.02_15-47-0050</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0050</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -344,7 +427,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.02_15-47-0050';
+  const SITE_VERSION = '26.09.04_21-17-0050';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -352,5 +435,242 @@
   const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
 </script>
+
+<script>
+// ── Live endpoint checks ───────────────────────────────────────────────────
+// Each row probes one of this site's own /api/ functions from the browser and
+// classifies the answer into ok / warn / bad. The point is to surface the
+// SILENT failures: every one of these functions is written to fall back rather
+// than error, so "the site still works" is not evidence that a key or binding
+// is actually configured.
+//
+// A few notes on what's deliberately not done here:
+//   • Nothing is probed with a side effect. /api/shorten-link would mint a real
+//     short code on POST, so it's only checked for reachability with a GET.
+//   • /api/route-optimize IS given a real two-stop POST, because that is the
+//     only way to learn whether ORS is answering or the haversine fallback is —
+//     which is the exact thing that's invisible from the Tour Planner itself.
+//     Two stops is the smallest possible request against a 500/day quota.
+//   • EmailJS, Nominatim and the Google Sheet can't be checked from here at all
+//     (no server endpoint of ours in the path); they're documented above with
+//     what to look at instead.
+(function(){
+  'use strict';
+
+  var CHECKS = [
+    {
+      id: 'dev-order', name: 'Dev hub card order', code: '/api/dev-order',
+      what: 'Drag-to-reorder on the dev hub, synced across devices.',
+      where: 'KV binding DEV_ORDER_KV',
+      run: function(){
+        return fetch('/api/dev-order').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(r.json && r.json.error) return bad('KV not bound — order saves in one browser only.');
+          return ok('Bound and responding.');
+        });
+      }
+    },
+    {
+      id: 'dev-notes', name: 'Dev hub notes', code: '/api/dev-notes',
+      what: 'The "jot a note" box on the dev hub.',
+      where: 'KV binding DEV_ORDER_KV (shared)',
+      run: function(){
+        return fetch('/api/dev-notes').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(r.json && r.json.error) return bad('KV not bound — notes save in one browser only.');
+          var n = r.json && Array.isArray(r.json.notes) ? r.json.notes.length : 0;
+          return ok(n + ' note' + (n === 1 ? '' : 's') + ' stored.');
+        });
+      }
+    },
+    {
+      id: 'dev-cards', name: 'Dev hub card edits', code: '/api/dev-cards',
+      what: 'Editing and adding project cards from the dev hub itself.',
+      where: 'KV binding DEV_ORDER_KV (shared)',
+      run: function(){
+        return fetch('/api/dev-cards').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(r.json && r.json.error) return bad('KV not bound — card edits save in one browser only.');
+          var st = r.json && r.json.state;
+          var added = st && st.added ? st.added.length : 0;
+          var over = st && st.overrides ? Object.keys(st.overrides).length : 0;
+          return ok(over + ' card' + (over === 1 ? '' : 's') + ' edited, ' + added + ' added.');
+        });
+      }
+    },
+    {
+      id: 'tours', name: 'Saved tours', code: '/api/tours',
+      what: 'Cross-device saved tours in the Tour Planner.',
+      where: 'KV binding TOURS_KV',
+      run: function(){
+        return fetch('/api/tours').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(r.status === 501) return bad('TOURS_KV not bound — saved tours are per-browser.');
+          if(!r.ok) return bad('Responded ' + r.status + '.');
+          var n = r.json && r.json.tours ? Object.keys(r.json.tours).length : 0;
+          return ok(n + ' tour' + (n === 1 ? '' : 's') + ' saved.');
+        });
+      }
+    },
+    {
+      id: 'shorten', name: 'Short-link service', code: '/api/shorten-link',
+      what: 'The 804re.com/s/… links shared from the Tour Planner.',
+      where: 'KV binding TOURS_KV (shared)',
+      run: function(){
+        // GET only — a POST here would mint a real short code as a side effect.
+        return fetch('/api/shorten-link').then(function(res){
+          if(res.status === 404) return bad('Endpoint not deployed (404).');
+          return ok('Deployed. Riding the same TOURS_KV binding as saved tours.');
+        });
+      }
+    },
+    {
+      id: 'route', name: 'Route optimization', code: '/api/route-optimize',
+      what: 'Driving order and real route geometry in the Tour Planner.',
+      where: 'Env var ORS_API_KEY',
+      run: function(){
+        // The only check on this page that sends a real request, because the
+        // ORS-vs-fallback distinction is invisible any other way. Two stops.
+        return fetch('/api/route-optimize', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ mode:'optimize', stops:[
+            {lat:37.7599, lng:-77.4797}, {lat:37.7285, lng:-77.4761}
+          ]})
+        }).then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(!r.json) return bad('Responded ' + r.status + ' with no JSON.');
+          var src = r.json.source || '';
+          if(/ors/i.test(src)) return ok('Live ORS routing (source: ' + src + ').');
+          if(/fallback/i.test(src)) return warn('Running on the straight-line fallback — ORS_API_KEY missing or rejected.');
+          return warn('Responded, but did not report a source.');
+        });
+      }
+    },
+    {
+      id: 'rates', name: 'Mortgage rates', code: '/api/rates',
+      what: 'Live rate figures on the budget and affordability pages.',
+      where: 'Env var FRED_API_KEY',
+      run: function(){
+        return fetch('/api/rates').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(!r.json) return bad('Responded ' + r.status + ' with no JSON.');
+          var src = String(r.json.source || '');
+          if(/fallback|static|hardcode/i.test(src)) return warn('Serving the hardcoded fallback rate — FRED_API_KEY missing or rejected.');
+          return ok('Live rate data' + (src ? ' (source: ' + src + ')' : '') + '.');
+        });
+      }
+    },
+    {
+      id: 'county', name: 'County lookup', code: '/api/county-lookup',
+      what: 'Maps an address to its county on the valuation and map pages.',
+      where: 'No key required',
+      run: function(){
+        return fetch('/api/county-lookup').then(function(res){
+          if(res.status === 404) return bad('Endpoint not deployed (404).');
+          return ok('Deployed and answering.');
+        });
+      }
+    },
+    {
+      id: 'autocomplete', name: 'Address autocomplete', code: '/api/address-autocomplete',
+      what: 'Address suggestions on the valuation form.',
+      where: 'No key required (proxies Nominatim)',
+      run: function(){
+        return fetch('/api/address-autocomplete').then(function(res){
+          if(res.status === 404) return bad('Endpoint not deployed (404).');
+          return ok('Deployed and answering.');
+        });
+      }
+    },
+    {
+      id: 'heigit', name: 'HeiGIT account site', code: '/api/heigit-status',
+      what: 'account.heigit.org — where the ORS key is managed. Cached about an hour.',
+      where: 'External, nothing to configure',
+      run: function(){
+        return fetch('/api/heigit-status').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(!r.json) return bad('Responded ' + r.status + ' with no JSON.');
+          if(r.json.up) return ok('account.heigit.org reachable.');
+          return warn('account.heigit.org looks down (reported ' + (r.json.status || '?') + '). Their signup flow has been flaky; usually transient.');
+        });
+      }
+    }
+  ];
+
+  function readJson(res){
+    return res.json().catch(function(){ return null; }).then(function(j){
+      return { status: res.status, ok: res.ok, json: j };
+    });
+  }
+  function ok(msg){ return { level:'ok', msg: msg }; }
+  function warn(msg){ return { level:'warn', msg: msg }; }
+  function bad(msg){ return { level:'bad', msg: msg }; }
+
+  var rowsEl = document.getElementById('stRows');
+  var checkedEl = document.getElementById('stChecked');
+  if(!rowsEl) return;
+
+  CHECKS.forEach(function(c){
+    var row = document.createElement('div');
+    row.className = 'st-row';
+    row.innerHTML =
+      '<i class="st-dot checking" data-dot="' + c.id + '"></i>' +
+      '<div><div class="st-name">' + c.name + ' <code>' + c.code + '</code></div>' +
+      '<div class="st-what">' + c.what + '</div>' +
+      '<div class="st-msg" data-msg="' + c.id + '">Checking…</div></div>' +
+      '<div class="st-where">' + c.where + '</div>';
+    rowsEl.appendChild(row);
+  });
+
+  function paint(id, level, msg){
+    var dot = rowsEl.querySelector('[data-dot="' + id + '"]');
+    var m = rowsEl.querySelector('[data-msg="' + id + '"]');
+    if(dot) dot.className = 'st-dot ' + level;
+    if(m){ m.className = 'st-msg ' + level; m.textContent = msg; }
+  }
+
+  function tally(){
+    var counts = { ok:0, warn:0, bad:0 };
+    [].forEach.call(rowsEl.querySelectorAll('.st-dot'), function(d){
+      ['ok','warn','bad'].forEach(function(k){ if(d.classList.contains(k)) counts[k]++; });
+    });
+    var set = function(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; };
+    set('stCountOk', counts.ok);
+    set('stCountWarn', counts.warn);
+    set('stCountBad', counts.bad);
+  }
+
+  function runAll(){
+    checkedEl.textContent = 'Checking…';
+    var done = 0;
+    CHECKS.forEach(function(c){
+      paint(c.id, 'checking', 'Checking…');
+      var settle = function(r){
+        paint(c.id, r.level, r.msg);
+        if(++done === CHECKS.length){
+          checkedEl.textContent = 'Checked ' + new Date().toLocaleTimeString();
+          tally();
+        }
+        tally();
+      };
+      // A thrown fetch (offline, blocked, file://) is a failure of the check,
+      // not of the service — say so rather than reporting a false red.
+      var guard = setTimeout(function(){ settle(bad('No response within 10 seconds.')); }, 10000);
+      var finish = function(r){ clearTimeout(guard); settle(r); };
+      try {
+        c.run().then(finish).catch(function(err){
+          finish(bad('Could not reach it: ' + ((err && err.message) || 'network error') + '.'));
+        });
+      } catch(err){
+        finish(bad('Check failed to run: ' + ((err && err.message) || err) + '.'));
+      }
+    });
+  }
+
+  document.getElementById('stRecheck').addEventListener('click', runAll);
+  runAll();
+})();
+</script>
+
 </body>
 </html>
