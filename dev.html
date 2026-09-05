@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_20-08-0062                            ║
+  ║  SITE VERSION: 26.09.05_20-17-0063                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_20-08-0062    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_20-17-0063    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -133,7 +133,7 @@
        black head and over the white body, and short-titled cards sat visibly
        shorter than their neighbours. Every collapsed head is now the same
        three-line block. */
-    .dev-card-head{background:var(--card-bg,var(--black));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;height:104px;cursor:pointer}
+    .dev-card-head{background:var(--card-bg,var(--black));padding:14px 20px 12px;display:flex;align-items:stretch;justify-content:space-between;gap:10px;position:relative;padding-right:48px;height:104px;cursor:pointer}
     /* Initial caps and a lighter weight (was 800 + uppercase). Uppercase made
        every title the same visual shout, which is the opposite of what a
        scannable stack of collapsed cards needs. */
@@ -260,11 +260,19 @@
        is worth seeing at a glance on a collapsed card. The strip keeps a fixed
        height whether or not a card has ever been edited, so collapsed cards all
        stay the same overall height. */
-    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:10px 20px 12px;min-height:34px}
+    /* Date text up 25% (.76 -> .95rem) and the strip tightened, so the white
+       band under the coloured head is only as tall as the line it carries. Kept
+       at a fixed height whether or not a card has a date, so collapsed cards
+       all remain exactly the same height. */
+    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:6px 20px 7px;height:27px;display:flex;align-items:center}
     /* Created is reference detail, not a headline, so it is nested inside the
        body and only appears once the card is rolled down. */
     .dev-card-created{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-top:14px;padding-top:10px;border-top:1px solid var(--gray-mid)}
-    .dev-card-headmain{display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex:1 1 auto;min-width:0}
+    /* Title pinned to the top, badge pinned to the bottom, so a one-line and a
+       two-line card have identical spacing above the title and identical badge
+       positions - the ragged look was coming from vertical centring, not from
+       the head heights, which were already equal. */
+    .dev-card-headmain{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:5px;flex:1 1 auto;min-width:0;height:100%}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
     .dev-card-body li{font-size:1.05rem;color:var(--gray-muted);padding:5px 0 5px 16px;position:relative}
@@ -714,7 +722,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_20-08-0062</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_20-17-0063</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -725,7 +733,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_20-08-0062';
+  const SITE_VERSION = '26.09.05_20-17-0063';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
