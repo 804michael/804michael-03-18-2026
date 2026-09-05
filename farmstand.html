@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_00-21-0052                            ║
+  ║  SITE VERSION: 26.09.05_05-26-0053                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-21-0052   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_05-26-0053   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -32,6 +32,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hanover Farmstand Trail | 804Michael</title>
+<meta name="description" content="A map of farm stands, produce stands and roadside markets across Hanover County and Ashland VA. See what is open near you, and add a stand you know about." />
+<link rel="canonical" href="https://804re.com/farmstand" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type"        content="website" />
+<meta property="og:locale"      content="en_US" />
+<meta property="og:url"         content="https://804re.com/farmstand" />
+<meta property="og:title"       content="Hanover Farmstand Trail | 804Michael" />
+<meta property="og:description" content="A map of farm stands and roadside markets across Hanover County and Ashland VA. See what is open near you." />
+<meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
+<meta property="og:image:width"  content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name"   content="804Michael - Ashland VA Real Estate" />
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:site"        content="@804Michael" />
+<meta name="twitter:title"       content="Hanover Farmstand Trail | 804Michael" />
+<meta name="twitter:description" content="A map of farm stands and roadside markets across Hanover County and Ashland VA." />
+<meta name="twitter:image"       content="https://804re.com/images/Tool-og1.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
@@ -341,7 +358,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.05_00-21-0052</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.05_05-26-0053</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -573,7 +590,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.05_00-21-0052';
+const SITE_VERSION = '26.09.05_05-26-0053';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);

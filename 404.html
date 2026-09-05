@@ -1,0 +1,154 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.05_05-28-0001                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_05-28-0001    ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║                                                               ║
+  ║  🚦 WHAT THIS PAGE IS FOR                                     ║
+  ║  Cloudflare Pages serves this file, with a real HTTP 404      ║
+  ║  status, for any URL that does not match a file in the repo.  ║
+  ║  Before it existed, unknown URLs returned the HOMEPAGE with   ║
+  ║  a 200 OK — a "soft 404". Search engines read that as an      ║
+  ║  endless supply of duplicate homepages, and dead links from   ║
+  ║  the old Squarespace site (/blog, /testimonials, /team-page)  ║
+  ║  never properly died. Keep this file at the repo root and     ║
+  ║  named exactly 404.html or that behaviour comes back.         ║
+  ║                                                               ║
+  ║  Deliberately noindex/nofollow: an error page should never    ║
+  ║  itself appear in search results.                             ║
+  ║  Deliberately lean — no fonts preload, no map libraries, no   ║
+  ║  forms. This page loads when something has already gone       ║
+  ║  wrong; it should be the fastest page on the site.            ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Page Not Found | 804Michael</title>
+<meta name="description" content="That page could not be found on 804re.com. Find homes, tools and local guides for Ashland, Hanover County, Glen Allen and Mechanicsville." />
+<meta name="robots" content="noindex, nofollow" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&family=Barlow:wght@400;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="nav.css" />
+
+<style>
+  :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+
+  /* Hero — same black-bar standard as every other page. Direct child of
+     <body>, no 100vw breakout (that includes the scrollbar and pushes the
+     bar ~8px out of line). See the black-hero standard in the design notes. */
+  .black-hero{
+    background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
+    margin-top:calc(var(--banner-h) + var(--nav-h));
+  }
+  .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+  .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
+  .black-hero h1 span{color:var(--red)}
+  .black-hero-sub{font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);max-width:640px}
+
+  .nf-body{max-width:900px;margin:0 auto;padding:44px 24px 70px}
+  .nf-lead{font-size:1.15rem;line-height:1.7;color:var(--gray-text);margin-bottom:34px;max-width:640px}
+
+  .nf-h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:1.5rem;margin:0 0 14px}
+  .nf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:40px}
+  .nf-card{display:block;border:1px solid var(--gray-mid);border-left:4px solid var(--red);padding:16px 18px;transition:background .2s,transform .2s}
+  .nf-card:hover{background:var(--gray-light);transform:translateX(2px)}
+  .nf-card b{display:block;font-weight:700;font-size:1.05rem;margin-bottom:3px}
+  .nf-card span{font-size:.9rem;color:var(--gray-text);line-height:1.5}
+
+  .nf-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .btn{display:inline-block;padding:13px 28px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.35rem;letter-spacing:.03em;text-transform:uppercase;transition:background .2s,color .2s}
+  .btn-red{background:var(--red);color:var(--white)}
+  .btn-red:hover{background:var(--red-dark)}
+  .btn-outline{border:2px solid var(--red);color:var(--red)}
+  .btn-outline:hover{background:var(--red);color:var(--white)}
+
+  footer{background:var(--black);padding:36px 24px 30px;border-top:1px solid rgba(255,255,255,.07)}
+  .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+  .ft-copy a{color:rgba(255,255,255,.55)}
+  .ft-copy a:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+
+<section class="black-hero">
+  <h1>Page <span>Not Found</span></h1>
+  <p class="black-hero-sub">That address does not exist on 804re.com. It may have been an old link, a typo, or a page that has since moved.</p>
+</section>
+
+<main class="nf-body">
+  <p class="nf-lead">
+    Nothing is broken on your end. Here are the places most people are looking for.
+  </p>
+
+  <h2 class="nf-h2">Popular pages</h2>
+  <div class="nf-grid">
+    <a class="nf-card" href="index.html"><b>Home</b><span>Start here</span></a>
+    <a class="nf-card" href="map-search.html"><b>Draw Your Search Area</b><span>Circle the neighborhoods you want and send them to me</span></a>
+    <a class="nf-card" href="home-value-estimate.html"><b>What Is My Home Worth?</b><span>Free valuation, no signup</span></a>
+    <a class="nf-card" href="determine-your-budget.html"><b>Determine Your Budget</b><span>What you can actually afford, with current rates</span></a>
+    <a class="nf-card" href="seller-net-sheet.html"><b>Seller Net Sheet</b><span>What you walk away with at closing</span></a>
+    <a class="nf-card" href="cash-to-buy-a-home.html"><b>Cash to Buy a Home</b><span>The real up-front cost, beyond the price</span></a>
+  </div>
+
+  <h2 class="nf-h2">Local areas</h2>
+  <div class="nf-grid">
+    <a class="nf-card" href="ashland.html"><b>Ashland</b><span>The Center of the Universe</span></a>
+    <a class="nf-card" href="hanover.html"><b>Hanover County</b><span>Ashland to Mechanicsville</span></a>
+    <a class="nf-card" href="glen-allen.html"><b>Glen Allen</b><span>Short Pump &amp; West Broad Village</span></a>
+    <a class="nf-card" href="mechanicsville.html"><b>Mechanicsville</b><span>Established, high-value Hanover</span></a>
+  </div>
+
+  <h2 class="nf-h2">Still stuck?</h2>
+  <div class="nf-cta">
+    <a class="btn btn-red" href="tel:+18046424235">Call 804-Michael</a>
+    <a class="btn btn-outline" href="sms:+18046424235">Text 804-642-4235</a>
+  </div>
+</main>
+
+<footer>
+  <div class="ft-in">
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:4px;font-weight:400">v26.09.05_05-28-0001</p>
+    <p class="ft-copy">
+      &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      <a href="index.html">804re.com</a>
+    </p>
+  </div>
+</footer>
+
+<script src="nav.js" defer></script>
+<script>
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.05_05-28-0001';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
+
+  var _yr = document.getElementById('yr');
+  if (_yr) _yr.textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

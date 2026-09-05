@@ -4,3 +4,22 @@
 # the client sees (200 = rewrite, not a redirect). The page reads the code off
 # its own path. Must stay ABOVE any catch-all rule if one is ever added.
 /t/*  /client-tour.html  200
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Legacy URLs from the previous (Squarespace) 804re.com, added 2026-09-05.
+#
+# Google still has these indexed. Before 404.html existed they each returned
+# the HOMEPAGE with a 200 OK, so they looked to search engines like real pages
+# duplicating the homepage. These 301s send each one to its closest living
+# equivalent instead, which passes the old page's ranking value along and gets
+# the dead URL dropped from the index cleanly.
+#
+# Anything NOT listed here now correctly falls through to 404.html with a real
+# 404 status. If you find another old URL still getting traffic (check Google
+# Search Console > Pages), add a line for it here rather than leaving it to 404.
+/testimonials     /            301
+/team-page        /            301
+/new-contact-us   /#contact    301
+/communities      /            301
+/blog             /            301
+/blog/*           /            301
