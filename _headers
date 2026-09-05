@@ -22,3 +22,17 @@
 
 /*.html
   Cache-Control: public, max-age=300, must-revalidate
+
+# Client tour links (/t/<code>) must never be cached by the browser.
+#
+# Added 2026-09-05 after a real failure: while the /t/* rule still pointed at
+# /client-tour.html, Cloudflare's own .html -> extensionless rule fired on top
+# of it and answered with a 308 PERMANENT redirect to /client-tour, which drops
+# the tour code. Browsers cache a 308 indefinitely, per URL, so even after the
+# server was fixed, any phone that had opened a tour link during that window
+# kept redirecting itself to the code-less URL without ever asking the server
+# again - the link looked permanently broken to that one person and fine to
+# everyone else. no-store stops a redirect on these URLs from ever being
+# remembered, so a future routing mistake can't strand a client the same way.
+/t/*
+  Cache-Control: no-store

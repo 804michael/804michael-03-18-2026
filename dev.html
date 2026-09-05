@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_20-17-0063                            ║
+  ║  SITE VERSION: 26.09.05_22-04-0064                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_20-17-0063    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_22-04-0064    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -133,7 +133,7 @@
        black head and over the white body, and short-titled cards sat visibly
        shorter than their neighbours. Every collapsed head is now the same
        three-line block. */
-    .dev-card-head{background:var(--card-bg,var(--black));padding:14px 20px 12px;display:flex;align-items:stretch;justify-content:space-between;gap:10px;position:relative;padding-right:48px;height:104px;cursor:pointer}
+    .dev-card-head{background:var(--card-bg,var(--black));padding:14px 20px 12px;display:flex;align-items:stretch;justify-content:space-between;gap:10px;position:relative;padding-right:48px;height:116px;cursor:pointer}
     /* Initial caps and a lighter weight (was 800 + uppercase). Uppercase made
        every title the same visual shout, which is the opposite of what a
        scannable stack of collapsed cards needs. */
@@ -141,7 +141,10 @@
        coloured head taller than its neighbours', which is what made the grid
        look ragged. Two lines is the ceiling; anything longer ellipsises, and the
        full text is still available via the title attribute. */
-    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;line-height:1.15;letter-spacing:.01em;text-transform:none;color:var(--card-fg,var(--white));display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    /* min-height reserves exactly two lines (2 x 1.15 x 1.5rem = 55.2px). The
+       head previously gave the title less room than two lines needed, so the
+       second line was clipped mid-glyph by the badge below it. */
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;line-height:1.15;letter-spacing:.01em;text-transform:none;color:var(--card-fg,var(--white));display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(2 * 1.15 * 1.5rem)}
     .dev-card-head h3 a{color:var(--card-fg,var(--white));display:inline}
     .dev-card-head h3 a:hover{color:var(--card-hover,var(--red))}
     /* Icon says at a glance whether there is a page behind this card. */
@@ -722,7 +725,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_20-17-0063</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_22-04-0064</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -733,7 +736,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_20-17-0063';
+  const SITE_VERSION = '26.09.05_22-04-0064';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
