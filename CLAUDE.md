@@ -12,9 +12,13 @@ the short version plus the rules that are easy to break.
 ## What this is
 
 A static real-estate site for Michael Hottman (804Michael), deployed to
-Cloudflare Pages. Michael runs `push-live.bat` himself to deploy — never trigger
-a deployment. There is no build step: pages are hand-written HTML with their own
-embedded `<style>` and `<script>`.
+Cloudflare Pages. Michael deploys by running `push-live.bat` or by saying "push"
+in chat — never push on your own initiative. A push to origin IS the deploy here
+(Cloudflare Pages rebuilds from GitHub), so it is a separate decision from
+committing; see rule 8.
+
+There is no build step: pages are hand-written HTML with their own embedded
+`<style>` and `<script>`.
 
 `functions/` holds Cloudflare Pages Functions (the `/api/*` endpoints). They read
 secrets and KV bindings from the Cloudflare dashboard; a new binding or key only
@@ -80,6 +84,14 @@ paid sthan.io API server-side to keep those credentials off the page.
 7. **Client-facing output must never carry agent-only data.** `client-tour.html`
    and `/api/tour-page.js` enforce an allow-list server-side; private notes and
    agent ratings must not cross it.
+
+8. **Commits are automatic, pushes are not.** A Stop hook
+   (`.claude/hooks/auto-commit.sh`, wired up in `.claude/settings.json`) commits
+   whatever changed when you finish a task, so nothing is left sitting
+   uncommitted, and prints how many commits are waiting. Do NOT push. End every
+   task by saying the work is committed and asking whether to push — pushing
+   deploys to the live site, and that stays Michael's call. When he says
+   "push", run `git push origin main`.
 
 ## Layout conventions
 
