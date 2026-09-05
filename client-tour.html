@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_00-14-0051                            ║
+  ║  SITE VERSION: 26.09.05_16-36-0052                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-14-0051    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_16-36-0052    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -175,7 +175,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.05_00-14-0051';
+const SITE_VERSION = '26.09.05_16-36-0052';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -185,7 +185,18 @@ const SITE_VERSION = '26.09.05_00-14-0051';
   // path to this file (a 200 rewrite, so the URL the client sees stays /t/…),
   // which means the path is the only place the code lives — there is no query
   // string to read.
-  var code = (location.pathname.split('/').filter(Boolean).pop() || '').replace(/[^A-Za-z0-9]/g, '');
+  // Match /t/<code> EXPLICITLY rather than taking the last path segment. On
+  // 2026-09-05 the _redirects rule pointed at "/client-tour.html", and
+  // Cloudflare's own .html -> extensionless redirect fired on top of the
+  // rewrite, so the browser landed on /client-tour with the code gone from
+  // the URL. "Last path segment" happily returned "client-tour", which
+  // sanitised into a plausible-looking code, so every shared link failed with
+  // "This tour link isn't working. It may have expired." The rule now targets
+  // /client-tour, and this parse refuses to invent a code from a path that is
+  // not /t/<something>, so a future routing break surfaces as the honest
+  // "missing its tour code" message instead of a fake expiry.
+  var _m = location.pathname.match(/^\/t\/([^\/?#]+)/i);
+  var code = (_m ? decodeURIComponent(_m[1]) : '').replace(/[^A-Za-z0-9]/g, '');
 
   // Same palette as the planner's map markers, so a stop's number is the same
   // colour on the client's phone as on the agent's map and printed sheet.

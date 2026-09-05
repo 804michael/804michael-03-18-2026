@@ -2,6 +2,44 @@
 
 Standing conventions and decisions captured here so future page work (by Claude or otherwise) stays consistent, without re-litigating them each time.
 
+## STANDING RULE: never read-and-rewrite these files through PowerShell or as UTF-8 (added 2026-09-05)
+
+The HTML in this repo is **not valid UTF-8**. It is mixed content with
+Windows-1252 bytes in it, and always has been. That is fine in a browser (the
+pages declare `charset=UTF-8` and render correctly), but it makes the files
+fragile to any tool that decodes and re-encodes them.
+
+**What broke:** editing the canonical/og:url tags on ten pages via
+`Get-Content -Raw` / `Set-Content -Encoding utf8` in PowerShell 5.1 produced a
+584-line diff on `map-search.html` when the intended change was two lines. The
+round-trip re-encoded every byte it could not decode, and `-Encoding utf8` in
+PowerShell 5.1 also prepends a BOM. Caught before committing, reverted, redone.
+
+**Do this instead:**
+
+- `sed -i` from Git Bash — operates on bytes, safe for ASCII-only patterns.
+- Node reading and writing with `'latin1'` — a 1:1 byte mapping, so the
+  round-trip is byte-exact everywhere the script does not touch. This is the
+  right tool for anything a regex can't do in one line.
+
+**Never:** `Get-Content`/`Set-Content` round-trips, `-Encoding utf8` (BOM),
+or Node with the default `'utf8'` encoding on these files.
+
+**How to check a change went in clean**, before committing:
+
+- `git diff --stat` — the line count must match the size of the intended edit.
+  A two-line change showing hundreds of lines means the encoding shifted.
+- First three bytes must not be `efbbbf` (that is a BOM):
+  `head -c 3 file.html | xxd -p`
+- Invalid-sequence count must be unchanged from the committed version:
+  `git show HEAD:file.html | iconv -f UTF-8 -t UTF-8 >/dev/null` versus the
+  same on the working copy. These files report 1 either way; that is expected
+  and is not something to "fix".
+
+Converting the whole repo to clean UTF-8 would remove the hazard, but it is a
+large, risky, all-at-once change touching every page, so it has not been done.
+Until it is, treat the encoding as load-bearing.
+
 ## Standing rule: new pages/tools stay hidden until Michael explicitly approves going live (added 2026-09-03)
 
 Every new page or tool defaults to hidden, full stop — same pattern already used for the whole Dev hub (see "Hidden (non-nav) pages" below): `noindex`/`nofollow` (or `noindex, follow` once there's real citable content), no link added to `nav-partial.html`, no entry in `sitemap.xml`, discoverable only via its own `dev.html` card. That's the default for anything new, not something that has to be requested each time.
