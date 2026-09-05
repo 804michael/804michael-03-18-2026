@@ -118,3 +118,30 @@ before delivering. Several bugs in the history were caught only by rendering.
 
 Note the repo lives inside OneDrive, and a first write to a file has repeatedly
 reported success without landing — read the file back after writing it.
+
+## Reporting back — how to end every reply
+
+Michael reads these replies to learn the codebase, not just to approve work, so
+the write-up is part of the deliverable. Structure every substantive reply this
+way:
+
+1. **Version line first** — `📌 Version: vYY.MM.DD_HH-MM-XXXX`, per rule 1.
+2. **Explanation, under `##` headings.** One heading per thing you changed,
+   named for the change ("Card height", "Mobile drag", "Colour picker"). Say
+   what was wrong, why it was wrong, and what you did — the root cause, not just
+   the symptom. This is the part he's reading to understand the code.
+3. **An `## Issues found` heading** whenever you hit a bug, a wrong assumption,
+   or something that looked right and wasn't — including ones you caused and
+   fixed, and ones already in the file that you noticed in passing. Do not bury
+   these in the prose above; he wants them called out. Say "none" if there were
+   none.
+4. **A `## Summary` bullet list** at the end. One bullet per heading above,
+   reusing the exact same heading text in bold so the bullets map onto the
+   sections one-to-one. One line each.
+5. **A `## Ready to push?` heading last**, naming the commit(s) waiting and what
+   they contain. Never push without being asked (rule 8).
+
+Occasionally — not every reply — add a short `## Worth knowing` note about a
+Claude Code or Claude capability that would help his actual work (connectors,
+skills, scheduled tasks, artifacts, hooks). Concrete and tied to something he
+just did, never a feature tour.
