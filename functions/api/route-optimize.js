@@ -60,6 +60,21 @@
 //     explores the same route space, so this still gives a genuinely
 //     optimizer-chosen starting point, not an arbitrary one.
 // Either way this is an "open" route — no forced return to the start.
+//
+// SHOWING TIME WINDOWS (added 2026-09-05)
+// A stop can carry `windowStart` / `windowEnd`, seconds since midnight of the
+// tour day, sent by the frontend from its two <input type="time"> fields. Those
+// become VROOM `time_windows` on that job, and each stop's dwell time becomes
+// the job's `service` so the optimizer knows a 20-minute showing has to FIT
+// inside the window, not just begin in it. The vehicle gets a day-long
+// `time_window` anchored at `dayStartSec` so every job's window is on the same
+// scale.
+//
+// If the windows can't all be satisfied, VROOM does NOT fail — it returns the
+// impossible ones in `unassigned`. Those stops are appended to the end of the
+// order and their ids come back in `unscheduled` so the page can say plainly
+// which showings don't fit, rather than silently producing an order that
+// misses an appointment.
 
 const ORS_OPTIMIZATION_URL = 'https://api.heigit.org/vroom/v0';
 const ORS_DIRECTIONS_URL = 'https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson';
@@ -109,7 +124,22 @@ function fallbackResult(stops, mode, pinnedStartId){
       orderedInput.unshift(pinned);
     }
   }
-  const ordered = mode === 'optimize' ? nearestNeighborOrder(orderedInput) : orderedInput.slice();
+  // Without a key there's no real solver, so windows are honoured the only
+  // way a straight-line estimate can: stops that HAVE a window go first, in
+  // window order, and the rest are nearest-neighboured after them. That
+  // respects the appointments but won't be the shortest route — the response's
+  // `source` already tells the page it's on the fallback.
+  let ordered;
+  if(mode !== 'optimize'){
+    ordered = orderedInput.slice();
+  } else {
+    const windowed = orderedInput.filter(s => typeof s.windowStart === 'number')
+                                 .sort((a, b) => a.windowStart - b.windowStart);
+    const free = orderedInput.filter(s => typeof s.windowStart !== 'number');
+    ordered = windowed.length
+      ? windowed.concat(nearestNeighborOrder(free))
+      : nearestNeighborOrder(orderedInput);
+  }
   const legs = [];
   let totalDistanceMeters = 0, totalDurationSeconds = 0;
   for(let i = 0; i < ordered.length - 1; i++){
@@ -126,6 +156,26 @@ function fallbackResult(stops, mode, pinnedStartId){
   };
 }
 
+// Turn one stop into a VROOM job. `service` is the dwell time so the solver
+// knows the showing itself consumes part of the window; `time_windows` is only
+// attached when the stop actually has one, since an absent window means "any
+// time" and an empty array would mean "never".
+function jobFor(stop, id){
+  const job = { id, location: [stop.lng, stop.lat] };
+  const budgetMin = Number(stop.budgetMinutes);
+  if(isFinite(budgetMin) && budgetMin > 0) job.service = Math.round(budgetMin * 60);
+  if(typeof stop.windowStart === 'number' && typeof stop.windowEnd === 'number'
+     && stop.windowEnd > stop.windowStart){
+    job.time_windows = [[Math.round(stop.windowStart), Math.round(stop.windowEnd)]];
+  }
+  return job;
+}
+
+function vehicleWindow(dayStartSec){
+  const start = (typeof dayStartSec === 'number' && isFinite(dayStartSec)) ? Math.round(dayStartSec) : 8 * 3600;
+  return [start, start + 12 * 3600]; // a generous single working day
+}
+
 async function callOrsOptimize(jobs, vehicle, apiKey){
   const body = { jobs, vehicles: [vehicle] };
   const res = await fetch(ORS_OPTIMIZATION_URL, {
@@ -137,37 +187,49 @@ async function callOrsOptimize(jobs, vehicle, apiKey){
   const data = await res.json();
   const steps = data && data.routes && data.routes[0] && data.routes[0].steps;
   if(!Array.isArray(steps)) throw new Error('ors_optimization_bad_response');
-  return steps.filter(st => st.type === 'job');
+  return {
+    steps: steps.filter(st => st.type === 'job'),
+    // Jobs VROOM could not fit inside their time windows. Never silently
+    // dropped — the caller appends them and names them to the user.
+    unassigned: Array.isArray(data.unassigned) ? data.unassigned.map(u => u.id) : [],
+  };
 }
 
-async function orsOptimizeOrder(stops, apiKey, pinnedStartId){
-  if(stops.length < 3) return stops.slice(); // nothing to optimize with only 2 stops
+async function orsOptimizeOrder(stops, apiKey, pinnedStartId, dayStartSec){
+  if(stops.length < 3) return { ordered: stops.slice(), unscheduled: [] };
 
   const pinned = pinnedStartId ? stops.find(s => s.id === pinnedStartId) : null;
+  const timeWindow = vehicleWindow(dayStartSec);
 
-  if(pinned){
-    // Fixed start: the pinned stop anchors the vehicle's start; every other
-    // stop is a job VROOM can freely reorder around it.
-    const others = stops.filter(s => s.id !== pinned.id);
-    const jobs = others.map((s, i) => ({ id: i + 1, location: [s.lng, s.lat] }));
-    const jobSteps = await callOrsOptimize(jobs, { id: 1, profile: 'driving-car', start: [pinned.lng, pinned.lat] }, apiKey);
-    const ordered = [pinned];
-    jobSteps.forEach(st => { const s = others[st.job - 1]; if(s) ordered.push(s); });
-    return ordered.length === stops.length ? ordered : stops.slice();
-  }
+  // Whichever end is anchored, the remaining stops become jobs VROOM can
+  // reorder freely, subject to any time windows they carry. `others` is the
+  // lookup back from a returned job id to the original stop.
+  const anchorAtStart = !!pinned;
+  const anchor = pinned || stops[stops.length - 1];
+  const others = anchorAtStart ? stops.filter(s => s.id !== anchor.id) : stops.slice(0, -1);
 
-  // No pin ("let the optimizer pick the best start"): see the top-of-file
-  // comment — VROOM requires at least one of start/end, so the last stop in
-  // the current list is anchored as the route's `end` purely to satisfy
-  // that, while the actual starting stop is fully up to the optimizer.
-  const anchor = stops[stops.length - 1];
-  const others = stops.slice(0, -1);
-  const jobs = others.map((s, i) => ({ id: i + 1, location: [s.lng, s.lat] }));
-  const jobSteps = await callOrsOptimize(jobs, { id: 1, profile: 'driving-car', end: [anchor.lng, anchor.lat] }, apiKey);
-  const ordered = [];
-  jobSteps.forEach(st => { const s = others[st.job - 1]; if(s) ordered.push(s); });
-  ordered.push(anchor);
-  return ordered.length === stops.length ? ordered : stops.slice();
+  const jobs = others.map((s, i) => jobFor(s, i + 1));
+  const vehicle = { id: 1, profile: 'driving-car', time_window: timeWindow };
+  if(anchorAtStart) vehicle.start = [anchor.lng, anchor.lat];
+  else vehicle.end = [anchor.lng, anchor.lat];
+
+  const { steps, unassigned } = await callOrsOptimize(jobs, vehicle, apiKey);
+
+  const placed = [];
+  steps.forEach(st => { const s = others[st.job - 1]; if(s) placed.push(s); });
+
+  // Anything VROOM couldn't fit inside its window comes back unassigned. Keep
+  // those stops in the route (dropping a showing silently would be far worse)
+  // but put them last and name them, so the page can flag which ones don't fit.
+  const placedIds = new Set(placed.map(s => s.id));
+  const unscheduled = others.filter(s => !placedIds.has(s.id));
+
+  const ordered = anchorAtStart
+    ? [anchor].concat(placed, unscheduled)
+    : placed.concat(unscheduled, [anchor]);
+
+  if(ordered.length !== stops.length) return { ordered: stops.slice(), unscheduled: [] };
+  return { ordered, unscheduled: unscheduled.map(s => s.id) };
 }
 
 async function orsDirections(orderedStops, apiKey){
@@ -213,9 +275,16 @@ export async function onRequestPost(context) {
   const mode = payload && payload.mode === 'manual' ? 'manual' : 'optimize';
   const startStopId = payload && typeof payload.startStopId === 'string' && payload.startStopId ? payload.startStopId : null;
   const rawStops = Array.isArray(payload && payload.stops) ? payload.stops : [];
+  const dayStartSec = payload && typeof payload.dayStartSec === 'number' ? payload.dayStartSec : null;
   const stops = rawStops
     .filter(s => s && typeof s.lat === 'number' && typeof s.lng === 'number' && s.id)
-    .slice(0, 12);
+    .slice(0, 12)
+    .map(s => ({
+      id: s.id, lat: s.lat, lng: s.lng,
+      budgetMinutes: typeof s.budgetMinutes === 'number' ? s.budgetMinutes : null,
+      windowStart: typeof s.windowStart === 'number' ? s.windowStart : null,
+      windowEnd: typeof s.windowEnd === 'number' ? s.windowEnd : null,
+    }));
 
   if(stops.length < 2){
     return new Response(JSON.stringify({ error: 'need_at_least_two_stops' }), { status: 400, headers: jsonHeaders });
@@ -226,11 +295,15 @@ export async function onRequestPost(context) {
     result = fallbackResult(stops, mode, startStopId);
   } else {
     try {
-      const ordered = mode === 'optimize' ? await orsOptimizeOrder(stops, env.ORS_API_KEY, startStopId) : stops.slice();
+      const opt = mode === 'optimize'
+        ? await orsOptimizeOrder(stops, env.ORS_API_KEY, startStopId, dayStartSec)
+        : { ordered: stops.slice(), unscheduled: [] };
+      const ordered = opt.ordered;
       const dirResult = await orsDirections(ordered, env.ORS_API_KEY);
       result = {
         source: 'ORS',
         order: ordered.map(s => s.id),
+        unscheduled: opt.unscheduled,
         legs: dirResult.legs,
         geometry: dirResult.geometry,
         totalDistanceMeters: dirResult.totalDistanceMeters,

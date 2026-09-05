@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_23-06-0054                            ║
+  ║  SITE VERSION: 26.09.04_23-37-0055                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-06-0054    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-37-0055    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -424,6 +424,9 @@
           <li>Real driving order/geometry via OpenRouteService once ORS_API_KEY is set in Cloudflare — falls back to a straight-line nearest-neighbor estimate until then</li>
           <li>Per-stop time budget (default 20 min), running arrival-time estimates, total drive time/distance</li>
           <li>Client-facing blurb + private notes per stop, QR code, SMS share, Google/Apple/Outlook calendar links, printable itinerary, saved tours (this browser)</li>
+          <li>New: per-stop showing time windows the optimizer honours, and Tour Mode — one stop at a time on your phone, rate and take notes as you go</li>
+          <li>Parked, not built: traffic buffer + "does this tour fit the client's window" warning. Low value in Richmond; worth revisiting if the tool goes to agents in busier markets</li>
+          <li>Next up for review: branded client tour page replacing the raw Google Maps link, with client ratings coming back to you</li>
         </ul>
         <a class="dev-card-link" href="tour-planner.html">View page →</a>
       </div>
@@ -566,7 +569,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_23-06-0054</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_23-37-0055</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -577,7 +580,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04_23-06-0054';
+  const SITE_VERSION = '26.09.04_23-37-0055';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
