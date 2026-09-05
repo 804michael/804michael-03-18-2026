@@ -67,6 +67,14 @@ function cleanBadgeKind(v) {
   return v === 'unlinked' || v === 'review' ? v : '';
 }
 
+// Dates are stored as plain YYYY-MM-DD strings. Anything that is not exactly
+// that shape is dropped rather than trusted, so a bad value can never reach
+// the page as markup.
+function cleanDate(v) {
+  const s = str(v, 10).trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
+}
+
 function cleanCardFields(raw) {
   const o = raw && typeof raw === 'object' ? raw : {};
   return {
@@ -78,6 +86,8 @@ function cleanCardFields(raw) {
       ? o.bullets.map(function (b) { return str(b, 300); }).filter(Boolean).slice(0, MAX_BULLETS)
       : [],
     href: str(o.href, 300),
+    created: cleanDate(o.created),
+    edited: cleanDate(o.edited),
   };
 }
 

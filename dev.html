@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_15-54-0058                            ║
+  ║  SITE VERSION: 26.09.05_16-41-0059                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_15-54-0058    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_16-41-0059    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -114,12 +114,22 @@
        selected or copied at all. The card is now draggable="false" by
        default and only flips to true while the ⠿ handle is held down, which
        leaves normal text selection working everywhere else on the card. */
-    .dev-card-drag{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.85rem;line-height:1;cursor:grab;flex:0 0 auto;padding:0;user-select:none}
+    /* touch-action:none is what makes dragging work on a phone: without it the
+       browser claims the gesture for scrolling before pointermove ever fires. */
+    .dev-card-drag{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.85rem;line-height:1;cursor:grab;flex:0 0 auto;padding:0;user-select:none;touch-action:none}
     .dev-card-drag:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
     .dev-card-drag:active{cursor:grabbing}
     .dev-card.drag-over{border-color:var(--red);border-style:dashed}
-    .dev-card-head{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;min-height:62px}
-    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
+    .dev-card-head{background:var(--black);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;min-height:62px;cursor:pointer}
+    /* Initial caps and a lighter weight (was 800 + uppercase). Uppercase made
+       every title the same visual shout, which is the opposite of what a
+       scannable stack of collapsed cards needs. */
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:.01em;text-transform:none;color:var(--white)}
+    .dev-card-head h3 a{color:var(--white);display:inline-flex;align-items:center;gap:7px}
+    .dev-card-head h3 a:hover{color:var(--red)}
+    /* Icon says at a glance whether there is a page behind this card. */
+    .dev-card-pageicon{font-size:.78rem;opacity:.75;flex:0 0 auto}
+    .dev-card-pageicon.none{opacity:.4}
     .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap}
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
@@ -144,7 +154,9 @@
     .dev-add-card-btn:hover{background:var(--red-dark)}
     .dev-card-edit{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.82rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0}
     .dev-card-edit:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
-    .dev-card-tools{position:absolute;top:8px;right:12px;display:flex;flex-direction:column;gap:4px;z-index:2}
+    .dev-card-tools{position:absolute;top:8px;right:10px;display:flex;flex-direction:column;gap:4px;z-index:2}
+    .dev-card.drag-active{opacity:.55;outline:2px solid var(--red)}
+    .dev-card-dropline{border:2px dashed var(--red);border-radius:16px;background:rgba(218,41,28,.05)}
     /* Adding the pencil made the head a three-item row, which pushed the
        (nowrap) status badge past the card's right edge on any card with a
        longish title — .dev-card has overflow:hidden, so it clipped rather
@@ -198,7 +210,19 @@
     .dev-note-sync-hint{font-size:.82rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
     #dev-notes-dynamic:empty{display:none}
     .dev-notes-divider{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin:2px 0 6px;padding-top:8px;border-top:1px solid var(--gray-mid)}
-    .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
+    /* Collapsed by default (2026-09-05). With every body expanded you could
+       see barely two cards on desktop and one on mobile, which made ordering
+       them impossible. The head alone is the card now; the body rolls down. */
+    .dev-card-body{padding:16px 20px 20px;flex:1;display:none;flex-direction:column}
+    .dev-card.is-open .dev-card-body{display:flex}
+    .dev-card-expand{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:7px;width:24px;height:24px;font-size:.8rem;line-height:1;cursor:pointer;flex:0 0 auto;padding:0;transition:transform .2s}
+    .dev-card-expand:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card.is-open .dev-card-expand{transform:rotate(180deg)}
+    /* Edited date rides at the top of the head, created at the foot of the
+       card, so the two never read as one blob of small grey text. */
+    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+    .dev-card-created{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:0 20px 12px}
+    .dev-card-headmain{display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
     .dev-card-body li{font-size:1.05rem;color:var(--gray-muted);padding:5px 0 5px 16px;position:relative}
@@ -294,7 +318,7 @@
 
   <div class="dev-grid">
 
-    <div class="dev-card" data-id="due-diligence">
+    <div class="dev-card" data-id="due-diligence" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Due Diligence</h3>
         <span class="dev-badge">In Progress</span>
@@ -310,7 +334,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="financing-commandments">
+    <div class="dev-card" data-id="financing-commandments" data-created="2026-09-02">
       <div class="dev-card-head">
         <h3>Freeze Your Financial Picture</h3>
         <span class="dev-badge">In Progress</span>
@@ -326,7 +350,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="utility-providers">
+    <div class="dev-card" data-id="utility-providers" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Utility Providers</h3>
         <span class="dev-badge">In Progress</span>
@@ -342,7 +366,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="find-a-home">
+    <div class="dev-card" data-id="find-a-home" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Keys to Finding a Great Home</h3>
         <span class="dev-badge unlinked">Built — Unlinked</span>
@@ -358,7 +382,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="tour-a-home">
+    <div class="dev-card" data-id="tour-a-home" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Tour a Home Like a Pro</h3>
         <span class="dev-badge unlinked">Built — Unlinked</span>
@@ -374,7 +398,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="buyer-intake">
+    <div class="dev-card" data-id="buyer-intake" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Buyer Intake Form</h3>
         <span class="dev-badge">In Progress</span>
@@ -389,7 +413,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="seller-intake">
+    <div class="dev-card" data-id="seller-intake" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Seller Intake Form</h3>
         <span class="dev-badge">In Progress</span>
@@ -404,7 +428,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="market-stats">
+    <div class="dev-card" data-id="market-stats" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Quick Market Stats</h3>
         <span class="dev-badge">In Progress</span>
@@ -419,7 +443,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="tour-planner">
+    <div class="dev-card" data-id="tour-planner" data-created="2026-09-03">
       <div class="dev-card-head">
         <h3>Home Tour Route Planner</h3>
         <span class="dev-badge">In Progress</span>
@@ -438,7 +462,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="home-value">
+    <div class="dev-card" data-id="home-value" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Home Value Estimate</h3>
         <span class="dev-badge review">Live — Review</span>
@@ -453,7 +477,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="system-status">
+    <div class="dev-card" data-id="system-status" data-created="2026-09-04">
       <div class="dev-card-head">
         <h3>System Status</h3>
         <span class="dev-badge">In Progress</span>
@@ -469,7 +493,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="seasonal-decoration-map">
+    <div class="dev-card" data-id="seasonal-decoration-map" data-created="2026-09-04">
       <div class="dev-card-head">
         <h3>Seasonal Decoration Map</h3>
         <span class="dev-badge">In Progress</span>
@@ -487,7 +511,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="keys-to-negotiating">
+    <div class="dev-card" data-id="keys-to-negotiating" data-created="2026-09-04">
       <div class="dev-card-head">
         <h3>Keys to Negotiating</h3>
         <span class="dev-badge">In Progress</span>
@@ -503,7 +527,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="about-page">
+    <div class="dev-card" data-id="about-page" data-created="2026-09-05">
       <div class="dev-card-head">
         <h3>About / Meet Michael</h3>
         <span class="dev-badge">In Progress</span>
@@ -520,7 +544,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="buyer-seller-services">
+    <div class="dev-card" data-id="buyer-seller-services" data-created="2026-09-05">
       <div class="dev-card-head">
         <h3>Seller Services / Buyer Services</h3>
         <span class="dev-badge">In Progress</span>
@@ -537,7 +561,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="faq-schema">
+    <div class="dev-card" data-id="faq-schema" data-created="2026-09-05">
       <div class="dev-card-head">
         <h3>FAQ Sections + FAQPage Schema</h3>
         <span class="dev-badge">In Progress</span>
@@ -554,7 +578,7 @@
       </div>
     </div>
 
-    <div class="dev-card" data-id="neighborhood-pages">
+    <div class="dev-card" data-id="neighborhood-pages" data-created="2026-09-05">
       <div class="dev-card-head">
         <h3>Neighborhood-Level Pages</h3>
         <span class="dev-badge">In Progress</span>
@@ -643,7 +667,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_15-54-0058</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_16-41-0059</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -654,7 +678,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_15-54-0058';
+  const SITE_VERSION = '26.09.05_16-41-0059';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -741,6 +765,11 @@
     function writeCard(el, d){
       var h3 = el.querySelector('.dev-card-head h3');
       if(h3 && d.title) h3.textContent = d.title;
+      // Setting textContent above wipes the title's link and page icon, so the
+      // card has to be re-decorated once the new content is in place (see the
+      // decorateCard call at the end of this function).
+      if(d.edited) el.setAttribute('data-edited', d.edited);
+      if(d.created) el.setAttribute('data-created', d.created);
       var badge = el.querySelector('.dev-badge');
       if(badge){
         badge.textContent = d.badge || '';
@@ -772,6 +801,7 @@
         if(d.href){ link.setAttribute('href', d.href); link.removeAttribute('style'); link.textContent = 'View page →'; }
         else { link.removeAttribute('href'); link.setAttribute('style','color:var(--gray-muted)'); link.textContent = 'Not built yet'; }
       }
+      if(typeof decorateCard === "function") decorateCard(el);
     }
 
     function buildCard(d){
@@ -812,10 +842,118 @@
       // right corner. Positioned within the HEAD rather than the card so they
       // are always over the black bar — the white-outlined buttons would be
       // invisible if they overhung onto the white card body.
+      // Third tool: roll the body down / up. Cards ship collapsed.
+      var exp = document.createElement('button');
+      exp.type = 'button';
+      exp.className = 'dev-card-expand';
+      exp.title = 'Show details';
+      exp.setAttribute('aria-label', 'Show details for this card');
+      exp.setAttribute('aria-expanded', 'false');
+      exp.textContent = '\u25BE';
+      exp.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+      exp.addEventListener('click', function(e){ e.stopPropagation(); toggleCard(el); });
+
       right.appendChild(grip);
       right.appendChild(btn);
+      right.appendChild(exp);
       head.appendChild(right);
+
+      decorateCard(el);
     }
+
+    // Collapse/expand one card. Kept separate from the button so the whole head
+    // can trigger it too - on a phone the head is a far bigger tap target than
+    // a 24px chevron.
+    function toggleCard(el, force){
+      var open = typeof force === 'boolean' ? force : !el.classList.contains('is-open');
+      el.classList.toggle('is-open', open);
+      var exp = el.querySelector('.dev-card-expand');
+      if(exp){
+        exp.setAttribute('aria-expanded', open ? 'true' : 'false');
+        exp.title = open ? 'Hide details' : 'Show details';
+      }
+    }
+
+    // Turns the title into a link when the card has a real page behind it, and
+    // renders the created/edited dates. Which pages exist is derived from the
+    // card's own "View page" link rather than a second list to keep in sync:
+    // an <a href> in the body means the page is live, a <span> means it is not.
+    function decorateCard(el){
+      var head = el.querySelector('.dev-card-head');
+      var h3 = head && head.querySelector('h3');
+      if(!h3) return;
+
+      var pageLink = el.querySelector('.dev-card-body a.dev-card-link[href]');
+      var href = pageLink ? pageLink.getAttribute('href') : '';
+
+      if(!h3.querySelector('a') && !h3.querySelector('.dev-card-pageicon')){
+        var label = (h3.textContent || '').trim();
+        h3.textContent = '';
+        if(href){
+          var a = document.createElement('a');
+          a.href = href;
+          a.title = 'Open this page';
+          a.appendChild(document.createTextNode(label));
+          var ic = document.createElement('span');
+          ic.className = 'dev-card-pageicon';
+          ic.textContent = '\u2197';           // north-east arrow: page exists
+          ic.setAttribute('aria-hidden', 'true');
+          a.appendChild(ic);
+          a.addEventListener('click', function(e){ e.stopPropagation(); });
+          a.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+          h3.appendChild(a);
+        }else{
+          h3.appendChild(document.createTextNode(label + ' '));
+          var ic2 = document.createElement('span');
+          ic2.className = 'dev-card-pageicon none';
+          ic2.textContent = '\u25CB';          // hollow circle: nothing built yet
+          ic2.title = 'No page built yet';
+          h3.appendChild(ic2);
+        }
+      }
+
+      // Wrap title+badge so the edited date can sit above them without the
+      // absolutely-positioned tool stack overlapping it.
+      if(!head.querySelector('.dev-card-headmain')){
+        var main = document.createElement('div');
+        main.className = 'dev-card-headmain';
+        head.insertBefore(main, h3);
+        main.appendChild(h3);
+        var badge = head.querySelector('.dev-badge');
+        if(badge) main.appendChild(badge);
+      }
+
+      // Edited line lives at the top of the head and is refreshed on every
+      // decorate, so an edit made in this session shows immediately.
+      var mainEl = head.querySelector('.dev-card-headmain');
+      var editedVal = el.getAttribute('data-edited') || '';
+      var edEl = head.querySelector('.dev-card-edited');
+      if(editedVal && mainEl){
+        if(!edEl){
+          edEl = document.createElement('div');
+          edEl.className = 'dev-card-edited';
+          mainEl.insertBefore(edEl, mainEl.firstChild);
+        }
+        edEl.textContent = 'Edited ' + editedVal;
+      } else if(edEl){ edEl.remove(); }
+
+      var created = el.getAttribute('data-created') || '';
+      if(created && !el.querySelector('.dev-card-created')){
+        var cd = document.createElement('div');
+        cd.className = 'dev-card-created';
+        cd.textContent = 'Created ' + created;
+        el.appendChild(cd);
+      }
+
+      var createdEl = el.querySelector('.dev-card-created');
+      if(created && createdEl) createdEl.textContent = 'Created ' + created;
+
+      if(!head.dataset.toggleBound){
+        head.dataset.toggleBound = '1';
+        head.addEventListener('click', function(){ toggleCard(el); });
+      }
+    }
+    window.devDecorateCard = decorateCard;
 
     function applyState(){
       if(!grid) return;
@@ -909,6 +1047,24 @@
     document.getElementById('dev-modal-save').addEventListener('click', function(){
       var d = collect();
       if(!d.title){ setHint('Give the card a title first.', true); fTitle.focus(); return; }
+
+      // Date stamps. "Created" is set once and then carried forward on every
+      // later save (read back off the card, since that is where the seeded
+      // git-history dates live); "edited" is refreshed on each save. Local
+      // date, not UTC, so a late-evening edit does not show tomorrow's date.
+      var _now = new Date();
+      var _today = _now.getFullYear() + '-' +
+                   String(_now.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(_now.getDate()).padStart(2, '0');
+      if(editingId){
+        var _card = cardById(editingId);
+        var _created = _card ? (_card.getAttribute('data-created') || '') : '';
+        if(_created) d.created = _created;
+        d.edited = _today;
+      } else {
+        d.created = _today;
+      }
+
       if(editingId){
         var existing = (state.added||[]).filter(function(c){ return c.id === editingId; })[0];
         if(existing){ Object.keys(d).forEach(function(k){ existing[k] = d[k]; }); }
@@ -999,58 +1155,102 @@
       });
     }
 
+    //    Drag to reorder, on Pointer Events (rewritten 2026-09-05)           
+    // The old implementation used HTML5 drag-and-drop (draggable="true" +
+    // dragstart/dragover/drop), armed by a mousedown on the grip. That never
+    // worked on a phone: touch devices do not fire HTML5 drag events at all,
+    // and mousedown does not fire from a finger either, so the handle was inert
+    // on mobile - which was the one place reordering mattered most, since the
+    // cards were too tall to see more than one at a time.
+    //
+    // Pointer Events cover mouse, touch and stylus with one code path.
+    // .dev-card-drag carries touch-action:none so the browser does not steal
+    // the gesture for scrolling before pointermove fires.
     var dragEl = null;
-    // Pulled out of the forEach below (2026-09-04) and exposed on window so a
-    // card created from the "+ Add Card" editor can be made draggable the
-    // moment it's inserted, instead of only after a reload.
+    var dragPlaceholder = null;
+    var autoScrollTimer = null;
+
+    function cardUnderPoint(x, y){
+      var el = document.elementFromPoint(x, y);
+      while(el && el !== document.body){
+        if(el.classList && el.classList.contains('dev-card')) return el;
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    // Near the top or bottom edge of the viewport, keep scrolling so a card can
+    // be dragged past the edge of a phone screen.
+    function edgeScroll(y){
+      var margin = 90, speed = 0;
+      if(y < margin) speed = -Math.ceil((margin - y) / 6);
+      else if(y > window.innerHeight - margin) speed = Math.ceil((y - (window.innerHeight - margin)) / 6);
+      if(autoScrollTimer){ clearInterval(autoScrollTimer); autoScrollTimer = null; }
+      if(speed !== 0){
+        autoScrollTimer = setInterval(function(){ window.scrollBy(0, speed); }, 16);
+      }
+    }
+
+    function endDrag(){
+      if(autoScrollTimer){ clearInterval(autoScrollTimer); autoScrollTimer = null; }
+      if(dragPlaceholder && dragPlaceholder.parentNode) dragPlaceholder.parentNode.removeChild(dragPlaceholder);
+      dragPlaceholder = null;
+      if(dragEl){
+        dragEl.classList.remove('drag-active');
+        dragEl = null;
+        saveOrder();
+      }
+    }
+
     function bindCardDrag(card){
       if(card.dataset.dragBound === '1') return;
       card.dataset.dragBound = '1';
+      // Belt and braces: make sure no stale native drag behaviour survives.
       card.setAttribute('draggable', 'false');
 
-      // Arm the card only while the handle is held. Disarming on the document
-      // (not the card) matters: releasing the mouse after a drag often happens
-      // over a different card, and a mouseup listener on this card alone would
-      // never fire, leaving it permanently draggable and text unselectable again.
       var grip = card.querySelector('.dev-card-drag');
-      if(grip){
-        grip.addEventListener('mousedown', function(){ card.setAttribute('draggable', 'true'); });
-        document.addEventListener('mouseup', function(){ card.setAttribute('draggable', 'false'); });
-      }
+      if(!grip) return;
 
-      card.addEventListener('dragstart', function(e){
+      grip.addEventListener('pointerdown', function(e){
+        e.preventDefault();
+        e.stopPropagation();
         dragEl = card;
-        card.classList.add('dragging');
-        if(e.dataTransfer){ e.dataTransfer.effectAllowed = 'move'; }
+        card.classList.add('drag-active');
+
+        dragPlaceholder = document.createElement('div');
+        dragPlaceholder.className = 'dev-card dev-card-dropline';
+        dragPlaceholder.style.height = card.offsetHeight + 'px';
+        card.parentNode.insertBefore(dragPlaceholder, card.nextSibling);
+
+        // Capture on the grip so the gesture keeps reporting even when the
+        // finger leaves the handle, which it immediately does.
+        if(grip.setPointerCapture) grip.setPointerCapture(e.pointerId);
       });
-      card.addEventListener('dragend', function(){
-        card.setAttribute('draggable', 'false');
-        card.classList.remove('dragging');
-        Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(function(c){
-          c.classList.remove('drag-over');
-        });
-        saveOrder();
-      });
-      card.addEventListener('dragover', function(e){
+
+      grip.addEventListener('pointermove', function(e){
+        if(!dragEl) return;
         e.preventDefault();
-        if(card !== dragEl) card.classList.add('drag-over');
+        edgeScroll(e.clientY);
+
+        var over = cardUnderPoint(e.clientX, e.clientY);
+        if(!over || over === dragEl || over === dragPlaceholder) return;
+
+        // Insert before or after the hovered card depending on which half of it
+        // the pointer is in, so the drop position matches what you can see.
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        over.parentNode.insertBefore(dragEl, after ? over.nextSibling : over);
+        if(dragPlaceholder) dragPlaceholder.parentNode.removeChild(dragPlaceholder);
+        dragEl.parentNode.insertBefore(dragPlaceholder, dragEl.nextSibling);
       });
-      card.addEventListener('dragleave', function(){
-        card.classList.remove('drag-over');
-      });
-      card.addEventListener('drop', function(e){
-        e.preventDefault();
-        card.classList.remove('drag-over');
-        if(!dragEl || dragEl === card) return;
-        var cards = Array.prototype.slice.call(grid.children);
-        var dragIdx = cards.indexOf(dragEl);
-        var dropIdx = cards.indexOf(card);
-        if(dragIdx < dropIdx){
-          grid.insertBefore(dragEl, card.nextSibling);
-        }else{
-          grid.insertBefore(dragEl, card);
+
+      grip.addEventListener('pointerup', function(e){
+        if(grip.releasePointerCapture && e.pointerId != null){
+          try { grip.releasePointerCapture(e.pointerId); } catch(err){}
         }
+        endDrag();
       });
+      grip.addEventListener('pointercancel', endDrag);
     }
     window.devBindCardDrag = bindCardDrag;
     Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(bindCardDrag);
