@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_23-06-0057                            ║
+  ║  SITE VERSION: 26.09.05_00-00-0060                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-06-0057    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-00-0060    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -78,9 +78,9 @@
     width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
   }
   .tp-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
-  .tp-hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(26px,4.6vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 8px;text-transform:uppercase}
+  .tp-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
   .tp-hero h1 span{color:var(--red)}
-  .tp-hero-sub{font-size:14px;color:rgba(255,255,255,.75);max-width:720px;line-height:1.5}
+  .tp-hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);max-width:720px}
 
   /* ── Breadcrumb ── */
   .breadcrumb{background:var(--black);padding:12px 0}
@@ -161,6 +161,61 @@
   .stop-warn{font-size:.78rem;color:#a06000;font-weight:600}
   .stop-notes{display:none;width:100%;margin-top:8px;resize:vertical;min-height:44px;padding:7px 10px;border:1.5px dashed var(--gray-mid);border-radius:8px;font-size:.85rem;background:#fffef7}
   .stop-notes.open{display:block}
+  /* Showing window — an optional hard appointment on a single stop. Hidden
+     behind its own toggle like private notes, since most stops don't have one,
+     but auto-opens when a stop already carries a window (e.g. loaded tour). */
+  .stop-window{display:none;align-items:center;flex-wrap:wrap;gap:8px;width:100%;margin-top:8px;padding:8px 10px;border:1.5px dashed var(--gray-mid);border-radius:8px;background:#f7fbff}
+  .stop-window.open{display:flex}
+  .stop-window input[type="time"]{padding:5px 8px;border:1.5px solid var(--gray-mid);border-radius:7px;font-size:.85rem;font-family:inherit;background:#fff}
+  /* Caption sits BELOW its input, per Michael's request, rather than a sentence
+     running across the row — two labelled fields read faster than prose here. */
+  .sw-field{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .sw-cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
+  .stop-window-clear{background:none;border:none;color:var(--gray-muted);font-size:1.1rem;line-height:1;cursor:pointer;padding:0 4px;margin-left:auto;align-self:center}
+  .stop-window-clear:hover{color:var(--red)}
+  .stop-window-toggle{background:none;border:none;color:var(--gray-muted);font-size:.78rem;text-decoration:underline;padding:2px 0;cursor:pointer}
+  .stop-window-toggle:hover{color:var(--red)}
+  .stop-row.has-window .stop-window-toggle{color:var(--red);font-weight:600}
+  /* Stops the optimizer could not fit inside their window. */
+  .stop-row.unscheduled{border-color:var(--red);background:#fff6f5}
+  .tp-window-warn{margin-top:10px;padding:10px 12px;border-radius:9px;background:#fff6e6;border:1.5px solid #e0b34d;color:#7a5200;font-size:.85rem;line-height:1.45}
+  .tp-window-warn[hidden]{display:none}
+
+  /* ── Tour Mode ──────────────────────────────────────────────────────────
+     Sized for a phone held one-handed mid-tour: big tap targets, one stop on
+     screen, nothing that needs precision. Fixed inset:0 with its own scroll
+     region so the page behind it can't be reached by accident. */
+  .tm-overlay{position:fixed;inset:0;z-index:10000;background:var(--white);display:flex;flex-direction:column}
+  .tm-overlay[hidden]{display:none}
+  .tm-bar{flex:0 0 auto;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+  .tm-progress{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase}
+  .tm-save-note{font-size:.78rem;color:rgba(255,255,255,.6);margin-left:auto;margin-right:10px;white-space:nowrap}
+  .tm-exit{background:none;border:1.5px solid rgba(255,255,255,.4);color:var(--white);border-radius:999px;padding:6px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+  .tm-exit:hover{border-color:var(--white)}
+  .tm-body{flex:1 1 auto;overflow-y:auto;padding:20px 16px 16px;display:flex;flex-direction:column;gap:14px}
+  .tm-stopline{display:flex;gap:12px;align-items:flex-start}
+  .tm-pin{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.25rem}
+  .tm-addr-wrap{flex:1 1 auto;min-width:0}
+  .tm-addr{display:block;font-size:1.45rem;font-weight:700;line-height:1.2;color:var(--black);text-decoration:none;border-bottom:2px solid var(--red)}
+  .tm-eta{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-top:4px}
+  .tm-blurb{font-size:1.05rem;color:var(--gray-text);margin:0}
+  .tm-private{background:#fffef7;border:1.5px dashed var(--gray-mid);border-radius:9px;padding:10px 12px;font-size:.95rem;color:#7a5200}
+  .tm-private[hidden]{display:none}
+  .tm-nav-btn{width:100%;text-align:center;padding:14px;font-size:1.05rem}
+  .tm-rate{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--gray-mid);padding-top:14px}
+  .tm-rate-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.1em;text-transform:uppercase}
+  .tm-dots{display:flex;gap:8px;margin-left:auto}
+  .tm-dots button{width:46px;height:46px;border-radius:50%;border:2px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;cursor:pointer}
+  .tm-dots button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+  .tm-note-lbl{font-size:.8rem;color:var(--gray-muted)}
+  .tm-note{width:100%;padding:10px 12px;border:1.5px solid var(--gray-mid);border-radius:9px;font-family:inherit;font-size:1rem;resize:vertical;background:#fffef7}
+  .tm-note:focus{outline:none;border-color:var(--red)}
+  .tm-next{border-top:1px solid var(--gray-mid);padding-top:12px;display:flex;gap:10px;align-items:baseline}
+  .tm-next[hidden]{display:none}
+  .tm-next-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
+  .tm-next-addr{font-size:.98rem;color:var(--gray-text)}
+  .tm-foot{flex:0 0 auto;display:flex;gap:10px;padding:12px 16px;border-top:1.5px solid var(--gray-mid);background:var(--gray-light)}
+  .tm-foot .tp-btn{flex:1 1 0;padding:14px;font-size:1rem}
 
   .addr-ac-wrap{position:relative}
   .addr-ac-list{position:absolute;top:100%;left:0;right:0;z-index:10001;margin:4px 0 0;padding:6px;list-style:none;background:#fff;border:1.5px solid var(--gray-mid);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.15);max-height:220px;overflow-y:auto;font-family:'Barlow',sans-serif}
@@ -211,7 +266,7 @@
   /* 50% larger than the standard field label (.78rem → 1.17rem), for the
      "Select First Stop" control specifically — it's a routing decision rather
      than another form field, so it reads as a heading for its own row. */
-  .tp-field label.tp-label-lg{font-size:1.17rem}
+  .tp-field label.tp-label-lg{font-size:1.053rem}
   .tp-field input,.tp-field select{padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.9rem}
   .tp-field-row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
   .tp-field-row .tp-field{flex:1 1 100px;margin-bottom:12px;min-width:0}
@@ -693,6 +748,11 @@
             <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="mapCtaBtn">Calculate Route</button>
           </div>
         </div>
+
+        <div class="tp-actions-row" style="margin:12px 0 14px">
+          <button type="button" class="tp-btn tp-btn-outline" id="startTourBtn" style="width:100%">▶ Start Tour Mode</button>
+        </div>
+
         <div class="tp-summary-grid">
           <div class="tp-summary-stat">
             <div class="val" id="totalDistanceVal">—</div>
@@ -773,6 +833,7 @@
           </div>
         </div>
 
+        <p class="tp-window-warn" id="windowWarn" hidden></p>
         <p class="tp-source-note" id="routeSourceNote">Add stops and click Recalculate Route to see distance, drive time, and the map.</p>
       </div>
 
@@ -850,6 +911,52 @@
   <div class="pi-map-brand" id="piMapBrand" aria-hidden="true"></div>
 </div>
 
+<!-- TOUR MODE — full-screen overlay, one stop at a time.
+     Deliberately a mode inside this page rather than a separate page: the tour
+     is already loaded here, and on a phone you get to it by loading a saved
+     tour (those sync via KV) and tapping Start Tour Mode. A separate page
+     would have needed the whole tour passed to it again. -->
+<div class="tm-overlay" id="tourMode" hidden>
+  <div class="tm-bar">
+    <span class="tm-progress" id="tmProgress">Stop 1 of 5</span>
+    <span class="tm-save-note" id="tmSaveNote"></span>
+    <button type="button" class="tm-exit" id="tmExit" aria-label="Leave tour mode">Done</button>
+  </div>
+
+  <div class="tm-body">
+    <div class="tm-stopline">
+      <span class="tm-pin" id="tmPin">1</span>
+      <div class="tm-addr-wrap">
+        <a class="tm-addr" id="tmAddr" href="#" target="_blank" rel="noopener">—</a>
+        <div class="tm-eta" id="tmEta"></div>
+      </div>
+    </div>
+
+    <p class="tm-blurb" id="tmBlurb"></p>
+    <div class="tm-private" id="tmPrivate" hidden></div>
+
+    <a class="tp-btn tp-btn-red tm-nav-btn" id="tmDirections" target="_blank" rel="noopener">Directions to this stop</a>
+
+    <div class="tm-rate">
+      <span class="tm-rate-lbl">Rate this home</span>
+      <div class="tm-dots" id="tmDots"></div>
+    </div>
+
+    <label class="tm-note-lbl" for="tmNote">Agent Only Notes — never sent to clients</label>
+    <textarea id="tmNote" class="tm-note" rows="4" placeholder="Buyer liked the kitchen, worried about the road noise…"></textarea>
+
+    <div class="tm-next" id="tmNextWrap">
+      <span class="tm-next-lbl">Next</span>
+      <span class="tm-next-addr" id="tmNextAddr"></span>
+    </div>
+  </div>
+
+  <div class="tm-foot">
+    <button type="button" class="tp-btn tp-btn-outline" id="tmPrev">← Back</button>
+    <button type="button" class="tp-btn tp-btn-red" id="tmNext">Next stop →</button>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="ft-in">
@@ -867,7 +974,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_23-06-0057</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_00-00-0060</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -880,7 +987,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04_23-06-0057';
+const SITE_VERSION = '26.09.05_00-00-0060';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -893,6 +1000,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   var DEBOUNCE_MS = 300;
   var MIN_CHARS = 3;
   var SAVED_KEY = '804m_tour_saved_lists';
+  // Crash-safe autosave of the tour currently on screen (added 2026-09-05).
+  // Separate from SAVED_KEY, which only ever holds tours explicitly named and
+  // saved. This one is written continuously and restored on next load, so a
+  // dead battery mid-tour costs nothing.
+  var DRAFT_KEY = '804m_tour_working_draft';
 
   // Nominatim's usage policy caps requests around ~1/sec. Live-typing
   // autocomplete and the bulk "paste a list" lookup used to each fire their
@@ -998,7 +1110,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // ── Stop model helpers ─────────────────────────────────────────────────
   function newStop(){
     uid++;
-    return { id:'s'+uid+'-'+Date.now(), address:'', lat:null, lng:null, blurb:'', notes:'', budget: Number(document.getElementById('defaultBudgetInput').value)||20 };
+    return { id:'s'+uid+'-'+Date.now(), address:'', lat:null, lng:null, blurb:'', notes:'', budget: Number(document.getElementById('defaultBudgetInput').value)||20, windowStart:'', windowEnd:'', rating:0 };
   }
 
   function stopRowHtml(s){
@@ -1015,10 +1127,16 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
           '<div class="stop-budget-wrap"><input type="number" class="stop-budget" min="0" max="180" value="' + s.budget + '"> min</div>' +
         '</div>' +
         '<div class="stop-row-bottom">' +
-          '<button type="button" class="stop-notes-toggle">+ Private notes (never sent to clients)</button>' +
+          '<button type="button" class="stop-notes-toggle">+ Agent Only Notes</button>' +
+          '<button type="button" class="stop-window-toggle">+ Showing window</button>' +
           '<span class="stop-eta"></span>' +
         '</div>' +
-        '<textarea class="stop-notes" placeholder="Private notes for you only — lockbox code, seller instructions, etc.">' + escapeHtml(s.notes) + '</textarea>' +
+        '<div class="stop-window' + (s.windowStart || s.windowEnd ? ' open' : '') + '">' +
+          '<div class="sw-field"><input type="time" class="stop-window-start" value="' + escapeAttr(s.windowStart || '') + '"><span class="sw-cap">Start</span></div>' +
+          '<div class="sw-field"><input type="time" class="stop-window-end" value="' + escapeAttr(s.windowEnd || '') + '"><span class="sw-cap">End</span></div>' +
+          '<button type="button" class="stop-window-clear" title="Clear this window">&times;</button>' +
+        '</div>' +
+        '<textarea class="stop-notes" placeholder="Agent only — lockbox code, seller instructions, etc. Never sent to clients.">' + escapeHtml(s.notes) + '</textarea>' +
       '</div>'
     );
   }
@@ -1209,6 +1327,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var budgetEl = row.querySelector('.stop-budget');
     var notesEl = row.querySelector('.stop-notes');
     var notesToggle = row.querySelector('.stop-notes-toggle');
+    var windowBox = row.querySelector('.stop-window');
+    var windowToggle = row.querySelector('.stop-window-toggle');
+    var winStartEl = row.querySelector('.stop-window-start');
+    var winEndEl = row.querySelector('.stop-window-end');
+    var winClearBtn = row.querySelector('.stop-window-clear');
     var removeBtn = row.querySelector('.stop-remove');
 
     attachAutocomplete(addressEl, function(item){
@@ -1228,8 +1351,43 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     notesEl.addEventListener('input', function(){ s.notes = notesEl.value; });
     notesToggle.addEventListener('click', function(){
       notesEl.classList.toggle('open');
-      notesToggle.textContent = notesEl.classList.contains('open') ? '– Private notes (never sent to clients)' : '+ Private notes (never sent to clients)';
+      notesToggle.textContent = notesEl.classList.contains('open') ? '– Agent Only Notes' : '+ Agent Only Notes';
     });
+    // Showing window. Stored on the stop as the raw "HH:MM" strings the two
+    // inputs hold; conversion to seconds-since-midnight happens once, at the
+    // point the route request is built, so nothing has to be kept in sync.
+    function syncWindowState(){
+      var has = !!(s.windowStart && s.windowEnd);
+      row.classList.toggle('has-window', has);
+      windowToggle.textContent = has
+        ? '– Showing window ' + s.windowStart + '–' + s.windowEnd
+        : (windowBox.classList.contains('open') ? '– Showing window' : '+ Showing window');
+      // A half-filled window can't constrain anything, so say so rather than
+      // quietly ignoring it at calculate time.
+      var half = (!!s.windowStart) !== (!!s.windowEnd);
+      windowBox.classList.toggle('half-set', half);
+    }
+    windowToggle.addEventListener('click', function(){
+      windowBox.classList.toggle('open');
+      if(windowBox.classList.contains('open')) winStartEl.focus();
+      syncWindowState();
+    });
+    function onWindowChange(){
+      s.windowStart = winStartEl.value || '';
+      s.windowEnd = winEndEl.value || '';
+      syncWindowState();
+      resetShareAndSummary();
+    }
+    winStartEl.addEventListener('change', onWindowChange);
+    winEndEl.addEventListener('change', onWindowChange);
+    winClearBtn.addEventListener('click', function(){
+      winStartEl.value = ''; winEndEl.value = '';
+      onWindowChange();
+      windowBox.classList.remove('open');
+      syncWindowState();
+    });
+    syncWindowState();
+
     removeBtn.addEventListener('click', function(){ removeStopRow(s.id); });
 
     // Drag reorder
@@ -1465,6 +1623,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     if(!confirm('Clear all stops and start over?')) return;
     stopList.innerHTML=''; stops=[];
     addStopRow(); addStopRow();
+    // Also drop the crash-recovery draft, or the next load would helpfully
+    // restore exactly the tour that was just deliberately cleared.
+    try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+    document.getElementById('saveTourNameInput').value = '';
+    resetShareAndSummary();
   });
 
   // ── Calendar buttons: flash a warning if clicked while still disabled ──
@@ -1771,7 +1934,17 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       body: JSON.stringify({
         mode: mode,
         startStopId: document.getElementById('startPinSelect').value || null,
-        stops: usable.map(function(s){ return {id:s.id, lat:s.lat, lng:s.lng}; })
+        dayStartSec: hhmmToSeconds(document.getElementById('startTimeInput').value),
+        stops: usable.map(function(s){
+          return {
+            id: s.id, lat: s.lat, lng: s.lng,
+            budgetMinutes: Number(s.budget) || null,
+            // Only send a window when BOTH ends are set — one end alone can't
+            // constrain anything, and VROOM would reject a malformed pair.
+            windowStart: (s.windowStart && s.windowEnd) ? hhmmToSeconds(s.windowStart) : null,
+            windowEnd: (s.windowStart && s.windowEnd) ? hhmmToSeconds(s.windowEnd) : null
+          };
+        })
       })
     }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('http_'+r.status)); })
       .then(function(data){ applyRouteResult(data); })
@@ -1780,6 +1953,30 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         applyRouteResult(computeLocalFallback());
       })
       .finally(function(){ btn.disabled=false; btn.textContent='Recalculate Route'; });
+  }
+
+  // ── NOT BUILT: traffic buffer / trip-length warning ────────────────────
+  // Michael's call (2026-09-05): skip for now. ORS returns free-flow driving
+  // times, so a late-afternoon tour will run longer than the estimate — but
+  // Richmond traffic rarely moves the number enough to matter, and he'd rather
+  // not carry a setting that's noise here. Two shapes were discussed if this
+  // ever comes back, most likely if the tool goes to agents in busier markets:
+  //   (a) a global "+X% buffer" applied to every leg's duration, and
+  //   (b) a warning when total trip time exceeds a window the agent sets —
+  //       he noted this only makes sense once a tour date AND start time are
+  //       entered, which the Calendar section already collects.
+  // (b) is the cheaper and more useful half and needs no new data source.
+  // Deliberately left as a note rather than a disabled control: a greyed-out
+  // setting in the UI is clutter that has to be explained to every user.
+
+  // "HH:MM" -> seconds since midnight. Returns null for anything unparseable
+  // so a blank field never becomes a spurious 00:00 constraint.
+  function hhmmToSeconds(v){
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(v || '').trim());
+    if(!m) return null;
+    var h = Number(m[1]), min = Number(m[2]);
+    if(h > 23 || min > 59) return null;
+    return h * 3600 + min * 60;
   }
 
   function computeLocalFallback(){
@@ -1803,6 +2000,28 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     });
     syncStopsOrderFromDom();
     renumberRows();
+
+    // Stops the optimizer could not fit inside their showing window. They stay
+    // in the route (dropping an appointment silently would be far worse) but
+    // are flagged both on the row and in a banner, because an order that
+    // quietly misses a confirmed showing is the one failure that actually
+    // costs Michael something.
+    stopList.querySelectorAll('.stop-row').forEach(function(r){ r.classList.remove('unscheduled'); });
+    var unfit = Array.isArray(data.unscheduled) ? data.unscheduled : [];
+    var warnEl = document.getElementById('windowWarn');
+    if(unfit.length){
+      var names = unfit.map(function(id){
+        var row = stopList.querySelector('.stop-row[data-id="'+id+'"]');
+        if(row) row.classList.add('unscheduled');
+        var st = findStop(id);
+        return st && st.address ? st.address.split(',')[0] : 'a stop';
+      });
+      warnEl.textContent = (unfit.length === 1 ? 'One showing does not fit its window: ' : unfit.length + ' showings do not fit their windows: ')
+        + names.join(', ') + '. They are still in the route, at the end. Widen the window, shorten the time per stop, or drop a stop.';
+      warnEl.hidden = false;
+    } else {
+      warnEl.hidden = true;
+    }
 
     var geometry = (data.geometry && data.geometry.length) ? data.geometry : null;
     drawRoute(orderedStops, geometry);
@@ -2124,6 +2343,17 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     slot.appendChild(clone);
   })();
 
+  // A rating captured in Tour Mode prints as a filled mark on the agent copy
+  // so the sheet matches what was actually recorded; an unrated stop still
+  // prints the blank 1–5 scale to write on. The client copy never shows a
+  // rating either way — .pi-rating is only meaningful to Michael.
+  function ratingMarkup(rating){
+    var r = Number(rating) || 0;
+    return 'Rating: ' + [1,2,3,4,5].map(function(v){
+      return (r === v ? '●&nbsp;<b>' + v + '</b>' : '○&nbsp;' + v);
+    }).join(' &nbsp;');
+  }
+
   function buildPrintable(orderedStops, startVal, data){
     // QR code on the itinerary page (page 1) was dropped this round — it ate
     // into the handwritten-notes space per stop, and the map page (page 2)
@@ -2168,7 +2398,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       return '<div class="pi-stop"><div class="pi-num" style="background:' + color + '">' + (i+1) + '</div>' +
         '<div class="pi-stop-body">' +
         '<div class="pi-addr">' + escapeHtml(addrParts.line1) + '</div>' +
-        '<div class="pi-rating">Rating: ○ 1 &nbsp;○ 2 &nbsp;○ 3 &nbsp;○ 4 &nbsp;○ 5</div>' +
+        '<div class="pi-rating">' + ratingMarkup(s.rating) + '</div>' +
         '<div class="pi-eta-row"><span class="pi-eta">' + escapeHtml(etaEls[i]||'') + '</span></div>' +
         (s.blurb ? '<div class="pi-blurb">'+escapeHtml(s.blurb)+'</div>' : '') +
         (s.notes ? '<div class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</div>' : '') +
@@ -2285,7 +2515,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     if(!name){ alert('Give this tour a name first.'); return; }
     if(!stops.length){ alert('Add at least one stop first.'); return; }
     if(toursCache[name] && !confirm('A tour named "'+name+'" already exists — overwrite it?')) return;
-    var tourStops = stops.map(function(s){ return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes, budget:s.budget}; });
+    var tourStops = stops.map(function(s){ return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes, budget:s.budget, windowStart:s.windowStart, windowEnd:s.windowEnd, rating:s.rating}; });
 
     function afterSave(){
       document.getElementById('saveTourNameInput').value='';
@@ -2379,6 +2609,222 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     }
   });
 
+  // ── Crash-safe autosave ────────────────────────────────────────────────
+  // Before this, ratings and notes taken during a tour lived only in memory:
+  // a dead phone or a crashed browser lost everything since the last manual
+  // Save Tour. Two layers now:
+  //   1. A working draft written to localStorage on every change (instant, no
+  //      network, survives a crash or a battery death on the same device).
+  //   2. When the tour has a name, a debounced push to the server store, so
+  //      the tour also survives losing the device itself.
+  // Entering Tour Mode auto-names an unnamed tour so layer 2 always has a
+  // home — an unnamed tour is exactly the one that would otherwise be lost.
+  var draftSaveTimer = null, serverSaveTimer = null;
+  var autoSaveNote = null; // set once the tour-mode bar exists
+
+  function currentDraft(){
+    syncStopsOrderFromDom();
+    return {
+      savedAt: Date.now(),
+      name: (document.getElementById('saveTourNameInput') || {}).value || '',
+      stops: stops.map(function(s){
+        return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes,
+                budget:s.budget, windowStart:s.windowStart, windowEnd:s.windowEnd, rating:s.rating};
+      })
+    };
+  }
+
+  function saveWorkingDraft(){
+    try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(currentDraft())); }catch(e){}
+  }
+
+  function setAutoSaveNote(text){
+    if(!autoSaveNote) autoSaveNote = document.getElementById('tmSaveNote');
+    if(autoSaveNote) autoSaveNote.textContent = text || '';
+  }
+
+  // Called on every rating/note change. The local write is immediate; the
+  // server write is debounced so typing a note isn't one request per keystroke.
+  function autoSave(){
+    saveWorkingDraft();
+    setAutoSaveNote('Saved on this phone');
+    clearTimeout(serverSaveTimer);
+    serverSaveTimer = setTimeout(function(){
+      var name = (document.getElementById('saveTourNameInput') || {}).value || '';
+      if(!name.trim() || storageMode !== 'kv') return;
+      var payload = currentDraft().stops;
+      toursApi('POST', {name:name.trim(), stops:payload}).then(function(data){
+        toursCache = (data && data.tours) || toursCache;
+        setAutoSaveNote('Saved to your account');
+      }).catch(function(){ setAutoSaveNote('Saved on this phone only'); });
+    }, 1500);
+  }
+
+  // Any edit in the planner itself also refreshes the draft, debounced —
+  // cheap insurance, and it means a crash before a tour even starts is safe.
+  function queueDraftSave(){
+    clearTimeout(draftSaveTimer);
+    draftSaveTimer = setTimeout(saveWorkingDraft, 800);
+  }
+  stopList.addEventListener('input', queueDraftSave);
+  stopList.addEventListener('change', queueDraftSave);
+
+  // Restore on load. Skipped when a #tour= link supplied its own tour (that
+  // link is an explicit instruction and should win) or when the draft has no
+  // real stops in it. Clear All wipes the draft, so a deliberate fresh start
+  // stays fresh.
+  (function restoreWorkingDraft(){
+    if(/[#&]tour=/.test(location.hash || '')) return;
+    var d = null;
+    try{ d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }catch(e){}
+    if(!d || !Array.isArray(d.stops)) return;
+    var real = d.stops.filter(function(x){ return x.address; });
+    if(!real.length) return;
+    stopList.innerHTML = ''; stops = [];
+    d.stops.forEach(function(item){ addStopRow(item); });
+    if(d.name){
+      var nameEl = document.getElementById('saveTourNameInput');
+      if(nameEl) nameEl.value = d.name;
+    }
+    resetShareAndSummary();
+    var note = document.getElementById('routeSourceNote');
+    if(note) note.textContent = 'Picked up the tour you had open (' + real.length +
+      ' stop' + (real.length === 1 ? '' : 's') + '). Clear All starts fresh.';
+  })();
+
+  // ── Tour Mode ──────────────────────────────────────────────────────────
+  // The in-tour view: one stop at a time, big targets, rating and private
+  // notes captured as you go. Reads and writes the SAME stop objects the
+  // planner uses, so a rating or note taken here shows up in the printed agent
+  // copy, the saved tour, the file and the share link without any extra
+  // plumbing — and Save Tour after a tour keeps the record.
+  //
+  // Ratings are agent-side only. They are never included in anything
+  // client-facing (the Maps links, the SMS, the client link list, the client
+  // print) for the same reason private notes aren't.
+  var tmIndex = 0;
+  var tourModeEl = document.getElementById('tourMode');
+
+  function tmStops(){
+    // Read from the DOM order so Tour Mode always follows whatever order is
+    // currently on screen, optimized or hand-dragged.
+    syncStopsOrderFromDom();
+    return stops.filter(function(s){ return s.address && s.lat != null; });
+  }
+
+  function tmRender(){
+    var list = tmStops();
+    if(!list.length) return;
+    if(tmIndex < 0) tmIndex = 0;
+    if(tmIndex > list.length - 1) tmIndex = list.length - 1;
+    var s = list[tmIndex];
+    var next = list[tmIndex + 1];
+
+    document.getElementById('tmProgress').textContent = 'Stop ' + (tmIndex + 1) + ' of ' + list.length;
+    var pin = document.getElementById('tmPin');
+    pin.textContent = tmIndex + 1;
+    pin.style.background = stopMarkerColor(tmIndex, list.length);
+
+    var addrEl = document.getElementById('tmAddr');
+    addrEl.textContent = s.address;
+    var mapsHref = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.address);
+    addrEl.href = mapsHref;
+    document.getElementById('tmDirections').href = mapsHref;
+
+    var row = stopList.querySelector('.stop-row[data-id="' + s.id + '"]');
+    var etaEl = row ? row.querySelector('.stop-eta') : null;
+    var etaBits = [];
+    if(etaEl && etaEl.textContent.trim()) etaBits.push(etaEl.textContent.trim());
+    if(s.windowStart && s.windowEnd) etaBits.push('window ' + s.windowStart + '–' + s.windowEnd);
+    if(s.budget) etaBits.push(s.budget + ' min here');
+    document.getElementById('tmEta').textContent = etaBits.join(' · ');
+
+    document.getElementById('tmBlurb').textContent = s.blurb || '';
+    var priv = document.getElementById('tmPrivate');
+    priv.textContent = s.notes ? '🔒 ' + s.notes : '';
+    priv.hidden = !s.notes;
+
+    document.getElementById('tmDots').innerHTML = [1,2,3,4,5].map(function(v){
+      return '<button type="button" data-val="' + v + '" aria-pressed="' +
+             (Number(s.rating) === v ? 'true' : 'false') + '" aria-label="Rate ' + v + ' out of 5">' + v + '</button>';
+    }).join('');
+
+    document.getElementById('tmNote').value = s.notes || '';
+
+    var nextWrap = document.getElementById('tmNextWrap');
+    if(next){
+      document.getElementById('tmNextAddr').textContent = next.address;
+      nextWrap.hidden = false;
+    } else { nextWrap.hidden = true; }
+
+    document.getElementById('tmPrev').disabled = tmIndex === 0;
+    document.getElementById('tmNext').textContent = next ? 'Next stop →' : 'Finish tour';
+  }
+
+  function tmCurrent(){ var l = tmStops(); return l[tmIndex] || null; }
+
+  document.getElementById('startTourBtn').addEventListener('click', function(){
+    var list = tmStops();
+    if(!list.length){ alert('Add at least one stop with a matched address first.'); return; }
+    // An unnamed tour can't be pushed to the server store, and that's exactly
+    // the tour worth protecting once a phone is about to be carried around for
+    // three hours — so name it automatically rather than prompting mid-tour.
+    // Rename is available afterwards if the generated name isn't wanted.
+    var nameEl = document.getElementById('saveTourNameInput');
+    if(nameEl && !nameEl.value.trim()){
+      var d = new Date();
+      nameEl.value = 'Tour ' + d.toLocaleDateString(undefined, {month:'short', day:'numeric'}) +
+                     ' ' + d.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+    }
+    tmIndex = 0;
+    tourModeEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    tmRender();
+    autoSave();
+  });
+
+  function tmExit(){
+    tourModeEl.hidden = true;
+    document.body.style.overflow = '';
+    // Push whatever was captured back into the visible rows, so the planner
+    // and the printed agent copy reflect the tour without a reload.
+    tmStops().forEach(function(s){
+      var row = stopList.querySelector('.stop-row[data-id="' + s.id + '"]');
+      if(!row) return;
+      var n = row.querySelector('.stop-notes');
+      if(n && n.value !== (s.notes || '')) n.value = s.notes || '';
+    });
+  }
+  document.getElementById('tmExit').addEventListener('click', tmExit);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !tourModeEl.hidden) tmExit();
+  });
+
+  document.getElementById('tmDots').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-val]');
+    if(!btn) return;
+    var s = tmCurrent();
+    if(!s) return;
+    var v = Number(btn.dataset.val);
+    s.rating = (s.rating === v) ? 0 : v; // tapping the same number clears it
+    tmRender();
+    autoSave();
+  });
+
+  document.getElementById('tmNote').addEventListener('input', function(){
+    var s = tmCurrent();
+    if(!s) return;
+    s.notes = this.value;
+    autoSave();
+  });
+
+  document.getElementById('tmPrev').addEventListener('click', function(){ tmIndex--; tmRender(); });
+  document.getElementById('tmNext').addEventListener('click', function(){
+    var list = tmStops();
+    if(tmIndex >= list.length - 1) tmExit();
+    else { tmIndex++; tmRender(); document.querySelector('.tm-body').scrollTop = 0; }
+  });
+
   // ── Portable tour store: a file, or a self-contained link ──────────────
   // Added 2026-09-04 as future-proofing for handing this tool to other agents.
   // Both paths are deliberately server-free: the file is generated in the
@@ -2403,7 +2849,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   function serializeTour(){
     syncStopsOrderFromDom();
     return [TOUR_FILE_V, currentTourName(), stops.map(function(s){
-      return [s.address||'', round5(s.lat), round5(s.lng), s.blurb||'', s.notes||'', s.budget==null?'':s.budget];
+      return [s.address||'', round5(s.lat), round5(s.lng), s.blurb||'', s.notes||'', s.budget==null?'':s.budget, s.windowStart||'', s.windowEnd||''];
     })];
   }
   function deserializeTour(payload){
@@ -2414,7 +2860,10 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       name: payload[1] || '',
       stops: rows.slice(0, MAX_STOPS).map(function(r){
         return { address: r[0]||'', lat: (r[1]==null?null:Number(r[1])), lng: (r[2]==null?null:Number(r[2])),
-                 blurb: r[3]||'', notes: r[4]||'', budget: (r[5]===''||r[5]==null)?null:Number(r[5]) };
+                 blurb: r[3]||'', notes: r[4]||'', budget: (r[5]===''||r[5]==null)?null:Number(r[5]),
+                 // Fields 6/7 added 2026-09-05; a v1 payload written before then
+                 // simply has no entries here and gets empty windows.
+                 windowStart: r[6]||'', windowEnd: r[7]||'' };
       })
     };
   }
