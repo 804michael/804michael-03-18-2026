@@ -1,0 +1,10 @@
+# Staging area for drafts and work-in-progress copies of pages.
+# Deliberately untracked: Cloudflare Pages serves whatever is committed, so a
+# stale draft in here would otherwise be published to 804re.com at a second URL
+# alongside the real page. Anything worth keeping belongs in docs/ or at the
+# repo root, not here.
+Claude outputs/
+
+# Windows / OneDrive noise
+Thumbs.db
+desktop.ini
