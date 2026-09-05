@@ -7,11 +7,16 @@ Michael Hottman has been licensed in real estate since age 19, grew up in the fa
 ## Core pages
 
 - [Home](https://804re.com/): Michael Hottman, broker with Malcolm Real Estate, serving Ashland, Hanover County, Henrico County, the City of Richmond, Chesterfield, Powhatan, Goochland, and Caroline counties. Seller-focused representation with a track record protecting first-time and repeat buyers.
-- [Ashland VA Real Estate](https://804re.com/ashland.html): Homes for sale in Ashland VA, free home valuation, school zone info, and hyper-local market insights for the Center of the Universe.
-- [Hanover County VA Real Estate](https://804re.com/hanover.html): Homes for sale across Hanover County VA, covering neighborhoods from Ashland to Mechanicsville, plus award-winning school district guidance.
-- [Glen Allen VA Real Estate](https://804re.com/glen-allen.html): Homes for sale in Glen Allen VA, including Short Pump, West Broad Village, and top-rated Henrico County schools.
-- [Mechanicsville VA Real Estate](https://804re.com/mechanicsville.html): Homes for sale in Mechanicsville VA, an established, high-value Hanover County community with easy interstate access.
-- [Draw Your Search Area](https://804re.com/map-search.html): Interactive map tool for buyers to draw their ideal search area across Ashland, Hanover County, or Glen Allen and send it directly to Michael.
+- [Ashland VA Real Estate](https://804re.com/ashland): Homes for sale in Ashland VA, free home valuation, school zone info, and hyper-local market insights for the Center of the Universe.
+- [Hanover County VA Real Estate](https://804re.com/hanover): Homes for sale across Hanover County VA, covering neighborhoods from Ashland to Mechanicsville, plus award-winning school district guidance.
+- [Glen Allen VA Real Estate](https://804re.com/glen-allen): Homes for sale in Glen Allen VA, including Short Pump, West Broad Village, and top-rated Henrico County schools.
+- [Mechanicsville VA Real Estate](https://804re.com/mechanicsville): Homes for sale in Mechanicsville VA, an established, high-value Hanover County community with easy interstate access.
+- [Draw Your Search Area](https://804re.com/map-search): Interactive map tool for buyers to draw their ideal search area across Ashland, Hanover County, or Glen Allen and send it directly to Michael.
+- [Determine Your Budget](https://804re.com/determine-your-budget): What you can actually afford in Central Virginia, using live weekly mortgage rates, with a county lookup for local tax and insurance figures.
+- [Cash to Buy a Home](https://804re.com/cash-to-buy-a-home): The real up-front cost of buying beyond the purchase price - earnest money, inspections, appraisal, closing costs and prepaids, in plain language.
+- [Seller Net Sheet](https://804re.com/seller-net-sheet): Estimate what a seller actually walks away with at closing after commission, taxes, payoff and concessions.
+- [Home Value Estimate](https://804re.com/home-value-estimate): Free, no-signup home valuation request for Ashland, Hanover County, Glen Allen and Mechanicsville.
+- [Hanover Farmstand Trail](https://804re.com/farmstand): A community map of farm stands, produce stands and roadside markets across Hanover County and Ashland VA.
 
 <!--
 STAGED — add each line below to the list above only once the page is live.
