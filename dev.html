@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_17-53-0061                            ║
+  ║  SITE VERSION: 26.09.05_20-08-0062                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_17-53-0061    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_20-08-0062    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -133,12 +133,16 @@
        black head and over the white body, and short-titled cards sat visibly
        shorter than their neighbours. Every collapsed head is now the same
        three-line block. */
-    .dev-card-head{background:var(--card-bg,var(--black));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;min-height:96px;cursor:pointer}
+    .dev-card-head{background:var(--card-bg,var(--black));padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;padding-right:48px;height:104px;cursor:pointer}
     /* Initial caps and a lighter weight (was 800 + uppercase). Uppercase made
        every title the same visual shout, which is the opposite of what a
        scannable stack of collapsed cards needs. */
-    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:.01em;text-transform:none;color:var(--card-fg,var(--white))}
-    .dev-card-head h3 a{color:var(--card-fg,var(--white));display:inline-flex;align-items:center;gap:7px}
+    /* Clamped to two lines (2026-09-05). A three-line title stretched its card's
+       coloured head taller than its neighbours', which is what made the grid
+       look ragged. Two lines is the ceiling; anything longer ellipsises, and the
+       full text is still available via the title attribute. */
+    .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.5rem;line-height:1.15;letter-spacing:.01em;text-transform:none;color:var(--card-fg,var(--white));display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .dev-card-head h3 a{color:var(--card-fg,var(--white));display:inline}
     .dev-card-head h3 a:hover{color:var(--card-hover,var(--red))}
     /* Icon says at a glance whether there is a page behind this card. */
     .dev-card-pageicon{font-size:.78rem;opacity:.75;flex:0 0 auto}
@@ -251,8 +255,15 @@
     .dev-card.is-open .dev-card-expand{transform:rotate(180deg)}
     /* Edited date rides at the top of the head, created at the foot of the
        card, so the two never read as one blob of small grey text. */
-    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--card-fg-mid,rgba(255,255,255,.45));margin-bottom:3px}
-    .dev-card-created{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:0 20px 12px}
+    /* Edited now sits in the light strip under the coloured head - the spot
+       Created used to occupy - because it is the date that actually changes and
+       is worth seeing at a glance on a collapsed card. The strip keeps a fixed
+       height whether or not a card has ever been edited, so collapsed cards all
+       stay the same overall height. */
+    .dev-card-edited{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);padding:10px 20px 12px;min-height:34px}
+    /* Created is reference detail, not a headline, so it is nested inside the
+       body and only appears once the card is rolled down. */
+    .dev-card-created{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin-top:14px;padding-top:10px;border-top:1px solid var(--gray-mid)}
     .dev-card-headmain{display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex:1 1 auto;min-width:0}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
@@ -703,7 +714,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_17-53-0061</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_20-08-0062</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -714,7 +725,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_17-53-0061';
+  const SITE_VERSION = '26.09.05_20-08-0062';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -994,6 +1005,7 @@
 
       if(!h3.querySelector('a') && !h3.querySelector('.dev-card-pageicon')){
         var label = (h3.textContent || '').trim();
+        h3.setAttribute('title', label);   // full text, since 2 lines may clip
         h3.textContent = '';
         if(href){
           var a = document.createElement('a');
@@ -1029,26 +1041,26 @@
         if(badge) main.appendChild(badge);
       }
 
-      // Edited line lives at the top of the head and is refreshed on every
-      // decorate, so an edit made in this session shows immediately.
-      var mainEl = head.querySelector('.dev-card-headmain');
+      // Edited sits in the light strip directly under the coloured head. The
+      // element is always present, even with no date, so every collapsed card
+      // has the same height.
       var editedVal = el.getAttribute('data-edited') || '';
-      var edEl = head.querySelector('.dev-card-edited');
-      if(editedVal && mainEl){
-        if(!edEl){
-          edEl = document.createElement('div');
-          edEl.className = 'dev-card-edited';
-          mainEl.insertBefore(edEl, mainEl.firstChild);
-        }
-        edEl.textContent = 'Edited ' + editedVal;
-      } else if(edEl){ edEl.remove(); }
+      var edEl = el.querySelector(':scope > .dev-card-edited');
+      if(!edEl){
+        edEl = document.createElement('div');
+        edEl.className = 'dev-card-edited';
+        head.insertAdjacentElement('afterend', edEl);
+      }
+      edEl.textContent = editedVal ? 'Edited ' + editedVal : '';
 
+      // Created is nested inside the body, so it only shows when rolled down.
       var created = el.getAttribute('data-created') || '';
-      if(created && !el.querySelector('.dev-card-created')){
+      var bodyEl = el.querySelector('.dev-card-body');
+      if(created && bodyEl && !bodyEl.querySelector('.dev-card-created')){
         var cd = document.createElement('div');
         cd.className = 'dev-card-created';
         cd.textContent = 'Created ' + created;
-        el.appendChild(cd);
+        bodyEl.appendChild(cd);
       }
 
       var createdEl = el.querySelector('.dev-card-created');
