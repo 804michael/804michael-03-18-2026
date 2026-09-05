@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_01-23-0050                            ║
+  ║  SITE VERSION: 26.09.04_23-45-0051                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_01-23-0050   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_23-45-0051   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -67,7 +67,7 @@
   .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.22em;
     text-transform:uppercase;color:var(--red);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
   .eyebrow::before{content:'';display:inline-block;width:26px;height:2px;background:var(--red);}
-  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(32px,5.6vw,52px);line-height:1.05;
+  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;
     letter-spacing:-.01em;margin:0 0 10px;}
   h1 span{color:var(--red);}
   .sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
@@ -336,7 +336,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04_01-23-0050</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.04_23-45-0051</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
 </div>
 
@@ -568,7 +568,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.04_01-23-0050';
+const SITE_VERSION = '26.09.04_23-45-0051';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
