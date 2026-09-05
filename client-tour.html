@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.05_00-14-0051                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-14-0051    ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text at the foot of the page   ║
+  ║  Use the actual current date/time, format YY.MM.DD_HH-MM, and ║
+  ║  the revision number from spot #2 above, PLUS ONE.            ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                           ║
+  ║                                                               ║
+  ║  👥 CLIENT-FACING — served at 804re.com/t/<code>              ║
+  ║  This is the ONE page on the site a buyer opens during a      ║
+  ║  showing tour. It is deliberately noindex/nofollow: each URL  ║
+  ║  is one private tour for one client, not public content.      ║
+  ║  It renders ONLY what /api/tour-page.js publishes, which is   ║
+  ║  an allow-list of address + blurb + coordinates. The agent's  ║
+  ║  private notes and the agent's own ratings never leave the    ║
+  ║  planner. Do not add a field here without checking that the   ║
+  ║  server actually stores it and that it is safe for a client   ║
+  ║  to read.                                                     ║
+  ║  Deliberately does NOT include the shared nav (nav.js) — a    ║
+  ║  client mid-tour needs this tour, not the site menu. Same     ║
+  ║  reasoning as the landing-archetype pages.                    ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Your Home Tour — 804Michael</title>
+  <meta name="description" content="Your home tour itinerary from 804Michael." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#111111" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888;--good:#1a7a3c}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;color:var(--black);background:var(--white);line-height:1.55;-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+
+    /* Standard site hero (see "the black hero bar is one shared standard" in
+       site-design-notes.md) — same values as every other page. */
+    .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+    .brand{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.45rem;letter-spacing:-.01em;line-height:1;flex:0 0 auto}
+    .brand em{font-style:italic;color:var(--red);font-weight:800}
+    .hero-when{text-align:right;font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.35;flex:0 0 auto}
+    .hero-when strong{display:block;color:var(--white);font-weight:600;font-size:.95rem}
+    h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:14px 0 10px}
+    h1 span{color:var(--red)}
+    .hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75)}
+    .hero-cta{display:flex;gap:8px;margin-top:16px}
+
+    /* nowrap + a slightly tighter face: at 1rem with .06em tracking these two
+       labels broke mid-word ("CALL 804-" / "MICHAEL") in a half-width pill on a
+       phone — the same wrapping bug the mobile nav CTAs had. */
+    .btn{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;padding:11px 10px;border-radius:999px;border:1.5px solid transparent;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+    /* Very narrow phones (iPhone SE and similar, 320px): the standard hero's
+       28px side padding plus the two pills overflowed. Trimming the side
+       padding here only — this is the one client-facing page, and a sideways
+       scroll on a phone mid-tour is worse than a 12px deviation from the
+       site-wide hero padding. */
+    @media(max-width:360px){
+      .btn{font-size:.9rem;letter-spacing:.02em;padding:10px 8px}
+      .hero{padding:20px 16px 16px}
+      .wrap{padding:18px 12px 50px}
+      .stop{padding:13px}
+      /* Stack the two CTAs on the narrowest phones. Side by side, each pill
+         gets ~145px, and "Text 804-642-4235" does not reliably fit that at any
+         readable size — and it cannot be shortened, since the wording is fixed
+         by the site-wide CTA rule. Stacking is the only option that is safe
+         regardless of whether the condensed webfont has loaded yet. */
+      .hero-cta,.cta-row{flex-direction:column}
+    }
+    .btn-red{background:var(--red);color:var(--white)}
+    .btn-red:hover{background:var(--red-dark)}
+    .btn-ghost{background:transparent;color:var(--white);border-color:rgba(255,255,255,.35)}
+    .btn-ghost:hover{border-color:var(--white)}
+    a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+    .wrap{max-width:620px;margin:0 auto;padding:22px 16px 60px}
+    .state{padding:40px 16px;text-align:center;color:var(--gray-text)}
+
+    /* Stops — a timeline, with the drive leg between cards carrying real info */
+    .stop{border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px;background:var(--white)}
+    .stop.first{border-color:var(--red)}
+    .stop-head{display:flex;gap:12px;align-items:flex-start}
+    .pin{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fff;line-height:1}
+    .stop-id{flex:1 1 auto;min-width:0}
+    .addr{display:inline-block;font-weight:700;font-size:1.08rem;line-height:1.25;color:var(--black);text-decoration:none;border-bottom:1.5px solid var(--red);padding-bottom:1px}
+    .addr:hover{color:var(--red)}
+    .city{font-size:.88rem;color:var(--gray-muted);margin-top:2px}
+    .blurb{font-size:.95rem;color:var(--gray-text);margin-top:10px;font-variant-numeric:tabular-nums}
+    .dirs{display:flex;gap:8px;margin-top:12px}
+    .dirs a{flex:1 1 0;text-align:center;padding:8px 10px;border-radius:9px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase}
+    .dirs a:hover{border-color:var(--red);color:var(--red)}
+
+    .rate{border-top:1px solid var(--gray-light);margin-top:14px;padding-top:12px}
+    .rate-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .rate-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
+    .dots{display:flex;gap:6px;margin-left:auto}
+    .dots button{width:34px;height:34px;border-radius:50%;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
+    .dots button:hover{border-color:var(--red);color:var(--red)}
+    .dots button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+    .note{width:100%;margin-top:10px;padding:9px 11px;border-radius:9px;border:1.5px solid var(--gray-mid);background:var(--gray-light);font-family:'Barlow',sans-serif;font-size:.95rem;resize:vertical;min-height:44px;color:var(--black)}
+    .note:focus{outline:none;border-color:var(--red);background:var(--white)}
+    .saved{display:none;align-items:center;gap:6px;margin-top:8px;font-size:.82rem;color:var(--good);font-weight:600}
+    .saved.on{display:flex}
+    .saved.err{color:var(--red)}
+
+    .leg{display:flex;align-items:center;padding:10px 0 10px 15px;margin-left:16px;border-left:2px dotted var(--gray-mid)}
+    .leg span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted)}
+
+    .cta{margin-top:28px;background:var(--black);color:var(--white);border-radius:14px;padding:20px 18px;text-align:center}
+    .cta p{margin:0 0 14px;color:rgba(255,255,255,.72);font-size:.95rem}
+    .cta-row{display:flex;gap:8px}
+    .legal{font-size:.75rem;color:var(--gray-muted);text-align:center;margin-top:22px;line-height:1.6}
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">804<em>Michael</em></div>
+    <div class="hero-when" id="heroWhen"></div>
+  </div>
+  <h1 id="heroTitle">Your Home <span>Tour</span></h1>
+  <p class="hero-sub" id="heroSub"></p>
+  <div class="hero-cta">
+    <a class="btn btn-red" href="tel:8046424235">Call 804-Michael</a>
+    <a class="btn btn-ghost" href="sms:8046424235">Text 804-642-4235</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="stops"><p class="state">Loading your tour…</p></div>
+
+  <div class="cta" id="footCta" hidden>
+    <p>Questions on any of these, or want to see one again?</p>
+    <div class="cta-row">
+      <a class="btn btn-red" href="tel:8046424235">Call 804-Michael</a>
+      <a class="btn btn-ghost" href="sms:8046424235">Text 804-642-4235</a>
+    </div>
+  </div>
+
+  <p class="legal">
+    Michael Hottman &middot; Licensed Real Estate Broker in Virginia<br>
+    Your ratings and notes are shared only with Michael.<br>
+    <span id="site-version-display" style="color:var(--gray-mid)"></span>
+  </p>
+</div>
+
+<script>
+// ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
+// line + the visible version line every edit. Start chat replies with:
+// "📌 Version: v" + SITE_VERSION
+const SITE_VERSION = '26.09.05_00-14-0051';
+(function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
+
+(function(){
+  'use strict';
+
+  // The code is the last path segment of /t/<code>. _redirects rewrites that
+  // path to this file (a 200 rewrite, so the URL the client sees stays /t/…),
+  // which means the path is the only place the code lives — there is no query
+  // string to read.
+  var code = (location.pathname.split('/').filter(Boolean).pop() || '').replace(/[^A-Za-z0-9]/g, '');
+
+  // Same palette as the planner's map markers, so a stop's number is the same
+  // colour on the client's phone as on the agent's map and printed sheet.
+  var MIDDLE = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#3949AB','#F9A825','#1F6FB2','#6D4C41','#757575'];
+  function pinColor(i, total){
+    if(total <= 1 || i === 0) return '#1a7a3c';
+    if(i === total - 1) return '#DA291C';
+    return MIDDLE[(i - 1) % MIDDLE.length];
+  }
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+  function splitAddr(a){
+    var parts = String(a || '').split(',');
+    return { street: (parts.shift() || '').trim(), rest: parts.join(',').trim() };
+  }
+  function gmaps(a){ return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(a); }
+  function amaps(a){ return 'https://maps.apple.com/?daddr=' + encodeURIComponent(a); }
+
+  var stopsEl = document.getElementById('stops');
+  var tour = null;
+
+  // Ratings are cached locally as well as sent, so a client who loses signal
+  // mid-tour still sees their own answers and the page can re-send later.
+  var LS_KEY = '804m_tour_fb_' + code;
+  var local = {};
+  try{ local = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }catch(e){ local = {}; }
+
+  function saveLocal(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(local)); }catch(e){}
+  }
+
+  var sendTimer = null, pending = {};
+  function queueSend(i){
+    pending[i] = true;
+    clearTimeout(sendTimer);
+    sendTimer = setTimeout(function(){
+      var items = Object.keys(pending).map(function(k){
+        var n = Number(k);
+        return { i: n, rating: local[n] && local[n].rating, comment: (local[n] && local[n].comment) || '' };
+      });
+      pending = {};
+      fetch('/api/tour-page', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'feedback', code: code, items: items })
+      }).then(function(r){ return r.json(); }).then(function(d){
+        items.forEach(function(it){ mark(it.i, d && d.ok); });
+      }).catch(function(){
+        items.forEach(function(it){ mark(it.i, false); });
+      });
+    }, 900);
+  }
+
+  function mark(i, ok){
+    var el = stopsEl.querySelector('[data-saved="' + i + '"]');
+    if(!el) return;
+    el.textContent = ok ? 'Sent to Michael' : 'Saved on your phone — will send when you’re back online';
+    el.classList.add('on');
+    el.classList.toggle('err', !ok);
+  }
+
+  function stopHtml(s, i, total){
+    var a = splitAddr(s.address);
+    var saved = local[i] || {};
+    var dots = [1,2,3,4,5].map(function(v){
+      return '<button type="button" data-i="' + i + '" data-val="' + v + '" aria-pressed="' +
+        (saved.rating === v ? 'true' : 'false') + '" aria-label="Rate ' + v + ' out of 5">' + v + '</button>';
+    }).join('');
+    return '<article class="stop' + (i === 0 ? ' first' : '') + '">' +
+      '<div class="stop-head">' +
+        '<div class="pin" style="background:' + pinColor(i, total) + '">' + (i + 1) + '</div>' +
+        '<div class="stop-id">' +
+          '<a class="addr" href="' + esc(gmaps(s.address)) + '" target="_blank" rel="noopener">' + esc(a.street) + '</a>' +
+          (a.rest ? '<div class="city">' + esc(a.rest) + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      (s.blurb ? '<p class="blurb">' + esc(s.blurb) + '</p>' : '') +
+      '<div class="dirs">' +
+        '<a href="' + esc(gmaps(s.address)) + '" target="_blank" rel="noopener">Google Maps</a>' +
+        '<a href="' + esc(amaps(s.address)) + '" target="_blank" rel="noopener">Apple Maps</a>' +
+      '</div>' +
+      '<div class="rate">' +
+        '<div class="rate-row"><span class="rate-lbl">How was it?</span><div class="dots">' + dots + '</div></div>' +
+        '<textarea class="note" data-i="' + i + '" rows="1" placeholder="Anything you want to remember about this one…">' + esc(saved.comment || '') + '</textarea>' +
+        '<div class="saved' + (saved.rating || saved.comment ? ' on' : '') + '" data-saved="' + i + '">' +
+          (saved.rating || saved.comment ? 'Sent to Michael' : '') + '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function render(){
+    var list = tour.stops || [];
+    document.getElementById('heroTitle').innerHTML = tour.name
+      ? esc(tour.name) + ' <span>Tour</span>'
+      : 'Your Home <span>Tour</span>';
+    document.getElementById('heroWhen').innerHTML = tour.dateLabel
+      ? '<strong>' + esc(tour.dateLabel) + '</strong>' + (tour.startLabel ? 'Starts ' + esc(tour.startLabel) : '')
+      : '';
+    document.getElementById('heroSub').textContent =
+      list.length + (list.length === 1 ? ' home' : ' homes') + (tour.summary ? ' · ' + tour.summary : '');
+
+    stopsEl.innerHTML = list.map(function(s, i){
+      return stopHtml(s, i, list.length) +
+        (i < list.length - 1 ? '<div class="leg"><span>Next stop</span></div>' : '');
+    }).join('');
+    document.getElementById('footCta').hidden = false;
+  }
+
+  stopsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.dots button');
+    if(!btn) return;
+    var i = Number(btn.dataset.i), v = Number(btn.dataset.val);
+    local[i] = local[i] || {};
+    local[i].rating = (local[i].rating === v) ? 0 : v;
+    btn.parentNode.querySelectorAll('button').forEach(function(b){
+      b.setAttribute('aria-pressed', Number(b.dataset.val) === local[i].rating ? 'true' : 'false');
+    });
+    saveLocal(); queueSend(i);
+  });
+
+  stopsEl.addEventListener('input', function(e){
+    if(!e.target.classList.contains('note')) return;
+    var i = Number(e.target.dataset.i);
+    local[i] = local[i] || {};
+    local[i].comment = e.target.value;
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+    saveLocal(); queueSend(i);
+  });
+
+  if(!code){
+    stopsEl.innerHTML = '<p class="state">This link is missing its tour code. Ask Michael to resend it.</p>';
+    return;
+  }
+
+  fetch('/api/tour-page?code=' + encodeURIComponent(code))
+    .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, d: d}; }); })
+    .then(function(res){
+      if(!res.ok || !res.d || !res.d.tour){
+        stopsEl.innerHTML = '<p class="state">This tour link isn’t working. It may have expired — give Michael a call at 804-642-4235 and he’ll send a new one.</p>';
+        return;
+      }
+      tour = res.d.tour;
+      render();
+    })
+    .catch(function(){
+      stopsEl.innerHTML = '<p class="state">Couldn’t load your tour. Check your signal and refresh, or call Michael at 804-642-4235.</p>';
+    });
+})();
+</script>
+</body>
+</html>

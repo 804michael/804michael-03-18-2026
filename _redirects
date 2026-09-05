@@ -1,1 +1,6 @@
 /home-affordability-calculator.html /determine-your-budget.html 301!
+
+# Client tour pages: /t/<code> serves client-tour.html without changing the URL
+# the client sees (200 = rewrite, not a redirect). The page reads the code off
+# its own path. Must stay ABOVE any catch-all rule if one is ever added.
+/t/*  /client-tour.html  200
