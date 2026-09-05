@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_21-17-0053                            ║
+  ║  SITE VERSION: 26.09.04_22-20-0054                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0053    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_22-20-0054    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -123,7 +123,7 @@
      "per stop"), then the number input on its own line, then "minutes"
      below that — four lines total, stacked, all left-aligned
      (align-items:flex-start) rather than hugging the panel's right edge. */
-  .tp-stops-intro{display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
+  .tp-stops-intro{display:flex;gap:16px;align-items:flex-start;margin-bottom:7px}
   .tp-stops-intro .tp-panel-sub{flex:1 1 260px;min-width:0;margin:0}
   .tp-default-budget-field{flex:0 0 auto;width:auto;margin-bottom:0;align-items:flex-start}
   .tp-default-budget-field label{text-align:left;line-height:1.25}
@@ -187,7 +187,7 @@
   /* Rolled up (collapsed) via JS after a successful bulk add — see
      collapseBulkWrap(). Transition lives here so JS only has to toggle the
      height/opacity/margin values, not manage the animation itself. */
-  .tp-bulk-wrap.tp-rolling-up{transition:height .3s ease,opacity .3s ease,margin-bottom .3s ease,padding-top .3s ease,padding-bottom .3s ease}
+  .tp-bulk-wrap.tp-rolling-up,.tp-bulk-wrap.tp-rolling-down{transition:height .3s ease,opacity .3s ease,margin-bottom .3s ease,padding-top .3s ease,padding-bottom .3s ease}
   .tp-bulk-hint{font-size:.8rem;color:var(--gray-text);margin-bottom:8px;line-height:1.4}
   .tp-bulk-textarea{width:100%;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:.85rem;resize:vertical;margin-bottom:10px;font-family:inherit;background:#fff;transition:height .25s ease}
   .tp-bulk-status{font-size:.78rem;color:var(--gray-text);margin-top:8px;line-height:1.4}
@@ -218,21 +218,19 @@
      (.ics) shrunk down to fit under Start Time (column 2) on that same
      row. The two top-level columns mirror the Tour date / Start time
      field widths above them (.tp-field-row is also a 1fr/1fr split). */
-  /* Centered as a group (2026-09-04, Michael's request) rather than the
-     old 1fr/1fr grid that stretched the buttons to mirror the Tour date /
-     Start time field widths above. Now a centered flex row: each button
-     sizes to its own text and the three of them sit centered under the
-     fields, wrapping as a group on narrow widths. */
-  .tp-cal-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px;align-items:stretch}
-  .tp-cal-col{display:flex;gap:8px;min-width:0;flex:0 1 auto;justify-content:center}
-  .tp-cal-col .tp-btn{flex:0 1 auto;min-width:0}
+  .tp-cal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;align-items:stretch}
+  .tp-cal-col{display:flex;gap:8px;min-width:0}
+  .tp-cal-col .tp-btn{flex:1 1 0;min-width:0}
   /* All three calendar buttons share the same text treatment (Google
      Calendar's base .tp-btn styling is the model) — none gets its own
      smaller font. Apple/Outlook's label is the longest, so it gets the
      full right-hand column (same width as Google Calendar + Outlook (Web)
      combined) and wraps to two lines the same way Google Calendar already
      does at this width, instead of shrinking its type. */
-  .tp-cal-col-right .tp-btn{text-align:center;line-height:1.15}
+  /* Text centred INSIDE each button (2026-09-04). The buttons themselves
+     keep their full-width grid positions; only the label alignment changed.
+     Matters most for the two that wrap to a second line. */
+  .tp-cal-actions .tp-btn{text-align:center;line-height:1.15;justify-content:center}
   /* All three read the same way — red outline, red text — same as every
      other red-outline control on this page. Not color-coded per button. */
   .tp-cal-actions .tp-btn{border-color:var(--red);color:var(--red)}
@@ -286,6 +284,17 @@
   .tp-num-icon{background:var(--red);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 
   .tp-summary-grid{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:6px}
+  /* Until a route has actually been calculated, everything below the map is
+     showing placeholder em-dashes and dead buttons. Grey it out and make it
+     unclickable so it reads as "not ready yet" rather than "broken", and put
+     a call-to-action straight on the map. #routeSourceNote stays at full
+     opacity — it's the line that explains what to do next. */
+  .tp-awaiting-route .tp-summary-grid,.tp-awaiting-route #calendarSection{opacity:.38;filter:grayscale(1);pointer-events:none;transition:opacity .25s ease,filter .25s ease}
+  .tp-map-wrap{position:relative}
+  .tp-map-cta{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:500;display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(255,255,255,.94);border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 22px;box-shadow:0 10px 30px rgba(0,0,0,.18);text-align:center;max-width:88%}
+  .tp-map-cta[hidden]{display:none}
+  .tp-map-cta p{font-size:.85rem;color:var(--gray-text);margin:0;line-height:1.4}
+  .tp-map-cta .tp-btn{white-space:nowrap}
   .tp-summary-stat{flex:1 1 140px}
   .tp-summary-stat .val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.7rem;color:var(--black)}
   .tp-summary-stat .lbl{font-size:.78rem;color:var(--gray-muted);text-transform:uppercase;letter-spacing:.06em}
@@ -503,11 +512,7 @@
        space and leaving a large blank gap below each input. Reset to
        flex:0 0 auto here so each field is just as tall as its own content. */
     .tp-field-row .tp-field{width:100%;flex:0 0 auto}
-    /* .tp-cal-actions is a centered flex row now, not a grid — stack its
-       two column-wrappers vertically here and let each button fill the
-       narrow width rather than shrink-wrapping to its own text. */
-    .tp-cal-actions{flex-direction:column;align-items:stretch}
-    .tp-cal-col .tp-btn{flex:1 1 0}
+    .tp-cal-actions{grid-template-columns:1fr}
     .tp-saved-grid-select{grid-template-columns:1fr 1fr}
     .tp-saved-grid-select select{grid-column:1 / 3}
     .tp-saved-grid-name{grid-template-columns:1fr}
@@ -547,7 +552,7 @@
       <div class="tp-panel">
         <h2>Stops</h2>
         <div class="tp-stops-intro">
-          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to place on map. <strong>Maximum of 10 stops.</strong> Drag stops to reorder manually. No need to choose a starting point, it's automatically current location when opening link.</p>
+          <p class="tp-panel-sub">Type an address &amp; pick from suggestions to set stops. <strong>Maximum of 10 stops.</strong> Let the Routing Tool automatically optimize route or drag stops to reorder manually. Starting point for directions is automatically current location of device when opening link followed by ordered stops.</p>
           <div class="tp-field tp-default-budget-field">
             <label for="defaultBudgetInput">Default time<br>per stop</label>
             <div class="tp-input-suffix-wrap">
@@ -562,10 +567,10 @@
         </div>
 
         <div class="tp-bulk-wrap" id="bulkAddWrap" hidden>
-          <p class="tp-bulk-hint">Enter one address (partial or full) per line, each one will be looked up automatically. If a match is not found, that line is added as the stop's address text, so you can click into it and pick from the suggestions or make edits.</p>
+          <p class="tp-bulk-hint">Enter one address (partial or full) per line, each one will be looked up when Add Steps is clicked. If a match is not found, text entered in that line is added as the stop's address, so you can modify your entry and pick from suggestions.</p>
           <textarea id="bulkAddTextarea" class="tp-bulk-textarea" rows="5" placeholder="123 Maple Grove Lane, Richmond, VA&#10;456 Willow Bend Court, Mechanicsville, VA&#10;789 Foxhollow Drive, Glen Allen, VA"></textarea>
           <div class="tp-actions-row">
-            <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="bulkAddSubmitBtn">Add These Stops</button>
+            <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="bulkAddSubmitBtn">Add Steps</button>
             <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="bulkAddCancelBtn">Cancel</button>
           </div>
           <p class="tp-bulk-status" id="bulkAddStatus"></p>
@@ -586,6 +591,10 @@
             <button type="button" class="tp-mode-btn active" id="modeOptimizeBtn" data-mode="optimize">Optimize Route</button>
             <button type="button" class="tp-mode-btn" id="modeManualBtn" data-mode="manual">Manual Order</button>
           </div>
+          <!-- Separate button, deliberately NOT a third mode-toggle segment:
+               it's a one-shot action on the current list, not a mode you sit
+               in, so it shouldn't take the toggle's persistent "active" look. -->
+          <button type="button" class="tp-btn tp-btn-outline tp-btn-sm" id="reverseOrderBtn" title="Flip the current stop order end to end">⇅ Reverse Order</button>
         </div>
 
         <div class="tp-field">
@@ -655,7 +664,15 @@
 
       <div class="tp-panel tp-panel-plain">
         <h2>Route Map</h2>
-        <div id="map"></div>
+        <div class="tp-map-wrap">
+          <div id="map"></div>
+          <!-- Mirrors #recalculateBtn rather than replacing it — Michael asked
+               for the existing button to stay exactly where it is. -->
+          <div class="tp-map-cta" id="mapCta">
+            <p>Add your stops, then calculate the route to see the map, drive times and the client link.</p>
+            <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="mapCtaBtn">Calculate Route</button>
+          </div>
+        </div>
         <div class="tp-summary-grid">
           <div class="tp-summary-stat">
             <div class="val" id="totalDistanceVal">—</div>
@@ -832,7 +849,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0053</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_22-20-0054</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -845,7 +862,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.04_21-17-0053';
+const SITE_VERSION = '26.09.04_22-20-0054';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -1041,7 +1058,19 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     resetShareAndSummary();
   }
 
+  // Everything below the map is meaningless until a route exists: the stats
+  // read "—" and the calendar buttons are inert. setRouteReady(false) greys
+  // that whole area out and puts a Calculate CTA on the map itself; the
+  // original Calculate/Recalculate button is untouched and stays where it is.
+  function setRouteReady(ready){
+    var col = document.querySelector('.tp-col-right');
+    var cta = document.getElementById('mapCta');
+    if(col) col.classList.toggle('tp-awaiting-route', !ready);
+    if(cta) cta.hidden = !!ready;
+  }
+
   function resetShareAndSummary(){
+    setRouteReady(false);
     document.getElementById('shareSection').style.display = 'none';
     document.getElementById('totalDistanceVal').textContent = '—';
     document.getElementById('totalDurationVal').textContent = '—';
@@ -1230,9 +1259,43 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   var bulkAddTextarea = document.getElementById('bulkAddTextarea');
   var bulkAddStatus = document.getElementById('bulkAddStatus');
   var bulkAddSubmitBtn = document.getElementById('bulkAddSubmitBtn');
+  // Opening now animates too (2026-09-04) — it used to just snap visible
+  // while closing was already a smooth roll-up, which read as inconsistent.
+  // Same technique in reverse: measure the natural height with the box laid
+  // out but at height 0, transition up to it, then clear the inline height so
+  // the box can grow normally if the textarea is resized afterwards.
+  function expandBulkWrap(){
+    bulkAddWrap.hidden = false;
+    bulkAddTextarea.style.height = '';
+    var target = bulkAddWrap.scrollHeight;
+    bulkAddWrap.classList.add('tp-rolling-down');
+    bulkAddWrap.style.height = '0px';
+    bulkAddWrap.style.opacity = '0';
+    bulkAddWrap.style.paddingTop = '0';
+    bulkAddWrap.style.paddingBottom = '0';
+    void bulkAddWrap.offsetHeight; // force reflow so the transition animates
+    function finish(){
+      bulkAddWrap.removeEventListener('transitionend', onEnd);
+      bulkAddWrap.classList.remove('tp-rolling-down');
+      bulkAddWrap.style.height = '';
+      bulkAddWrap.style.opacity = '';
+      bulkAddWrap.style.paddingTop = '';
+      bulkAddWrap.style.paddingBottom = '';
+      bulkAddTextarea.focus();
+    }
+    function onEnd(e){ if(e.target === bulkAddWrap && e.propertyName === 'height') finish(); }
+    bulkAddWrap.addEventListener('transitionend', onEnd);
+    setTimeout(function(){ if(bulkAddWrap.classList.contains('tp-rolling-down')) finish(); }, 400);
+    requestAnimationFrame(function(){
+      bulkAddWrap.style.height = target + 'px';
+      bulkAddWrap.style.opacity = '1';
+      bulkAddWrap.style.paddingTop = '';
+      bulkAddWrap.style.paddingBottom = '';
+    });
+  }
   bulkAddBtn.addEventListener('click', function(){
-    bulkAddWrap.hidden = !bulkAddWrap.hidden;
-    if(!bulkAddWrap.hidden){ bulkAddTextarea.style.height=''; bulkAddTextarea.focus(); }
+    if(bulkAddWrap.hidden) expandBulkWrap();
+    else collapseBulkWrap();
   });
   document.getElementById('bulkAddCancelBtn').addEventListener('click', function(){
     bulkAddWrap.hidden = true; bulkAddTextarea.value=''; bulkAddTextarea.style.height=''; bulkAddStatus.textContent='';
@@ -1455,9 +1518,10 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // start marker, the last badge always the red end marker), so a request to
   // swap two *displayed* stop colors is a swap of the two array positions two
   // below those numbers. History of swaps, newest first:
+  //   2026-09-04  badges 7 ↔ 8  (array idx 5 ↔ 6): #F9A825 amber ↔ #3949AB indigo
   //   2026-09-04  badges 5 ↔ 9  (array idx 3 ↔ 7): #1F6FB2 blue ↔ #00ACC1 teal
   //   2026-09-04  badges 3 ↔ 9  (array idx 1 ↔ 7), 12-stop era
-  var MIDDLE_STOP_COLORS = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#F9A825','#3949AB','#1F6FB2','#6D4C41','#757575'];
+  var MIDDLE_STOP_COLORS = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#3949AB','#F9A825','#1F6FB2','#6D4C41','#757575'];
   function stopMarkerColor(i, total){
     if(total<=1 || i===0) return '#1a7a3c';
     if(i===total-1) return '#DA291C';
@@ -1541,6 +1605,9 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // below the point where this used to sit, and the map itself never
   // initialized). Keep this call below the Map setup section.
   addStopRow(); addStopRow();
+  // Start in the not-yet-calculated state so the area below the map is
+  // greyed out and the map carries its Calculate CTA on first load.
+  setRouteReady(false);
 
   // ── Distance/time helpers (haversine fallback) ─────────────────────────
   function haversineMeters(a,b){
@@ -1614,6 +1681,28 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   // ── Recalculate ──────────────────────────────────────────────────────
   document.getElementById('recalculateBtn').addEventListener('click', recalculate);
+  // The CTA sitting on the map is a second trigger for the same action, not a
+  // separate code path — Michael asked for the original button to stay put.
+  document.getElementById('mapCtaBtn').addEventListener('click', recalculate);
+
+  // Reverse the current stop order end to end. Works on the DOM rows rather
+  // than the `stops` array alone, because the row elements carry the live
+  // input values and per-row listeners — rebuilding them from data would drop
+  // anything typed but not yet committed. syncStopsOrderFromDom() then brings
+  // the array back in line, exactly as a drag-drop does.
+  document.getElementById('reverseOrderBtn').addEventListener('click', function(){
+    var rows = Array.prototype.slice.call(stopList.children);
+    if(rows.length < 2) return;
+    rows.reverse().forEach(function(row){ stopList.appendChild(row); });
+    syncStopsOrderFromDom();
+    renumberRows();
+    resetShareAndSummary();
+    // Reversing is a manual decision about order, so switch out of Optimize —
+    // otherwise the next calculate would immediately undo what was just done.
+    mode = 'manual';
+    modeManualBtn.classList.add('active');
+    modeOptimizeBtn.classList.remove('active');
+  });
 
   // A stop nobody has touched yet (no address typed, no coords) — the kind
   // the page starts with 2 of, or that a bulk-paste run leaves behind once
@@ -1775,6 +1864,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   function googleSingleStopUrl(s){ return 'https://www.google.com/maps/dir/?api=1&destination=' + addrParam(s) + '&travelmode=driving'; }
 
   function buildShareAndCalendar(orderedStops, data){
+    setRouteReady(true);
     var fullUrl = googleFullRouteUrl(orderedStops);
     // Set by the calendar-building code further down; called again once the
     // short link resolves (see the /api/shorten-link fetch below) so the
@@ -1800,7 +1890,9 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     };
     document.getElementById('smsShareBtn').onclick = function(){
       var linkToShare = document.getElementById('shortLinkInput').value || fullUrl;
-      var body = 'Click this link to see route stops. ' + linkToShare;
+      // Leading 📍 so the text reads as a map link at a glance in a message
+      // list. Plain emoji, not an image — nothing to load and it survives SMS.
+      var body = '📍 Click link for route map. ' + linkToShare;
       window.location.href = 'sms:?&body=' + encodeURIComponent(body);
     };
     document.getElementById('printBtn').onclick = function(){

@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_21-17-0051                            ║
+  ║  SITE VERSION: 26.09.04_22-20-0052                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0051    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_22-20-0052    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -99,9 +99,18 @@
     .dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
     @media(max-width:980px){.dev-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:640px){.dev-grid{grid-template-columns:1fr}}
-    .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s;cursor:grab}
+    .dev-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
     .dev-card:hover{border-color:var(--red);transform:translateY(-2px)}
-    .dev-card.dragging{opacity:.4;cursor:grabbing}
+    .dev-card.dragging{opacity:.4}
+    /* Drag moved onto an explicit handle (2026-09-04). With draggable="true"
+       on the whole card, a click-and-drag across the description started a
+       card drag instead of a text selection, so the card text couldn't be
+       selected or copied at all. The card is now draggable="false" by
+       default and only flips to true while the ⠿ handle is held down, which
+       leaves normal text selection working everywhere else on the card. */
+    .dev-card-drag{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--white);border-radius:8px;width:26px;height:26px;font-size:.95rem;line-height:1;cursor:grab;flex:0 0 auto;padding:0;user-select:none}
+    .dev-card-drag:hover{border-color:var(--white);background:rgba(255,255,255,.14)}
+    .dev-card-drag:active{cursor:grabbing}
     .dev-card.drag-over{border-color:var(--red);border-style:dashed}
     .dev-card-head{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
     .dev-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.55rem;letter-spacing:.02em;text-transform:uppercase;color:var(--white)}
@@ -113,12 +122,6 @@
        account-signup check on the Tour Planner card (see the script at the
        bottom and functions/api/heigit-status.js). Reuses the same
        checking/up/down state pattern as farmstand.html's review-pill. */
-    .ext-status{font-size:.92rem;border-radius:8px;padding:6px 10px;margin:0 0 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .ext-status.checking{background:var(--gray-light);color:var(--gray-muted)}
-    .ext-status.up{background:#eef6ee;color:#2f6b30}
-    .ext-status.down{background:#fff6e6;color:#8a5a00}
-    .ext-status.error{background:var(--gray-light);color:var(--gray-muted)}
-    .ext-status button{background:none;border:none;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
 
     /* ── Notes & Ideas (research reminders — not built pages) — right-side panel ── */
     /* ── Card editing (added 2026-09-04) ────────────────────────────────
@@ -168,27 +171,27 @@
     .dev-note-form-hoisted::before{content:"Notes & Ideas";font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.01em;color:var(--black)}
     .dev-cards-hint{font-size:.85rem;color:var(--gray-muted);margin:0 0 14px}
     .dev-cards-hint.bad{color:var(--red)}
-    .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:20px 20px 8px}
-    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
-    .dev-notes-sub{color:#666;font-size:.95rem;margin:0 0 16px}
-    .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:14px 18px;margin-bottom:10px;position:relative}
-    .dev-note-item strong{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.15rem;color:var(--black);margin-bottom:5px}
-    .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.6;padding-right:20px}
+    .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:12px 12px 4px}
+    .dev-notes h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:2px}
+    .dev-notes-sub{color:#666;font-size:.95rem;margin:0 0 8px}
+    .dev-note-item{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:9px 11px;margin-bottom:6px;position:relative}
+    .dev-note-item strong{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.15rem;color:var(--black);margin-bottom:3px}
+    .dev-note-item p{font-size:1.05rem;color:#3d3d3d;line-height:1.5;padding-right:18px}
     .dev-note-item a{text-decoration:underline;font-weight:600}
     .dev-note-item .dni-date{font-size:.8rem;color:var(--gray-muted);font-style:italic}
     .dev-note-item .dni-del{position:absolute;top:8px;right:10px;background:none;border:none;font-size:1.3rem;line-height:1;color:var(--gray-muted);cursor:pointer;padding:2px 6px;border-radius:6px}
     .dev-note-item .dni-del:hover{color:var(--white);background:var(--red)}
 
     /* ── Quick "add a note" box — jot a note from any browser (2026-09-02) ── */
-    .dev-note-form{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-    .dev-note-form textarea{width:100%;resize:vertical;min-height:56px;padding:10px 12px;border:1.5px solid var(--gray-mid);border-radius:10px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);background:var(--white)}
+    .dev-note-form{display:flex;flex-direction:column;gap:5px;margin-bottom:5px}
+    .dev-note-form textarea{width:100%;resize:vertical;min-height:48px;padding:7px 9px;border:1.5px solid var(--gray-mid);border-radius:10px;font-family:'Barlow',sans-serif;font-size:1rem;color:var(--black);background:var(--white)}
     .dev-note-form textarea:focus{outline:none;border-color:var(--red)}
-    .dev-note-form button{align-self:flex-end;background:var(--red);color:var(--white);border:none;border-radius:999px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .dev-note-form button{align-self:flex-end;background:var(--red);color:var(--white);border:none;border-radius:999px;padding:6px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s}
     .dev-note-form button:hover{background:var(--red-dark)}
     .dev-note-form button:disabled{background:var(--gray-muted);cursor:default}
     .dev-note-sync-hint{font-size:.82rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
     #dev-notes-dynamic:empty{display:none}
-    .dev-notes-divider{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin:4px 0 10px;padding-top:14px;border-top:1px solid var(--gray-mid)}
+    .dev-notes-divider{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin:2px 0 6px;padding-top:8px;border-top:1px solid var(--gray-mid)}
     .dev-card-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column}
     .dev-card-body p{font-size:1.1rem;line-height:1.6;color:var(--gray-text);margin-bottom:14px;flex:1}
     .dev-card-body ul{list-style:none;margin:0 0 16px;padding:0}
@@ -422,7 +425,6 @@
           <li>Per-stop time budget (default 20 min), running arrival-time estimates, total drive time/distance</li>
           <li>Client-facing blurb + private notes per stop, QR code, SMS share, Google/Apple/Outlook calendar links, printable itinerary, saved tours (this browser)</li>
         </ul>
-        <div class="ext-status checking" id="orsStatus">⏳ Checking account.heigit.org (needed for the ORS key signup)…</div>
         <a class="dev-card-link" href="tour-planner.html">View page →</a>
       </div>
     </div>
@@ -455,6 +457,38 @@
           <li>Names where each one is configured, so anything broken points at the exact dashboard screen that fixes it</li>
         </ul>
         <a class="dev-card-link" href="system-status.html">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="halloween-map">
+      <div class="dev-card-head">
+        <h3>Halloween Decoration Map</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Not built yet — a seasonal "best decorated houses" map, modelled on the Farm Stand map: visitor submissions, moderated the same way, plotted on a Leaflet map. A genuine local-traffic magnet every October, and a reason for neighbours to send the link around.</p>
+        <ul>
+          <li>Same build as Farm Stand: submission modal, Google Sheet backing, Approved column, geocoding on submit</li>
+          <li>Seasonal styling: cartoon ghost and jack-o'-lantern markers, fall palette over the site's red/black</li>
+          <li>Printable list to take in the car, plus a route option — either its own routing, or hand the selected addresses straight to the Tour Planner</li>
+        </ul>
+        <span class="dev-card-link" style="color:var(--gray-muted)">Not built yet</span>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="christmas-map">
+      <div class="dev-card-head">
+        <h3>Christmas Lights Map</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Same idea as the Halloween map, for December — a map of the best light displays, submitted by visitors and moderated before publishing. Build them as one shared tool with a seasonal skin rather than two separate pages, so a fix to one fixes both.</p>
+        <ul>
+          <li>Christmas-light and Santa styling, with falling snow — worth checking it stays readable and doesn't tank performance on an older phone</li>
+          <li>Printable list plus the same routing hand-off as the Halloween map</li>
+          <li>Open question: one page that switches theme by season, or two pages sharing a common core</li>
+        </ul>
+        <span class="dev-card-link" style="color:var(--gray-muted)">Not built yet</span>
       </div>
     </div>
 
@@ -546,7 +580,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0051</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_22-20-0052</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -557,7 +591,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04_21-17-0051';
+  const SITE_VERSION = '26.09.04_22-20-0052';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -693,6 +727,13 @@
       var badge = head.querySelector('.dev-badge');
       var right = document.createElement('div');
       right.className = 'dev-head-right';
+      var grip = document.createElement('button');
+      grip.type = 'button';
+      grip.className = 'dev-card-drag';
+      grip.title = 'Drag to reorder';
+      grip.setAttribute('aria-label', 'Drag to reorder this card');
+      grip.textContent = '⠿';
+
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'dev-card-edit';
@@ -704,6 +745,7 @@
       btn.addEventListener('mousedown', function(e){ e.stopPropagation(); });
       btn.addEventListener('click', function(e){ e.stopPropagation(); openModal(el.getAttribute('data-id')); });
       if(badge) right.appendChild(badge);
+      right.appendChild(grip);
       right.appendChild(btn);
       head.appendChild(right);
     }
@@ -895,8 +937,19 @@
     // card created from the "+ Add Card" editor can be made draggable the
     // moment it's inserted, instead of only after a reload.
     function bindCardDrag(card){
-      if(card.getAttribute('draggable') === 'true') return;
-      card.setAttribute('draggable', 'true');
+      if(card.dataset.dragBound === '1') return;
+      card.dataset.dragBound = '1';
+      card.setAttribute('draggable', 'false');
+
+      // Arm the card only while the handle is held. Disarming on the document
+      // (not the card) matters: releasing the mouse after a drag often happens
+      // over a different card, and a mouseup listener on this card alone would
+      // never fire, leaving it permanently draggable and text unselectable again.
+      var grip = card.querySelector('.dev-card-drag');
+      if(grip){
+        grip.addEventListener('mousedown', function(){ card.setAttribute('draggable', 'true'); });
+        document.addEventListener('mouseup', function(){ card.setAttribute('draggable', 'false'); });
+      }
 
       card.addEventListener('dragstart', function(e){
         dragEl = card;
@@ -904,6 +957,7 @@
         if(e.dataTransfer){ e.dataTransfer.effectAllowed = 'move'; }
       });
       card.addEventListener('dragend', function(){
+        card.setAttribute('draggable', 'false');
         card.classList.remove('dragging');
         Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(function(c){
           c.classList.remove('drag-over');
@@ -1046,52 +1100,11 @@
     });
   })();
 
-  // ── account.heigit.org status check (Tour Planner card) ────────────────
-  // Backed by functions/api/heigit-status.js, which does the actual check
-  // server-side (a browser fetch straight to account.heigit.org would just
-  // get blocked by CORS) and caches the result there for about an hour, so
-  // loading this page repeatedly doesn't hammer HeiGIT's server — "check
-  // now" below forces a fresh one. See that file's top comment for detail.
-  (function(){
-    var el = document.getElementById('orsStatus');
-    if(!el) return;
-    var STATUS_URL = '/api/heigit-status';
-
-    function timeAgo(iso){
-      if(!iso) return '';
-      var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-      if(mins < 1) return 'just now';
-      if(mins < 60) return mins + ' min ago';
-      var hrs = Math.round(mins / 60);
-      return hrs + ' hr' + (hrs === 1 ? '' : 's') + ' ago';
-    }
-
-    function render(data, err){
-      if(err || !data){
-        el.className = 'ext-status error';
-        el.innerHTML = '⚠️ Could not check account.heigit.org right now &middot; <button type="button" id="orsRecheck">Check now</button>';
-      } else if(data.up){
-        el.className = 'ext-status up';
-        el.innerHTML = '🟢 account.heigit.org is back up — try the ORS signup again (checked ' + timeAgo(data.checkedAt) + ') &middot; <button type="button" id="orsRecheck">Check now</button>';
-      } else {
-        el.className = 'ext-status down';
-        el.innerHTML = '🔴 account.heigit.org still down (checked ' + timeAgo(data.checkedAt) + ') &middot; <button type="button" id="orsRecheck">Check now</button>';
-      }
-      var btn = document.getElementById('orsRecheck');
-      if(btn) btn.addEventListener('click', function(){ check(true); });
-    }
-
-    function check(force){
-      el.className = 'ext-status checking';
-      el.textContent = '⏳ Checking account.heigit.org…';
-      fetch(STATUS_URL + (force ? '?force=1' : ''))
-        .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('bad_response')); })
-        .then(function(data){ render(data, null); })
-        .catch(function(err){ render(null, err); });
-    }
-
-    check(false);
-  })();
+  // The account.heigit.org status indicator that used to live on the Tour
+  // Planner card was removed 2026-09-04: the ORS account is set up, so the
+  // "is their signup page back yet" question it answered is settled. The
+  // same check still runs on system-status.html, where it belongs alongside
+  // every other service check. functions/api/heigit-status.js is unchanged.
 </script>
 </body>
 </html>

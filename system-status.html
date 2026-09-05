@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.04_21-17-0050                            ║
+  ║  SITE VERSION: 26.09.04_22-20-0051                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.04_21-17-0050    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.04_22-20-0051    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -414,7 +414,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_21-17-0050</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.04_22-20-0051</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -427,7 +427,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.04_21-17-0050';
+  const SITE_VERSION = '26.09.04_22-20-0051';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -583,6 +583,45 @@
       }
     },
     {
+      id: 'farmstand', name: 'Farm stand submissions', code: 'Google Sheet CSV',
+      what: 'Stands waiting for your approval before they appear on the public map.',
+      where: 'Google Sheet — Approved column',
+      run: function(){
+        // Read the same published CSV farmstand.html reads, and apply the same
+        // rule its own countPending() uses, so the two can never disagree: a
+        // row with a name whose Approved value is neither blank nor "true" is
+        // pending. Parsed with a minimal split rather than pulling in PapaParse
+        // just for a count — the only field that needs care is Description,
+        // which can contain commas, and it's only tested with "contains".
+        return fetch(CSV_URL).then(function(res){
+          if(!res.ok) return bad('Sheet CSV responded ' + res.status + '.');
+          return res.text();
+        }).then(function(text){
+          if(typeof text !== 'string') return text;
+          var lines = text.split(/\r?\n/).filter(function(l){ return l.trim(); });
+          if(lines.length < 2) return warn('Sheet returned no rows — check the publish-to-web link.');
+          var head = splitCsvLine(lines[0]);
+          var iName = firstIndex(head, ['Farm Name','Name','Farm/Vendor Name']);
+          var iApp = head.indexOf('Approved');
+          var iDesc = head.indexOf('Description');
+          if(iApp === -1) return bad('No "Approved" column in the Sheet — the map\u2019s own filter depends on it.');
+          var pending = 0, needsFix = 0;
+          lines.slice(1).forEach(function(line){
+            var c = splitCsvLine(line);
+            if(iName === -1 || !(c[iName] || '').trim()) return;
+            var a = (c[iApp] || '').trim().toLowerCase();
+            if(a === '' || a === 'true') return;
+            pending++;
+            if(iDesc > -1 && (c[iDesc] || '').indexOf('NEEDS ADDRESS FIX') > -1) needsFix++;
+          });
+          if(!pending) return ok('Nothing waiting — every submission is reviewed.');
+          return warn(pending + ' stand' + (pending === 1 ? '' : 's') + ' waiting for approval' +
+                      (needsFix ? ', ' + needsFix + ' needing an address fix' : '') +
+                      '. Flip Approved to TRUE in the Sheet to publish.');
+        });
+      }
+    },
+    {
       id: 'heigit', name: 'HeiGIT account site', code: '/api/heigit-status',
       what: 'account.heigit.org — where the ORS key is managed. Cached about an hour.',
       where: 'External, nothing to configure',
@@ -596,6 +635,36 @@
       }
     }
   ];
+
+  // The published CSV behind the farm stand map. Kept in sync by hand with
+  // farmstand.html's own CSV_URL — if that link is ever regenerated, change it
+  // in both places or this row will report a false failure.
+  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQllKE4SJkxkqKoY7QElipKVptQQbcCwEPHl8PvI5o0Q0HQNdFaKmYaPQztbKQ0-2xxBILTcw47Woj7/pub?gid=52146640&single=true&output=csv";
+
+  // Minimal CSV field splitter — handles quoted fields containing commas and
+  // doubled quotes, which is all this count needs. Not a general CSV parser.
+  function splitCsvLine(line){
+    var out = [], cur = '', q = false;
+    for(var i = 0; i < line.length; i++){
+      var ch = line[i];
+      if(q){
+        if(ch === '"' && line[i+1] === '"'){ cur += '"'; i++; }
+        else if(ch === '"'){ q = false; }
+        else cur += ch;
+      } else if(ch === '"'){ q = true; }
+      else if(ch === ','){ out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out.map(function(v){ return v.trim(); });
+  }
+  function firstIndex(head, names){
+    for(var i = 0; i < names.length; i++){
+      var idx = head.indexOf(names[i]);
+      if(idx > -1) return idx;
+    }
+    return -1;
+  }
 
   function readJson(res){
     return res.json().catch(function(){ return null; }).then(function(j){
