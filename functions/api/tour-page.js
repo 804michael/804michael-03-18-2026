@@ -75,13 +75,28 @@ function num(v) {
 
 // ⚠ ALLOW-LIST. Anything not named here never reaches storage. See the note
 // at the top of this file before changing it.
+// Showing windows are HH:MM, 24-hour. Anything else is dropped rather than
+// trusted, so nothing but a time can ever reach the client page from this field.
+function cleanTime(v) {
+  const s = str(v, 5).trim();
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(s) ? s : '';
+}
+
 function publishableStop(raw) {
   const s = raw && typeof raw === 'object' ? raw : {};
+  // DELIBERATE ALLOW-LIST ADDITION, 2026-09-05: windowStart/windowEnd.
+  // A showing window is a hard constraint the client benefits from seeing
+  // ("we can only get in between 2 and 3") and is NOT agent-private the way
+  // notes and the agent's own ratings are - those two stay excluded, and the
+  // rule at the top of this file still stands: nothing reaches the client page
+  // unless it is named here on purpose.
   return {
     address: str(s.address, 200),
     blurb: str(s.blurb, 300),
     lat: num(s.lat),
     lng: num(s.lng),
+    windowStart: cleanTime(s.windowStart),
+    windowEnd: cleanTime(s.windowEnd),
   };
 }
 

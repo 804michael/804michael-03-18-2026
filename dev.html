@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_22-04-0064                            ║
+  ║  SITE VERSION: 26.09.06_00-46-0065                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_22-04-0064    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-46-0065    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -653,6 +653,24 @@
       </div>
     </div>
 
+    <div class="dev-card" data-id="tour-wrapup-email" data-created="2026-09-06">
+      <div class="dev-card-head">
+        <h3>Post-Tour Wrap-Up Email</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Not built yet - email Michael a ranked summary of what the client said after a tour, so the feedback comes to him instead of him having to remember to go look for it in the planner.</p>
+        <ul>
+          <li>The data is already there and already sorted best-first: rating, comment and address per stop, read with the tour's adminKey</li>
+          <li>EmailJS is already wired on this site for the lead forms, so no new service is needed</li>
+          <li>Trigger is the open question. A "Email me this summary" button is trivial; sending automatically a few hours after the tour needs a scheduler, since Pages Functions do not run on a timer</li>
+          <li>Agent-only. Do not copy the client - those are their private notes about houses</li>
+          <li>Worth including: any stop the client never rated, which is its own signal</li>
+        </ul>
+        <span class="dev-card-link" style="color:var(--gray-muted)">Not built yet</span>
+      </div>
+    </div>
+
   </div>
 
     </div>
@@ -725,7 +743,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_22-04-0064</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_00-46-0065</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -736,7 +754,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_22-04-0064';
+  const SITE_VERSION = '26.09.06_00-46-0065';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

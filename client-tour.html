@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_22-40-0056                            ║
+  ║  SITE VERSION: 26.09.06_00-46-0057                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_22-40-0056    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-46-0057    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -115,6 +115,9 @@
        obvious, at 3px instead of a full outline. */
     .stop{border:0;border-radius:0;padding:16px 2px;background:var(--white)}
     .stop.first{border-left:3px solid var(--red);padding-left:11px}
+    /* Only shown when the agent set BOTH ends of a window. It is a real
+       constraint on the day, so it reads as information, not decoration. */
+    .window{display:inline-block;margin-top:5px;padding:2px 8px;border-radius:999px;background:var(--gray-light);border:1px solid var(--gray-mid);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-text)}
     .stop-head{display:flex;gap:12px;align-items:flex-start}
     .pin{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fff;line-height:1}
     .stop-id{flex:1 1 auto;min-width:0}
@@ -189,7 +192,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.05_22-40-0056';
+const SITE_VERSION = '26.09.06_00-46-0057';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -235,6 +238,21 @@ const SITE_VERSION = '26.09.05_22-40-0056';
     var parts = String(a || '').split(',');
     return { street: (parts.shift() || '').trim(), rest: parts.join(',').trim() };
   }
+  // "14:30" -> "2:30 PM". Windows come from the planner as 24-hour HH:MM and
+  // the server only ever stores that shape, so anything unparseable is simply
+  // not shown rather than printed raw at a client.
+  function fmtWindow(from, to){
+    function one(hhmm){
+      var m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(hhmm || '');
+      if(!m) return '';
+      var h = parseInt(m[1], 10), ampm = h < 12 ? 'AM' : 'PM';
+      var h12 = h % 12; if(h12 === 0) h12 = 12;
+      return h12 + ':' + m[2] + ' ' + ampm;
+    }
+    var a = one(from), b = one(to);
+    return (a && b) ? (a + ' - ' + b) : '';
+  }
+
   function gmaps(a){ return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(a); }
   function amaps(a){ return 'https://maps.apple.com/?daddr=' + encodeURIComponent(a); }
 
@@ -304,8 +322,10 @@ const SITE_VERSION = '26.09.05_22-40-0056';
       '<div class="stop-head">' +
         '<div class="pin" style="background:' + pinColor(i, total) + '">' + (i + 1) + '</div>' +
         '<div class="stop-id">' +
-          '<a class="addr" href="' + esc(gmaps(s.address)) + '" target="_blank" rel="noopener">' + esc(a.street) + '</a>' +
+          '<a class="addr" href="' + esc(directionsUrl(s.address)) + '" target="_blank" rel="noopener">' + esc(a.street) + '</a>' +
           (a.rest ? '<div class="city">' + esc(a.rest) + '</div>' : '') +
+          (fmtWindow(s.windowStart, s.windowEnd)
+            ? '<div class="window">Showing window ' + esc(fmtWindow(s.windowStart, s.windowEnd)) + '</div>' : '') +
         '</div>' +
       '</div>' +
       (s.blurb ? '<p class="blurb">' + esc(s.blurb) + '</p>' : '') +
