@@ -1320,3 +1320,36 @@ correctly did not appear and nothing said why. The publish note now reads "Set a
 date & time to give the client Add to Calendar." **Any tour published before 2026-09-06
 must be republished** before its client page can offer the links, since `startISO` did
 not exist when it was stored.
+
+### Addendum — undo everywhere a note is typed; the calendar always offers (2026-09-06)
+
+**One undo store, two places.** The stop-row notes box now has the same one-step Undo
+as Tour Mode, and they share `noteUndo` keyed by stop id. That is the point, not an
+implementation detail: wipe a note in Tour Mode, exit, and the row offers to put it
+back — and the other way round. The row's link only shows while the notes box is open
+and there is something to restore, so a collapsed row stays quiet. Verified end to end:
+wipe in Tour Mode, exit, row restores the exact text.
+
+**Reversal: the calendar links now always appear**, at Michael's call. The earlier
+design hid them without a real start date on the grounds that "an event on the wrong day
+is worse than no link at all". His argument is better — a client can drag an event, and
+they cannot use a button that is not there.
+
+What makes it safe is that a guess must announce itself in three places, because a
+calendar entry gets read later, out of context, by someone who will not remember any
+caveat from the page:
+
+1. **On the page**, under the buttons: "Your agent has not set the date yet, so these
+   land on today. Move them once you hear the time."
+2. **In every event title**, `(date not set)` — the part visible in a calendar grid,
+   which is where it actually matters.
+3. **As the first line of every event description**, and in the Google link's details.
+
+The anchor when there is no `startISO`: today, at the first stop's showing window if any
+stop has one, otherwise 9am for a three-hour block. `startISO` still requires both a date
+and a time in the planner, so `buildStartDateTime`'s fall-back-to-today can never
+masquerade as a confirmed date — it just produces the warned case instead.
+
+Verified against three stubbed tours: dated (correct future date, no warning, clean
+titles), undated with windows (today at the first window, warned), undated without
+windows (today 9–12, warned, single event).

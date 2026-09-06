@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_06-30-0065                            ║
+  ║  SITE VERSION: 26.09.06_06-42-0066                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-30-0065    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-42-0066    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -83,6 +83,9 @@
        pills and a label onto one. */
     .ct-cal-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-mid)}
     .ct-cal-row[hidden]{display:none}
+    /* Full width, so it drops under the buttons rather than squeezing them. */
+    .ct-cal-warn{flex:1 0 100%;margin:2px 0 0;font-size:.8rem;line-height:1.45;color:#8a1a1a}
+    .ct-cal-warn[hidden]{display:none}
     .ct-cal-lbl{flex:0 0 auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted)}
     .ct-cal-btns{display:flex;gap:6px;margin-left:auto}
     .ct-cal{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
@@ -216,6 +219,7 @@
         <a class="ct-cal" id="ctCalApple" download="home-tour.ics">Apple</a>
         <a class="ct-cal" id="ctCalIcs" download="home-tour.ics">.ics</a>
       </span>
+      <p class="ct-cal-warn" id="ctCalWarn" hidden></p>
     </div>
   </section>
 
@@ -242,7 +246,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_06-30-0065';
+const SITE_VERSION = '26.09.06_06-42-0066';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -433,21 +437,53 @@ const SITE_VERSION = '26.09.06_06-30-0065';
       '&location=' + encodeURIComponent(ev.loc) +
       '&details=' + encodeURIComponent(ev.desc);
   }
+  function googleCalUrlWithCaveat(ev, caveat){
+    return googleCalUrl({ title: ev.title, start: ev.start, end: ev.end, loc: ev.loc,
+                          desc: (caveat ? caveat + '\n\n' : '') + ev.desc });
+  }
+
+  // When did this tour start? Only the first answer is the agent's; the rest
+  // are this page's best guess, and anything built on a guess has to say so
+  // both on the page and inside the event, because a calendar entry is read
+  // later, out of context, by someone who will not remember the caveat.
+  function calendarAnchor(live){
+    if(tour.startISO){
+      var exact = new Date(tour.startISO);
+      if(!isNaN(exact.getTime())) return { when: exact, sure: true };
+    }
+    // No date from the agent. Today, at the first showing window if there is
+    // one, otherwise mid-morning - a placeholder the client can drag.
+    var d = new Date();
+    var firstWindow = '';
+    for(var i = 0; i < live.length; i++){
+      if(live[i].windowStart){ firstWindow = live[i].windowStart; break; }
+    }
+    var m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(firstWindow);
+    if(m) d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    else d.setHours(9, 0, 0, 0);
+    return { when: d, sure: false };
+  }
 
   function buildCalendar(list){
     var row = document.getElementById('ctCalRow');
     if(!row) return;
-    var base = tour.startISO ? new Date(tour.startISO) : null;
-    if(!base || isNaN(base.getTime())){ row.hidden = true; return; }
 
     var live = list.filter(function(s){ return !s.skipped; });
     if(!live.length){ row.hidden = true; return; }
+
+    var anchor = calendarAnchor(live);
+    var base = anchor.when;
+    var caveat = anchor.sure ? ''
+      : 'Your agent has not set the date yet, so these land on today. Move them once you hear the time.';
+    var warnEl = document.getElementById('ctCalWarn');
+    warnEl.textContent = caveat;
+    warnEl.hidden = anchor.sure;
 
     var events = [];
     live.forEach(function(s, n){
       var from = atClock(base, s.windowStart), to = atClock(base, s.windowEnd);
       if(!from || !to) return;
-      events.push({ start: from, end: to, title: 'Showing: ' + splitAddr(s.address).street, loc: s.address, desc: s.blurb || '' });
+      events.push({ start: from, end: to, title: 'Showing: ' + splitAddr(s.address).street + (anchor.sure ? '' : ' (date not set)'), loc: s.address, desc: s.blurb || '' });
     });
 
     // One block standing for the whole day: what the Google link uses, and what
@@ -456,7 +492,7 @@ const SITE_VERSION = '26.09.06_06-30-0065';
     var whole = {
       start: base,
       end: (lastEnd && lastEnd > base) ? lastEnd : new Date(base.getTime() + 3 * 60 * 60 * 1000),
-      title: 'Home tour with 804Michael',
+      title: 'Home tour with 804Michael' + (anchor.sure ? '' : ' (date not set)'),
       loc: live[0].address,
       desc: live.map(function(s, n){
         var w = fmtWindow(s.windowStart, s.windowEnd);
@@ -477,7 +513,7 @@ const SITE_VERSION = '26.09.06_06-30-0065';
         'DTEND:' + icsDate(ev.end),
         'SUMMARY:' + icsText(ev.title),
         'LOCATION:' + icsText(ev.loc),
-        'DESCRIPTION:' + icsText((ev.desc ? ev.desc + '\n\n' : '') + 'Your tour: ' + location.href),
+        'DESCRIPTION:' + icsText((caveat ? caveat + '\n\n' : '') + (ev.desc ? ev.desc + '\n\n' : '') + 'Your tour: ' + location.href),
         'URL:' + location.href,
         'END:VEVENT');
     });
@@ -490,7 +526,7 @@ const SITE_VERSION = '26.09.06_06-30-0065';
     // for, not because the bytes differ.
     document.getElementById('ctCalApple').href = href;
     document.getElementById('ctCalIcs').href = href;
-    document.getElementById('ctCalGoogle').href = googleCalUrl(whole);
+    document.getElementById('ctCalGoogle').href = googleCalUrlWithCaveat(whole, caveat);
     row.hidden = false;
   }
 
