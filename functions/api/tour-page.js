@@ -101,8 +101,21 @@ function publishableStop(raw) {
 }
 
 function cleanCode(v) {
-  const s = str(v, 32);
-  return /^[A-Za-z0-9]+$/.test(s) ? s : '';
+  // Hyphens allowed since 2026-09-06 so custom slugs can read as words
+  // ("ashland-highlights"). client-tour.html's path parser allows the same set.
+  const s = str(v, 40);
+  return /^[A-Za-z0-9-]+$/.test(s) ? s : '';
+}
+
+// A custom, memorable code the agent chooses instead of the random 7 characters
+// - "demo" gives 804re.com/t/demo. Lowercased so the link is not case-sensitive
+// to type, and kept to a shape that cannot be confused with anything else in
+// the path. Minimum 3 so a stray character cannot claim a one-letter slug.
+function cleanSlug(v) {
+  const s = str(v, 40).trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/.test(s)) return '';
+  if (s.indexOf('--') !== -1) return '';
+  return s;
 }
 
 export async function onRequestOptions() {
@@ -187,7 +200,24 @@ export async function onRequestPost(context) {
   // feedback already attached to that code.
   let code = cleanCode(body.code);
   let adminKey = cleanCode(body.adminKey);
-  if (code) {
+
+  // A requested slug wins over the existing code, so a tour can be moved onto a
+  // memorable link. Unlike the random-code path below, a collision here is
+  // reported rather than silently worked around: asking for /t/demo and quietly
+  // getting /t/aB3xQ9z would look like the feature simply did not work.
+  const slug = cleanSlug(body.slug);
+  if (slug) {
+    const rawSlug = await env.TOURS_KV.get(TOUR_PREFIX + slug);
+    let prevSlug = null;
+    try { prevSlug = rawSlug ? JSON.parse(rawSlug) : null; } catch (e) { prevSlug = null; }
+    if (prevSlug && (!adminKey || adminKey !== prevSlug.adminKey)) {
+      return json({ error: 'slug_taken', slug }, 409);
+    }
+    code = slug;
+    if (prevSlug) adminKey = prevSlug.adminKey;   // keep the key that owns it
+  }
+
+  if (code && !slug) {
     const raw = await env.TOURS_KV.get(TOUR_PREFIX + code);
     let prev = null;
     try { prev = raw ? JSON.parse(raw) : null; } catch (e) { prev = null; }
@@ -215,6 +245,10 @@ export async function onRequestPost(context) {
   };
   if (!tour.stops.length) return json({ error: 'no_stops' }, 400);
 
-  await env.TOURS_KV.put(TOUR_PREFIX + code, JSON.stringify(tour), { expirationTtl: TTL_SECONDS });
-  return json({ ok: true, code, adminKey });
+  // A slugged tour is meant to be permanent (a demo link on a business card
+  // should not quietly stop working), so it is stored with no expiry. Random
+  // codes keep the 2-year TTL, since those are one client on one day.
+  const putOpts = slug ? {} : { expirationTtl: TTL_SECONDS };
+  await env.TOURS_KV.put(TOUR_PREFIX + code, JSON.stringify(tour), putOpts);
+  return json({ ok: true, code, adminKey, slug: slug || '' });
 }
