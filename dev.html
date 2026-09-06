@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_06-18-0068                            ║
+  ║  SITE VERSION: 26.09.06_06-59-0069                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-18-0068    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-59-0069    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -552,6 +552,25 @@
       </div>
     </div>
 
+    <div class="dev-card" data-id="route-planner-pro" data-created="2026-09-06">
+      <div class="dev-card-head">
+        <h3>Route Planner Pro</h3>
+        <span class="dev-badge">Prototype</span>
+      </div>
+      <div class="dev-card-body">
+        <p>A question, not a feature yet: is it worth attaching MLS facts to a tour? Paste a CSV export, match it to the stops, and the beds/baths/sqft/year/price questions clients ask on the doorstep are answered without leaving the page.</p>
+        <ul>
+          <li>Deliberately NOT a fork of the planner. Only the property-data layer lives here; if it earns its place the pieces move into the planner as a tab and this page is deleted</li>
+          <li>Import any CSV with a header row - columns matched by name, so the export order does not matter and extra columns are ignored</li>
+          <li>Address matching normalises suffixes ("Road" = "Rd") and ignores city/state/zip. Anything it cannot match stays visibly unmatched with a manual picker - it never guesses</li>
+          <li>Three views: Facts per stop, a Compare table with the best number in each row marked, and a monthly Payment estimate (P&amp;I + taxes + HOA + insurance)</li>
+          <li>A fourth tab shows exactly what would cross to the client page, with the agent-only fields listed as held back</li>
+          <li>Open question before any of it reaches a client: publishing MLS content on a public URL is a licensing call for CVR MLS, not a technical one. The agent-facing half raises none of that</li>
+        </ul>
+        <a class="dev-card-link" href="/route-planner-pro">View page →</a>
+      </div>
+    </div>
+
     <div class="dev-card" data-id="home-value" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Home Value Estimate</h3>
@@ -775,7 +794,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_06-18-0068</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_06-59-0069</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -786,7 +805,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_06-18-0068';
+  const SITE_VERSION = '26.09.06_06-59-0069';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

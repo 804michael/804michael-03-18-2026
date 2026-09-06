@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.06_07-05-0001                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_07-05-0001    ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Update the version string in THREE places every edit:        ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text at the foot of the page   ║
+  ║                                                               ║
+  ║  🧪 PROTOTYPE — NOT THE ROUTE PLANNER                         ║
+  ║  This page exists to answer one question: is it worth wiring  ║
+  ║  MLS facts into the tour tool? It deliberately does NOT fork  ║
+  ║  tour-planner.html. Forking 200KB of working code to try an   ║
+  ║  idea produces two planners that drift apart, and the good    ║
+  ║  one rots. What is here is only the property-data layer:      ║
+  ║  import, match, and the three views the data would feed. If   ║
+  ║  it earns its place, the pieces move INTO the planner as a    ║
+  ║  tab and this page is deleted.                                ║
+  ║                                                               ║
+  ║  🔒 NO REAL MLS DATA IN THIS FILE, EVER                       ║
+  ║  This repository is PUBLIC (github.com/804michael). CVR MLS   ║
+  ║  data is licensed, and agent-only fields (agent remarks,      ║
+  ║  buyer agent, showing instructions, lockbox) are not ours to  ║
+  ║  publish at all. The sample below is invented — fake streets, ║
+  ║  fake numbers. A real export is pasted at runtime, stays in   ║
+  ║  the browser, and is never sent anywhere or committed.        ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Planner Pro — Prototype — 804Michael</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="description" content="Prototype: MLS facts alongside a home tour." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nav.css">
+
+<style>
+  :root{
+    --red:#DA291C; --red-dark:#b01f15;
+    --black:#111; --white:#fff;
+    --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
+    --gray-text:#555; --gray-muted:#888;
+    --green:#1a7a3c; --amber:#8a6100;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+  a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer}
+  input,textarea,select{font-family:inherit}
+
+  /* Same black hero standard as every other page (see site-design-notes.md). */
+  .rp-hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;margin-top:calc(var(--banner-h) + var(--nav-h))}
+  .rp-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+  .rp-hero h1{font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
+  .rp-hero h1 span{color:var(--red)}
+  .rp-hero-sub{font-size:1rem;color:rgba(255,255,255,.78);max-width:60ch;line-height:1.5}
+  .rp-tag{display:inline-block;margin-bottom:10px;padding:3px 10px;border-radius:999px;background:var(--red);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+
+  .breadcrumb{background:var(--gray-light);border-bottom:1px solid var(--gray-mid)}
+  .breadcrumb-in{max-width:1180px;margin:0 auto;padding:9px 20px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted)}
+  .breadcrumb .cur{color:var(--black)}
+
+  .rp-body{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+
+  .rp-card{border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 18px;margin-bottom:18px;background:var(--white)}
+  .rp-card h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.25rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+  .rp-step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--black);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.85rem;margin-right:8px;vertical-align:2px}
+  .rp-hint{font-size:.9rem;color:var(--gray-text);line-height:1.5;margin-bottom:10px}
+  .rp-note{margin:10px 0 0;padding:10px 12px;border-left:3px solid var(--gray-mid);background:var(--gray-light);font-size:.88rem;line-height:1.55;color:var(--gray-text)}
+  .rp-note.warn{border-left-color:var(--red);background:#fdf3f2;color:#7a1a13}
+  .rp-note strong{color:inherit}
+
+  textarea.rp-paste{width:100%;min-height:120px;padding:10px 12px;border:1.5px solid var(--gray-mid);border-radius:9px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;line-height:1.45;resize:vertical;background:#fcfcfa}
+  textarea.rp-paste:focus{outline:none;border-color:var(--red)}
+  .rp-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:10px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:999px;border:1.5px solid transparent;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;transition:background .15s,color .15s,border-color .15s}
+  .btn-red{background:var(--red);color:#fff}
+  .btn-red:hover{background:var(--red-dark)}
+  .btn-out{background:none;border-color:var(--gray-mid);color:var(--gray-text)}
+  .btn-out:hover{border-color:var(--red);color:var(--red)}
+  .btn:focus-visible,a:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+  /* Match report */
+  .rp-match{margin-top:12px;border-top:1px solid var(--gray-mid);padding-top:12px}
+  .rp-mrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-light);flex-wrap:wrap}
+  .rp-mrow:last-child{border-bottom:0}
+  .rp-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%}
+  .rp-dot.ok{background:var(--green)}
+  .rp-dot.no{background:var(--red)}
+  .rp-maddr{flex:1 1 200px;min-width:0;font-weight:600;font-size:.95rem}
+  .rp-mkey{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.75rem;color:var(--gray-muted)}
+  .rp-mpick{flex:0 0 auto;padding:5px 8px;border:1.5px solid var(--gray-mid);border-radius:7px;font-size:.85rem;background:#fff;max-width:100%}
+
+  /* Tabs */
+  .rp-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--gray-mid);margin-bottom:16px}
+  .rp-tab{padding:9px 15px;border:0;background:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-muted);border-bottom:3px solid transparent;margin-bottom:-2px}
+  .rp-tab[aria-selected="true"]{color:var(--black);border-bottom-color:var(--red)}
+  .rp-panel[hidden]{display:none}
+
+  /* Facts cards */
+  .rp-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .rp-fact{border:1.5px solid var(--gray-mid);border-radius:12px;overflow:hidden}
+  .rp-fact-head{background:var(--black);color:#fff;padding:11px 14px}
+  .rp-fact-head .a1{font-weight:700;font-size:1.05rem;line-height:1.2}
+  .rp-fact-head .a2{font-size:.85rem;color:rgba(255,255,255,.65);margin-top:2px}
+  .rp-big{display:flex;gap:0;border-bottom:1px solid var(--gray-mid)}
+  .rp-big div{flex:1 1 0;padding:10px 6px;text-align:center;border-right:1px solid var(--gray-light)}
+  .rp-big div:last-child{border-right:0}
+  .rp-big b{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;line-height:1}
+  .rp-big span{display:block;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-muted);margin-top:3px}
+  .rp-kv{padding:10px 14px 12px}
+  .rp-kv dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.9rem}
+  .rp-kv dt{color:var(--gray-muted)}
+  .rp-kv dd{text-align:right;font-weight:600}
+  .rp-agentonly{margin:10px 14px 12px;padding:8px 11px;border-radius:8px;background:#fffef7;border-left:3px solid #e0c060;font-size:.85rem;color:var(--amber)}
+
+  /* Compare table */
+  .rp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.rp-cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+  .rp-cmp th,.rp-cmp td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--gray-light);white-space:nowrap}
+  .rp-cmp th:first-child,.rp-cmp td:first-child{text-align:left;position:sticky;left:0;background:#fff;font-weight:600}
+  .rp-cmp thead th{background:var(--gray-light);font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:.8rem;border-bottom:2px solid var(--gray-mid)}
+  .rp-cmp tbody tr:hover td{background:#fafafa}
+  .rp-best{background:#eaf5ee !important;font-weight:700}
+
+  /* Payment */
+  .rp-inputs{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .rp-field{flex:1 1 130px;min-width:0}
+  .rp-field label{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:3px}
+  .rp-field input{width:100%;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:1rem;min-width:0}
+  .rp-field input:focus{outline:none;border-color:var(--red)}
+
+  .rp-legal{font-size:.78rem;color:var(--gray-muted);line-height:1.6;margin-top:16px}
+
+  footer{background:var(--black);color:#fff;padding:26px 20px}
+  .ft-in{max-width:1180px;margin:0 auto;text-align:center}
+  .ft-in img{height:26px;width:auto;margin:0 auto 10px}
+  .ft-copy{font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.7}
+
+  @media(max-width:640px){
+    .rp-hero{padding:20px 16px 16px}
+    .rp-card{padding:14px;border-radius:12px}
+    .rp-kv dl{font-size:.88rem}
+  }
+</style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<div class="rp-hero">
+  <span class="rp-tag">Prototype</span>
+  <h1>Route Planner <span>Pro</span></h1>
+  <p class="rp-hero-sub">What a tour looks like with the listing facts attached. Paste an MLS export, match it to the stops, and the questions clients ask on the doorstep are already answered.</p>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="/">Home</a><span>›</span><a href="/dev">Dev</a><span>›</span><span class="cur">Route Planner Pro</span>
+  </div>
+</div>
+
+<div class="rp-body">
+
+  <div class="rp-card">
+    <h2><span class="rp-step">1</span>Paste the MLS export</h2>
+    <p class="rp-hint">Any CSV with a header row. Columns are matched by name, so the export does not have to be in a particular order — extra columns are ignored and missing ones just leave blanks.</p>
+    <textarea class="rp-paste" id="csvBox" spellcheck="false" placeholder="Address,List Price,# Bedrooms,Total Baths,SqFtTotal,…&#10;&quot;215 Example Rd&quot;,529900,3,2.1,2127,…"></textarea>
+    <div class="rp-row">
+      <button type="button" class="btn btn-red" id="parseBtn">Read it</button>
+      <button type="button" class="btn btn-out" id="sampleBtn">Load made-up sample</button>
+      <button type="button" class="btn btn-out" id="clearBtn">Clear</button>
+      <span id="parseNote" class="rp-hint" style="margin:0"></span>
+    </div>
+    <p class="rp-note warn"><strong>Nothing leaves this page.</strong> The paste is read in your browser and held in memory only — it is never uploaded, never saved to the server, and never written into the site's code. It is gone when you close the tab. That matters because this repository is public and MLS data is licensed.</p>
+  </div>
+
+  <div class="rp-card">
+    <h2><span class="rp-step">2</span>The stops on your tour</h2>
+    <p class="rp-hint">One address per line — in the real thing these come straight from the planner. Typed loosely on purpose here, to show the matching cope with it.</p>
+    <textarea class="rp-paste" id="stopsBox" spellcheck="false" style="min-height:90px"></textarea>
+    <div class="rp-row">
+      <button type="button" class="btn btn-red" id="matchBtn">Match them up</button>
+      <span id="matchNote" class="rp-hint" style="margin:0"></span>
+    </div>
+    <div class="rp-match" id="matchList" hidden></div>
+  </div>
+
+  <div class="rp-card" id="viewsCard" hidden>
+    <div class="rp-tabs" role="tablist">
+      <button type="button" class="rp-tab" role="tab" data-panel="facts" aria-selected="true">Facts</button>
+      <button type="button" class="rp-tab" role="tab" data-panel="compare" aria-selected="false">Compare</button>
+      <button type="button" class="rp-tab" role="tab" data-panel="payment" aria-selected="false">Payment</button>
+      <button type="button" class="rp-tab" role="tab" data-panel="client" aria-selected="false">What the client sees</button>
+    </div>
+
+    <div class="rp-panel" id="panel-facts"></div>
+
+    <div class="rp-panel" id="panel-compare" hidden>
+      <p class="rp-hint">Green marks the best number in each row. This is the drive-home view — the one that answers "which of these was the better buy".</p>
+      <div class="rp-scroll"><table class="rp-cmp" id="cmpTable"></table></div>
+    </div>
+
+    <div class="rp-panel" id="panel-payment" hidden>
+      <p class="rp-hint">Rough monthly cost, so "what would that run me a month?" has an answer at the kerb instead of a promise to check later.</p>
+      <div class="rp-inputs">
+        <div class="rp-field"><label for="downPct">Down %</label><input type="number" id="downPct" value="10" min="0" max="100" step="1"></div>
+        <div class="rp-field"><label for="rate">Rate %</label><input type="number" id="rate" value="6.5" min="0" max="20" step="0.125"></div>
+        <div class="rp-field"><label for="years">Years</label><input type="number" id="years" value="30" min="5" max="40" step="5"></div>
+        <div class="rp-field"><label for="insur">Insurance / yr</label><input type="number" id="insur" value="1800" min="0" step="100"></div>
+      </div>
+      <div class="rp-scroll"><table class="rp-cmp" id="payTable"></table></div>
+      <p class="rp-legal" id="payLegal"></p>
+    </div>
+
+    <div class="rp-panel" id="panel-client" hidden>
+      <p class="rp-hint">The same stops as the client's phone would show them. Everything held back is listed underneath, so what crosses the line is a decision rather than an accident.</p>
+      <div id="clientPreview"></div>
+    </div>
+  </div>
+
+  <div class="rp-card">
+    <h2>Read me before this goes anywhere near a client</h2>
+    <p class="rp-note warn"><strong>Agent-only fields must never reach the client page.</strong> An MLS export carries buyer-agent names and phones, seller-paid closing costs, days on market, showing instructions, lockbox details and agent remarks. This prototype keeps them behind an allow-list, the same way <code>/api/tour-page</code> does for the tour itself — the client page renders only what is explicitly permitted, never "everything except".</p>
+    <p class="rp-note"><strong>Publishing listing facts is a licensing question, not a technical one.</strong> Beds, baths, square feet and list price are MLS content. Sending them to a named client in a private link is one thing; putting them on a public URL is another, even a <code>noindex</code> one. Worth one email to CVR MLS before the client-facing half is switched on. The agent-facing half — this page, Tour Mode, the printed agent copy — raises none of that.</p>
+    <p class="rp-note"><strong>A pasted CSV is a snapshot.</strong> It is right on the morning you export it and wrong the moment a price changes. Anything shown to a client should carry the date it was pulled.</p>
+  </div>
+
+  <p class="rp-legal">
+    Prototype page — not linked from the site, <code>noindex</code>, reachable only from its card on <a href="/dev">Dev</a>.<br>
+    <span id="site-version-display"></span>
+  </p>
+</div>
+
+<footer>
+  <div class="ft-in">
+    <a href="/" aria-label="804Michael"><img src="/images/logos/804michael-wordmark-white.svg" alt="804Michael"></a>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br>
+      Internal staging page — not part of the public site navigation
+    </p>
+  </div>
+</footer>
+
+<script>
+// ⚠ AI: update SITE_VERSION + the top comment's SITE VERSION line + the visible
+// version line on every edit.
+const SITE_VERSION = '26.09.06_07-05-0001';
+(function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
+document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date().getFullYear(); });
+
+(function(){
+  'use strict';
+
+  // ── INVENTED sample data ────────────────────────────────────────────────
+  // Fake streets, fake numbers, fake MLS ids. This repository is public and
+  // MLS content is licensed, so nothing real is ever committed here. It exists
+  // so the page demonstrates itself; the real export is pasted at runtime.
+  var SAMPLE_CSV = [
+    '"Address","List Price","Status","Sales Price","Days On Market","# Bedrooms","Total Baths","SqFtTotal","County/City","List Date","Subdivision","Acres","$/Fin SF","Assd Total","Prop Type","ML Number","New/Resale","Yr Blt","Annual Taxes","HOA Fee","HOA Period","Elm School","Mid School","High School"',
+    '"101  Example Ridge Rd ","529900","Active","","34","3","2.1","2127","Hanover","2026-08-18","Sample Farms","0.21","249.13","0","Residential","9900001","New (never occupied)","2024","3180","175.00","Monthly","Sample Elem","Sample Middle","Sample High"',
+    '"202 Demonstration St","389000","Active","","12","4","2","1512","Hanover","2026-08-30","Placeholder Park","0.25","257.28","282100","Residential","9900002","Resale (occupied at least once)","2001","2640","150.00","Yearly","Other Elem","Sample Middle","Sample High"',
+    '"303  Placeholder Ln ","449950","Active","","7","3","2.1","1575","Hanover","2026-09-01","None","0.17","285.68","339100","Residential","9900003","Resale (occupied at least once)","2006","2937","","","Other Elem","Sample Middle","Sample High"',
+    '"404  Mockup Station Rd ","410000","Active","","64","3","2.1","1701","Hanover","2026-07-04","None","0.33","241.03","296000","Residential","9900004","Resale (occupied at least once)","2009","2588","100.00","Yearly","Other Elem","Sample Middle","Sample High"',
+    '"12390 Fictional Gate Way","559950","Active","","267","4","3","2508","Hanover","2026-04-10","None","1.70","223.27","398900","Residential","9900005","New (never occupied)","2012","3801","300.00","Yearly","Other Elem","Sample Middle","Sample High"'
+  ].join('\n');
+
+  // Deliberately messy: a spelled-out suffix, a missing city, extra commas, and
+  // one address that is not in the export at all.
+  var SAMPLE_STOPS = [
+    '101 Example Ridge Road, Ashland, VA 23005',
+    '303 Placeholder Lane, Ashland',
+    '12390 Fictional Gate Way, Ashland, VA 23005',
+    '202 Demonstration Street',
+    '9 Not In The Export Ct, Ashland, VA'
+  ].join('\n');
+
+  // ── CSV ────────────────────────────────────────────────────────────────
+  // Fields may be quoted and may contain commas and doubled quotes. Anything
+  // less than this mangles the first address with a comma in it.
+  function parseCSV(text){
+    var rows = [], row = [], cell = '', q = false, i = 0;
+    text = String(text || '').replace(/\r\n?/g, '\n');
+    for(; i < text.length; i++){
+      var c = text[i];
+      if(q){
+        if(c === '"'){ if(text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if(c === '"'){ q = true; }
+      else if(c === ','){ row.push(cell); cell = ''; }
+      else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += c;
+    }
+    if(cell.length || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(v){ return String(v).trim(); }); });
+  }
+
+  // Header names vary between exports and between MLSs, so match on a squashed
+  // form and accept several spellings rather than demanding one exact schema.
+  var FIELDS = {
+    address:   ['address','fulladdress','propertyaddress','streetaddress'],
+    price:     ['listprice','currentprice','price','askingprice'],
+    sold:      ['salesprice','soldprice','closeprice'],
+    status:    ['status','mlsstatus'],
+    dom:       ['daysonmarket','dom','cdom'],
+    beds:      ['bedrooms','beds','bdrms','totalbedrooms'],
+    baths:     ['totalbaths','baths','bathrooms'],
+    sqft:      ['sqfttotal','totalfinishedarea','squarefeet','sqft','abovegradefinishedarea'],
+    psf:       ['finsf','pricepersqft','sqftprice','ttlfinar'],
+    acres:     ['acres','lotsizeacres','lotacres'],
+    year:      ['yrblt','yearbuilt','yrbuilt'],
+    taxes:     ['annualtaxes','taxes','taxamount'],
+    assessed:  ['assdtotal','totalassmt','assessedvalue'],
+    hoaFee:    ['hoafee','fee','associationfee','condofee'],
+    hoaPeriod: ['hoaperiod','feeperiod'],
+    sub:       ['subdivision','neighborhood','nghbrhd'],
+    county:    ['countycity','county'],
+    mls:       ['mlnumber','mls','mlsnumber','listingid'],
+    newResale: ['newresale','newconstruction'],
+    elem:      ['elmschool','elementaryschool','elemschool'],
+    mid:       ['midschool','middleschool'],
+    high:      ['highschool'],
+    listDate:  ['listdate','listingdate']
+  };
+  function squash(s){ return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  function mapColumns(header){
+    var squashed = header.map(squash), map = {};
+    Object.keys(FIELDS).forEach(function(key){
+      for(var i = 0; i < FIELDS[key].length; i++){
+        var want = FIELDS[key][i];
+        var at = squashed.indexOf(want);
+        if(at === -1) at = squashed.findIndex(function(h){ return h && (h.indexOf(want) === 0 || want.indexOf(h) === 0 && h.length > 4); });
+        if(at !== -1){ map[key] = at; return; }
+      }
+    });
+    return map;
+  }
+
+  // ── Address matching ───────────────────────────────────────────────────
+  // The export writes "101  Example Ridge Rd " and the planner holds
+  // "101 Example Ridge Road, Ashland, VA 23005". Same house. The key is the
+  // number plus the street words with the suffix normalised, and the city,
+  // state and zip dropped - they are the parts most likely to differ.
+  var SUFFIX = {
+    road:'rd', street:'st', drive:'dr', lane:'ln', court:'ct', avenue:'ave', av:'ave',
+    boulevard:'blvd', place:'pl', terrace:'ter', circle:'cir', parkway:'pkwy',
+    highway:'hwy', trail:'trl', way:'way', square:'sq', crossing:'xing', run:'run',
+    north:'n', south:'s', east:'e', west:'w'
+  };
+  function addrKey(raw){
+    var s = String(raw || '').toLowerCase();
+    s = s.split(',')[0];                                  // street line only
+    s = s.replace(/\b(?:apt|unit|ste|suite|bldg|fl)\b\.?\s*#?\s*[\w-]+/g, '');
+    s = s.replace(/#\s*[\w-]+/g, '');
+    s = s.replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    var parts = s.split(' ').filter(Boolean);
+    if(!parts.length) return '';
+    var num = /^\d+[a-z]?$/.test(parts[0]) ? parts.shift() : '';
+    parts = parts.map(function(w){ return SUFFIX[w] || w; });
+    // A trailing state/zip that survived a missing comma.
+    while(parts.length && /^\d{5}$/.test(parts[parts.length-1])) parts.pop();
+    if(parts.length > 1 && parts[parts.length-1] === 'va') parts.pop();
+    return (num + ' ' + parts.join(' ')).trim();
+  }
+
+  // ── State ──────────────────────────────────────────────────────────────
+  var listings = [];     // parsed rows, canonical field names
+  var stops = [];        // {raw, key, listing|null, manual}
+  var colsFound = [];
+
+  function num(v){
+    var n = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, ''));
+    return isFinite(n) ? n : null;
+  }
+  function money(n){ return n == null ? '—' : '$' + Math.round(n).toLocaleString(); }
+  // "2.1" is MLS shorthand for two full baths and one half. It sorts fine as
+  // a number so comparison keeps the raw value, but nobody should have to
+  // read it as a decimal.
+  function bathLabel(v){
+    if(v == null || v === '') return '\u2014';
+    var s = String(v), dot = s.indexOf('.');
+    if(dot === -1) return s;
+    var full = s.slice(0, dot) || '0', half = parseInt(s.slice(dot + 1), 10) || 0;
+    return half ? full + '\u00BD' : full;
+  }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function readCsv(text){
+    var rows = parseCSV(text);
+    if(rows.length < 2) return { error: 'Needs a header row and at least one listing.' };
+    var map = mapColumns(rows[0]);
+    if(map.address == null) return { error: 'No column that looks like an address. Include one named "Address".' };
+    colsFound = Object.keys(map);
+    var out = rows.slice(1).map(function(r){
+      var o = {};
+      Object.keys(map).forEach(function(k){ o[k] = (r[map[k]] || '').trim(); });
+      o.key = addrKey(o.address);
+      // $/sqft is usually in the export, but derive it when it is not - it is
+      // the number this whole exercise is really about.
+      var price = num(o.price) || num(o.sold), sqft = num(o.sqft);
+      o._price = price; o._sqft = sqft;
+      o._psf = num(o.psf) || (price && sqft ? price / sqft : null);
+      o._beds = num(o.beds); o._baths = num(o.baths);
+      o._year = num(o.year); o._acres = num(o.acres);
+      o._taxes = num(o.taxes); o._dom = num(o.dom);
+      var fee = num(o.hoaFee) || 0;
+      var per = String(o.hoaPeriod || '').toLowerCase();
+      o._hoaMonthly = !fee ? 0 : (per.indexOf('year') === 0 || per.indexOf('ann') === 0) ? fee / 12
+                    : (per.indexOf('quart') === 0) ? fee / 3 : fee;
+      return o;
+    }).filter(function(o){ return o.key; });
+    return { listings: out };
+  }
+
+  document.getElementById('sampleBtn').addEventListener('click', function(){
+    document.getElementById('csvBox').value = SAMPLE_CSV;
+    document.getElementById('stopsBox').value = SAMPLE_STOPS;
+    document.getElementById('parseBtn').click();
+  });
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    document.getElementById('csvBox').value = '';
+    document.getElementById('stopsBox').value = '';
+    listings = []; stops = [];
+    document.getElementById('parseNote').textContent = '';
+    document.getElementById('matchNote').textContent = '';
+    document.getElementById('matchList').hidden = true;
+    document.getElementById('viewsCard').hidden = true;
+  });
+
+  document.getElementById('parseBtn').addEventListener('click', function(){
+    var res = readCsv(document.getElementById('csvBox').value);
+    var note = document.getElementById('parseNote');
+    if(res.error){ listings = []; note.textContent = res.error; return; }
+    listings = res.listings;
+    var wanted = { year:'Yr Blt', taxes:'Annual Taxes', hoaFee:'HOA Fee',
+                   elem:'Elm School', acres:'Acres', sub:'Subdivision' };
+    var absent = Object.keys(wanted).filter(function(k){ return colsFound.indexOf(k) === -1; })
+                       .map(function(k){ return wanted[k]; });
+    note.innerHTML = esc(listings.length + (listings.length === 1 ? ' listing' : ' listings') +
+      ' · ' + colsFound.length + ' usable columns') +
+      (absent.length ? '<br><span style="color:var(--amber)">Not in this export: ' +
+        esc(absent.join(', ')) + ' — add them to the saved search and these rows fill in.</span>' : '');
+    if(document.getElementById('stopsBox').value.trim()) document.getElementById('matchBtn').click();
+  });
+
+  document.getElementById('matchBtn').addEventListener('click', function(){
+    var lines = document.getElementById('stopsBox').value.split('\n')
+      .map(function(l){ return l.trim(); }).filter(Boolean);
+    stops = lines.map(function(raw){
+      var key = addrKey(raw);
+      var hit = listings.filter(function(l){ return l.key === key; })[0] || null;
+      return { raw: raw, key: key, listing: hit, manual: false };
+    });
+    renderMatch();
+    renderAll();
+  });
+
+  function renderMatch(){
+    var box = document.getElementById('matchList');
+    var hits = stops.filter(function(s){ return s.listing; }).length;
+    document.getElementById('matchNote').textContent =
+      hits + ' of ' + stops.length + ' matched' + (hits < stops.length ? ' — pick the rest by hand' : '');
+    box.hidden = !stops.length;
+    box.innerHTML = stops.map(function(s, i){
+      var opts = ['<option value="">— not matched —</option>'].concat(listings.map(function(l, li){
+        return '<option value="' + li + '"' + (s.listing === l ? ' selected' : '') + '>' +
+               esc(l.address.trim()) + '</option>';
+      })).join('');
+      return '<div class="rp-mrow">' +
+        '<span class="rp-dot ' + (s.listing ? 'ok' : 'no') + '"></span>' +
+        '<span class="rp-maddr">' + esc(s.raw) + '<br><span class="rp-mkey">key: ' + esc(s.key) + '</span></span>' +
+        '<select class="rp-mpick" data-stop="' + i + '">' + opts + '</select>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Never silently attach the wrong facts to a house - the same failure the
+  // client-feedback fix was about. An unmatched stop stays visibly unmatched
+  // until a person picks.
+  document.getElementById('matchList').addEventListener('change', function(e){
+    var sel = e.target.closest('select[data-stop]');
+    if(!sel) return;
+    var s = stops[Number(sel.dataset.stop)];
+    s.listing = sel.value === '' ? null : listings[Number(sel.value)];
+    s.manual = true;
+    renderMatch();
+    renderAll();
+  });
+
+  // ── Tabs ───────────────────────────────────────────────────────────────
+  document.querySelector('.rp-tabs').addEventListener('click', function(e){
+    var tab = e.target.closest('.rp-tab');
+    if(!tab) return;
+    document.querySelectorAll('.rp-tab').forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById('panel-' + t.dataset.panel).hidden = !on;
+    });
+  });
+
+  function renderAll(){
+    var any = stops.some(function(s){ return s.listing; });
+    document.getElementById('viewsCard').hidden = !any;
+    if(!any) return;
+    renderFacts(); renderCompare(); renderPayment(); renderClient();
+  }
+
+  // ── Facts ──────────────────────────────────────────────────────────────
+  function renderFacts(){
+    document.getElementById('panel-facts').innerHTML =
+      '<div class="rp-facts">' + stops.map(function(s, i){
+        var l = s.listing;
+        var street = s.raw.split(',')[0];
+        if(!l){
+          return '<div class="rp-fact"><div class="rp-fact-head"><div class="a1">' + esc(street) + '</div>' +
+            '<div class="a2">Stop ' + (i+1) + ' · nothing matched</div></div>' +
+            '<div class="rp-kv"><p class="rp-hint" style="margin:0">No listing attached, so no numbers are shown. Better a blank than someone else\'s house.</p></div></div>';
+        }
+        var kv = [
+          ['Year built', l.year || '—'],
+          ['Lot', l._acres != null ? l._acres.toFixed(2) + ' ac' : '—'],
+          ['$/sq ft', l._psf != null ? '$' + l._psf.toFixed(0) : '—'],
+          ['Taxes', l._taxes != null ? money(l._taxes) + '/yr' : '—'],
+          ['HOA', l._hoaMonthly ? money(l._hoaMonthly) + '/mo' : 'None'],
+          ['Subdivision', l.sub || '—'],
+          ['Schools', [l.elem, l.mid, l.high].filter(Boolean).join(' · ') || '—'],
+          ['Assessed', l.assessed ? money(num(l.assessed)) : '—']
+        ];
+        return '<div class="rp-fact">' +
+          '<div class="rp-fact-head"><div class="a1">' + esc(street) + '</div>' +
+            '<div class="a2">Stop ' + (i+1) + ' · ' + esc(l.status || 'Listed') + ' · MLS ' + esc(l.mls || '—') + '</div></div>' +
+          '<div class="rp-big">' +
+            '<div><b>' + (l._beds != null ? l._beds : '—') + '</b><span>Beds</span></div>' +
+            '<div><b>' + bathLabel(l.baths) + '</b><span>Baths</span></div>' +
+            '<div><b>' + (l._sqft != null ? l._sqft.toLocaleString() : '—') + '</b><span>Sq ft</span></div>' +
+            '<div><b>' + (l._price != null ? '$' + Math.round(l._price/1000) + 'k' : '—') + '</b><span>Price</span></div>' +
+          '</div>' +
+          '<div class="rp-kv"><dl>' + kv.map(function(p){
+            return '<dt>' + esc(p[0]) + '</dt><dd>' + esc(p[1]) + '</dd>';
+          }).join('') + '</dl></div>' +
+          (l._dom != null ? '<div class="rp-agentonly">Agent only · ' + l._dom + ' days on market' +
+            (l.newResale ? ' · ' + esc(l.newResale.replace(/\s*\(.*\)/, '')) : '') + '</div>' : '') +
+        '</div>';
+      }).join('') + '</div>';
+  }
+
+  // ── Compare ────────────────────────────────────────────────────────────
+  function renderCompare(){
+    var live = stops.filter(function(s){ return s.listing; });
+    var rows = [
+      ['Price',    function(l){ return l._price; },  money, 'low'],
+      ['Beds',     function(l){ return l._beds; },   String, 'high'],
+      ['Baths',    function(l){ return l._baths; },  bathLabel, 'high'],
+      ['Sq ft',    function(l){ return l._sqft; },   function(n){ return n == null ? '—' : n.toLocaleString(); }, 'high'],
+      ['$/sq ft',  function(l){ return l._psf; },    function(n){ return n == null ? '—' : '$' + n.toFixed(0); }, 'low'],
+      ['Year',     function(l){ return l._year; },   function(n){ return n == null ? '—' : String(n); }, 'high'],
+      ['Lot (ac)', function(l){ return l._acres; },  function(n){ return n == null ? '—' : n.toFixed(2); }, 'high'],
+      ['Taxes/yr', function(l){ return l._taxes; },  money, 'low'],
+      ['HOA/mo',   function(l){ return l._hoaMonthly; }, function(n){ return !n ? 'None' : money(n); }, 'low'],
+      ['Days on mkt', function(l){ return l._dom; }, function(n){ return n == null ? '—' : String(n); }, 'low']
+    ];
+    var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s, i){
+      return '<th>' + esc(s.raw.split(',')[0]) + '</th>';
+    }).join('') + '</tr></thead>';
+    var body = '<tbody>' + rows.map(function(r){
+      var vals = live.map(function(s){ return r[1](s.listing); });
+      var real = vals.filter(function(v){ return v != null && v !== '' && !isNaN(v); }).map(Number);
+      var best = real.length < 2 ? null : (r[3] === 'low' ? Math.min.apply(null, real) : Math.max.apply(null, real));
+      return '<tr><td>' + r[0] + '</td>' + vals.map(function(v){
+        var isBest = best != null && v != null && Number(v) === best;
+        return '<td class="' + (isBest ? 'rp-best' : '') + '">' + esc(r[2](v)) + '</td>';
+      }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+    document.getElementById('cmpTable').innerHTML = head + body;
+  }
+
+  // ── Payment ────────────────────────────────────────────────────────────
+  function monthlyPI(principal, ratePct, years){
+    if(!principal || !years) return 0;
+    var r = (ratePct / 100) / 12, n = years * 12;
+    if(!r) return principal / n;
+    return principal * r / (1 - Math.pow(1 + r, -n));
+  }
+  function renderPayment(){
+    var live = stops.filter(function(s){ return s.listing && s.listing._price; });
+    var down = num(document.getElementById('downPct').value) || 0;
+    var rate = num(document.getElementById('rate').value) || 0;
+    var yrs  = num(document.getElementById('years').value) || 30;
+    var ins  = num(document.getElementById('insur').value) || 0;
+
+    var rows = [
+      ['Price',        function(x){ return money(x.price); }],
+      ['Down (' + down + '%)', function(x){ return money(x.downAmt); }],
+      ['Loan',         function(x){ return money(x.loan); }],
+      ['P &amp; I',    function(x){ return money(x.pi); }],
+      ['Taxes',        function(x){ return money(x.tax); }],
+      ['Insurance',    function(x){ return money(x.ins); }],
+      ['HOA',          function(x){ return x.hoa ? money(x.hoa) : '—'; }],
+      ['<strong>Monthly</strong>', function(x){ return '<strong>' + money(x.total) + '</strong>'; }]
+    ];
+    var calc = live.map(function(s){
+      var l = s.listing, price = l._price;
+      var downAmt = price * down / 100, loan = price - downAmt;
+      var pi = monthlyPI(loan, rate, yrs);
+      var tax = (l._taxes || 0) / 12, hoa = l._hoaMonthly || 0, insM = ins / 12;
+      return { price: price, downAmt: downAmt, loan: loan, pi: pi, tax: tax, ins: insM, hoa: hoa,
+               total: pi + tax + insM + hoa };
+    });
+    var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s){
+      return '<th>' + esc(s.raw.split(',')[0]) + '</th>';
+    }).join('') + '</tr></thead>';
+    var totals = calc.map(function(c){ return c.total; });
+    var lowest = totals.length > 1 ? Math.min.apply(null, totals) : null;
+    var body = '<tbody>' + rows.map(function(r, ri){
+      return '<tr><td>' + r[0] + '</td>' + calc.map(function(c){
+        var mark = (ri === rows.length - 1 && lowest != null && c.total === lowest) ? ' class="rp-best"' : '';
+        return '<td' + mark + '>' + r[1](c) + '</td>';
+      }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+    document.getElementById('payTable').innerHTML = head + body;
+    document.getElementById('payLegal').textContent =
+      'Estimate only. Principal and interest at ' + rate + '% over ' + yrs + ' years, plus the listing’s own tax figure, ' +
+      'the HOA fee converted to monthly, and insurance at $' + Math.round(ins).toLocaleString() + '/yr spread evenly. ' +
+      'No PMI, no escrow shortfall, no closing costs. Michael Hottman is a licensed broker, not a lender — a lender’s ' +
+      'quote is the only number to act on.';
+  }
+  ['downPct','rate','years','insur'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(){
+      if(!document.getElementById('viewsCard').hidden) renderPayment();
+    });
+  });
+
+  // ── What the client sees ───────────────────────────────────────────────
+  // An allow-list, not a deny-list. The client page is built from exactly
+  // these five fields; everything else in the export is listed as held back so
+  // the decision is visible rather than implied.
+  var CLIENT_FIELDS = ['beds', 'baths', 'sqft', 'year', 'price'];
+  var HELD_BACK = ['Days on market', 'Sold price', 'Assessed value', 'Buyer agent and office',
+                   'Seller-paid closing costs', 'Agent remarks', 'Showing instructions', 'MLS number'];
+  function renderClient(){
+    var live = stops.filter(function(s){ return s.listing; });
+    var pulled = new Date().toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+    document.getElementById('clientPreview').innerHTML =
+      '<div class="rp-facts">' + live.map(function(s, i){
+        var l = s.listing;
+        return '<div class="rp-fact">' +
+          '<div class="rp-fact-head"><div class="a1">' + esc(s.raw.split(',')[0]) + '</div>' +
+            '<div class="a2">Stop ' + (i+1) + '</div></div>' +
+          '<div class="rp-big">' +
+            '<div><b>' + (l._beds != null ? l._beds : '—') + '</b><span>Beds</span></div>' +
+            '<div><b>' + bathLabel(l.baths) + '</b><span>Baths</span></div>' +
+            '<div><b>' + (l._sqft != null ? l._sqft.toLocaleString() : '—') + '</b><span>Sq ft</span></div>' +
+            '<div><b>' + (l._year != null ? l._year : '—') + '</b><span>Built</span></div>' +
+          '</div>' +
+          '<div class="rp-kv"><dl><dt>Listed at</dt><dd>' + money(l._price) + '</dd></dl></div>' +
+        '</div>';
+      }).join('') + '</div>' +
+      '<p class="rp-note">Shown to the client: ' + CLIENT_FIELDS.join(', ') + '. Figures pulled ' + pulled + '.</p>' +
+      '<p class="rp-note warn"><strong>Held back:</strong> ' + HELD_BACK.join(' · ') + '. ' +
+      'The client page renders only the allow-list above, so a new column appearing in a future export cannot leak by default.</p>';
+  }
+})();
+</script>
+</body>
+</html>

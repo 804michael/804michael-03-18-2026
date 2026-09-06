@@ -1353,3 +1353,75 @@ masquerade as a confirmed date — it just produces the warned case instead.
 Verified against three stubbed tours: dated (correct future date, no warning, clean
 titles), undated with windows (today at the first window, warned), undated without
 windows (today 9–12, warned, single event).
+
+## Fifteenth pass — Route Planner Pro, a prototype for MLS facts on a tour (2026-09-06)
+
+`route-planner-pro.html` v26.09.06_07-05-0001, `dev.html` v26.09.06_06-59-0069.
+
+### It is deliberately NOT a fork of the planner
+
+Michael's own framing was "I really like where the current route planner is and I
+don't want to mess it up", and that is the right instinct. Forking 200KB of working
+code to try an idea gives you two planners that drift apart, and it is always the
+good one that rots. This page carries only the **property-data layer** — import,
+match, and the views the data would feed. If it earns its place, those pieces move
+INTO the planner as a tab and this page is deleted. Nothing in `tour-planner.html`
+was touched.
+
+### STANDING RULE: no real MLS data in this repository, ever
+
+`github.com/804michael/804michael-03-18-2026` is a **public** repository. CVR MLS
+content is licensed, and the agent-only half of an Agent Long report (agent remarks,
+buyer agent name and phone, seller-paid closing costs, showing instructions) is not
+ours to publish at any level. So:
+
+- The sample baked into the page is **invented** — fake streets, fake MLS ids.
+- A real export is pasted at runtime, parsed in the browser, held in memory, and
+  never uploaded or written to disk.
+- The same goes for anything a future session is handed. Read it, use it to shape
+  the code, do not commit it.
+
+### What the export actually contains, and what it does not
+
+The CSV Michael provided has: address, list/sold price, status, days on market, beds,
+total baths, sqft, county, the three dates, subdivision, acres, $/fin sf, assessed,
+prop type, ML number, new/resale. **It does not have year built, annual taxes, HOA
+fee, or schools** — those live only in the PDF report. All four are things clients ask
+about constantly, and all four are available as columns in a saved search. The parse
+note now names the missing ones rather than silently rendering dashes, which looked
+like the tool failing rather than the export being short.
+
+`Total Baths` is `2.1`, meaning two full and one half. It sorts correctly as a number
+so comparison keeps the raw value, but it is displayed as `2½`.
+
+### Address matching, and the bug it found immediately
+
+The export writes `"215  Thorncliff Rd "`; the planner holds
+`215 Thorncliff Rd, Ashland, VA 23005`. The key is the house number plus the street
+words with the suffix normalised (`Road`→`rd`, `Street`→`st`, …), with city, state and
+zip dropped — those are the parts most likely to differ.
+
+The first run against the real file exposed a genuine bug: `100 Steyland Street` keyed
+as `100 st`. The unit-number strip was `\b(apt|unit|ste|suite|#)\s*[\w-]+`, and
+`\b(ste)` matched the START of "Steyland" while `\s*[\w-]+` ate "yland" with it. Both
+sides were mangled identically so it still matched the right house **by luck** — two
+"Ste…" streets sharing a house number would have swapped their facts silently. The
+keyword now needs a word boundary on both ends. Same failure class as the client
+feedback keyed by index: a silent wrong attachment is the worst kind.
+
+Unmatched stops stay visibly unmatched with a manual picker. The tool never guesses.
+
+### The client-facing half is a licensing question, not a technical one
+
+The page has a "What the client sees" tab built from an **allow-list** of five fields
+(beds, baths, sqft, year, price), with everything held back listed underneath — the
+same shape as `publishableStop` in `/api/tour-page`, and for the same reason: a new
+column appearing in a future export must not be able to leak by default.
+
+Whether those five may be published at all is for CVR MLS to answer. Sending them to a
+named client on a private link is one thing; a public URL is another, even a `noindex`
+one. **The agent-facing half raises none of that** — Tour Mode, the printed agent copy,
+and this page are internal.
+
+A pasted CSV is also a snapshot: right the morning you export it, wrong the moment a
+price changes. Anything shown to a client carries the date it was pulled.
