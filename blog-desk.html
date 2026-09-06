@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_17-19-0002                            ║
+  ║  SITE VERSION: 26.09.06_17-21-0003                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-19-0002    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-21-0003    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -256,6 +256,13 @@
       <button type="button" id="bd-v-kan">Pipeline</button>
     </div>
     <button type="button" class="bd-btn primary" id="bd-scan">Scan for ideas</button>
+    <select class="bd-sel" id="bd-take" title="How many of the top-scoring new ideas to keep from a scan">
+      <option value="10">Keep top 10</option>
+      <option value="15" selected>Keep top 15</option>
+      <option value="20">Keep top 20</option>
+      <option value="30">Keep top 30</option>
+      <option value="0">Keep all</option>
+    </select>
     <button type="button" class="bd-btn" id="bd-corpus">Sync published posts</button>
     <button type="button" class="bd-btn" id="bd-sources">Sources</button>
     <div class="bd-spacer"></div>
@@ -344,7 +351,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-19-0002</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-21-0003</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -354,7 +361,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_17-19-0002';
+  const SITE_VERSION = '26.09.06_17-21-0003';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -833,19 +840,26 @@
       var have = {};
       STATE.ideas.forEach(function (i) { have[i.id] = 1; });
 
-      var added = 0;
-      (d.candidates || []).forEach(function (c) {
-        if (seen[c.url] || have[c.id]) return;
+      // A full scan returns well over a hundred candidates, which is not a
+      // catalog, it is a pile. Only the top-scoring N are taken, and ONLY
+      // those are marked seen — the rest are deferred, not rejected, so they
+      // can surface again next time instead of being silently burned.
+      var take = parseInt($('bd-take').value, 10) || 0;
+      var fresh = (d.candidates || []).filter(function (c) { return !seen[c.url] && !have[c.id]; });
+      var available = fresh.length;
+      if (take > 0) fresh = fresh.slice(0, take);
+
+      fresh.forEach(function (c) {
         STATE.ideas.push(c);
         STATE.seen.push(c.url);
-        added++;
       });
       if (STATE.seen.length > 2000) STATE.seen = STATE.seen.slice(-2000);
 
       var ok = lastScanStatus.filter(function (s) { return s.ok; }).length;
       var bad = lastScanStatus.filter(function (s) { return !s.ok; });
-      var note = added + ' new idea' + (added === 1 ? '' : 's') + ' from ' + ok + ' of ' + lastScanStatus.length + ' feeds';
-      if (d.dropped) note += ' (' + d.dropped + ' off-topic items dropped)';
+      var note = 'Kept the top ' + fresh.length + ' of ' + available + ' new ideas from ' + ok + ' of ' + lastScanStatus.length + ' feeds';
+      if (d.dropped) note += ' (' + d.dropped + ' off-topic items dropped before scoring)';
+      if (available > fresh.length) note += '. The other ' + (available - fresh.length) + ' are still on offer next scan';
       if (bad.length) note += '. Not answering: ' + bad.map(function (s) { return s.label + ' — ' + s.error; }).join('; ');
       say(note, bad.length > 0);
 
