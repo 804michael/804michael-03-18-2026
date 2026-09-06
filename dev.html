@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_00-51-0066                            ║
+  ║  SITE VERSION: 26.09.06_01-25-0067                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-51-0066    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_01-25-0067    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -102,7 +102,19 @@
 
     .dev-drag-hint{font-size:.9rem;color:var(--gray-muted);font-style:italic;margin:0 0 14px}
 
-    .dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    /* align-items:start is the fix for "open one card and its two neighbours
+       turn into tall empty boxes" (2026-09-06). Grid stretches every item to
+       the height of its row by default, so expanding one card dragged the other
+       two up to match, leaving them mostly white space.
+       Paired with .is-open spanning the full row below: an expanded card takes
+       its own full-width row instead of forcing a 3-up row to the height of its
+       tallest member, so no dead space is left anywhere and the collapsed cards
+       keep packing normally. Row-major order is preserved, which matters
+       because these cards are drag-ordered - a CSS multi-column masonry would
+       have filled the gaps too, but it flows top-to-bottom down each column,
+       so "first card" would stop meaning top-left. */
+    .dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start;grid-auto-flow:row dense}
+    .dev-card.is-open{grid-column:1 / -1}
     @media(max-width:980px){.dev-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:640px){.dev-grid{grid-template-columns:1fr}}
     /* Per-card colour (2026-09-05). A card with a colour picked in the editor
@@ -754,7 +766,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_00-51-0066</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_01-25-0067</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -765,7 +777,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_00-51-0066';
+  const SITE_VERSION = '26.09.06_01-25-0067';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
