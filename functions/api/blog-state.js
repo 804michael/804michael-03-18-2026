@@ -103,6 +103,17 @@ function cleanSourceType(v) {
   return SOURCE_TYPES.indexOf(v) >= 0 ? v : 'media';
 }
 
+// The five things that decide whether a post earns anything, per the editorial
+// rules agreed 2026-09-06. Kept in sync with CHECKLIST in blog-desk.html.
+const CHECK_KEYS = ['ownData', 'localKnowledge', 'answerFirst', 'faqSchema', 'primarySource'];
+
+function cleanChecks(raw) {
+  const o = raw && typeof raw === 'object' ? raw : {};
+  const out = {};
+  CHECK_KEYS.forEach(function (k) { if (o[k]) out[k] = true; });
+  return out;
+}
+
 function cleanIdea(raw) {
   const o = raw && typeof raw === 'object' ? raw : {};
   return {
@@ -126,6 +137,17 @@ function cleanIdea(raw) {
     // image asset a competitor cannot copy, so the shot is decided on the card
     // rather than settled for with stock at drafting time.
     photo: str(o.photo, 600),
+    // The "what makes this post win" checklist, as { key: true }. Only the
+    // known keys survive, so a stale or hand-edited key cannot render a
+    // phantom row on the card.
+    checks: cleanChecks(o.checks),
+    // Primary sources kept off the source article: { url, host, label, why }.
+    cited: Array.isArray(o.cited)
+      ? o.cited.slice(0, 20).map(function (c) {
+          const x = c && typeof c === 'object' ? c : {};
+          return { url: cleanUrl(x.url), host: str(x.host, 120), label: str(x.label, 160), why: str(x.why, 400) };
+        }).filter(function (c) { return c.url; })
+      : [],
     scheduled: cleanDate(o.scheduled),
     publishedUrl: cleanUrl(o.publishedUrl),
     refreshOf: cleanUrl(o.refreshOf),

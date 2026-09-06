@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_18-45-0005                            ║
+  ║  SITE VERSION: 26.09.06_22-56-0006                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_18-45-0005    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_22-56-0006    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -138,6 +138,40 @@
     .bd-field textarea{min-height:70px;resize:vertical;line-height:1.5}
     .bd-field input:focus,.bd-field textarea:focus,.bd-field select:focus{outline:none;border-color:var(--red)}
     .bd-shot{font-size:.8rem;color:var(--gray-muted);line-height:1.5;margin-top:4px}
+
+    /* ── Editorial checklist ── */
+    .bd-check,.bd-src-found{margin-top:13px;border:1.5px solid var(--gray-mid);border-radius:10px;padding:11px 13px;background:var(--gray-light)}
+    .bd-check>b,.bd-src-found>b{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:.11em;text-transform:uppercase;font-size:.8rem;color:var(--gray-text);margin-bottom:8px}
+    .bd-check-n{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:.06em;background:var(--white);border:1.5px solid var(--gray-mid);color:var(--gray-muted);border-radius:999px;padding:1px 8px}
+    .bd-check-n.all{background:var(--green);border-color:var(--green);color:var(--white)}
+    .bd-check-row{display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--gray-mid);cursor:pointer;font-size:.86rem;line-height:1.5;color:var(--gray-text)}
+    .bd-check-row:first-of-type{border-top:none}
+    .bd-check-row input{width:17px;height:17px;flex:0 0 auto;margin-top:2px;accent-color:var(--green);cursor:pointer}
+    .bd-check-row b{display:block;color:var(--black);font-weight:700;font-size:.9rem}
+    .bd-check-row.on b{color:var(--green)}
+    .bd-check-foot{font-size:.8rem;color:var(--gray-muted);line-height:1.55;margin-top:9px;padding-top:8px;border-top:1px solid var(--gray-mid)}
+    /* A pip on the collapsed head, so a stack of cards shows at a glance which
+       drafts have had the work done and which are still just a headline. */
+    .bd-pip{position:absolute;bottom:8px;right:10px;display:flex;gap:3px}
+    .bd-pip i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3)}
+    .bd-pip i.on{background:var(--white)}
+
+    /* ── Primary sources ── */
+    .bd-cite-list{list-style:none;margin:0 0 4px}
+    .bd-cite-list li{padding:5px 0;border-top:1px solid var(--gray-mid);font-size:.86rem;line-height:1.45}
+    .bd-cite-list li:first-child{border-top:none}
+    .bd-cite-list a{color:var(--red);font-weight:600;word-break:break-word}
+    .bd-cite-x{background:none;border:none;color:var(--gray-muted);cursor:pointer;font-size:1rem;padding:0 4px;float:right}
+    .bd-cite-x:hover{color:var(--red)}
+    .bd-cite-why{display:block;font-size:.8rem;color:var(--gray-muted);font-style:italic;margin-top:2px}
+    .bd-cite-out{margin-top:8px}
+    .bd-cite-found{border-top:1px solid var(--gray-mid);padding:7px 0;font-size:.85rem;line-height:1.45}
+    .bd-cite-found .tag{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:1px 7px;margin-right:6px;white-space:nowrap}
+    .bd-cite-found .tag.linked{background:var(--green);color:var(--white)}
+    .bd-cite-found .tag.mention{background:var(--amber);color:var(--white)}
+    .bd-cite-found .ctx{display:block;color:var(--gray-muted);font-style:italic;font-size:.79rem;margin:3px 0 0}
+    .bd-cite-found button{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1.5px solid var(--gray-mid);background:var(--white);cursor:pointer;margin-top:4px}
+    .bd-cite-found button:hover{border-color:var(--green);color:var(--green)}
     .bd-why{margin:10px 0 0;padding-left:17px;font-size:.85rem;color:var(--gray-text);line-height:1.55}
     .bd-why li{margin-bottom:1px}
     .bd-row{display:flex;gap:10px;flex-wrap:wrap}
@@ -352,7 +386,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_18-45-0005</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_22-56-0006</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -362,7 +396,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_18-45-0005';
+  const SITE_VERSION = '26.09.06_22-56-0006';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -535,6 +569,36 @@
   // actually generate leads. Decided here, on the card, so it cannot be
   // forgotten at drafting time.
 
+  // ── The editorial checklist ──────────────────────────────────────────
+  // The five things that actually decide whether a post earns anything, in
+  // rough order of leverage. These are on the card rather than in a document
+  // because a rule nobody sees at the moment of writing is not a rule.
+  //
+  // The order matters and is not arbitrary: 1 and 2 are the only things a
+  // competitor cannot copy and an AI cannot generate, so they come first. 3 is
+  // free and is the single highest-return formatting habit for AI answer
+  // engines. 4 is structural. 5 is what makes a claim checkable, which is what
+  // gets it quoted.
+  var CHECKLIST = [
+    { key: 'ownData', label: 'Used my own transaction data',
+      hint: 'The highest-leverage asset here and nobody can scrape it. "What closing costs actually ran on my last twelve Hanover closings" is a primary claim an AI answer engine will lift and attribute. One post like that beats ten competent summaries.' },
+    { key: 'localKnowledge', label: 'Added local knowledge only I have',
+      hint: 'Which streets flood, which HOAs are strict about parking, what the Hanover assessor actually does when you appeal. No national blog has it. It is a straight moat.' },
+    { key: 'answerFirst', label: 'Answered the question in the first 40 words',
+      hint: 'AI Overviews and ChatGPT lift the extractable direct answer near the top. Give it plainly, then elaborate below. Costs nothing, highest ROI formatting habit there is.' },
+    { key: 'faqSchema', label: 'FAQ block with schema markup',
+      hint: 'Three to five real questions with short answers, marked up as FAQPage. This is the structure answer engines quote from.' },
+    { key: 'primarySource', label: 'Linked a dated primary source',
+      hint: 'Freddie Mac, NAR, the Census, the county assessor. Never the blog the topic came from: that hands a competitor a link and cites the weaker source. Date the stat and name the source.' },
+  ];
+
+  function checkCount(idea) {
+    var c = idea.checks || {};
+    var n = 0;
+    CHECKLIST.forEach(function (k) { if (c[k.key]) n++; });
+    return n;
+  }
+
   // ── Photo brief ──────────────────────────────────────────────────────
   // Stock photography is not penalised by Google, but it earns nothing: the
   // same Depositphotos house is on a thousand other agent sites, it never
@@ -654,6 +718,13 @@
     h.push('<h3>' + esc(idea.title) + '</h3>');
     h.push('<div class="bd-score" title="Demand score">' + idea.score + '</div>');
     if (clash) h.push('<span class="bd-flag">Overlap</span>');
+    if (idea.status !== 'idea') {
+      var n = checkCount(idea);
+      h.push('<div class="bd-pip" title="' + n + ' of ' + CHECKLIST.length + ' editorial checks done">' +
+        CHECKLIST.map(function (item) {
+          return '<i class="' + (idea.checks && idea.checks[item.key] ? 'on' : '') + '"></i>';
+        }).join('') + '</div>');
+    }
     h.push('</header>');
 
     h.push('<div class="bd-card-meta">');
@@ -719,6 +790,35 @@
           return '<option value="' + s + '"' + (idea.depth === s ? ' selected' : '') + '>' + s + '</option>';
         }).join('') + '</select></div>');
       h.push('<div class="bd-field"><label>Publish date</label><input type="date" data-f="scheduled" value="' + esc(idea.scheduled) + '"></div>');
+      h.push('</div>');
+
+      // Checklist
+      var done = checkCount(idea);
+      h.push('<div class="bd-check"><b>What makes this post win <span class="bd-check-n' + (done === CHECKLIST.length ? ' all' : '') + '">' + done + '/' + CHECKLIST.length + '</span></b>');
+      CHECKLIST.forEach(function (item) {
+        var on = !!(idea.checks && idea.checks[item.key]);
+        h.push('<label class="bd-check-row' + (on ? ' on' : '') + '">' +
+          '<input type="checkbox" data-check="' + item.key + '"' + (on ? ' checked' : '') + '>' +
+          '<span><b>' + esc(item.label) + '</b>' + esc(item.hint) + '</span></label>');
+      });
+      h.push('<p class="bd-check-foot">After month six, updating an old post usually beats writing a new one: the URL already has history with Google, so it recovers rankings faster than a new one earns them. Refresh candidates appear at the bottom of this page.</p>');
+      h.push('</div>');
+
+      // Primary sources
+      h.push('<div class="bd-src-found"><b>Primary sources</b>');
+      if (idea.cited && idea.cited.length) {
+        h.push('<ul class="bd-cite-list">');
+        idea.cited.forEach(function (c, i) {
+          h.push('<li><a href="' + esc(c.url) + '" target="_blank" rel="noopener nofollow" data-win="1">' + esc(c.label || c.host) + '</a>' +
+            '<button type="button" class="bd-cite-x" data-drop-cite="' + i + '" title="Remove">&times;</button>' +
+            (c.why ? '<span class="bd-cite-why">' + esc(c.why) + '</span>' : '') + '</li>');
+        });
+        h.push('</ul>');
+      } else {
+        h.push('<p class="bd-check-foot">None kept yet. Pull what the source article cites, then link the source itself rather than the article.</p>');
+      }
+      h.push('<div class="bd-acts"><button type="button" data-act="findcited">Find sources in the article</button></div>');
+      h.push('<div class="bd-cite-out" data-cite-out></div>');
       h.push('</div>');
 
       var ties = TIES[idea.cluster] || TIES.general;
@@ -999,6 +1099,21 @@
       '',
       'MUST LINK TO: ' + ties + ', plus one sibling blog post.',
       'PUBLISH DATE: ' + (idea.scheduled || '(unscheduled)'),
+      '',
+      'PRIMARY SOURCES TO CITE (link these, never the source article):',
+      (idea.cited && idea.cited.length
+        ? idea.cited.map(function (c) { return '  - ' + (c.label || c.host) + ': ' + c.url + (c.why ? '\n      ' + c.why : ''); }).join('\n')
+        : '  (none kept - go to the data: Freddie Mac for rates, NAR for sales, the county for taxes)'),
+      '',
+      'EDITORIAL RULES, non-negotiable:',
+      CHECKLIST.map(function (item, i) {
+        var on = idea.checks && idea.checks[item.key];
+        return '  ' + (i + 1) + '. [' + (on ? 'x' : ' ') + '] ' + item.label + ' - ' + item.hint;
+      }).join('\n'),
+      '',
+      'Date every statistic and name its source. Do not rewrite the source',
+      'article: it is a topic signal only, and the piece is written from the',
+      'angle above.',
     ].filter(function (l) { return l !== ''; }).join('\n');
   }
 
@@ -1030,6 +1145,34 @@
     var idea = findIdea(card.getAttribute('data-id'));
     if (!idea) return;
 
+    // Keep / drop a found source. Handled before the generic actions because
+    // both live inside the card and neither should toggle it open or shut.
+    var keepEl = ev.target.closest('[data-keep-cite]');
+    if (keepEl) {
+      ev.stopPropagation();
+      var found = card.querySelector('[data-cite-out]')._found || [];
+      var pick = found[parseInt(keepEl.getAttribute('data-keep-cite'), 10)];
+      if (pick) {
+        idea.cited = idea.cited || [];
+        if (!idea.cited.some(function (c) { return c.url === pick.url; })) {
+          idea.cited.push({ url: pick.url, host: pick.label, label: pick.label, why: pick.why });
+          // Keeping a source is the act the checklist item is about.
+          idea.checks = idea.checks || {};
+          idea.checks.primarySource = true;
+          save(); render();
+        }
+      }
+      return;
+    }
+    var dropEl = ev.target.closest('[data-drop-cite]');
+    if (dropEl) {
+      ev.stopPropagation();
+      idea.cited.splice(parseInt(dropEl.getAttribute('data-drop-cite'), 10), 1);
+      if (!idea.cited.length && idea.checks) delete idea.checks.primarySource;
+      save(); render();
+      return;
+    }
+
     var actEl = ev.target.closest('[data-act]');
     var act = actEl ? actEl.getAttribute('data-act') : '';
 
@@ -1055,6 +1198,54 @@
       }
       return;
     }
+    if (act === 'findcited') {
+      var out = card.querySelector('[data-cite-out]');
+      if (!idea.url) { out.innerHTML = '<p class="bd-check-foot">No source URL on this card.</p>'; return; }
+      actEl.disabled = true;
+      out.innerHTML = '<p class="bd-check-foot">Reading the article…</p>';
+      fetch('/api/blog-scan?mode=cited&url=' + encodeURIComponent(idea.url))
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.error) { out.innerHTML = '<p class="bd-check-foot">Could not read it: ' + esc(d.error) + '</p>'; return; }
+          var rows = [];
+          (d.linked || []).forEach(function (l) {
+            // Host alone is ambiguous when an article cites the same body
+            // twice (two different CFPB pages both read "consumerfinance.gov"),
+            // so the label carries a trimmed path as well.
+            var tail = '';
+            try {
+              var p = new URL(l.url).pathname.replace(/\/$/, '');
+              if (p && p !== '/') tail = p.length > 42 ? p.slice(0, 40) + '…' : p;
+            } catch (e) { /* label stays the bare host */ }
+            rows.push({
+              url: l.url,
+              label: l.host + tail,
+              why: l.text ? 'Linked as: ' + l.text : 'Linked by the article',
+              tag: 'linked',
+              tagText: l.tier === 'primary' ? 'linked' : 'research',
+            });
+          });
+          (d.mentioned || []).forEach(function (x) {
+            rows.push({ url: x.url, label: x.org, why: x.context, tag: 'mention', tagText: 'named, not linked' });
+          });
+          if (!rows.length) {
+            out.innerHTML = '<p class="bd-check-foot">Nothing authoritative in there. Common for video, forum posts and opinion pieces. Go to the data yourself: Freddie Mac for rates, NAR for sales, the county for taxes.</p>';
+            return;
+          }
+          // Stashed on the element so "Keep" does not need to re-parse markup.
+          out._found = rows;
+          out.innerHTML = rows.map(function (r, i) {
+            return '<div class="bd-cite-found"><span class="tag ' + r.tag + '">' + esc(r.tagText) + '</span>' +
+              '<a href="' + esc(r.url) + '" target="_blank" rel="noopener nofollow" data-win="1">' + esc(r.label) + '</a>' +
+              (r.why ? '<span class="ctx">' + esc(r.why) + '</span>' : '') +
+              '<button type="button" data-keep-cite="' + i + '">Keep</button></div>';
+          }).join('');
+        })
+        .catch(function (e) { out.innerHTML = '<p class="bd-check-foot">Failed: ' + esc(e && e.message || e) + '</p>'; })
+        .then(function () { actEl.disabled = false; });
+      return;
+    }
+
     if (act === 'copy') {
       var text = briefFor(idea);
       if (navigator.clipboard) {
@@ -1089,6 +1280,18 @@
       if (!idea) return;
       idea[f] = ev.target.value;
       save(); render();
+      return;
+    }
+    // Editorial checklist boxes.
+    var ck = ev.target.getAttribute && ev.target.getAttribute('data-check');
+    if (ck) {
+      var ckCard = ev.target.closest('.bd-card[data-id]');
+      var ckIdea = ckCard && findIdea(ckCard.getAttribute('data-id'));
+      if (ckIdea) {
+        ckIdea.checks = ckIdea.checks || {};
+        if (ev.target.checked) ckIdea.checks[ck] = true; else delete ckIdea.checks[ck];
+        save(); render();
+      }
       return;
     }
     if (ev.target.hasAttribute && ev.target.hasAttribute('data-src-toggle')) {

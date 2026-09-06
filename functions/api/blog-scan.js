@@ -576,6 +576,197 @@ async function fetchCorpus() {
   return { corpus: [], source: 'none', error: errors.join(' | '), fallback: '/blog-corpus.json' };
 }
 
+// ── Primary sources in a source article ────────────────────────────────────
+// ?mode=cited&url=... fetches ONE article and reports the authoritative
+// sources behind it, two ways:
+//
+//   linked    — authoritative URLs the article actually links to
+//   mentioned — organisations it names in the text WITHOUT linking, which is
+//               the more common case and the more useful one. A piece saying
+//               "according to Freddie Mac" and never linking it is pointing at
+//               a number worth citing properly; this returns the canonical
+//               research URL plus the sentence it appeared in, so the claim can
+//               be checked at the source rather than repeated second-hand.
+//
+// The point is never to cite the article that surfaced the topic. Linking a
+// competitor's blog hands them a link and cites the weaker source. Linking the
+// primary source, with a date, is what makes a claim liftable by an AI answer
+// engine and is a genuine quality signal besides.
+//
+// Run per-card and on demand, not during a scan: a scan handles 100+
+// candidates, and fetching every one of those articles would be slow and rude
+// to the publishers.
+
+// A .gov or .edu is authoritative by construction. These are the non-.gov
+// hosts worth the same treatment.
+const PRIMARY_HOSTS = [
+  'freddiemac.com', 'fanniemae.com', 'nar.realtor', 'realtor.org', 'mba.org',
+  'virginiarealtors.org', 'virginiahousing.com', 'stlouisfed.org', 'fred.stlouisfed.org',
+];
+// Real data, but published by a commercial party with an interest.
+const RESEARCH_HOSTS = ['zillow.com', 'redfin.com', 'realtor.com', 'corelogic.com', 'blackknightinc.com', 'attomdata.com'];
+
+// Named in prose, usually unlinked. Full names match case-insensitively;
+// acronyms must match case-SENSITIVELY and on a word boundary, or "mba" in
+// "MBA program" and stray "nar" fragments produce constant false hits.
+const PRIMARY_ORGS = [
+  { name: 'National Association of Realtors', acr: ['NAR'], url: 'https://www.nar.realtor/research-and-statistics' },
+  { name: 'Freddie Mac', acr: [], url: 'https://www.freddiemac.com/pmms' },
+  { name: 'Fannie Mae', acr: [], url: 'https://www.fanniemae.com/research-and-insights' },
+  { name: 'Census Bureau', acr: [], url: 'https://www.census.gov/topics/housing.html' },
+  { name: 'Bureau of Labor Statistics', acr: ['BLS'], url: 'https://www.bls.gov/' },
+  { name: 'Federal Reserve', acr: [], url: 'https://www.federalreserve.gov/' },
+  { name: 'Consumer Financial Protection Bureau', acr: ['CFPB'], url: 'https://www.consumerfinance.gov/' },
+  { name: 'Federal Housing Finance Agency', acr: ['FHFA'], url: 'https://www.fhfa.gov/data/house-price-index' },
+  { name: 'Mortgage Bankers Association', acr: [], url: 'https://www.mba.org/news-and-research' },
+  { name: 'Department of Housing and Urban Development', acr: ['HUD'], url: 'https://www.hud.gov/' },
+  { name: 'Federal Housing Administration', acr: ['FHA'], url: 'https://www.hud.gov/federal_housing_administration' },
+  { name: 'Department of Veterans Affairs', acr: [], url: 'https://www.va.gov/housing-assistance/home-loans/' },
+  { name: 'Internal Revenue Service', acr: ['IRS'], url: 'https://www.irs.gov/' },
+  { name: 'Virginia REALTORS', acr: [], url: 'https://virginiarealtors.org/research/' },
+  { name: 'Virginia Housing', acr: [], url: 'https://www.virginiahousing.com/' },
+  { name: 'Hanover County', acr: [], url: 'https://www.hanovercounty.gov/' },
+  { name: 'Henrico County', acr: [], url: 'https://henrico.us/' },
+  { name: 'Chesterfield County', acr: [], url: 'https://www.chesterfield.gov/' },
+  { name: 'Zillow', acr: [], url: 'https://www.zillow.com/research/' },
+  { name: 'Redfin', acr: [], url: 'https://www.redfin.com/news/data-center/' },
+  { name: 'CoreLogic', acr: [], url: 'https://www.corelogic.com/intelligence/' },
+  { name: 'ATTOM', acr: [], url: 'https://www.attomdata.com/news/' },
+];
+
+function hostOf(u) {
+  try { return new URL(u).hostname.toLowerCase().replace(/^www\./, ''); } catch { return ''; }
+}
+
+function tierFor(host) {
+  if (!host) return '';
+  if (/\.gov$/.test(host) || /\.edu$/.test(host)) return 'primary';
+  for (let i = 0; i < PRIMARY_HOSTS.length; i++) {
+    if (host === PRIMARY_HOSTS[i] || host.endsWith('.' + PRIMARY_HOSTS[i])) return 'primary';
+  }
+  for (let j = 0; j < RESEARCH_HOSTS.length; j++) {
+    if (host === RESEARCH_HOSTS[j] || host.endsWith('.' + RESEARCH_HOSTS[j])) return 'research';
+  }
+  return '';
+}
+
+// This endpoint fetches a caller-supplied URL, so it refuses anything that is
+// not a public http(s) host. It returns only extracted link metadata, never
+// page content, so it cannot be used to read a page through this origin.
+function safeToFetch(u) {
+  let parsed;
+  try { parsed = new URL(u); } catch { return 'not a URL'; }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return 'only http and https';
+  const h = parsed.hostname.toLowerCase();
+  if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.local') || h.endsWith('.internal')) return 'not a public host';
+  if (h.indexOf('.') < 0) return 'not a public host';
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) {
+    const p = h.split('.').map(Number);
+    if (p[0] === 10 || p[0] === 127 || p[0] === 0 ||
+        (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+        (p[0] === 192 && p[1] === 168) ||
+        (p[0] === 169 && p[1] === 254)) return 'not a public host';
+  }
+  return '';
+}
+
+async function findCited(target) {
+  const bad = safeToFetch(target);
+  if (bad) return { linked: [], mentioned: [], error: bad };
+
+  let html;
+  try {
+    html = await fetchText(target, { raw: true });
+  } catch (err) {
+    return { linked: [], mentioned: [], error: String((err && err.message) || err) };
+  }
+
+  const selfHost = hostOf(target);
+
+  // Narrow to the article body before extracting anything. Scanning the whole
+  // document pulled "sources" out of the related-articles rail: a HousingWire
+  // page reported FHFA and HUD as mentioned by the article when those words
+  // were only ever in sidebar headlines for other stories. Chrome and
+  // publishers both mark the real body with <article> or <main>, so prefer
+  // that and strip the furniture either way.
+  html = html
+    .replace(/<(script|style|noscript|template)[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<(nav|header|footer|aside|form)\b[\s\S]*?<\/\1>/gi, ' ');
+
+  const body = /<article\b[^>]*>([\s\S]*?)<\/article>/i.exec(html)
+    || /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(html);
+  // Only trust it if it is substantial; some templates emit an empty <article>.
+  if (body && body[1] && body[1].length > 600) html = body[1];
+
+  // Links the article actually makes.
+  const linked = [];
+  const seenUrl = {};
+  const re = /<a\s[^>]*href=["']([^"']+)["'][^>]*>([\s\S]{0,300}?)<\/a>/gi;
+  let m, guard = 0;
+  while ((m = re.exec(html)) && guard++ < 3000) {
+    let href = decodeEntities(m[1]).trim();
+    if (/^(#|mailto:|tel:|javascript:)/i.test(href)) continue;
+    try { href = new URL(href, target).href; } catch { continue; }
+    const host = hostOf(href);
+    if (!host || host === selfHost) continue;
+    const tier = tierFor(host);
+    if (!tier) continue;
+    const key = href.split('#')[0];
+    if (seenUrl[key]) continue;
+    seenUrl[key] = 1;
+    linked.push({ url: key, host: host, tier: tier, text: cleanText(m[2]).slice(0, 120) });
+    if (linked.length >= 25) break;
+  }
+
+  // Organisations named but not linked. This is where most of the value is:
+  // publishers routinely write "according to Freddie Mac" and never link it.
+  const text = cleanText(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' '));
+  const linkedHosts = linked.map(function (l) { return l.host; });
+
+  // Suffix match, not equality: the article linked selling-guide.fanniemae.com
+  // and Fannie Mae still came back as an unlinked mention because the org's
+  // canonical host is the bare fanniemae.com.
+  function alreadyLinked(orgHost) {
+    for (let i = 0; i < linkedHosts.length; i++) {
+      const h = linkedHosts[i];
+      if (h === orgHost || h.endsWith('.' + orgHost) || orgHost.endsWith('.' + h)) return true;
+    }
+    return false;
+  }
+
+  const mentioned = [];
+  PRIMARY_ORGS.forEach(function (org) {
+    const orgHost = hostOf(org.url);
+    if (alreadyLinked(orgHost)) return; // already cited; not a gap
+
+    let at = -1, matchedAs = '';
+    const nameAt = text.toLowerCase().indexOf(org.name.toLowerCase());
+    if (nameAt >= 0) { at = nameAt; matchedAs = org.name; }
+    if (at < 0) {
+      for (let i = 0; i < org.acr.length; i++) {
+        const acr = org.acr[i];
+        const rx = new RegExp('\\b' + acr + '\\b');       // case-sensitive
+        const hit = rx.exec(text);
+        if (hit) { at = hit.index; matchedAs = acr; break; }
+      }
+    }
+    if (at < 0) return;
+
+    const from = Math.max(0, at - 100);
+    const context = text.slice(from, Math.min(text.length, at + 160)).trim();
+    mentioned.push({
+      org: org.name,
+      matchedAs: matchedAs,
+      url: org.url,
+      host: orgHost,
+      tier: 'primary',
+      context: (from > 0 ? '…' : '') + context + '…',
+    });
+  });
+
+  return { linked: linked, mentioned: mentioned.slice(0, 12), checked: target };
+}
+
 // ── Handlers ───────────────────────────────────────────────────────────────
 
 function usableSources(raw) {
@@ -603,6 +794,10 @@ export async function onRequestGet(context) {
     const mode = new URL(context.request.url).searchParams.get('mode') || '';
     if (mode === 'sources') return json({ sources: DEFAULT_SOURCES });
     if (mode === 'corpus') return json(await fetchCorpus());
+    if (mode === 'cited') {
+      const target = new URL(context.request.url).searchParams.get('url') || '';
+      return json(await findCited(target));
+    }
     return json(await runScan(DEFAULT_SOURCES));
   } catch (err) {
     return json({ candidates: [], sources: [], error: String((err && err.message) || err) });
