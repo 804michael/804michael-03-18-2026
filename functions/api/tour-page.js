@@ -97,6 +97,11 @@ function publishableStop(raw) {
     lng: num(s.lng),
     windowStart: cleanTime(s.windowStart),
     windowEnd: cleanTime(s.windowEnd),
+    // Added 2026-09-06. A showing the agent cancelled mid-tour has to reach the
+    // client's page, or their phone still tells them to drive to it. Published
+    // as a flag rather than by dropping the stop, so the numbering the client
+    // sees keeps matching their printed sheet.
+    skipped: s.skipped === true,
   };
 }
 
@@ -175,6 +180,10 @@ export async function onRequestPost(context) {
     const rawFb = await env.TOURS_KV.get(FB_PREFIX + code);
     try { existing = rawFb ? JSON.parse(rawFb) : {}; } catch (e) { existing = {}; }
 
+    // The published tour is the authority on which address is at which index.
+    let publishedStops = [];
+    try { publishedStops = (JSON.parse(rawTour).stops) || []; } catch (e) { publishedStops = []; }
+
     const items = Array.isArray(body.items) ? body.items.slice(0, MAX_STOPS) : [];
     items.forEach((it) => {
       const i = num(it && it.i);
@@ -184,6 +193,9 @@ export async function onRequestPost(context) {
       if (rating !== null && rating >= 0 && rating <= 5) entry.rating = Math.round(rating);
       if (typeof it.comment === 'string') entry.comment = str(it.comment, 1000);
       entry.at = Date.now();
+      // Stamped so a later reorder cannot reattach this to a different house.
+      const at = publishedStops[i];
+      if (at && at.address) entry.addr = str(at.address, 200);
       existing[i] = entry;
     });
 
@@ -237,6 +249,11 @@ export async function onRequestPost(context) {
     agent: str(body.agent, 120) || '804Michael',
     dateLabel: str(body.dateLabel, 60),
     startLabel: str(body.startLabel, 40),
+    // Added 2026-09-06 for the client page's "Add to calendar" link. dateLabel
+    // and startLabel are prose for a human to read; this is the same moment in
+    // a form a calendar file can be built from. Safe to publish: it says when
+    // the tour starts, which the client is being told anyway.
+    startISO: str(body.startISO, 40),
     summary: str(body.summary, 200),
     stops: stops.map(publishableStop).filter((s) => s.address),
     adminKey,

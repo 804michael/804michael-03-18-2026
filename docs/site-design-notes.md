@@ -1105,3 +1105,120 @@ Verified clean at 320, 360, 390, 768 and 1300 after both fixes.
 - The four area-guide pages (`ashland`, `hanover`, `glen-allen`, `mechanicsville`) still use photo heroes rather than black bars, and still carry no version-stamp convention. Both remain Michael's call.
 - `system-status.html` has still never run against a real deployment; its `/api/rates` `source`-field matching is still a guess.
 - The client tour page and its feedback loop need a deploy before they work live — until then Publish reports that client pages need the KV binding and the plain Maps link keeps working.
+
+## Fourteenth pass — feedback provenance, cancelled stops, client itinerary + calendar, Tour Mode on a phone (2026-09-06)
+
+Tour Planner `v26.09.06_05-58-0091`, client tour `v26.09.06_05-58-0063`, `functions/api/tour-page.js`.
+
+### STANDING RULE: a client's rating belongs to an address, not to a slot
+
+Client feedback is stored keyed by the stop's **index in the published order**. That
+key is not stable: reorder the stops and republish, or republish a shorter tour, and
+index 3 is now a different house. Nothing detected that, so a client's opinion of one
+home slid silently onto another — the worst class of bug this tool can have, because
+it is invisible and it is about someone's private words.
+
+Two halves, and both are required:
+
+1. **The server stamps every feedback entry with the address it was written about**
+   (`entry.addr`, taken from the published stop at that index at write time).
+2. **The planner refuses to render a rating whose stamp does not match** the stop it
+   is being asked about. It shows nothing rather than showing the wrong thing.
+
+A visible absence beats a confident lie. Entries written before the stamp existed have
+no `addr` and are still trusted, since there is nothing to check them against.
+
+Related: `clientFeedback` is now wiped whenever a different tour is loaded. `loadFeedback()`
+returns early for a tour with no published page, so without the wipe the previous
+client's ratings simply stayed in memory and rendered against the new tour's stops.
+
+### STANDING RULE: a cancelled stop keeps its number everywhere a human reads it
+
+Skipping a showing mid-tour must not renumber anything — the client is holding a
+printed sheet and looking at a phone, and those two have to agree. So `skipped` is a
+flag, never a deletion:
+
+- **Client page** — the card stays, struck through, with the directions link and the
+  rating controls removed, and says it was cancelled. The hero count says "3 homes ·
+  1 cancelled" rather than claiming four.
+- **Printed sheets** — struck through with a small "cancelled" tag, number intact.
+- **Tour Mode** — jumped over by next/back; the count says "· 1 skipped".
+- **Directions** — the ONE place it is dropped outright. `googleFullRouteUrl` filters
+  cancelled stops, because routing a car through a showing that is not happening is
+  the only place the placeholder does real harm.
+- **Export** — carried in the `.804tour.json` positional format (fields 8/9, appended,
+  so older files still load).
+
+### Client feedback reaches the agent live, not at page load
+
+`loadFeedback()` ran once, at page load — which is before the tour, i.e. before any
+feedback exists. Tour Mode now re-reads it every 30s while the overlay is open and on
+every move between stops, and stops the timer on exit.
+
+One trap this created: the poll re-renders the whole stop, and assigning the notes
+textarea's `value` moved the agent's caret to the end mid-sentence. `tmRender` now
+writes that field only when the text actually differs.
+
+### Client itinerary + calendar file
+
+The client page opens with the whole day on one card — number, street, window, tap to
+jump to that stop — and an "Add to calendar" link that builds an `.ics` in the browser.
+
+- Times are written as **floating local** (`DTSTART:20260906T140000`, no `Z`, no
+  VTIMEZONE). A showing at 2pm is 2pm where the house is; that is the only reading that
+  stays correct if the client's phone is set to another zone.
+- Offered **only** when the agent actually set a start time. `dateLabel`/`startLabel`
+  are prose; the new `startISO` field is the machine-readable moment. Without a real
+  date there is no honest event, and a calendar entry on the wrong day is worse than
+  no link at all.
+- Nothing may be lost: if any live stop has no window, an umbrella event covering the
+  whole day and listing every address is added, and the timed showings become detail
+  on top of it rather than the only record.
+
+### Tour Mode on a phone
+
+Measured at 412px (Michael's S24 Ultra) and 320px.
+
+- **The notes box was crushed to a few pixels and could not be typed in.** Root cause:
+  `.tm-body` is a column flex container, and a column flex container shrinks its
+  children *before* it agrees to scroll. `.tm-body > *{flex:0 0 auto}` fixes it —
+  worth remembering, since the same shape will bite any scrolling flex column.
+- Street, "City, ST ZIP" and the timing line each get their own line; only the street
+  is the big bold link.
+- The timing line reads as a sentence ("18 min to next stop · 30 min here") instead of
+  as a second uppercase heading competing with the address.
+- The client's stars sit on one row with the Directions button, between the client's
+  comment and the agent's note — where the eye already is on the way to the next tap.
+- The agent note is a full-width cream band bled past the body padding, not a dashed
+  box. **Note it is shown twice**: once as that band and once in the editable textarea
+  below it, which are the same `s.notes` field. Michael asked for both, so both are
+  there, and the band now tracks the textarea live — but one of the two could go.
+- "Rate this home" is capped at `5.5em` so it stacks to two short lines, and the five
+  rating buttons are pills (`flex:1 1 0`) that give up width before the row overflows.
+- Tour Mode was still showing `14:00–14:45` while every other surface had moved to
+  `2:00p`. `fmtHM` was defined inside `addStopRow`'s closure where Tour Mode could not
+  reach it; lifted to the top level and now shared.
+
+### Client tour page, smaller items
+
+- The hero's "Home Tour with [wordmark]" line said the same thing as the `<h1>` right
+  under it; the wordmark alone stays.
+- Rating row: the label stacks and the dots flex, so at 375px and up all five sit on
+  one line with Directions. At 320px they still wrap to a second line — that is the
+  documented escape hatch, and there the dots are 39px rather than 27px.
+- "Next stop" now sits 5px above the address it introduces rather than floating
+  equidistant between two cards.
+
+### Verified this round
+
+Local static server plus a stubbed `/api/tour-page`, at 320 / 375 / 412px:
+
+- Feedback stamped with a mismatched address renders as **nothing** on the stop it does
+  not belong to (audit fix, confirmed live).
+- Skipped stop is jumped by next/back; the bar reads "Stop 3 of 3 · 1 skipped".
+- `.ics` output parsed by hand: correct CRLF, escaped commas, cancelled stop excluded.
+- Portable-link round trip carries 10 fields per stop including rating and skipped.
+- No horizontal overflow at 320px on either page.
+
+Not exercised live: the "wipe feedback on tour load" path needs the `/api/tours`
+endpoint and was verified by reading the code only.

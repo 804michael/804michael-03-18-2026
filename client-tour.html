@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_03-18-0062                            ║
+  ║  SITE VERSION: 26.09.06_05-58-0063                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_03-18-0062    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_05-58-0063    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -74,6 +74,22 @@
     h1 span{color:var(--red)}
     .hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75)}
     /* Said once, plainly, above the stops - not repeated under every rating. */
+    /* The whole day on one screen before the client starts scrolling through
+       it stop by stop. Tapping a row jumps to that card. */
+    .ct-plan{margin:0 0 16px;border:1.5px solid var(--gray-mid);border-radius:12px;padding:12px 14px}
+    .ct-plan[hidden]{display:none}
+    .ct-plan-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ct-plan-title{flex:1 1 auto;min-width:0;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-text)}
+    .ct-cal{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .ct-cal:hover{border-color:var(--red);color:var(--red)}
+    .ct-cal[hidden]{display:none}
+    .ct-plan-list{list-style:none;margin:0;padding:0}
+    .ct-plan-row{display:flex;align-items:center;gap:9px;width:100%;padding:6px 0;background:none;border:0;font:inherit;text-align:left;cursor:pointer;color:inherit}
+    .ct-plan-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.82rem;line-height:1}
+    .ct-plan-addr{flex:1 1 auto;min-width:0;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ct-plan-when{flex:0 0 auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.03em;color:var(--gray-muted);white-space:nowrap}
+    .ct-plan-row.off .ct-plan-addr{text-decoration:line-through;color:var(--gray-muted)}
+    .ct-plan-row.off .ct-plan-num{opacity:.4}
     .ct-privacy{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--gray-mid);background:var(--gray-light);font-size:.88rem;line-height:1.5;color:var(--gray-text)}
     /* Unused since 2026-09-06: the hero's Call/Text pair was removed so the
        first screen goes straight to the homes. The identical pair at the foot
@@ -119,6 +135,10 @@
        obvious, at 3px instead of a full outline. */
     .stop{border:0;border-radius:0;padding:16px 2px;background:var(--white)}
     .stop.first{border-left:3px solid var(--red);padding-left:11px}
+    .stop.is-cancelled .pin{opacity:.4}
+    .stop.is-cancelled .addr{text-decoration:line-through;color:var(--gray-muted);border-bottom:0}
+    .stop.is-cancelled .city{color:var(--gray-muted);opacity:.7}
+    .cancelled-note{margin-top:5px;font-size:.85rem;line-height:1.4;color:var(--gray-muted)}
     /* Only shown when the agent set BOTH ends of a window. It is a real
        constraint on the day, so it reads as information, not decoration. */
     .window{display:inline-block;margin-top:5px;padding:2px 8px;border-radius:999px;background:var(--gray-light);border:1px solid var(--gray-mid);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-text)}
@@ -137,14 +157,16 @@
        (320px, where it genuinely cannot fit) drops the dots to a second line
        rather than overflowing. 30px keeps the dots above the 24px minimum tap
        target. */
-    .dirs-btn{flex:0 0 auto;padding:8px 12px;border-radius:9px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+    .dirs-btn{flex:0 0 auto;padding:8px 11px;border-radius:9px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
     .dirs-btn:hover{border-color:var(--red);color:var(--red)}
 
     .rate{border-top:1px solid var(--gray-light);margin-top:14px;padding-top:12px}
     .rate-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .rate-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap}
-    .dots{display:flex;gap:4px;margin-left:auto}
-    .dots button{width:30px;height:30px;border-radius:50%;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
+    .rate-lbl{flex:0 1 auto;min-width:0;max-width:5.2em;line-height:1.05;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-muted)}
+    .dots{flex:1 1 auto;display:flex;gap:4px;margin-left:auto;max-width:210px}
+    /* Pills rather than fixed circles: they give width back before the row
+       overflows. flex-wrap on .rate-row is still the escape hatch at 320px. */
+    .dots button{flex:1 1 0;min-width:26px;height:34px;border-radius:999px;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
     .dots button:hover{border-color:var(--red);color:var(--red)}
     .dots button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
     /* Bigger: this is where the client actually writes, and a 44px slot that shows
@@ -155,7 +177,8 @@
     .saved.on{display:flex}
     .saved.err{color:var(--red)}
 
-    .leg{display:flex;align-items:center;padding:10px 0 10px 15px;margin-left:16px;border-left:2px dotted var(--gray-mid)}
+    .leg{display:flex;align-items:center;padding:14px 0 0 15px;margin-left:16px;border-left:2px dotted var(--gray-mid)}
+    .leg + .stop{padding-top:4px}
     .leg span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted)}
 
     .cta{margin-top:28px;background:var(--black);color:var(--white);border-radius:14px;padding:20px 18px;text-align:center}
@@ -168,7 +191,7 @@
 
 <div class="hero">
   <div class="hero-top">
-    <div class="brand">Home Tour with <img src="/images/logos/804michael-wordmark-white.svg" alt="804Michael" /></div>
+    <div class="brand"><img src="/images/logos/804michael-wordmark-white.svg" alt="804Michael" /></div>
     <div class="hero-when" id="heroWhen"></div>
   </div>
   <h1 id="heroTitle">Your Home <span>Tour</span></h1>
@@ -176,7 +199,15 @@
 </div>
 
 <div class="wrap">
-  <p class="ct-privacy">Your ratings and notes are saved and shared with Michael, so he can line up what fits. Nobody else sees them.</p>
+  <section class="ct-plan" id="ctPlan" hidden>
+    <div class="ct-plan-head">
+      <h2 class="ct-plan-title">Today's stops</h2>
+      <a class="ct-cal" id="ctCal" download="home-tour.ics" hidden>Add to calendar</a>
+    </div>
+    <ol class="ct-plan-list" id="ctPlanList"></ol>
+  </section>
+
+  <p class="ct-privacy">Your ratings &amp; notes are saved &amp; shared with 804-Michael. No one else sees them.</p>
 
 <div id="stops"><p class="state">Loading your tour…</p></div>
 
@@ -199,7 +230,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_03-18-0062';
+const SITE_VERSION = '26.09.06_05-58-0063';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -332,14 +363,128 @@ const SITE_VERSION = '26.09.06_03-18-0062';
     el.classList.toggle('err', !ok);
   }
 
+  // One tap per stop to jump to it, plus a calendar file for the whole day.
+  function buildPlan(list){
+    var planEl = document.getElementById('ctPlan');
+    if(!planEl || list.length < 2){ if(planEl) planEl.hidden = true; return; }
+    document.getElementById('ctPlanList').innerHTML = list.map(function(s, i){
+      var a = splitAddr(s.address);
+      var w = fmtWindow(s.windowStart, s.windowEnd);
+      return '<li><button type="button" class="ct-plan-row' + (s.skipped ? ' off' : '') + '" data-jump="' + i + '">' +
+        '<span class="ct-plan-num" style="background:' + pinColor(i, list.length) + ';color:' + contrastOn(pinColor(i, list.length)) + '">' + (i + 1) + '</span>' +
+        '<span class="ct-plan-addr">' + esc(a.street) + '</span>' +
+        '<span class="ct-plan-when">' + esc(s.skipped ? 'cancelled' : w) + '</span>' +
+      '</button></li>';
+    }).join('');
+    planEl.hidden = false;
+    buildCalendar(list);
+  }
+
+  document.getElementById('ctPlanList').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-jump]');
+    if(!btn) return;
+    var card = document.getElementById('stop-' + btn.dataset.jump);
+    if(card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  //    Calendar                                                           
+  // Written as floating local times (no Z, no VTIMEZONE): a showing at 2pm is
+  // 2pm where the house is, which is the only reading that stays correct if the
+  // client's phone is set to another zone. Only offered when the agent actually
+  // set a start time - without a real date there is no honest event to write,
+  // and a calendar entry on the wrong day is worse than no link at all.
+  function pad2(n){ return (n < 10 ? '0' : '') + n; }
+  function icsDate(d){
+    return d.getFullYear() + pad2(d.getMonth()+1) + pad2(d.getDate()) + 'T' +
+           pad2(d.getHours()) + pad2(d.getMinutes()) + '00';
+  }
+  function atClock(base, hhmm){
+    var m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(hhmm || '');
+    if(!m) return null;
+    var d = new Date(base.getTime());
+    d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    return d;
+  }
+  // RFC 5545 wants CRLF, escaped commas/semicolons, and no bare newlines.
+  function icsText(s){
+    return String(s == null ? '' : s)
+      .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
+      .replace(/\r?\n/g, '\\n');
+  }
+  function buildCalendar(list){
+    var link = document.getElementById('ctCal');
+    if(!link) return;
+    var base = tour.startISO ? new Date(tour.startISO) : null;
+    if(!base || isNaN(base.getTime())){ link.hidden = true; return; }
+
+    var live = list.filter(function(s){ return !s.skipped; });
+    if(!live.length){ link.hidden = true; return; }
+
+    var events = [];
+    live.forEach(function(s, n){
+      var from = atClock(base, s.windowStart), to = atClock(base, s.windowEnd);
+      if(!from || !to) return;
+      events.push({ start: from, end: to, title: 'Showing: ' + splitAddr(s.address).street, loc: s.address, desc: s.blurb || '' });
+    });
+
+    // Nothing may be lost. If any live stop has no window - or none of them do
+    // - one umbrella event holds the whole day and lists every address, and the
+    // timed showings above become detail on top of it rather than the only
+    // record of the tour.
+    if(events.length < live.length){
+      var lastEnd = events.length ? events[events.length - 1].end : null;
+      var end = (lastEnd && lastEnd > base) ? lastEnd : new Date(base.getTime() + 3 * 60 * 60 * 1000);
+      events.unshift({
+        start: base, end: end,
+        title: 'Home tour with 804Michael',
+        loc: live[0].address,
+        desc: live.map(function(s, n){ return (n+1) + '. ' + s.address; }).join('\n')
+      });
+    }
+
+    var stamp = icsDate(new Date());
+    var lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//804Michael//Home Tour//EN','CALSCALE:GREGORIAN'];
+    events.forEach(function(ev, n){
+      lines.push('BEGIN:VEVENT',
+        'UID:' + code + '-' + n + '@804re.com',
+        'DTSTAMP:' + stamp,
+        'DTSTART:' + icsDate(ev.start),
+        'DTEND:' + icsDate(ev.end),
+        'SUMMARY:' + icsText(ev.title),
+        'LOCATION:' + icsText(ev.loc),
+        'DESCRIPTION:' + icsText((ev.desc ? ev.desc + '\n\n' : '') + 'Your tour: ' + location.href),
+        'URL:' + location.href,
+        'END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+
+    var blob = new Blob([lines.join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
+    link.href = URL.createObjectURL(blob);
+    link.hidden = false;
+  }
+
+  function skippedStopHtml(a, i, total){
+    return '<article class="stop is-cancelled' + (i === 0 ? ' first' : '') + '" id="stop-' + i + '">' +
+      '<div class="stop-head">' +
+        '<div class="pin" style="background:' + pinColor(i, total) + ';color:' + contrastOn(pinColor(i, total)) + '">' + (i + 1) + '</div>' +
+        '<div class="stop-id">' +
+          '<span class="addr">' + esc(a.street) + '</span>' +
+          (a.rest ? '<div class="city">' + esc(a.rest) + '</div>' : '') +
+          '<div class="cancelled-note">Cancelled. Your agent will let you know if this one can be rescheduled.</div>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
   function stopHtml(s, i, total){
     var a = splitAddr(s.address);
+    if(s.skipped) return skippedStopHtml(a, i, total);
     var saved = local[i] || {};
     var dots = [1,2,3,4,5].map(function(v){
       return '<button type="button" data-i="' + i + '" data-val="' + v + '" aria-pressed="' +
         (saved.rating === v ? 'true' : 'false') + '" aria-label="Rate ' + v + ' out of 5">' + v + '</button>';
     }).join('');
-    return '<article class="stop' + (i === 0 ? ' first' : '') + '">' +
+    return '<article class="stop' + (i === 0 ? ' first' : '') + '" id="stop-' + i + '">' +
       '<div class="stop-head">' +
         '<div class="pin" style="background:' + pinColor(i, total) + ';color:' + contrastOn(pinColor(i, total)) + '">' + (i + 1) + '</div>' +
         '<div class="stop-id">' +
@@ -371,13 +516,21 @@ const SITE_VERSION = '26.09.06_03-18-0062';
     document.getElementById('heroWhen').innerHTML = tour.dateLabel
       ? '<strong>' + esc(tour.dateLabel) + '</strong>' + (tour.startLabel ? 'Starts ' + esc(tour.startLabel) : '')
       : '';
+    // Counts the homes actually being seen. A cancelled stop keeps its card
+    // and its number below, but promising "5 homes" and showing four is the
+    // kind of small lie a client notices.
+    var liveCount = list.filter(function(s){ return !s.skipped; }).length;
+    var offCount = list.length - liveCount;
     document.getElementById('heroSub').textContent =
-      list.length + (list.length === 1 ? ' home' : ' homes') + (tour.summary ? ' · ' + tour.summary : '');
+      liveCount + (liveCount === 1 ? ' home' : ' homes') +
+      (offCount ? ' · ' + offCount + ' cancelled' : '') +
+      (tour.summary ? ' · ' + tour.summary : '');
 
     stopsEl.innerHTML = list.map(function(s, i){
       return stopHtml(s, i, list.length) +
         (i < list.length - 1 ? '<div class="leg"><span>Next stop</span></div>' : '');
     }).join('');
+    buildPlan(list);
     document.getElementById('footCta').hidden = false;
   }
 
