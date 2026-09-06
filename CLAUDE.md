@@ -12,10 +12,9 @@ the short version plus the rules that are easy to break.
 ## What this is
 
 A static real-estate site for Michael Hottman (804Michael), deployed to
-Cloudflare Pages. Michael deploys by running `push-live.bat` or by saying "push"
-in chat — never push on your own initiative. A push to origin IS the deploy here
-(Cloudflare Pages rebuilds from GitHub), so it is a separate decision from
-committing; see rule 8.
+Cloudflare Pages. A push to origin IS the deploy (Cloudflare Pages rebuilds from
+GitHub). Push finished work yourself without asking — see rule 8 for what still
+needs a check-in first.
 
 There is no build step: pages are hand-written HTML with their own embedded
 `<style>` and `<script>`.
@@ -85,13 +84,22 @@ paid sthan.io API server-side to keep those credentials off the page.
    and `/api/tour-page.js` enforce an allow-list server-side; private notes and
    agent ratings must not cross it.
 
-8. **Commits are automatic, pushes are not.** A Stop hook
-   (`.claude/hooks/auto-commit.sh`, wired up in `.claude/settings.json`) commits
-   whatever changed when you finish a task, so nothing is left sitting
-   uncommitted, and prints how many commits are waiting. Do NOT push. End every
-   task by saying the work is committed and asking whether to push — pushing
-   deploys to the live site, and that stays Michael's call. When he says
-   "push", run `git push origin main`.
+8. **Commit and push when the work is done — do not ask first.** (Changed
+   2026-09-06 at Michael's request; this rule previously said the opposite.) A
+   Stop hook (`.claude/hooks/auto-commit.sh`, wired up in
+   `.claude/settings.json`) commits whatever changed when you finish a task, so
+   nothing is left uncommitted. Then run `git push origin main` yourself and
+   report what went live, including the version stamp now serving. A push to
+   origin is the deploy, so verify before pushing, not after: `node --check` the
+   inline script, check tag balance, and confirm the diff is the size you
+   intended — an encoding round-trip that rewrites a whole file is the failure
+   this catches (see the UTF-8 standing rule in the design notes).
+
+   **Still stop and ask** before anything that changes what the public sees in a
+   way a commit message cannot undo: launching a hidden page (rule 2), deleting
+   content, restructuring URLs, or any change to `_redirects`, `_headers`,
+   `robots.txt` or `sitemap.xml` that affects live routing. Pushing ordinary
+   page and tool work needs no permission.
 
 ## Layout conventions
 
@@ -138,8 +146,10 @@ way:
 4. **A `## Summary` bullet list** at the end. One bullet per heading above,
    reusing the exact same heading text in bold so the bullets map onto the
    sections one-to-one. One line each.
-5. **A `## Ready to push?` heading last**, naming the commit(s) waiting and what
-   they contain. Never push without being asked (rule 8).
+5. **A `## Pushed` heading last**, naming the commit(s) that went live and the
+   version stamp now serving, confirmed against the live URL rather than
+   assumed. If something was deliberately held back for Michael to decide (rule
+   8), say so there instead.
 
 Occasionally — not every reply — add a short `## Worth knowing` note about a
 Claude Code or Claude capability that would help his actual work (connectors,

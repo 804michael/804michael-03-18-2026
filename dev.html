@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_00-46-0065                            ║
+  ║  SITE VERSION: 26.09.06_00-51-0066                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-46-0065    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-51-0066    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -225,6 +225,16 @@
        breathing room and a label to stop it reading as an orphan. */
     .dev-note-form-hoisted{margin-bottom:4px}
     .dev-note-form-hoisted::before{content:"Notes & Ideas";font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.01em;color:var(--black)}
+    /* "Page note" sits beside "+ Add Card" and holds what used to be a
+       permanent banner across the top of the page. Same words, one tap away,
+       and the cards start higher up the screen. */
+    .dev-page-note-btn{background:none;border:1.5px solid var(--gray-mid);color:var(--gray-text);border-radius:999px;padding:7px 15px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+    .dev-page-note-btn:hover{border-color:var(--red);color:var(--red)}
+    .dev-page-note-btn[aria-expanded="true"]{border-color:var(--red);color:var(--red);background:#fff5f4}
+    .dev-page-note-pop{position:relative;margin:0 0 14px;padding:14px 40px 14px 16px;border-left:3px solid var(--red);border-radius:0 10px 10px 0;background:#fffdf3;box-shadow:0 6px 20px rgba(0,0,0,.08);font-size:.95rem;line-height:1.6;color:var(--gray-text)}
+    .dev-page-note-pop code{background:var(--gray-light);padding:1px 5px;border-radius:4px;font-size:.9em}
+    .dev-page-note-close{position:absolute;top:8px;right:10px;background:none;border:0;font-size:1.4rem;line-height:1;color:var(--gray-muted);cursor:pointer;padding:2px 6px}
+    .dev-page-note-close:hover{color:var(--red)}
     .dev-cards-hint{font-size:.85rem;color:var(--gray-muted);margin:0 0 14px}
     .dev-cards-hint.bad{color:var(--red)}
     .dev-notes{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:16px;padding:12px 12px 4px}
@@ -313,16 +323,17 @@
 
 <div class="dev-body">
 
-  <div class="dev-note">
-    Page is unlinked from main nav &amp; blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live — bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.
-  </div>
-
   <div class="dev-layout">
     <div class="dev-main">
 
   <div class="dev-toolbar">
     <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
+    <button type="button" class="dev-page-note-btn" id="dev-page-note-btn" aria-haspopup="dialog" aria-expanded="false">Page note</button>
     <button type="button" class="dev-add-card-btn" id="dev-add-card-btn">+ Add Card</button>
+  </div>
+  <div class="dev-page-note-pop" id="dev-page-note-pop" role="dialog" aria-label="About this page" hidden>
+    <button type="button" class="dev-page-note-close" id="dev-page-note-close" aria-label="Close">&times;</button>
+    <p>Page is unlinked from main nav &amp; blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live &mdash; bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.</p>
   </div>
   <p class="dev-cards-hint" id="dev-cards-hint"></p>
 
@@ -743,7 +754,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_00-46-0065</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_00-51-0066</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -754,7 +765,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_00-46-0065';
+  const SITE_VERSION = '26.09.06_00-51-0066';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -1219,6 +1230,24 @@
       while(cardById(id)){ id = base + '-' + (n++); }
       return id;
     }
+
+    // Page note: toggle, close button, Escape. Deliberately not a modal - it
+    // is a footnote, not something to interrupt what you were doing.
+    (function(){
+      var btn = document.getElementById('dev-page-note-btn');
+      var pop = document.getElementById('dev-page-note-pop');
+      var close = document.getElementById('dev-page-note-close');
+      if(!btn || !pop) return;
+      function setOpen(open){
+        pop.hidden = !open;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      btn.addEventListener('click', function(){ setOpen(pop.hidden); });
+      if(close) close.addEventListener('click', function(){ setOpen(false); btn.focus(); });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' && !pop.hidden) setOpen(false);
+      });
+    })();
 
     document.getElementById('dev-add-card-btn').addEventListener('click', function(){ openModal(null); });
     document.getElementById('dev-modal-cancel').addEventListener('click', closeModal);
