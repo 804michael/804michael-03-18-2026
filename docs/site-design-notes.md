@@ -1691,3 +1691,66 @@ rates with their annual budgets, usually effective 1 July), and fails red on dri
 
 The general point: a green light that only means "the endpoint answered" hides exactly
 the failures worth catching. Show the value and its age.
+
+## Nineteenth pass — Route Planner Pro is now a fork of the planner (2026-09-06)
+
+### The earlier advice was right, and Michael's decision overrides it anyway
+
+The prototype was deliberately not a fork, on the grounds that copying 200KB of working
+code produces two planners that drift apart and the good one rots. That reasoning has
+not changed. What changed is the purpose: Michael wants to **use** Pro — to judge the
+MLS facts and the segment rail against real stops, a real map and real share links. A
+data panel beside a paste-in box cannot be judged that way, and a re-implementation
+would differ subtly enough to invalidate the comparison.
+
+So `route-planner-pro.html` is now `tour-planner.html` copied at commit `147cab0`, with
+the Pro layer added. **The fork is a debt and the file says so in its own banner:**
+`tour-planner.html` is the one that ships, it stays untouched, and every fix made in Pro
+has to be carried back deliberately. When the ideas settle, they move into the planner
+and this file is deleted.
+
+Confirmed on every commit since: `git diff <base> HEAD -- tour-planner.html` is empty.
+
+### The bridge: Pro reads the DOM, not the planner's variables
+
+The Pro layer is its own IIFE and reaches the tour through one function:
+
+```js
+function plannerStops(){
+  return [].slice.call(document.querySelectorAll('#stopList .stop-row'))
+    .map(function(row){ var i = row.querySelector('.stop-address'); return i ? i.value.trim() : ''; })
+    .filter(Boolean);
+}
+```
+
+Three reasons, all of which matter:
+
+- **The DOM order IS the current order.** The optimiser reorders the rows themselves, and
+  so does dragging, so this is correct before and after a route calculation with no
+  hooks into either.
+- **No variable collisions.** The planner has its own `stops`; so did the prototype.
+  Splicing the two scripts together would have needed a dozen renames, each a chance to
+  break the planner half.
+- **Carrying a planner fix across becomes a copy, not a merge**, because the Pro layer
+  never reached inside.
+
+It is kept in step by a debounced `input` listener on `#stopList` and a `MutationObserver`
+for rows added or removed.
+
+### What changed from the planner, and nothing else
+
+- `MAX_STOPS` 10 → 40. Ten exists because Google Maps takes nine waypoints in one link;
+  errand runs get past that by splitting, so the cap can lift.
+- `DRAFT_KEY` → `804m_tourpro_working_draft`. **Saved tours stay shared** (`SAVED_KEY`
+  and `/api/tours`) so a tour saved in one page opens in the other — that is wanted. The
+  working draft must not be, or two open tabs overwrite each other every keystroke.
+- Title, hero, breadcrumb, banner, and `tax-rates.js`.
+
+### Verified against 14 real stops
+
+14 rows from a portable link; the segment rail read all 14 straight out of the planner.
+Two "+ Add segment" clicks gave **4 / 3 / 7** — varying sizes, which was the point.
+Loading the real MLS export matched **5 of 14** (the five listings; the nine errand stops
+correctly did not match), 14 fact cards rendered, and tax estimated from Hanover 0.81%
+against list price. Map, Optimize, Calculate, Save, Publish, Print and share links all
+present and working.
