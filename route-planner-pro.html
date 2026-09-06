@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_16-20-0006                            ║
+  ║  SITE VERSION: 26.09.06_16-29-0007                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_16-20-0006    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_16-29-0007    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Update the version string in THREE places every edit:        ║
@@ -47,6 +47,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
 <link rel="stylesheet" href="nav.css">
+<script src="tax-rates.js"></script>
 
 <style>
   :root{
@@ -281,7 +282,7 @@
           <button type="button" class="btn btn-out" id="rateReset">Reset</button>
         </div>
         <div class="rp-rates-rows" id="rateRows"></div>
-        <p class="rp-note warn" style="margin-top:8px"><strong>These rates are starting points, not gospel.</strong> Localities set them every year and they move. Check each one against the county or city website and correct it here before the number goes anywhere near a client &mdash; the figures are yours to maintain, saved in this browser.</p>
+        <p class="rp-note" style="margin-top:8px" id="rateSource"></p>
       </div>
       <div class="rp-scroll"><table class="rp-cmp" id="payTable"></table></div>
       <p class="rp-legal" id="payLegal"></p>
@@ -351,7 +352,7 @@
 <script>
 // ⚠ AI: update SITE_VERSION + the top comment's SITE VERSION line + the visible
 // version line on every edit.
-const SITE_VERSION = '26.09.06_16-20-0006';
+const SITE_VERSION = '26.09.06_16-29-0007';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date().getFullYear(); });
 
@@ -730,15 +731,39 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
   // Rates are NOT hard facts here. They change every year, they are seeded
   // from published figures that may already be stale, and they are editable
   // and stored per browser so the agent owns them.
-  var RATE_SEED = {
-    'Hanover': 0.81, 'Ashland': 0.88, 'Henrico': 0.85, 'Chesterfield': 0.90,
-    'Richmond City': 1.20, 'Goochland': 0.53, 'New Kent': 0.67,
-    'Powhatan': 0.77, 'Caroline': 0.83, 'Louisa': 0.72
-  };
-  var RATE_KEY = '804m_tax_rates_v1';
+  // The list lives in tax-rates.js, which the affordability calculator is
+  // also measured against. This page used to carry its own seeds and four of
+  // them were wrong - a second copy of a number that changes every year is a
+  // guarantee that one copy is stale.
+  var RATE_SEED = (function(){
+    var o = {};
+    var src = (window.VA_TAX_RATES && window.VA_TAX_RATES.localities) || [];
+    src.forEach(function(r){ o[r.key] = r.pct; });
+    return o;
+  })();
+  // The saved copy is keyed to the canonical list's AS_OF date, so re-checking
+  // the rates in tax-rates.js automatically retires every local edit made
+  // against the old figures. Without that, one edit here outranked the shared
+  // list forever - a browser that had ever touched this page kept quoting
+  // whatever it was told first, and Reset was the only way out.
+  var RATE_KEY = '804m_tax_rates_' + ((window.VA_TAX_RATES && window.VA_TAX_RATES.AS_OF) || 'none');
   var rates = (function(){
-    try { return Object.assign({}, RATE_SEED, JSON.parse(localStorage.getItem(RATE_KEY) || '{}')); }
-    catch(e){ return Object.assign({}, RATE_SEED); }
+    var base = Object.assign({}, RATE_SEED);
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(RATE_KEY) || '{}'); } catch(e){}
+    // Only keep an override for a locality the shared list still carries.
+    Object.keys(saved).forEach(function(k){
+      if(Object.prototype.hasOwnProperty.call(base, k)) base[k] = Number(saved[k]);
+    });
+    // Sweep the pre-2026-09-06 key and anything left from an older AS_OF.
+    try {
+      for(var i = localStorage.length - 1; i >= 0; i--){
+        var k = localStorage.key(i);
+        if(k && /^804m_tax_rates_/.test(k) && k !== RATE_KEY) localStorage.removeItem(k);
+      }
+      localStorage.removeItem('804m_tax_rates_v1');
+    } catch(e){}
+    return base;
   })();
   function saveRates(){ try { localStorage.setItem(RATE_KEY, JSON.stringify(rates)); } catch(e){} }
   function rateFor(locality){
@@ -776,6 +801,16 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     if(rst) rst.addEventListener('click', function(){
       rates = Object.assign({}, RATE_SEED); saveRates(); renderRates(); renderPayment();
     });
+    // Say where the numbers came from, and how old they are.
+    var srcEl = document.getElementById('rateSource');
+    if(srcEl && window.VA_TAX_RATES){
+      var mo = window.VA_TAX_RATES.monthsOld();
+      srcEl.innerHTML = '<strong>From tax-rates.js, last checked ' + esc(window.VA_TAX_RATES.AS_OF) +
+        '</strong> (' + (mo === 0 ? 'this month' : mo + ' month' + (mo === 1 ? '' : 's') + ' ago') + ').' +
+        ' Localities reset these with their annual budgets, so confirm before a number reaches a client.' +
+        ' Editing one here changes it in this browser only \u2014 to change it everywhere, edit tax-rates.js.';
+      if(mo != null && mo >= 6) srcEl.className = 'rp-note warn';
+    }
     renderRates();
   })();
 

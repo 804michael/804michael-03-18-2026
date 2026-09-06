@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_00-21-0054                            ║
+  ║  SITE VERSION: 26.09.06_16-29-0055                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_00-21-0054    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_16-29-0055    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -94,6 +94,7 @@
 
   <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
   <link rel="stylesheet" href="nav.css">
+<script src="tax-rates.js"></script>
 
   <style>
     :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
@@ -432,7 +433,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_00-21-0054</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_16-29-0055</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -445,7 +446,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_00-21-0054';
+  const SITE_VERSION = '26.09.06_16-29-0055';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -565,16 +566,70 @@
       }
     },
     {
-      id: 'rates', name: 'Mortgage rates', code: '/api/rates',
-      what: 'Live rate figures on the budget and affordability pages.',
-      where: 'Env var FRED_API_KEY',
+      id: 'rates', name: 'Mortgage rate', code: '/api/rates',
+      what: 'The 30-year average behind the budget and affordability calculators.',
+      where: 'FRED (Freddie Mac PMMS) via env var FRED_API_KEY',
       run: function(){
         return fetch('/api/rates').then(readJson).then(function(r){
           if(r.status === 404) return bad('Endpoint not deployed (404).');
           if(!r.json) return bad('Responded ' + r.status + ' with no JSON.');
-          var src = String(r.json.source || '');
-          if(/fallback|static|hardcode/i.test(src)) return warn('Serving the hardcoded fallback rate — FRED_API_KEY missing or rejected.');
-          return ok('Live rate data' + (src ? ' (source: ' + src + ')' : '') + '.');
+          var j = r.json;
+          var rate = j.rate30 != null ? Number(j.rate30).toFixed(2) + '%' : 'no figure';
+          var src = String(j.source || '');
+          if(/fallback|static|hardcode/i.test(src)){
+            return bad('Serving the hardcoded ' + rate + ' fallback \u2014 FRED_API_KEY missing or rejected. ' +
+                       'Every calculator on the site is quoting a made-up number.');
+          }
+          // PMMS publishes weekly, on a Thursday. More than a week without a
+          // new observation means the survey date has stopped moving, which
+          // is the quiet failure - the endpoint still answers, with old data.
+          var age = null;
+          if(j.asOf){
+            var d = new Date(j.asOf + 'T00:00:00');
+            if(!isNaN(d)) age = Math.floor((Date.now() - d.getTime()) / 86400000);
+          }
+          if(age == null) return warn(rate + ' live, but the survey date is missing \u2014 cannot tell how old it is.');
+          var when = j.asOf + ', ' + age + ' day' + (age === 1 ? '' : 's') + ' ago';
+          if(age > 7) return warn(rate + ' \u2014 survey dated ' + when + '. PMMS updates weekly, so this has stopped refreshing.');
+          return ok(rate + ' \u2014 survey dated ' + when + '.');
+        });
+      }
+    },
+    {
+      id: 'taxrates', name: 'Property tax rates', code: 'tax-rates.js',
+      what: 'The county rates in the affordability calculator and Route Planner Pro.',
+      where: 'tax-rates.js \u2014 edited by hand, not fetched from anywhere',
+      run: function(){
+        var T = window.VA_TAX_RATES;
+        if(!T) return Promise.resolve(bad('tax-rates.js did not load \u2014 Route Planner Pro has no rates at all.'));
+        var mo = T.monthsOld();
+        var n = T.localities.length;
+        // The calculator keeps its own hardcoded <option> list so it works
+        // with no JS. That is fine as long as the numbers agree - so check.
+        return fetch('/determine-your-budget').then(function(res){
+          if(!res.ok) throw new Error('fetch');
+          return res.text();
+        }).then(function(html){
+          var drift = [];
+          T.localities.forEach(function(r){
+            var re = new RegExp('<option value="([\\d.]+)"[^>]*>\\s*' +
+              r.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*') , 'i');
+            var m = html.match(re);
+            if(!m) drift.push(r.label + ' (not on the calculator)');
+            else if(Math.abs(Number(m[1]) - r.pct) > 0.0001) drift.push(r.label + ' ' + m[1] + '% vs ' + r.pct + '%');
+          });
+          var age = mo == null ? 'unknown age'
+                  : mo === 0 ? 'checked this month'
+                  : 'last checked ' + T.AS_OF + ', ' + mo + ' month' + (mo === 1 ? '' : 's') + ' ago';
+          if(drift.length){
+            return bad(n + ' localities, ' + age + '. OUT OF STEP with the calculator: ' + drift.join('; ') + '.');
+          }
+          if(mo != null && mo >= 6) return warn(n + ' localities agree with the calculator, but ' + age +
+            '. Localities reset rates with their annual budgets \u2014 time to re-check them.');
+          return ok(n + ' localities, ' + age + ', all agreeing with the calculator.');
+        }).catch(function(){
+          var age = mo == null ? 'unknown age' : T.AS_OF + ' (' + mo + ' months ago)';
+          return warn(n + ' localities, last checked ' + age + '. Could not read the calculator to compare.');
         });
       }
     },

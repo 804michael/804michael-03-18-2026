@@ -1638,3 +1638,56 @@ the dev-hub card drag.
 Hiding a seeded card is reversible — it is still in the page source. Deleting one you
 added is not, so it asks twice, and the second question says plainly: "Are you sure you
 want to delete? This is not reversable."
+
+## Eighteenth pass — one rate list, and system status watches both clocks (2026-09-06)
+
+### STANDING RULE: a number that changes on a schedule gets ONE home and a watcher
+
+Michael spotted that the site already had a maintained county tax-rate list, in
+`determine-your-budget.html`. Route Planner Pro had been seeded with a second set that
+disagreed with it on **four of nine localities** — Ashland 0.88 vs 0.91, Henrico 0.85 vs
+0.83, Chesterfield 0.90 vs 0.89, Caroline 0.83 vs 0.77, New Kent 0.67 vs 0.60 — plus a
+Louisa row the calculator never had. Two copies of a number that resets every year is a
+guarantee that one is stale, and the wrong one is the one somebody quotes to a buyer.
+
+`tax-rates.js` is now the canonical list: ten localities, an `AS_OF` month, a `find()`
+that tolerates "Hanover" / "Hanover County" / "hanover county, va", and `monthsOld()`.
+It carries its own update instructions at the top.
+
+**The calculator's `<option>` list is deliberately still hardcoded** so the page works
+with no JS — that is worth keeping. What is not acceptable is the two drifting apart
+unnoticed, so `system-status.html` fetches the calculator, parses its options, and fails
+red naming the locality and both figures when they disagree. Verified by moving Henrico
+to 0.99 in the canonical file: *"OUT OF STEP with the calculator: Henrico County 0.83%
+vs 0.99%."*
+
+### Saved overrides must expire when the canonical list moves
+
+Route Planner Pro lets the rates be edited in the browser and saved. Merging that saved
+copy over the seed meant **one local edit outranked the shared list forever** — a browser
+that had ever opened the page kept quoting whatever it was told first, and Reset was the
+only way out. It is why the page was still showing the wrong Ashland and Henrico rates
+after the canonical file was wired in.
+
+The storage key now carries the canonical `AS_OF` (`804m_tax_rates_2026-08`), so
+re-checking the rates retires every edit made against the old figures, and older keys are
+swept on load. Overrides are also dropped for any locality the shared list no longer
+carries. **Any per-browser override of shared data needs this**: key it to the version of
+the thing it overrides, or it becomes permanent.
+
+### System status now reports values, not just liveness
+
+The mortgage-rate check said "live rate data" and nothing else — it could not tell a
+working endpoint from one serving a frozen number. It now shows **the rate and the survey
+date**, because PMMS publishes weekly and the quiet failure is an endpoint that answers
+happily with month-old data:
+
+- fresh: `6.41% — survey dated 2026-09-03, 3 days ago.`
+- over a week: **warn** — `survey dated 2026-08-18, 19 days ago. PMMS updates weekly, so this has stopped refreshing.`
+- no key: **red** — `Serving the hardcoded 6.60% fallback … Every calculator on the site is quoting a made-up number.`
+
+The tax-rate check reports count, age and agreement, warns at six months (localities set
+rates with their annual budgets, usually effective 1 July), and fails red on drift.
+
+The general point: a green light that only means "the endpoint answered" hides exactly
+the failures worth catching. Show the value and its age.
