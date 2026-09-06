@@ -83,8 +83,23 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ error: 'invalid_payload' }), { status: 400, headers: jsonHeaders });
   }
 
+  // A saved tour used to be stored as a bare array of stops, which meant the
+  // published code and its adminKey were NOT kept with it - reloading a saved
+  // tour therefore lost the link and made its client feedback unreadable, and
+  // republishing minted a brand new code. It is now stored as an object that
+  // carries that identity alongside the stops. Bare arrays written before
+  // 2026-09-06 still read fine; the page normalises either shape.
+  const meta = payload && typeof payload.meta === 'object' && payload.meta ? payload.meta : {};
+  const asStr = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+
   const tours = await readTours(env.TOURS_KV);
-  tours[name] = stops;
+  tours[name] = {
+    stops,
+    tourPageCode: asStr(meta.tourPageCode, 40),
+    tourPageAdminKey: asStr(meta.tourPageAdminKey, 40),
+    tourSlug: asStr(meta.tourSlug, 40),
+    savedAt: Date.now(),
+  };
   await writeTours(env.TOURS_KV, tours);
   return new Response(JSON.stringify({ ok: true, tours }), { headers: jsonHeaders });
 }

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_01-36-0060                            ║
+  ║  SITE VERSION: 26.09.06_02-09-0061                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_01-36-0060    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_02-09-0061    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -199,7 +199,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_01-36-0060';
+const SITE_VERSION = '26.09.06_02-09-0061';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -252,9 +252,11 @@ const SITE_VERSION = '26.09.06_01-36-0060';
     function one(hhmm){
       var m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(hhmm || '');
       if(!m) return '';
-      var h = parseInt(m[1], 10), ampm = h < 12 ? 'AM' : 'PM';
+      // Single lowercase letter, matching the planner: "2:00p". Shorter reads
+      // better in a pill on a phone, and the two pages now say it the same way.
+      var h = parseInt(m[1], 10), ampm = h < 12 ? 'a' : 'p';
       var h12 = h % 12; if(h12 === 0) h12 = 12;
-      return h12 + ':' + m[2] + ' ' + ampm;
+      return h12 + ':' + m[2] + ampm;
     }
     var a = one(from), b = one(to);
     return (a && b) ? (a + ' - ' + b) : '';
