@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_00-46-0057                            ║
+  ║  SITE VERSION: 26.09.06_00-57-0058                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-46-0057    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-57-0058    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -75,6 +75,10 @@
     .hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75)}
     /* Said once, plainly, above the stops - not repeated under every rating. */
     .ct-privacy{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--gray-mid);background:var(--gray-light);font-size:.88rem;line-height:1.5;color:var(--gray-text)}
+    /* Unused since 2026-09-06: the hero's Call/Text pair was removed so the
+       first screen goes straight to the homes. The identical pair at the foot
+       of the page is the contact path now. Kept in case the hero ever wants
+       buttons again. */
     .hero-cta{display:flex;gap:8px;margin-top:16px}
 
     /* nowrap + a slightly tighter face: at 1rem with .06em tracking these two
@@ -162,10 +166,6 @@
   </div>
   <h1 id="heroTitle">Your Home <span>Tour</span></h1>
   <p class="hero-sub" id="heroSub"></p>
-  <div class="hero-cta">
-    <a class="btn btn-red" href="tel:8046424235">Call 804-Michael</a>
-    <a class="btn btn-ghost" href="sms:8046424235">Text 804-642-4235</a>
-  </div>
 </div>
 
 <div class="wrap">
@@ -192,7 +192,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_00-46-0057';
+const SITE_VERSION = '26.09.06_00-57-0058';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
