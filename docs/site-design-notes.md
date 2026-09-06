@@ -1272,3 +1272,51 @@ first move, swaps one slot at ~170px, moves three slots on a 500px drag, returns
 exactly on the reverse drag, no oscillation, no stuck `.drag-active`, order persisted.
 A real finger drag still could not be run — the browser pane will not render for
 `left_click_drag` — so Michael's phone is the confirming test.
+
+### Addendum — brand placement, one-step note undo, the notes box (2026-09-06)
+
+**The wordmark moved off the hero and onto the stops card**, upper right of "Today's
+stops". It needed a light-ground variant: `804michael-wordmark-dark.svg` is the white
+one with the "804" recoloured to `#111`. The script "Michael" is `#ED1C24` in both, so
+the mark reads the same on either ground — do NOT try to do this with `filter:invert()`,
+which would take the red with it. The hero row now right-aligns, since the date is the
+only thing left in it.
+
+**Undo for an erased agent note.** A note is saved on every keystroke and pushed to the
+server, so a stray select-all-and-type is gone from everywhere at once, and the
+textarea's own ctrl+Z does not survive moving to the next stop. Tour Mode now keeps, per
+stop, the last text a *destructive* edit threw away — emptied, or ≥20 characters lost in
+one go. Ordinary backspacing does not arm it, or it would keep resetting what Undo
+would restore.
+
+Undo **swaps** rather than discards, so pressing it twice returns you to where you were:
+press it by mistake after writing a fresh note and the fresh note would otherwise be
+gone. That swap only works if "is there something stored" is asked with
+`hasOwnProperty` — the stored value after one press is usually the empty string that was
+wiped, and a truthiness test says no. It lives in memory for the life of the tab, which
+is the whole of a tour. It is not history: one step back from the one mistake worth
+catching.
+
+**The notes box.** Bled 10px past `.tm-body`'s padding on each side with its own padding
+trimmed, so at 320px it is **308px** wide — the writing area is the point of that screen.
+Label sits 4px above it (`.tm-note-head` inside `.tm-note-wrap`) rather than a full 14px
+flex gap away, since the two are one thing.
+
+**The timing line** left `.tm-addr-wrap` and became its own block under the whole stop
+line, so it starts at the left margin under the number rather than hanging off the
+address. `margin-top:-8px` claws back most of the body gap: it belongs to the address
+above it, not the blurb below.
+
+### Trap worth knowing: the calendar links need a start DATE, not just a time
+
+The client page's Add to Calendar row is hidden unless the published tour carries
+`startISO`, which the planner only sends when **both** the start date and the start time
+are set. `buildStartDateTime` falls back to *today* when no date is given — fine for a
+label a person reads next to the tour, wrong for a calendar entry, since a tour planned
+for next Tuesday would land on today in the client's calendar.
+
+The live `/t/demo` tour had neither a date nor a time nor any showing windows, so the row
+correctly did not appear and nothing said why. The publish note now reads "Set a start
+date & time to give the client Add to Calendar." **Any tour published before 2026-09-06
+must be republished** before its client page can offer the links, since `startISO` did
+not exist when it was stored.

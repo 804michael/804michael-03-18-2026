@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_06-19-0064                            ║
+  ║  SITE VERSION: 26.09.06_06-30-0065                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-19-0064    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-30-0065    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -62,12 +62,10 @@
        site-design-notes.md) — same values as every other page. */
     .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden}
     .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
-    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+    .hero-top{display:flex;align-items:flex-start;justify-content:flex-end;gap:16px}
     /* Was a text approximation of the logo (804 + italic "Michael"), which is
        not the brand mark. Now the real wordmark as an SVG image, on the white
        -on-black variant since this hero is black. */
-    .brand{display:flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.05rem;letter-spacing:.04em;line-height:1;flex:0 0 auto;color:rgba(255,255,255,.8)}
-    .brand img{height:26px;width:auto;display:block}
     .hero-when{text-align:right;font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.35;flex:0 0 auto}
     .hero-when strong{display:block;color:var(--white);font-weight:600;font-size:.95rem}
     h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:14px 0 10px}
@@ -79,6 +77,7 @@
     .ct-plan{margin:0 0 16px;border:1.5px solid var(--gray-mid);border-radius:12px;padding:12px 14px}
     .ct-plan[hidden]{display:none}
     .ct-plan-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ct-plan-mark{flex:0 0 auto;height:20px;width:auto;display:block}
     .ct-plan-title{flex:1 1 auto;min-width:0;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-text)}
     /* Wraps to two lines on the narrowest phones rather than squeezing three
        pills and a label onto one. */
@@ -197,7 +196,6 @@
 
 <div class="hero">
   <div class="hero-top">
-    <div class="brand"><img src="/images/logos/804michael-wordmark-white.svg" alt="804Michael" /></div>
     <div class="hero-when" id="heroWhen"></div>
   </div>
   <h1 id="heroTitle">Your Home <span>Tour</span></h1>
@@ -208,6 +206,7 @@
   <section class="ct-plan" id="ctPlan" hidden>
     <div class="ct-plan-head">
       <h2 class="ct-plan-title">Today's stops</h2>
+      <img class="ct-plan-mark" src="/images/logos/804michael-wordmark-dark.svg" alt="804Michael" width="96" height="20" />
     </div>
     <ol class="ct-plan-list" id="ctPlanList"></ol>
     <div class="ct-cal-row" id="ctCalRow" hidden>
@@ -243,7 +242,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_06-19-0064';
+const SITE_VERSION = '26.09.06_06-30-0065';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
