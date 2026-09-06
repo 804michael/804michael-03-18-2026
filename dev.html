@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_14-12-0071                            ║
+  ║  SITE VERSION: 26.09.06_14-24-0072                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-12-0071    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-24-0072    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -167,6 +167,14 @@
     .dev-badge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white);background:var(--red);padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 0 0 1.5px var(--card-fg-faint,transparent)}
     .dev-badge.unlinked{background:var(--gray-muted)}
     .dev-badge.review{background:#3b6ea5}
+    .dev-badge.done{background:var(--green,#1a7a3c)}
+    /* Full width of the grid, so finished work is separated by a real line
+       rather than by hoping the reader notices the badge colour changed. */
+    .dev-done-bar{grid-column:1 / -1;display:flex;align-items:center;gap:12px;margin:18px 0 2px;color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.14em;text-transform:uppercase}
+    .dev-done-bar::after{content:"";flex:1 1 auto;height:1.5px;background:var(--gray-mid)}
+    /* Finished, not gone: still readable, just not competing with live work. */
+    .dev-card.is-done{opacity:.72}
+    .dev-card.is-done:hover{opacity:1}
 
     /* Small dynamic status line — currently only used for the ORS/HeiGIT
        account-signup check on the Tour Planner card (see the script at the
@@ -376,7 +384,8 @@
         <select id="dev-f-badgekind">
           <option value="">Red — In Progress</option>
           <option value="unlinked">Grey — Built, Unlinked</option>
-          <option value="review">Blue — Live, Review</option>
+          <option value="review">Blue &mdash; Live, Review</option>
+          <option value="done">Green &mdash; Completed</option>
         </select>
       </div>
       <div class="dev-field">
@@ -795,7 +804,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_14-12-0071</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_14-24-0072</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -806,7 +815,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_14-12-0071';
+  const SITE_VERSION = '26.09.06_14-24-0072';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -951,7 +960,9 @@
       return {
         title: titleTxt,
         badge: badge ? badge.textContent : '',
-        badgeKind: badge && badge.classList.contains('unlinked') ? 'unlinked' : (badge && badge.classList.contains('review') ? 'review' : ''),
+        badgeKind: !badge ? '' : (badge.classList.contains('unlinked') ? 'unlinked'
+                 : badge.classList.contains('review') ? 'review'
+                 : badge.classList.contains('done') ? 'done' : ''),
         desc: p ? p.textContent : '',
         bullets: [].map.call(el.querySelectorAll('.dev-card-body ul li'), function(li){ return li.textContent; }),
         href: (link && link.tagName === 'A') ? link.getAttribute('href') : '',
@@ -1155,6 +1166,29 @@
     window.devDecorateCard = decorateCard;
 
     function applyState(){
+      // A card is "completed" when its badge is the green one. One control, not
+      // two: the status and where it sits are the same fact.
+      function isDone(el){
+        var b = el.querySelector('.dev-badge');
+        return !!b && b.classList.contains('done');
+      }
+      function reflowCompleted(){
+        var cards = [].slice.call(grid.querySelectorAll('.dev-card'));
+        var done = cards.filter(isDone);
+        cards.forEach(function(c){ c.classList.toggle('is-done', isDone(c)); });
+        var bar = document.getElementById('dev-done-bar');
+        if(!done.length){ if(bar) bar.remove(); return; }
+        if(!bar){
+          bar = document.createElement('div');
+          bar.id = 'dev-done-bar';
+          bar.className = 'dev-done-bar';
+          bar.textContent = 'Completed';
+        }
+        // Append in order: the bar, then every finished card after it.
+        grid.appendChild(bar);
+        done.forEach(function(c){ grid.appendChild(c); });
+      }
+      window.devReflowCompleted = reflowCompleted;
       if(!grid) return;
       (state.hidden||[]).forEach(function(id){ var c = cardById(id); if(c) c.remove(); });
       Object.keys(state.overrides||{}).forEach(function(id){
@@ -1165,6 +1199,7 @@
         grid.appendChild(buildCard(d));
       });
       [].forEach.call(grid.querySelectorAll('.dev-card'), addEditButton);
+      reflowCompleted();
     }
 
     function cacheLocal(){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(state)); }catch(e){} }
@@ -1232,6 +1267,13 @@
         fColors.appendChild(b);
       });
     })();
+    var BADGE_DEFAULTS = { '': 'In Progress', unlinked: 'Built \u2014 Unlinked', review: 'Live \u2014 Review', done: 'Completed' };
+    fKind.addEventListener('change', function(){
+      var wasDefault = !fBadge.value.trim() ||
+        Object.keys(BADGE_DEFAULTS).some(function(k){ return BADGE_DEFAULTS[k] === fBadge.value.trim(); });
+      if(wasDefault) fBadge.value = BADGE_DEFAULTS[fKind.value] || '';
+    });
+
     function setPicked(id){
       pickedColor = id || '';
       if(!fColors) return;
@@ -1244,7 +1286,13 @@
       editingId = id;
       var isNew = !id;
       document.getElementById('dev-modal-title').textContent = isNew ? 'Add Card' : 'Edit Card';
-      document.getElementById('dev-modal-remove').hidden = isNew;
+      // A seeded card cannot be deleted - it lives in the page source - so the
+      // button says "Hide". One you added yourself really does go. Saying the
+      // same word for both was why the delete was hard to find.
+      var rmBtn = document.getElementById('dev-modal-remove');
+      rmBtn.hidden = isNew;
+      rmBtn.textContent = (!isNew && (state.added||[]).some(function(c){ return c.id === id; }))
+        ? 'Delete Card' : 'Hide Card';
       var d = isNew ? {title:'',badge:'In Progress',badgeKind:'',desc:'',bullets:[],href:'',color:''} : readCard(cardById(id));
       fTitle.value = d.title; fBadge.value = d.badge; fKind.value = d.badgeKind;
       fDesc.value = d.desc; fBul.value = (d.bullets||[]).join('\n'); fHref.value = d.href || '';
@@ -1330,6 +1378,7 @@
         addEditButton(el);
         if(typeof window.devBindCardDrag === 'function') window.devBindCardDrag(el);
       }
+      if(window.devReflowCompleted) window.devReflowCompleted();
       persist();
       closeModal();
     });
@@ -1342,6 +1391,7 @@
       else { state.hidden = (state.hidden||[]).concat([editingId]); }
       var el = cardById(editingId);
       if(el) el.remove();
+      if(window.devReflowCompleted) window.devReflowCompleted();
       persist();
       closeModal();
     });
@@ -1409,7 +1459,7 @@
       });
     }
 
-    //    Drag to reorder, on Pointer Events (rewritten 2026-09-05)           
+    //  Drag to reorder, on Pointer Events (rewritten 2026-09-05) 
     // The old implementation used HTML5 drag-and-drop (draggable="true" +
     // dragstart/dragover/drop), armed by a mousedown on the grip. That never
     // worked on a phone: touch devices do not fire HTML5 drag events at all,

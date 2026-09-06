@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_06-42-0066                            ║
+  ║  SITE VERSION: 26.09.06_14-24-0067                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-42-0066    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-24-0067    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -246,7 +246,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_06-42-0066';
+const SITE_VERSION = '26.09.06_14-24-0067';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -403,7 +403,7 @@ const SITE_VERSION = '26.09.06_06-42-0066';
     if(card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  //    Calendar                                                           
+  //  Calendar 
   // Written as floating local times (no Z, no VTIMEZONE): a showing at 2pm is
   // 2pm where the house is, which is the only reading that stays correct if the
   // client's phone is set to another zone. Only offered when the agent actually

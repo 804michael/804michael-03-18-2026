@@ -1505,3 +1505,63 @@ The answer to "where should the split happen":
 
 The prototype groups the order it is given; the optimiser already exists in the planner.
 Keeping the two apart is deliberate — the grouping half can be judged on its own.
+
+## Sixteenth pass — completed cards, NUL bytes, estimated property tax (2026-09-06)
+
+### STANDING RULE: never write a raw code point into a latin1 file
+
+`fs.writeFileSync(f, text, 'latin1')` truncates every character to its low byte.
+`'\u2019'` becomes `0x19`; other escapes became `0x00`. The page still renders — the
+HTML parser drops control bytes — so nothing looks wrong. What breaks is **git**: one
+NUL and the file is "binary", so there are no diffs, no blame and no merge. That is why
+`grep` had been printing "Binary file client-tour.html matches" for hours.
+
+Counts when found: `client-tour.html` 60 (all mine, introduced at `0a90e8c`),
+`dev.html` 12 (pre-existing), `route-planner-pro.html` 1 × 0x19 plus 58 NUL. All
+stripped; all four page files now read as text.
+
+**The rule:** when writing through a latin1 read, a non-ASCII character must be written
+as its **UTF-8 bytes** — `'\u00E2\u0080\u0099'` for `’`, `'\u00E2\u0080\u0094'` for `—`,
+`'\u00C2\u00B7'` for `·`. And the check is not "does it look right", it is:
+
+```js
+const raw = fs.readFileSync(FILE);
+Buffer.from(raw.toString('utf8'), 'utf8').equals(raw)   // valid UTF-8
+raw.filter(b => b === 0).length === 0                    // and git sees text
+```
+
+Both, every time. Validity alone passes NUL, because NUL is legal UTF-8.
+
+### Dev hub: Completed is a badge, not a second field
+
+Picking the green badge IS what marks a card finished — one control, because the status
+and where the card sits are the same fact. `reflowCompleted()` appends the "Completed"
+bar (full grid width, `grid-column:1/-1`) and then every finished card after it, and
+runs on load, on save and on delete. Finished cards keep 0.72 opacity — present and
+readable, just not competing with live work. `readCard` had to learn the new kind, or a
+completed card lost its status the moment it was edited.
+
+The badge text follows the colour unless it has been typed by hand: switching to green
+fills in "Completed" only when the field still holds one of the four defaults.
+
+**Delete already existed** — it is the button in the card editor. It said "Hide Card"
+for every card, which is why it read as something else. It is now labelled for what it
+will actually do: **Delete Card** for a card you added (it really goes), **Hide Card**
+for one seeded in the page source (it cannot be deleted from the browser, only hidden).
+
+### Estimated property tax — arithmetic, not a guess
+
+Virginia bills real estate tax as a rate per $100 of value, set by the locality, and the
+export already names the locality in `County/City`. So an estimate is just rate × value.
+
+**The value is deliberately the worst case: list price, not assessed value.** A buyer is
+shown the seller's current assessment and is then reassessed toward what they actually
+paid, so the bill after closing is usually higher than the number they were quoted. When
+someone is working out what they can afford, high is the honest side to be wrong on.
+
+The rates are **not** presented as fact. They are seeded from published figures that may
+already be stale, shown in an editable table, saved per browser, and carry a warning to
+check each one against the locality before it reaches a client. A town rate (Ashland
+sits inside Hanover) stacks on the county's, which is exactly the kind of thing the
+seeded number will get wrong. Estimated figures are marked "est." in the table and the
+legal line says the basis in full.
