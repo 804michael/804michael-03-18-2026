@@ -42,7 +42,7 @@ const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
@@ -250,4 +250,49 @@ export async function onRequestPost(context) {
   const putOpts = slug ? {} : { expirationTtl: TTL_SECONDS };
   await env.TOURS_KV.put(TOUR_PREFIX + code, JSON.stringify(tour), putOpts);
   return json({ ok: true, code, adminKey, slug: slug || '' });
+}
+
+// Remove a published tour page.
+//
+// Needed because a slugged tour is stored with NO expiry, so a test or an
+// abandoned demo would otherwise sit on a memorable link forever with no way
+// to take it down. Random-code tours age out on their own after two years;
+// this is the way to remove either kind on purpose.
+//
+// Requires the adminKey, exactly like re-publishing does. Deleting is at least
+// as destructive as overwriting, and this endpoint is public, so it gets the
+// same gate - a caller who only knows the code (which is the client link, and
+// therefore not a secret) can delete nothing.
+//
+// The client's feedback is deleted alongside the tour rather than left behind:
+// once the page is gone the feedback is unreadable anyway, and leaving what
+// someone typed in confidence sitting in storage is the wrong default.
+export async function onRequestDelete(context) {
+  const { request, env } = context;
+  if (!env.TOURS_KV) return notConfigured();
+
+  let body;
+  try { body = await request.json(); } catch (e) {
+    return json({ error: 'invalid_json' }, 400);
+  }
+
+  const code = cleanCode(body && body.code);
+  const adminKey = cleanCode(body && body.adminKey);
+  if (!code) return json({ error: 'missing_code' }, 400);
+  if (!adminKey) return json({ error: 'missing_key' }, 400);
+
+  const raw = await env.TOURS_KV.get(TOUR_PREFIX + code);
+  if (!raw) return json({ error: 'not_found' }, 404);
+
+  let prev = null;
+  try { prev = JSON.parse(raw); } catch (e) { prev = null; }
+  // A record with no stored key has no owner and cannot be proven either way;
+  // treat it as deletable, matching how publish lets such a slug be reclaimed.
+  if (prev && prev.adminKey && prev.adminKey !== adminKey) {
+    return json({ error: 'wrong_key' }, 403);
+  }
+
+  await env.TOURS_KV.delete(TOUR_PREFIX + code);
+  await env.TOURS_KV.delete(FB_PREFIX + code);
+  return json({ ok: true, code, deletedFeedback: true });
 }
