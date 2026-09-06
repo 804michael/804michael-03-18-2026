@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_00-57-0058                            ║
+  ║  SITE VERSION: 26.09.06_01-00-0059                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_00-57-0058    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_01-00-0059    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -129,15 +129,22 @@
     .addr:hover{color:var(--red)}
     .city{font-size:.88rem;color:var(--gray-muted);margin-top:2px}
     .blurb{font-size:.95rem;color:var(--gray-text);margin-top:10px;font-variant-numeric:tabular-nums}
-    .dirs{display:flex;gap:8px;margin-top:12px}
-    .dirs a{flex:1 1 0;text-align:center;padding:8px 10px;border-radius:9px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase}
-    .dirs a:hover{border-color:var(--red);color:var(--red)}
+    /* Directions now rides the rating row instead of taking a full-width band
+       of its own (2026-09-06). Measured at 412px, Michael's phone: the button
+       at its natural width, the label and five 34px dots came to 411px inside a
+       380px card, so the dots drop to 30px and the label tightens - which
+       brings the row well under. flex-wrap on .rate-row means a narrower phone
+       (320px, where it genuinely cannot fit) drops the dots to a second line
+       rather than overflowing. 30px keeps the dots above the 24px minimum tap
+       target. */
+    .dirs-btn{flex:0 0 auto;padding:8px 12px;border-radius:9px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+    .dirs-btn:hover{border-color:var(--red);color:var(--red)}
 
     .rate{border-top:1px solid var(--gray-light);margin-top:14px;padding-top:12px}
-    .rate-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .rate-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
-    .dots{display:flex;gap:6px;margin-left:auto}
-    .dots button{width:34px;height:34px;border-radius:50%;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
+    .rate-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .rate-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-muted);white-space:nowrap}
+    .dots{display:flex;gap:4px;margin-left:auto}
+    .dots button{width:30px;height:30px;border-radius:50%;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem}
     .dots button:hover{border-color:var(--red);color:var(--red)}
     .dots button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
     /* Bigger: this is where the client actually writes, and a 44px slot that shows
@@ -192,7 +199,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_00-57-0058';
+const SITE_VERSION = '26.09.06_01-00-0059';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -329,11 +336,12 @@ const SITE_VERSION = '26.09.06_00-57-0058';
         '</div>' +
       '</div>' +
       (s.blurb ? '<p class="blurb">' + esc(s.blurb) + '</p>' : '') +
-      '<div class="dirs">' +
-        '<a href="' + esc(directionsUrl(s.address)) + '" target="_blank" rel="noopener">Directions</a>' +
-      '</div>' +
       '<div class="rate">' +
-        '<div class="rate-row"><span class="rate-lbl">Rate this Home</span><div class="dots">' + dots + '</div></div>' +
+        '<div class="rate-row">' +
+          '<a class="dirs-btn" href="' + esc(directionsUrl(s.address)) + '" target="_blank" rel="noopener">Directions</a>' +
+          '<span class="rate-lbl">Rate this Home</span>' +
+          '<div class="dots">' + dots + '</div>' +
+        '</div>' +
         '<textarea class="note" data-i="' + i + '" rows="3" placeholder="Anything you want to remember about this one…">' + esc(saved.comment || '') + '</textarea>' +
         '<div class="saved' + (saved.rating || saved.comment ? ' on' : '') + '" data-saved="' + i + '">' +
           (saved.rating || saved.comment ? 'Saved' : '') + '</div>' +
