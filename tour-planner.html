@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_03-19-0077                            ║
+  ║  SITE VERSION: 26.09.06_03-43-0079                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_03-19-0077    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_03-43-0079    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -172,7 +172,10 @@
   .sw-cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
   .stop-window-clear{background:none;border:none;color:var(--gray-muted);font-size:1.1rem;line-height:1;cursor:pointer;padding:0 4px;margin-left:auto;align-self:center}
   .stop-window-clear:hover{color:var(--red)}
-  .stop-window-toggle{background:none;border:none;color:var(--gray-muted);font-size:.78rem;text-decoration:underline;padding:2px 0;cursor:pointer}
+  .stop-window-toggle{background:none;border:none;color:var(--gray-muted);font-size:.78rem;text-decoration:underline;padding:2px 0;cursor:pointer;text-align:left;line-height:1.3}
+  /* Label first line, hours second, so a set window keeps the toggle narrow. */
+  .sw-toggle-label{display:block}
+  .sw-toggle-hours{display:block;font-weight:700;text-decoration:none}
   .stop-window-toggle:hover{color:var(--red)}
   .stop-row.has-window .stop-window-toggle{color:var(--red);font-weight:600}
   /* Stops the optimizer could not fit inside their window. */
@@ -192,6 +195,13 @@
   .tm-exit{background:none;border:1.5px solid rgba(255,255,255,.4);color:var(--white);border-radius:999px;padding:6px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
   .tm-exit:hover{border-color:var(--white)}
   .tm-body{flex:1 1 auto;overflow-y:auto;padding:20px 16px 16px;display:flex;flex-direction:column;gap:14px}
+  /* What the client rated this home, shown during the tour. Green rather than
+     the agent-note amber so the two are never confused at a glance. */
+  .tm-client-fb{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:10px;padding:8px 11px;border-left:3px solid var(--green);background:#f2f8f4;border-radius:0 8px 8px 0}
+  .tm-client-fb[hidden]{display:none}
+  .tm-cf-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+  .tm-cf-stars{font-size:1.05rem;color:#111;letter-spacing:2px}
+  .tm-cf-comment{font-size:.95rem;color:#333;font-style:italic;min-width:0}
   .tm-stopline{display:flex;gap:12px;align-items:flex-start}
   .tm-pin{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.25rem}
   .tm-addr-wrap{flex:1 1 auto;min-width:0}
@@ -612,10 +622,14 @@
     /* Rating at address size, sharing a line with the agent-only note. */
     .pi-agent-row{display:flex;align-items:baseline;gap:12px;margin-top:2px;min-height:1px}
     .pi-rating{font-size:16px;color:#333;flex:0 0 auto;letter-spacing:1px}
+    /* The client's own rating, agent copy only - it is their opinion, and the
+       client sheet should not hand it back to them. */
+    .pi-client-fb{display:none;font-size:12px;color:#1a5c33;min-width:0}
+    #printItinerary.pi-agent-copy .pi-client-fb{display:inline}
     /* Was 10px in #a06000 - small and low-contrast at once. Bigger, and a much
        darker brown that still reads as "agent only" without being unreadable. */
-    .pi-private-note{display:none;font-size:12px;color:#5a3f0f;font-style:italic;min-width:0}
-    #printItinerary.pi-agent-copy .pi-private-note{display:inline}
+    .pi-private-note{display:none;font-size:12px;color:#111;font-style:italic;margin-top:3px}
+    #printItinerary.pi-agent-copy .pi-private-note{display:block}
     .pi-notes-block{margin-top:5px}
     .pi-notes-block .pi-notes-line{border-bottom:1px solid #bbb;height:18px}
     /* Density tiers, set on #printItinerary by buildPrintable(): more
@@ -636,6 +650,7 @@
        case (10 stops, every field filled) pushes the last stop onto its own
        near-empty second page. Client Route keeps the full count. */
     #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:nth-child(n+2){display:none}
+    #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:last-child{border-bottom:none}
     /* Worst case is 10 stops on Agent Copy with a blurb AND a private note on
        every one — measured 8px over the page even after dropping a ruled line,
        which is enough to spill the last stop onto a near-empty third page.
@@ -962,10 +977,10 @@
                   </div>
                 </div>
                 <div class="tp-publish-row">
-                  <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="publishTourBtn">Publish for Client</button>
+                  <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="publishTourBtn">Publish Client Tour</button>
                   <span class="tp-publish-hint">Applies the custom link too</span>
                 </div>
-                <p class="tp-clientpage-note" id="publishNote">Publishing sends the addresses and client notes only. Your Agent Only Notes and your own ratings never leave this page.</p>
+                <p class="tp-clientpage-note" id="publishNote">Publishing sends addresses &amp; client notes only. Agent Only Notes &amp; agent ratings never leave this page.</p>
               </div>
 
               <div class="tp-feedback" id="feedbackPanel" hidden>
@@ -1136,6 +1151,7 @@
 
     <p class="tm-blurb" id="tmBlurb"></p>
     <div class="tm-private" id="tmPrivate" hidden></div>
+    <div class="tm-client-fb" id="tmClientFb" hidden></div>
 
     <a class="tp-btn tp-btn-red tm-nav-btn" id="tmDirections" target="_blank" rel="noopener">Directions to this stop</a>
 
@@ -1176,7 +1192,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_03-19-0077</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_03-43-0079</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -1189,7 +1205,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_03-19-0077';
+const SITE_VERSION = '26.09.06_03-43-0079';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -1574,9 +1590,14 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     function syncWindowState(){
       var has = !!(s.windowStart && s.windowEnd);
       row.classList.toggle('has-window', has);
-      windowToggle.textContent = has
-        ? '– Showing window ' + fmtHM(s.windowStart) + '–' + fmtHM(s.windowEnd)
-        : (windowBox.classList.contains('open') ? '– Showing window' : '+ Showing window');
+      // Label on the first line, the hours forced onto a second, so a set
+      // window does not stretch the toggle into one long line.
+      if(has){
+        windowToggle.innerHTML = '<span class="sw-toggle-label">\u2013 Showing window</span>' +
+          '<span class="sw-toggle-hours">' + escapeHtml(fmtHM(s.windowStart) + '\u2013' + fmtHM(s.windowEnd)) + '</span>';
+      } else {
+        windowToggle.textContent = windowBox.classList.contains('open') ? '\u2013 Showing window' : '+ Showing window';
+      }
       // A half-filled window can't constrain anything, so say so rather than
       // quietly ignoring it at calculate time.
       var half = (!!s.windowStart) !== (!!s.windowEnd);
@@ -2667,9 +2688,10 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
         (s.blurb ? '<div class="pi-blurb">'+escapeHtml(s.blurb)+'</div>' : '') +
         '<div class="pi-agent-row">' +
           '<span class="pi-rating">' + ratingMarkup(s.rating) + '</span>' +
-          (s.notes ? '<span class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</span>' : '') +
+          (function(){ var cf = clientFeedbackFor(i); return cf ? '<span class="pi-client-fb">Client ' + clientStars(cf.rating) + (cf.comment ? ' ' + escapeHtml(cf.comment) + '' : '') + '</span>' : ''; })() +
         '</div>' +
         notesBlockHtml +
+          (s.notes ? '<span class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</span>' : '') +
         '</div></div>';
     }).join('');
 
@@ -2708,7 +2730,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     } else {
       mapLinkEl.textContent = '';
       mapLinkEl.hidden = true;
-      mapLabelEl.textContent = 'Scan for the full route';
+      mapLabelEl.textContent = 'Scan for full route';
     }
   }
 
@@ -2925,6 +2947,11 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   // stopping anyone holding the client link from reading what the client
   // typed about the houses.
   var tourPageCode = '', tourPageAdminKey = '';
+  // What the client typed on their tour page, keyed by their position in the
+  // PUBLISHED order. Fetched by loadFeedback() and read by Tour Mode and the
+  // printed agent copy, so the ratings reach the places the agent actually
+  // looks during a tour rather than only the panel beside the publish box.
+  var clientFeedback = {};
   var lastOrderedStops = [];
 
   function setPublishNote(msg, kind){
@@ -2958,7 +2985,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     ['copyClientPageBtn','smsClientPageBtn'].forEach(function(id){
       document.getElementById(id).disabled = !url;
     });
-    document.getElementById('publishTourBtn').textContent = url ? 'Update Client Tour' : 'Publish for Client';
+    document.getElementById('publishTourBtn').textContent = url ? 'Update Client Tour' : 'Publish Client Tour';
     document.getElementById('feedbackPanel').hidden = !url;
   }
 
@@ -3087,6 +3114,9 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
       .then(function(r){ return r.json(); })
       .then(function(d){
         var fb = (d && d.feedback) || {};
+        clientFeedback = fb;
+        // Tour Mode may be open while this resolves.
+        if(tourModeEl && !tourModeEl.hidden) tmRender();
         var keys = Object.keys(fb);
         if(!keys.length){
           listEl.innerHTML = '<p class="fb-empty">Nothing yet — this fills in as your client rates each home.</p>';
@@ -3229,6 +3259,19 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     return stops.filter(function(s){ return s.address && s.lat != null; });
   }
 
+  // Stars plus the client's own words. Returns '' when they have not rated
+  // that stop, so nothing renders an empty row.
+  function clientFeedbackFor(i){
+    var e = clientFeedback && clientFeedback[i];
+    if(!e) return null;
+    var r = Number(e.rating) || 0;
+    if(!r && !e.comment) return null;
+    return { rating: r, comment: e.comment || '' };
+  }
+  function clientStars(r){
+    return r ? ('\u2605'.repeat(r) + '\u2606'.repeat(5 - r)) : '';
+  }
+
   function tmRender(){
     var list = tmStops();
     if(!list.length) return;
@@ -3260,6 +3303,18 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     var priv = document.getElementById('tmPrivate');
     priv.textContent = s.notes ? '🔒 ' + s.notes : '';
     priv.hidden = !s.notes;
+
+    // What the client said about THIS stop, live from their tour page.
+    var cf = clientFeedbackFor(tmIndex);
+    var cfEl = document.getElementById('tmClientFb');
+    if(cfEl){
+      if(cf){
+        cfEl.innerHTML = '<span class="tm-cf-label">Client</span>' +
+          (cf.rating ? '<span class="tm-cf-stars">' + clientStars(cf.rating) + '</span>' : '') +
+          (cf.comment ? '<span class="tm-cf-comment">' + escapeHtml(cf.comment) + '</span>' : '');
+        cfEl.hidden = false;
+      } else { cfEl.hidden = true; }
+    }
 
     document.getElementById('tmDots').innerHTML = [1,2,3,4,5].map(function(v){
       return '<button type="button" data-val="' + v + '" aria-pressed="' +
