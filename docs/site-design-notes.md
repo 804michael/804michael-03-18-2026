@@ -1458,3 +1458,50 @@ Two display rules that came out of this: a row or field every listing is blank f
 dropped rather than printed as a line of dashes, and rows with no meaningful direction
 (Sold, HOA) get no "best" highlight — a lower sale price is not a better house, and an
 association is a preference, not a score.
+
+### Addendum — the fee comes back, and errand runs (2026-09-06, third pass)
+
+**Nothing was rolled back, because nothing needed to be.** Michael asked for the
+experiment to live on a totally separate page so the planner's integrity is kept. It
+already does: `git diff 6b74dc5~1 HEAD` touches `route-planner-pro.html` (new),
+`dev.html` (+27/-4, one card) and these notes. `tour-planner.html`, `client-tour.html`
+and `functions/` are byte-identical. Verify before reverting — a revert here would have
+deleted the prototype he asked for and changed nothing about the planner.
+
+**The association fee is carried again.** The third export adds `Year Built`, `Fee` and
+`Fee Period`, so the fee is shown on the facts card, in the compare table as a monthly
+figure, and inside the payment total. This reverses the "yes/no only" call from earlier
+the same day — that call was made when the export carried neither. What varies between
+communities is what a fee BUYS, not what it costs, and a monthly estimate that quietly
+omits a known $175 is the misleading one. A blank fee is a real answer ("600 Henry St"
+has no association), so it reads as **None** rather than as unknown, but only when the
+export carried a fee column at all.
+
+**Taxes: unknown must not render as $0.** Michael does not want tax columns, so
+`money(0)` was printing "$0" on every tax line — which reads as "this house has no
+property tax", not "we were not told". Tax is `null` when absent, the row is dropped
+when no listing has one, and the legal line says the monthly figure contains no
+property tax at all. Same rule as the compare table: a row nothing has a value for is
+noise.
+
+### Errand runs — why the split exists, and where it belongs
+
+Not a home tour: twenty-odd stops, no client. **Google Maps' URL API accepts nine
+waypoints**, which is exactly why the planner caps a tour at ten stops. A long day
+cannot be one link no matter how it is written, so splitting is not a nicety — it is
+the only way to hand the route over at all.
+
+The answer to "where should the split happen":
+
+- **After optimising, not before**, and as **contiguous chunks of the optimised order**.
+  A good route does not jump around, so a slice of one is already geographically tidy,
+  and the whole day stays optimal.
+- The alternative — cluster first, optimise each cluster — only wins when the runs are
+  **separate trips on different days**, each starting from home. Then a globally
+  optimal order is the wrong thing to slice. The "start and end every run at one place"
+  toggle is the switch that should trigger that mode if it becomes the real use.
+- With a base at both ends, every stop in a run is a waypoint, so the usable size drops
+  from ten to nine. The page warns rather than silently truncating the link.
+
+The prototype groups the order it is given; the optimiser already exists in the planner.
+Keeping the two apart is deliberate — the grouping half can be judged on its own.

@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_12-06-0070                            ║
+  ║  SITE VERSION: 26.09.06_14-12-0071                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_12-06-0070    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-12-0071    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -565,6 +565,7 @@
           <li>Address matching normalises suffixes ("Road" = "Rd") and ignores city/state/zip. Anything it cannot match stays visibly unmatched with a manual picker - it never guesses</li>
           <li>Three views: Facts per stop, a Compare table with the best number in each row marked, and a monthly Payment estimate (P&amp;I + taxes + insurance; association dues flagged but not priced)</li>
           <li>A fourth tab shows exactly what would cross to the client page, with the agent-only fields listed as held back</li>
+          <li>Also here: <strong>errand runs</strong> - Google Maps takes only nine waypoints per link, so a twenty-stop day cannot be one link. A slider splits an optimised order into runs, each with its own Maps link and time window</li>
           <li>Open question before any of it reaches a client: publishing MLS content on a public URL is a licensing call for CVR MLS, not a technical one. The agent-facing half raises none of that</li>
         </ul>
         <a class="dev-card-link" href="/route-planner-pro">View page →</a>
@@ -794,7 +795,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_12-06-0070</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_14-12-0071</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -805,7 +806,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_12-06-0070';
+  const SITE_VERSION = '26.09.06_14-12-0071';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

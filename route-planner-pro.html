@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_12-06-0002                            ║
+  ║  SITE VERSION: 26.09.06_14-12-0004                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_12-06-0002    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-12-0004    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Update the version string in THREE places every edit:        ║
@@ -146,6 +146,29 @@
   .rp-field input{width:100%;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:1rem;min-width:0}
   .rp-field input:focus{outline:none;border-color:var(--red)}
 
+  /* Errand runs */
+  .er-controls{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin:12px 0}
+  .er-slider{flex:1 1 240px;min-width:200px}
+  .er-slider label{display:flex;justify-content:space-between;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
+  .er-slider b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;color:var(--black);letter-spacing:0}
+  .er-slider input[type=range]{width:100%;accent-color:var(--red)}
+  .er-check{display:flex;align-items:center;gap:8px;font-size:.92rem;margin:4px 0 8px}
+  .er-check input{width:17px;height:17px;accent-color:var(--red);flex:0 0 auto}
+  .er-runs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px}
+  .er-run{border:1.5px solid var(--gray-mid);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .er-run-head{background:var(--black);color:#fff;padding:10px 13px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .er-run-head b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase}
+  .er-run-head span{font-size:.82rem;color:rgba(255,255,255,.65);white-space:nowrap}
+  .er-run ol{list-style:none;margin:0;padding:9px 13px;flex:1 1 auto}
+  .er-run li{display:flex;gap:9px;padding:3px 0;font-size:.92rem}
+  .er-run li i{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--gray-light);border:1px solid var(--gray-mid);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.75rem;font-style:normal}
+  .er-run li.base i{background:var(--black);border-color:var(--black);color:#fff}
+  .er-run li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .er-run-foot{display:flex;gap:8px;padding:10px 13px;border-top:1px solid var(--gray-light)}
+  .er-run-foot .btn{padding:7px 13px;font-size:.82rem;flex:1 1 0}
+  .er-warn{margin-top:10px;padding:9px 12px;border-left:3px solid var(--red);background:#fdf3f2;font-size:.85rem;color:#7a1a13;line-height:1.5}
+  .er-warn[hidden]{display:none}
+
   .rp-legal{font-size:.78rem;color:var(--gray-muted);line-height:1.6;margin-top:16px}
 
   footer{background:var(--black);color:#fff;padding:26px 20px}
@@ -236,6 +259,35 @@
     </div>
   </div>
 
+  <div class="rp-card" id="errandCard">
+    <h2><span class="rp-step">E</span>Errand runs</h2>
+    <p class="rp-hint">A different job from a home tour: twenty-odd stops, no client, and Google will not take them in one link. Google Maps accepts <strong>nine waypoints</strong> per link, which is exactly why the planner caps a tour at ten stops. Splitting an optimised order into runs is how you get past that without giving up the order.</p>
+    <textarea class="rp-paste" id="errBox" spellcheck="false" style="min-height:150px" placeholder="One address per line, in the order you want to drive them."></textarea>
+    <div class="rp-row">
+      <button type="button" class="btn btn-out" id="errSample">Load a 22-stop sample</button>
+      <span class="rp-hint" id="errCount" style="margin:0"></span>
+    </div>
+
+    <div class="er-controls">
+      <div class="er-slider">
+        <label for="errPer">Stops per run <b id="errPerOut">6</b></label>
+        <input type="range" id="errPer" min="2" max="10" value="6">
+      </div>
+      <div class="rp-field" style="flex:0 1 120px"><label for="errStart">Start</label><input type="time" id="errStart" value="09:00"></div>
+      <div class="rp-field" style="flex:0 1 110px"><label for="errDwell">Min per stop</label><input type="number" id="errDwell" value="15" min="0" max="180"></div>
+      <div class="rp-field" style="flex:0 1 110px"><label for="errDrive">Min between</label><input type="number" id="errDrive" value="10" min="0" max="120"></div>
+    </div>
+
+    <label class="er-check"><input type="checkbox" id="errBaseOn"> Start and end every run at one place</label>
+    <input type="text" class="rp-mpick" id="errBase" style="width:100%;padding:8px 10px" placeholder="Home or office address" disabled>
+    <p class="er-warn" id="errWarn" hidden></p>
+
+    <div class="er-runs" id="errRuns"></div>
+
+    <p class="rp-note"><strong>Where the split belongs.</strong> After optimising, not before, and as contiguous chunks of the optimised order &mdash; a good route does not jump around, so a slice of one is already geographically tidy. The alternative (cluster first, optimise each cluster) only wins when the runs are <em>separate trips on different days</em> that each start from home. If that becomes the real use, the base toggle above is the switch that should trigger it.</p>
+    <p class="rp-note"><strong>What this prototype does not do.</strong> It groups the order you give it. The optimiser lives in the planner and already works &mdash; this is only the half that is new, so the two can be judged separately.</p>
+  </div>
+
   <div class="rp-card">
     <h2>Read me before this goes anywhere near a client</h2>
     <p class="rp-note warn"><strong>Agent-only fields must never reach the client page.</strong> An MLS export carries buyer-agent names and phones, seller-paid closing costs, days on market, showing instructions, lockbox details and agent remarks. This prototype keeps them behind an allow-list, the same way <code>/api/tour-page</code> does for the tour itself — the client page renders only what is explicitly permitted, never "everything except".</p>
@@ -262,27 +314,24 @@
 <script>
 // ⚠ AI: update SITE_VERSION + the top comment's SITE VERSION line + the visible
 // version line on every edit.
-const SITE_VERSION = '26.09.06_12-06-0002';
+const SITE_VERSION = '26.09.06_14-12-0004';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date().getFullYear(); });
 
 (function(){
   'use strict';
 
-  // ── INVENTED sample data ────────────────────────────────────────────────
-  // Fake streets, fake numbers, fake MLS ids. This repository is public and
-  // MLS content is licensed, so nothing real is ever committed here. It exists
-  // so the page demonstrates itself; the real export is pasted at runtime.
-  // Shaped like the real "804 Home Tour Data" export, with Yr Blt and Annual
-  // Taxes added - those two are not in the current saved search, and the demo
-  // shows what those rows look like once they are.
+  // Shaped like the real "804 Home Tour Data" export as of 2026-09-06: no
+  // taxes (Michael does not want them), no $/sq ft, no schools, and the
+  // association carried as a fee plus its frequency. Row 3 has a blank fee,
+  // which is a real answer - that house has no association - not a gap.
   var SAMPLE_CSV = [
-    '\"#\",\"ML #\",\"Status\",\"Address\",\"Subdivision\",\"Type\",\"# Bedrooms\",\"Total Baths\",\"SqFtTotal\",\"List Price\",\"Days On Market\",\"Acres\",\"Association (Y/N)\",\"Sales Price\",\"Sales Date\",\"Assd Total\",\"Yr Blt\",\"Annual Taxes\"',
-    '\"1\",\"9900001\",\"ACTV\",\"101 Example Ridge RD\",\"Sample Farms\",\"Single Family Residence\",\"3\",\"2.1\",\"2,127\",\"$529,900\",\"34\",\"0.21\",\"Yes\",\"\",\"\",\"$0\",\"2024\",\"$3,180\"',
-    '\"2\",\"9900002\",\"ACTV\",\"202 Demonstration ST\",\"Placeholder Park\",\"Single Family Residence\",\"4\",\"2.0\",\"1,512\",\"$389,000\",\"12\",\"0.25\",\"Yes\",\"\",\"\",\"$282,100\",\"2001\",\"$2,640\"',
-    '\"3\",\"9900003\",\"ACTV\",\"303 Placeholder LN\",\"None\",\"Single Family Residence\",\"3\",\"2.1\",\"1,575\",\"$449,950\",\"7\",\"0.17\",\"No\",\"\",\"\",\"$339,100\",\"2006\",\"$2,937\"',
-    '\"4\",\"9900004\",\"ACTV\",\"404 Mockup Station RD\",\"None\",\"Single Family Residence\",\"3\",\"2.1\",\"1,701\",\"$410,000\",\"64\",\"0.33\",\"Yes\",\"\",\"\",\"$296,000\",\"2009\",\"$2,588\"',
-    '\"5\",\"9900005\",\"ACTV\",\"12390 Fictional Gate WAY\",\"None\",\"Single Family Residence\",\"4\",\"3.0\",\"2,508\",\"$559,950\",\"267\",\"1.70\",\"Yes\",\"\",\"\",\"$398,900\",\"2012\",\"$3,801\"'
+    '\"Address\",\"List Price\",\"# Bedrooms\",\"Total Baths\",\"SqFtTotal\",\"County/City\",\"Acres\",\"Assd Total\",\"ML Number\",\"New/Resale\",\"Year Built\",\"Fee\",\"Fee Period\"',
+    '\"101  Example Ridge Rd \",\"529900\",\"3\",\"2.1\",\"2127\",\"Hanover\",\"0.21\",\"0\",\"9900001\",\"New (never occupied)\",\"2024\",\"175\",\"Monthly\"',
+    '\"202 Demonstration Street\",\"389000\",\"4\",\"2\",\"1512\",\"Hanover\",\"0.248\",\"282100\",\"9900002\",\"Resale (occupied at least once)\",\"2001\",\"150\",\"Yearly\"',
+    '\"303  Placeholder Ln \",\"449950\",\"3\",\"2.1\",\"1575\",\"Hanover\",\"0.17\",\"339100\",\"9900003\",\"Resale (occupied at least once)\",\"2006\",\"\",\"\"',
+    '\"404  Mockup Station Rd \",\"410000\",\"3\",\"2.1\",\"1701\",\"Hanover\",\"0.332\",\"296000\",\"9900004\",\"Resale (occupied at least once)\",\"2009\",\"100\",\"Yearly\"',
+    '\"12390 Fictional Gate Way\",\"559950\",\"4\",\"3\",\"2508\",\"Hanover\",\"1.7\",\"398900\",\"9900005\",\"New (never occupied)\",\"2012\",\"300\",\"Yearly\"'
   ].join('\n');
 
   // Deliberately messy: a spelled-out suffix, a missing city, extra commas, and
@@ -338,7 +387,14 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     // and yard care, some a pool nobody uses - so a dollar amount in a monthly
     // estimate reads as precision that is not there. "There is one, ask" is
     // the honest version.
+    // Reversal, 2026-09-06 (second pass): the fee and its frequency ARE in the
+    // export now, so they are shown. The earlier "yes/no only" call was made
+    // when the export had neither. What varies between communities is what a
+    // fee BUYS, not what it costs - and a monthly cost estimate that quietly
+    // omits a known $175 is the misleading one.
     assoc:     ['associationyn','association','hoacondo','hoayn'],
+    fee:       ['fee','hoafee','associationfee','condofee','feeamount'],
+    feePeriod: ['feeperiod','hoaperiod','feefrequency','frequency'],
     sub:       ['subdivision','neighborhood','nghbrhd'],
     county:    ['countycity','county'],
     mls:       ['mlnumber','ml','mls','mlsnumber','listingid'],
@@ -429,9 +485,20 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       o._beds = num(o.beds); o._baths = num(o.baths);
       o._year = num(o.year); o._acres = num(o.acres);
       o._taxes = num(o.taxes); o._dom = num(o.dom);
-      // Yes/No only. Anything that is not a clear no counts as "there is one".
+      // The fee normalised to a monthly figure. A blank fee column is a real
+      // answer - "600 Henry St" has no association - so it reads as No rather
+      // than as unknown, PROVIDED the export carried a fee column at all.
+      var feeAmt = num(o.fee) || 0;
+      var per = String(o.feePeriod || '').trim().toLowerCase();
+      o._hoaMonthly = !feeAmt ? 0
+        : per.indexOf('year') === 0 || per.indexOf('ann') === 0 ? feeAmt / 12
+        : per.indexOf('quart') === 0 ? feeAmt / 3
+        : per.indexOf('semi') === 0 ? feeAmt / 6
+        : feeAmt;
       var a = String(o.assoc || '').trim().toLowerCase();
-      o._assoc = !a ? null : (a === 'n' || a === 'no' || a === 'none' || a === 'false' || a === '0') ? false : true;
+      var a = String(o.assoc || '').trim().toLowerCase();
+      o._assoc = a ? !(a === 'n' || a === 'no' || a === 'none' || a === 'false' || a === '0')
+                   : (colsFound.indexOf('fee') !== -1 ? feeAmt > 0 : null);
       return o;
     }).filter(function(o){ return o.key; });
     return { listings: out };
@@ -457,8 +524,9 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     var note = document.getElementById('parseNote');
     if(res.error){ listings = []; note.textContent = res.error; return; }
     listings = res.listings;
-    var wanted = { year:'Yr Blt', taxes:'Annual Taxes', acres:'Acres',
-                   sub:'Subdivision', assoc:'Association (Y/N)' };
+    // Taxes deliberately not asked for - Michael's call, 2026-09-06.
+    var wanted = { year:'Year Built', acres:'Acres', fee:'Fee', feePeriod:'Fee Period' };
+
     var absent = Object.keys(wanted).filter(function(k){ return colsFound.indexOf(k) === -1; })
                        .map(function(k){ return wanted[k]; });
     note.innerHTML = esc(listings.length + (listings.length === 1 ? ' listing' : ' listings') +
@@ -544,7 +612,8 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
         var kv = [
           ['Year built', l.year || '—'],
           ['Lot', l._acres != null ? l._acres.toFixed(2) + ' ac' : '—'],
-          ['HOA', l._assoc === null ? '—' : (l._assoc ? 'Yes' : 'No')],
+          ['HOA', l._hoaMonthly ? money(l._hoaMonthly) + '/mo'
+                 : l._assoc === null ? '' : (l._assoc ? 'Yes' : 'None')],
           ['Taxes', l._taxes != null ? money(l._taxes) + '/yr' : '—'],
           ['Subdivision', l.sub || '—'],
           ['Sold', l._sold != null ? money(l._sold) + (l.soldDate ? ' · ' + l.soldDate : '') : '—'],
@@ -586,7 +655,8 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       // No "best" for these two: a lower sold price is not a better house, and
       // an association is a preference, not a score.
       ['Sold',     function(l){ return l._sold; },  money, null],
-      ['HOA',      function(l){ return l._assoc; }, function(v){ return v == null ? '—' : (v ? 'Yes' : 'No'); }, null],
+      ['HOA/mo',   function(l){ return l._hoaMonthly; },
+                   function(v){ return v == null ? '—' : (!v ? 'None' : money(v)); }, 'low'],
       ['Days on mkt', function(l){ return l._dom; }, function(n){ return n == null ? '—' : String(n); }, 'low']
     ];
     var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s, i){
@@ -627,36 +697,41 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       ['Down (' + down + '%)', function(x){ return money(x.downAmt); }],
       ['Loan',         function(x){ return money(x.loan); }],
       ['P &amp; I',    function(x){ return money(x.pi); }],
-      ['Taxes',        function(x){ return money(x.tax); }],
+      ['Taxes',        function(x){ return x.tax == null ? 'not in export' : money(x.tax); }],
       ['Insurance',    function(x){ return money(x.ins); }],
-      ['HOA',          function(x){ return x.assoc === null ? '—' : (x.assoc ? 'Yes — not included' : 'No'); }],
+      ['HOA',          function(x){ return x.hoa ? money(x.hoa) : (x.assoc ? 'Yes, amount unknown' : 'None'); }],
       ['<strong>Monthly</strong>', function(x){ return '<strong>' + money(x.total) + '</strong>'; }]
     ];
     var calc = live.map(function(s){
       var l = s.listing, price = l._price;
       var downAmt = price * down / 100, loan = price - downAmt;
       var pi = monthlyPI(loan, rate, yrs);
-      var tax = (l._taxes || 0) / 12, insM = ins / 12;
+      var tax = l._taxes == null ? null : l._taxes / 12;
+      var insM = ins / 12, hoa = l._hoaMonthly || 0;
       return { price: price, downAmt: downAmt, loan: loan, pi: pi, tax: tax, ins: insM,
-               assoc: l._assoc, total: pi + tax + insM };
+               assoc: l._assoc, hoa: hoa, total: pi + (tax || 0) + insM + hoa };
     });
     var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s){
       return '<th>' + esc(s.raw.split(',')[0]) + '</th>';
     }).join('') + '</tr></thead>';
     var totals = calc.map(function(c){ return c.total; });
     var lowest = totals.length > 1 ? Math.min.apply(null, totals) : null;
-    var body = '<tbody>' + rows.map(function(r, ri){
+    var anyTax = calc.some(function(c){ return c.tax != null; });
+    var shown = rows.filter(function(r){ return anyTax || r[0] !== 'Taxes'; });
+    var body = '<tbody>' + shown.map(function(r, ri){
       return '<tr><td>' + r[0] + '</td>' + calc.map(function(c){
-        var mark = (ri === rows.length - 1 && lowest != null && c.total === lowest) ? ' class="rp-best"' : '';
+        var mark = (ri === shown.length - 1 && lowest != null && c.total === lowest) ? ' class="rp-best"' : '';
         return '<td' + mark + '>' + r[1](c) + '</td>';
       }).join('') + '</tr>';
     }).join('') + '</tbody>';
     document.getElementById('payTable').innerHTML = head + body;
     document.getElementById('payLegal').textContent =
-      'Estimate only. Principal and interest at ' + rate + '% over ' + yrs + ' years, plus the ' +
-      'listing\u2019s own tax figure and insurance at $' + Math.round(ins).toLocaleString() + '/yr spread evenly. ' +
-      'Association dues are NOT included - what a fee covers varies too much between ' +
-      'communities for a number here to mean anything. '  +
+      'Estimate only. Principal and interest at ' + rate + '% over ' + yrs + ' years, plus ' +
+      (anyTax ? 'the listings own tax figure and ' : 'NO property tax, because this export does not carry one, and ') +
+      'insurance at $' + Math.round(ins).toLocaleString() + '/yr spread evenly. ' +
+      'Association dues are included when the export gives a figure; what a fee ' +
+      'BUYS still varies enormously between communities, so it is not a like-for-like ' +
+      'comparison. ' +
       'No PMI, no escrow shortfall, no closing costs. Michael Hottman is a licensed broker, not a lender — a lender’s ' +
       'quote is the only number to act on.';
   }
@@ -695,6 +770,139 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       '<p class="rp-note warn"><strong>Held back:</strong> ' + HELD_BACK.join(' · ') + '. ' +
       'The client page renders only the allow-list above, so a new column appearing in a future export cannot leak by default.</p>';
   }
+
+  //    Errand runs                                                         
+  // Google Maps' URL API takes at most nine waypoints, so a twenty-stop day
+  // cannot be one link no matter how it is written. The split is therefore not
+  // a nicety - it is the only way to hand over a long route at all.
+  var ERR_SAMPLE = [
+    'Kroger, 101 N Washington Hwy, Ashland, VA',
+    'Ashland Post Office, 116 S Railroad Ave, Ashland, VA',
+    'Ace Hardware, 105 S Washington Hwy, Ashland, VA',
+    'Ashland Library, 201 S Railroad Ave, Ashland, VA',
+    'CVS, 100 N Washington Hwy, Ashland, VA',
+    'Bank, 200 England St, Ashland, VA',
+    'Dry Cleaner, 305 England St, Ashland, VA',
+    'Vet, 10331 Kings Acre Rd, Ashland, VA',
+    'Garden Center, 12190 Washington Hwy, Ashland, VA',
+    'Lumber Yard, 11400 Washington Hwy, Glen Allen, VA',
+    'Sign Shop, 9520 Kings Charter Dr, Ashland, VA',
+    'Print Shop, 5375 Wyndham Forest Dr, Glen Allen, VA',
+    'Storage Unit, 10250 Sliding Hill Rd, Ashland, VA',
+    'Title Company, 4551 Cox Rd, Glen Allen, VA',
+    'Courthouse, 7507 Library Dr, Hanover, VA',
+    'Inspector, 8005 Franklin Farms Dr, Richmond, VA',
+    'Photographer, 2314 W Main St, Richmond, VA',
+    'Stager, 3126 W Cary St, Richmond, VA',
+    'Closing Gift Shop, 5805 Grove Ave, Richmond, VA',
+    'Sign Pickup, 1806 Summit Ave, Richmond, VA',
+    'Lockbox Drop, 4914 Fitzhugh Ave, Richmond, VA',
+    'Office, 9211 Forest Hill Ave, Richmond, VA'
+  ].join('\n');
+
+  var errBox = document.getElementById('errBox');
+  var errPer = document.getElementById('errPer');
+  var errBaseOn = document.getElementById('errBaseOn');
+  var errBase = document.getElementById('errBase');
+
+  function errStops(){
+    return errBox.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean).slice(0, 60);
+  }
+  function chunk(arr, n){
+    var out = [];
+    for(var i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+    return out;
+  }
+  function hhmm(mins){
+    var h = Math.floor(mins / 60) % 24, m = Math.round(mins % 60);
+    var ap = h < 12 ? 'a' : 'p', h12 = h % 12; if(h12 === 0) h12 = 12;
+    return h12 + ':' + (m < 10 ? '0' : '') + m + ap;
+  }
+  // Origin is left off when there is no base, so the phone starts the run from
+  // wherever it actually is - which for the second run of the day is right.
+  function runUrl(stops, base){
+    var pts = base ? [base].concat(stops).concat([base]) : stops.slice();
+    var dest = pts[pts.length - 1];
+    var mid = pts.slice(base ? 0 : 0, pts.length - 1);
+    var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest) + '&travelmode=driving';
+    if(base) { url += '&origin=' + encodeURIComponent(base); mid = stops.slice(); }
+    else { mid = stops.slice(0, -1); }
+    if(mid.length) url += '&waypoints=' + mid.map(encodeURIComponent).join('%7C');
+    return url;
+  }
+
+  function renderErrands(){
+    var all = errStops();
+    var per = Number(errPer.value);
+    var base = errBaseOn.checked ? errBase.value.trim() : '';
+    document.getElementById('errPerOut').textContent = per;
+    var groups = chunk(all, per);
+    document.getElementById('errCount').textContent = all.length
+      ? all.length + ' stops \u00b7 ' + groups.length + (groups.length === 1 ? ' run' : ' runs') : '';
+
+    // Nine waypoints is Google's ceiling. With a base at both ends every stop
+    // in the run is a waypoint, so the usable size drops by one.
+    var cap = base ? 9 : 10;
+    var warn = document.getElementById('errWarn');
+    if(per > cap){
+      warn.textContent = 'Google takes nine waypoints per link. With a base at both ends that leaves room for ' + cap +
+        ' stops a run, so these links will be truncated. Slide it down to ' + cap + '.';
+      warn.hidden = false;
+    } else warn.hidden = true;
+
+    var startMin = (function(){
+      var m = /^(\d{1,2}):(\d{2})$/.exec(document.getElementById('errStart').value || '');
+      return m ? Number(m[1]) * 60 + Number(m[2]) : 9 * 60;
+    })();
+    var dwell = num(document.getElementById('errDwell').value) || 0;
+    var drive = num(document.getElementById('errDrive').value) || 0;
+
+    var clock = startMin, n = 0;
+    document.getElementById('errRuns').innerHTML = groups.map(function(g, gi){
+      var from = clock;
+      var body = g.map(function(a){
+        n++;
+        clock += dwell + drive;
+        return '<li><i>' + n + '</i><span>' + esc(a) + '</span></li>';
+      }).join('');
+      var to = clock - drive;
+      var baseLi = base ? '<li class="base"><i>\u2302</i><span>' + esc(base) + '</span></li>' : '';
+      return '<div class="er-run">' +
+        '<div class="er-run-head"><b>Run ' + (gi + 1) + ' of ' + groups.length + '</b>' +
+          '<span>' + hhmm(from) + ' \u2013 ' + hhmm(to) + '</span></div>' +
+        '<ol>' + baseLi + body + baseLi + '</ol>' +
+        '<div class="er-run-foot">' +
+          '<a class="btn btn-red" target="_blank" rel="noopener" href="' + esc(runUrl(g, base)) + '">Open in Maps</a>' +
+          '<button type="button" class="btn btn-out" data-copy="' + gi + '">Copy link</button>' +
+        '</div></div>';
+    }).join('');
+
+    // Stash the urls for the copy buttons rather than re-deriving them.
+    window.__errUrls = groups.map(function(g){ return runUrl(g, base); });
+  }
+
+  document.getElementById('errRuns').addEventListener('click', function(e){
+    var b = e.target.closest('[data-copy]');
+    if(!b) return;
+    var url = (window.__errUrls || [])[Number(b.dataset.copy)];
+    if(!url) return;
+    navigator.clipboard.writeText(url).then(function(){
+      var was = b.textContent; b.textContent = 'Copied';
+      setTimeout(function(){ b.textContent = was; }, 1200);
+    });
+  });
+
+  document.getElementById('errSample').addEventListener('click', function(){
+    errBox.value = ERR_SAMPLE; renderErrands();
+  });
+  errBaseOn.addEventListener('change', function(){
+    errBase.disabled = !errBaseOn.checked;
+    if(errBaseOn.checked && !errBase.value) errBase.value = '9211 Forest Hill Ave, Richmond, VA';
+    renderErrands();
+  });
+  ['errBox','errPer','errStart','errDwell','errDrive','errBase'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', renderErrands);
+  });
 })();
 </script>
 </body>
