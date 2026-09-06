@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_02-09-0061                            ║
+  ║  SITE VERSION: 26.09.06_03-18-0062                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_02-09-0061    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_03-18-0062    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -199,7 +199,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_02-09-0061';
+const SITE_VERSION = '26.09.06_03-18-0062';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -230,6 +230,18 @@ const SITE_VERSION = '26.09.06_02-09-0061';
   // Same palette as the planner's map markers, so a stop's number is the same
   // colour on the client's phone as on the agent's map and printed sheet.
   var MIDDLE = ['#E8871E','#C2185B','#8E44AD','#00ACC1','#00897B','#3949AB','#F9A825','#1F6FB2','#6D4C41','#757575'];
+  // White on the yellow (#F9A825) and the cyan in this palette is close to
+  // unreadable at badge size. Pick the text colour from the background's
+  // relative luminance instead of always using white. Same helper, same
+  // thresholds as the planner, so a stop's badge matches across both.
+  function contrastOn(hex){
+    var h = String(hex || '').replace('#','');
+    if(h.length !== 6) return '#fff';
+    var toLin = function(c){ c = parseInt(c,16)/255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
+    var lum = 0.2126*toLin(h.slice(0,2)) + 0.7152*toLin(h.slice(2,4)) + 0.0722*toLin(h.slice(4,6));
+    return lum > 0.42 ? '#111' : '#fff';
+  }
+
   function pinColor(i, total){
     if(total <= 1 || i === 0) return '#1a7a3c';
     if(i === total - 1) return '#DA291C';
@@ -329,7 +341,7 @@ const SITE_VERSION = '26.09.06_02-09-0061';
     }).join('');
     return '<article class="stop' + (i === 0 ? ' first' : '') + '">' +
       '<div class="stop-head">' +
-        '<div class="pin" style="background:' + pinColor(i, total) + '">' + (i + 1) + '</div>' +
+        '<div class="pin" style="background:' + pinColor(i, total) + ';color:' + contrastOn(pinColor(i, total)) + '">' + (i + 1) + '</div>' +
         '<div class="stop-id">' +
           '<a class="addr" href="' + esc(directionsUrl(s.address)) + '" target="_blank" rel="noopener">' + esc(a.street) + '</a>' +
           (a.rest ? '<div class="city">' + esc(a.rest) + '</div>' : '') +
