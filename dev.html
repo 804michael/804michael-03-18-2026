@@ -339,7 +339,7 @@
     <div class="dev-main">
 
   <div class="dev-toolbar">
-    <p class="dev-drag-hint" id="dev-drag-hint">Drag cards to reorder — order syncs across your devices.</p>
+    <p class="dev-drag-hint" id="dev-drag-hint">Drag to reorder — order syncs across your devices.</p>
     <button type="button" class="dev-page-note-btn" id="dev-page-note-btn" aria-haspopup="dialog" aria-expanded="false">Page note</button>
     <button type="button" class="dev-add-card-btn" id="dev-add-card-btn">+ Add Card</button>
   </div>
@@ -1333,8 +1333,8 @@
     var ORDER_KEY = '804m_dev_card_order';
     var API_URL = '/api/dev-order';
     var hintEl = document.getElementById('dev-drag-hint');
-    var DEFAULT_HINT = 'Drag cards to reorder — order syncs across your devices.';
-    var LOCAL_ONLY_HINT = 'Drag cards to reorder — saved in this browser only (server sync unavailable).';
+    var DEFAULT_HINT = 'Drag to reorder — order syncs across your devices.';
+    var LOCAL_ONLY_HINT = 'Drag to reorder — saved in this browser only (server sync unavailable).';
 
     function applyOrder(ids){
       if(!Array.isArray(ids) || !ids.length) return;

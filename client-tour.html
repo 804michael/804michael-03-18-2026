@@ -356,7 +356,7 @@ const SITE_VERSION = '26.09.06_03-18-0062';
           '<span class="rate-lbl">Rate this Home</span>' +
           '<div class="dots">' + dots + '</div>' +
         '</div>' +
-        '<textarea class="note" data-i="' + i + '" rows="3" placeholder="Anything you want to remember about this one…">' + esc(saved.comment || '') + '</textarea>' +
+        '<textarea class="note" data-i="' + i + '" rows="3" placeholder="Anything to remember about this one…">' + esc(saved.comment || '') + '</textarea>' +
         '<div class="saved' + (saved.rating || saved.comment ? ' on' : '') + '" data-saved="' + i + '">' +
           (saved.rating || saved.comment ? 'Saved' : '') + '</div>' +
       '</div>' +
@@ -404,7 +404,7 @@ const SITE_VERSION = '26.09.06_03-18-0062';
   });
 
   if(!code){
-    stopsEl.innerHTML = '<p class="state">This link is missing its tour code. Ask Michael to resend it.</p>';
+    stopsEl.innerHTML = '<p class="state">Link is missing its tour code. Ask Michael to resend.</p>';
     return;
   }
 

@@ -2,6 +2,44 @@
 
 Standing conventions and decisions captured here so future page work (by Claude or otherwise) stays consistent, without re-litigating them each time.
 
+## STANDING RULE: tool hints and microcopy are terse, not grammatical (added 2026-09-06)
+
+Michael, in his own words: *"I don't need no proper english in tool hints and
+such. minimizing words in those types of things."*
+
+Placeholders, button hints, inline captions, validation messages and empty
+states are **labels, not prose**. Articles, hedges and polite scaffolding cost
+width in exactly the places that are tightest - a placeholder inside a narrow
+input, a hint under a button, a caption on a phone - and read as padding rather
+than manners.
+
+**Trim:** "the", "a", "at least one", "you want to", "then ... can be",
+"in the right order", "just", "please".
+
+| Was | Now |
+| --- | --- |
+| Publish to create the link | Publish to create link |
+| Add at least one stop first. | Add a stop first. |
+| Give this tour a name first. | Name the tour first. |
+| Calculate a route first, so the stops publish in the right order. | Calculate a route first, so stops publish in order. |
+| Anything you want to remember about this one | Anything to remember about this one |
+| Drag cards to reorder | Drag to reorder |
+
+**This does NOT apply to visitor-facing page copy.** A guide page, a locality
+page, the client tour page's own explanatory sentences - those stay written in
+full sentences. The rule is specifically about UI chrome: the words wrapped
+around a control, where the control is the message and the text is a label for
+it. A good check: if it sits inside, on, or immediately under an input or
+button, trim it. If it is something a person reads for its meaning rather than
+to operate something, leave it.
+
+Two carve-outs that stay long on purpose, because they are disclosures rather
+than labels: the publish note on the route planner ("Publishing sends addresses
+& client notes only...") and the privacy line on the client tour page ("Your
+ratings and notes are saved and shared with Michael..."). Being terse there
+would cost clarity about who sees what, which is the one thing those sentences
+exist to make unambiguous.
+
 ## STANDING RULE: responsive floor is 320px, and Michael's real devices (added 2026-09-05)
 
 **Michael's current devices** (these replace the older `804len-book14` reference

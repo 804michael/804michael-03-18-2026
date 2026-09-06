@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_03-43-0079                            ║
+  ║  SITE VERSION: 26.09.06_04-04-0082                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time, hyphen, ║
   ║  4-digit revision number) — changed from the old "YY.MM.DD    ║
   ║  HH-MM" (no revision counter) as of this revision, 2026-09-04.║
@@ -9,7 +9,7 @@
   ║  no separate counter file — the next session reads the LAST   ║
   ║  revision number off the currently-deployed file itself (any  ║
   ║  of the 3 spots below) and increments it by 1.                ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_03-43-0079    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_04-04-0082    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -163,19 +163,23 @@
   /* Showing window — an optional hard appointment on a single stop. Hidden
      behind its own toggle like private notes, since most stops don't have one,
      but auto-opens when a stop already carries a window (e.g. loaded tour). */
-  .stop-window{display:none;align-items:center;flex-wrap:wrap;gap:8px;width:100%;margin-top:8px;padding:8px 10px;border:1.5px dashed var(--gray-mid);border-radius:8px;background:#f7fbff}
+    /* Centred (2026-09-06): the two time fields and their captions read as one
+     paired control, and left-aligning them in a full-width dashed box left the
+     pair stranded against the edge. */
+  .stop-window{display:none;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;width:100%;margin-top:8px;padding:8px 10px;border:1.5px dashed var(--gray-mid);border-radius:8px;background:#f7fbff}
   .stop-window.open{display:flex}
   .stop-window input[type="time"]{padding:5px 8px;border:1.5px solid var(--gray-mid);border-radius:7px;font-size:.85rem;font-family:inherit;background:#fff}
   /* Caption sits BELOW its input, per Michael's request, rather than a sentence
      running across the row — two labelled fields read faster than prose here. */
-  .sw-field{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+    .sw-field{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .sw-field input[type=time]{text-align:center}
   .sw-cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted)}
   .stop-window-clear{background:none;border:none;color:var(--gray-muted);font-size:1.1rem;line-height:1;cursor:pointer;padding:0 4px;margin-left:auto;align-self:center}
   .stop-window-clear:hover{color:var(--red)}
   .stop-window-toggle{background:none;border:none;color:var(--gray-muted);font-size:.78rem;text-decoration:underline;padding:2px 0;cursor:pointer;text-align:left;line-height:1.3}
   /* Label first line, hours second, so a set window keeps the toggle narrow. */
-  .sw-toggle-label{display:block}
-  .sw-toggle-hours{display:block;font-weight:700;text-decoration:none}
+  .sw-toggle-label{display:block;text-align:center}
+  .sw-toggle-hours{display:block;font-weight:700;text-decoration:none;text-align:center}
   .stop-window-toggle:hover{color:var(--red)}
   .stop-row.has-window .stop-window-toggle{color:var(--red);font-weight:600}
   /* Stops the optimizer could not fit inside their window. */
@@ -587,8 +591,15 @@
     /* Title left, logo upper-right, tops aligned (2026-09-04). The logo used
        to sit on its own line above the title; align-items:flex-start is what
        puts the top of the wordmark level with the top of the H1. */
-    .pi-head{padding-bottom:10px;margin-bottom:13px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+    .pi-head{padding-bottom:6px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
     .pi-head-title{flex:1 1 auto;min-width:0}
+    /* Client-tour QR, page 1. Deliberately small: the itinerary has to stay on
+       one sheet, and this block costs header height that the 10-stop agent copy
+       does not have to spare. Hidden when the tour has not been published. */
+    .pi-head-qr{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px}
+    .pi-head-qr[hidden]{display:none}
+    .pi-head-qr img{width:44px;height:44px;display:block}
+    .pi-head-qr span{font-size:8.5px;color:#666;letter-spacing:.02em}
     .pi-brand{flex:0 0 auto;margin:0;line-height:1}
     .pi-logo{height:25px;width:auto;display:block}
     .pi-head h1{font-size:26px;margin-bottom:4px}
@@ -618,7 +629,7 @@
     .pi-eta{flex:0 0 auto;white-space:nowrap;font-size:12px;color:#444;text-align:right}
     /* Client note directly under the address: it reads as the first written
        line of the note area rather than as a separate field. */
-    .pi-blurb{font-size:12.5px;color:#333;margin-top:2px}
+    .pi-blurb{font-size:12.5px;color:#333;margin-top:1px}
     /* Rating at address size, sharing a line with the agent-only note. */
     .pi-agent-row{display:flex;align-items:baseline;gap:12px;margin-top:2px;min-height:1px}
     .pi-rating{font-size:16px;color:#333;flex:0 0 auto;letter-spacing:1px}
@@ -628,40 +639,60 @@
     #printItinerary.pi-agent-copy .pi-client-fb{display:inline}
     /* Was 10px in #a06000 - small and low-contrast at once. Bigger, and a much
        darker brown that still reads as "agent only" without being unreadable. */
-    .pi-private-note{display:none;font-size:12px;color:#111;font-style:italic;margin-top:3px}
+    .pi-private-note{display:none;font-size:12px;color:#111;font-style:italic;margin-top:2px}
     #printItinerary.pi-agent-copy .pi-private-note{display:block}
-    .pi-notes-block{margin-top:5px}
-    .pi-notes-block .pi-notes-line{border-bottom:1px solid #bbb;height:18px}
+    /* Hidden on the client copy entirely (2026-09-06). Shown, but WITHOUT a
+       printed rule, on the agent copy: the line under the writing space read as
+       a separator once the agent note moved beneath it. The space stays; only
+       the rule goes. */
+    .pi-notes-block{display:none;margin-top:5px}
+    #printItinerary.pi-agent-copy .pi-notes-block{display:block}
+    .pi-notes-block .pi-notes-line{border-bottom:none;height:18px}
     /* Density tiers, set on #printItinerary by buildPrintable(): more
        breathing room (taller padding + more ruled note lines per stop) for
        a short list, tighter once stop count climbs toward the 10-stop max
        so it still holds to one page even in the worst case (10 stops, Agent
        Copy with a blurb + private note on every one). */
-    #printItinerary.pi-density-loose .pi-stop{padding:22px 0}
-    #printItinerary.pi-density-loose .pi-notes-block .pi-notes-line{height:20px}
-    #printItinerary.pi-density-medium .pi-stop{padding:11px 0}
-    #printItinerary.pi-density-medium .pi-notes-block .pi-notes-line{height:15px}
-    #printItinerary.pi-density-tight .pi-stop{padding:4px 0}
-    #printItinerary.pi-density-tight .pi-notes-block .pi-notes-line{height:11px}
+    #printItinerary.pi-density-loose .pi-stop{padding:16px 0}
+    #printItinerary.pi-density-loose .pi-notes-block .pi-notes-line{height:18px}
+    #printItinerary.pi-density-medium .pi-stop{padding:9px 0}
+    #printItinerary.pi-density-medium .pi-notes-block .pi-notes-line{height:13px}
+    #printItinerary.pi-density-tight .pi-stop{padding:3px 0}
+    #printItinerary.pi-density-tight .pi-notes-block .pi-notes-line{height:9px}
     #printItinerary.pi-density-tight .pi-eta-row{margin-top:1px}
     #printItinerary.pi-density-tight .pi-blurb,#printItinerary.pi-density-tight .pi-private-note{margin-top:0}
     /* Agent Copy already prints a blurb line and a private-note line per stop,
        so it drops one ruled line to buy that height back — otherwise the worst
        case (10 stops, every field filled) pushes the last stop onto its own
        near-empty second page. Client Route keeps the full count. */
-    #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:nth-child(n+2){display:none}
-    #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:last-child{border-bottom:none}
+
     /* Worst case is 10 stops on Agent Copy with a blurb AND a private note on
        every one — measured 8px over the page even after dropping a ruled line,
        which is enough to spill the last stop onto a near-empty third page.
        Tighten the per-stop padding for that combination only; the flex
        space-between above reclaims the difference as evenly-spread gaps, so
        the page still fills to the bottom margin. */
-    #printItinerary.pi-agent-copy.pi-density-tight .pi-stop{padding:2px 0}
+    /* The agent copy is the one that overflows: it alone carries the writing
+       area, the client note and the agent note. Measured at 720x984 (Letter
+       less the margins) with a blurb AND a note on every stop - the worst case
+       - the old tiers ran over at 6, 7, 9 and 10 stops. These agent-only
+       overrides bring every count back onto one sheet. Re-measure before
+       loosening any of them. */
+    #printItinerary.pi-agent-copy .pi-notes-block .pi-notes-line:nth-child(n+3){display:none}
+    #printItinerary.pi-agent-copy.pi-density-loose .pi-stop{padding:10px 0}
+    #printItinerary.pi-agent-copy.pi-density-loose .pi-notes-block .pi-notes-line{height:16px}
+    #printItinerary.pi-agent-copy.pi-density-medium .pi-stop{padding:2px 0}
+    #printItinerary.pi-agent-copy.pi-density-medium .pi-notes-block .pi-notes-line{height:7px}
+    #printItinerary.pi-agent-copy.pi-density-tight .pi-stop{padding:1px 0}
+    #printItinerary.pi-agent-copy.pi-density-tight .pi-notes-block .pi-notes-line{height:5px}
     /* Page margins: 0.3in at the bottom so the 804Michael mark can sit within
        0.3in of the paper edge (Michael's request). A browser's own print
        dialog can still override these if the user changes the margin setting. */
-    @page{margin:0.5in 0.5in 0.3in 0.5in}
+    /* One page is the target for the itinerary. The client copy has no writing
+       area at all, and the agent copy's is unruled space, so both are far
+       shorter than before; the tiers above plus these margins are what keep a
+       10-stop tour on a single sheet. Measure before loosening any of it. */
+    @page{margin:0.45in 0.5in 0.3in 0.5in}
     #printMapWrap{display:flex;flex-direction:column;min-height:100vh;position:static;left:auto;top:auto;width:100%;page-break-before:always;padding-top:20px}
     #printMap{width:100%;height:520px;border:none}
     /* Page 2 (map page) redesign: stats/legs/QR on the left under the map,
@@ -925,7 +956,7 @@
                for the existing button to stay exactly where it is. -->
           <div class="tp-map-scrollstrip" aria-hidden="true"></div>
           <div class="tp-map-cta" id="mapCta">
-            <p>Add stops, then calculate route to see map, drive times and links.</p>
+            <p>Add stops, then calculate route for map, times and links.</p>
             <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="mapCtaBtn">Calculate Route</button>
           </div>
         </div>
@@ -963,12 +994,12 @@
               <div class="tp-clientpage">
                 <label for="clientPageInput">Client tour page <span class="tp-badge-new">(your client rates the homes here)</span></label>
                 <div class="tp-link-line">
-                  <input type="text" id="clientPageInput" readonly placeholder="Publish to create the link">
+                  <input type="text" id="clientPageInput" readonly placeholder="Publish to create link">
                   <button type="button" class="tp-icon-btn" id="copyClientPageBtn" disabled aria-label="Copy"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg><span class="tp-icon-tip">Copy</span></button>
                   <button type="button" class="tp-icon-btn" id="smsClientPageBtn" disabled aria-label="Text"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.3 9 9 0 0 1-3.9-.9L3 21l1.9-5.1a8.2 8.2 0 0 1-1-4A8.4 8.4 0 0 1 12.4 3 8.4 8.4 0 0 1 21 11.5z"/></svg><span class="tp-icon-tip">Text</span></button>
                 </div>
                 <div class="tp-slug-row">
-                  <label for="tourSlugInput">Custom link <span class="tp-slug-hint">optional - permanent, for a demo or a tour you reuse</span></label>
+                  <label for="tourSlugInput">Custom link <span class="tp-slug-hint">optional - permanent, for a demo or reused tour</span></label>
                   <div class="tp-slug-line">
                     <div class="tp-slug-field">
                       <span class="tp-slug-prefix">804re.com/t/</span>
@@ -978,7 +1009,7 @@
                 </div>
                 <div class="tp-publish-row">
                   <button type="button" class="tp-btn tp-btn-red tp-btn-sm" id="publishTourBtn">Publish Client Tour</button>
-                  <span class="tp-publish-hint">Applies the custom link too</span>
+                  <span class="tp-publish-hint">Applies custom link too</span>
                 </div>
                 <p class="tp-clientpage-note" id="publishNote">Publishing sends addresses &amp; client notes only. Agent Only Notes &amp; agent ratings never leave this page.</p>
               </div>
@@ -1001,7 +1032,7 @@
               </div>
 
               <div class="tp-short-link-row">
-                <label for="shortLinkInput">Short link (for texting)
+                <label for="shortLinkInput"><span id="shortLinkLabelText">Short link (for texting)</span>
                   <button type="button" class="tp-info-btn" id="shortLinkInfoBtn" aria-label="About short links" aria-expanded="false">ⓘ</button>
                 </label>
                 <div class="tp-short-link-popup" id="shortLinkInfoPopup" hidden>
@@ -1065,6 +1096,10 @@
     <div class="pi-head-title">
       <h1>Home Tour Itinerary<span class="pi-agent-badge">Agent Copy</span></h1>
       <p id="piMeta"></p>
+    </div>
+    <div class="pi-head-qr" id="piHeadQr" hidden>
+      <img id="piHeadQrImg" alt="">
+      <span>Scan to rate homes</span>
     </div>
     <div class="pi-brand"><svg viewBox="0 0 786.329 238.272" class="pi-logo" aria-label="804Michael logo">
         <path fill="#111" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
@@ -1192,7 +1227,7 @@
         <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
       </svg>
     </a>
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_03-43-0079</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_04-04-0082</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal tool — not part of the public site navigation
@@ -1205,7 +1240,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible footer line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_03-43-0079';
+const SITE_VERSION = '26.09.06_04-04-0082';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
 
@@ -2398,6 +2433,20 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // again before the first shorten call returns.
     (function(){
       var shortInput = document.getElementById('shortLinkInput');
+      // A published tour link is already short - with a slug it is shorter than
+      // anything the shortener returns, it is branded, and it is the page that
+      // collects the client's ratings. So when one exists, that is the link
+      // worth texting; the Maps shortener is the fallback for an unpublished
+      // tour.
+      var shortLabel = document.getElementById('shortLinkLabelText');
+      var published = clientPageUrl();
+      if(published){
+        shortInput.value = published;
+        shortInput.removeAttribute('title');
+        if(shortLabel) shortLabel.textContent = 'Client tour link (for texting)';
+        return;
+      }
+      if(shortLabel) shortLabel.textContent = 'Short link (for texting)';
       var myReqId = ++shortLinkReqId;
       shortInput.value = '';
       shortInput.removeAttribute('title');
@@ -2630,6 +2679,21 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     // already carries its own QR code as the printed backup link. qrSrc is
     // still grabbed here for that page-2 QR, set further down.
     var qrSrc = document.getElementById('qrCodeImg').src;
+    // Page 1 carries a QR for the CLIENT TOUR page - the thing a client would
+    // actually scan off a printed sheet. The route QR on page 2 stays as it is;
+    // that one is an agent tool.
+    (function(){
+      var wrap = document.getElementById('piHeadQr');
+      var img = document.getElementById('piHeadQrImg');
+      var url = clientPageUrl();
+      if(wrap && img){
+        if(url){
+          img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(url);
+          img.alt = 'QR code for the client tour page';
+          wrap.hidden = false;
+        } else { wrap.hidden = true; }
+      }
+    })();
     var whenBit = '';
     if(startVal){
       var dt = buildStartDateTime(startVal);
@@ -2674,24 +2738,24 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
     document.getElementById('piStops').innerHTML = orderedStops.map(function(s,i){
       var color = stopMarkerColor(i, orderedStops.length);
       var addrParts = splitAddressForPrint(s.address);
-      // Layout per Michael (2026-09-06): address and the drive time to the next
-      // stop share the top line, time right-justified; the client note sits
-      // directly under the address, where it doubles as the top line of the
-      // writing area; the rating sits at address size on the same row as the
-      // agent-only note.
+      // Order (2026-09-06): address with the drive time to the next stop hard
+      // right, then the rating, then the client note under it. The agent note
+      // is last so it sits directly above the next stop's address. The writing
+      // area is agent-only - the client reads this on paper and rates on their
+      // phone, so ruled lines on their copy were just eating the page.
       return '<div class="pi-stop"><div class="pi-num" style="background:' + color + ';color:' + contrastOn(color) + '">' + (i+1) + '</div>' +
         '<div class="pi-stop-body">' +
         '<div class="pi-addr-row">' +
           '<span class="pi-addr">' + escapeHtml(addrParts.line1) + '</span>' +
           '<span class="pi-eta">' + escapeHtml(etaEls[i]||'') + '</span>' +
         '</div>' +
-        (s.blurb ? '<div class="pi-blurb">'+escapeHtml(s.blurb)+'</div>' : '') +
         '<div class="pi-agent-row">' +
           '<span class="pi-rating">' + ratingMarkup(s.rating) + '</span>' +
-          (function(){ var cf = clientFeedbackFor(i); return cf ? '<span class="pi-client-fb">Client ' + clientStars(cf.rating) + (cf.comment ? ' ' + escapeHtml(cf.comment) + '' : '') + '</span>' : ''; })() +
+          (function(){ var cf = clientFeedbackFor(i); return cf ? '<span class="pi-client-fb">Client ' + clientStars(cf.rating) + (cf.comment ? ' ' + escapeHtml(cf.comment) + '' : '') + '</span>' : ''; })() +
         '</div>' +
+        (s.blurb ? '<div class="pi-blurb">'+escapeHtml(s.blurb)+'</div>' : '') +
         notesBlockHtml +
-          (s.notes ? '<span class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</span>' : '') +
+        (s.notes ? '<div class="pi-private-note">🔒 '+escapeHtml(s.notes)+'</div>' : '') +
         '</div></div>';
     }).join('');
 
@@ -2822,8 +2886,8 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
   document.getElementById('saveTourBtn').addEventListener('click', function(){
     syncStopsOrderFromDom();
     var name = document.getElementById('saveTourNameInput').value.trim();
-    if(!name){ alert('Give this tour a name first.'); return; }
-    if(!stops.length){ alert('Add at least one stop first.'); return; }
+    if(!name){ alert('Name the tour first.'); return; }
+    if(!stops.length){ alert('Add a stop first.'); return; }
     if(toursCache[name] && !confirm('A tour named "'+name+'" already exists — overwrite it?')) return;
     var tourStops = stops.map(function(s){ return {address:s.address, lat:s.lat, lng:s.lng, blurb:s.blurb, notes:s.notes, budget:s.budget, windowStart:s.windowStart, windowEnd:s.windowEnd, rating:s.rating}; });
 
@@ -2991,7 +3055,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   document.getElementById('publishTourBtn').addEventListener('click', function(){
     var list = lastOrderedStops.length ? lastOrderedStops : stops.filter(function(s){ return s.address; });
-    if(!list.length){ setPublishNote('Calculate a route first, so the stops publish in the right order.', 'bad'); return; }
+    if(!list.length){ setPublishNote('Calculate a route first, so stops publish in order.', 'bad'); return; }
 
     var btn = this;
     btn.disabled = true;
@@ -3337,7 +3401,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   document.getElementById('startTourBtn').addEventListener('click', function(){
     var list = tmStops();
-    if(!list.length){ alert('Add at least one stop with a matched address first.'); return; }
+    if(!list.length){ alert('Add a stop with a matched address first.'); return; }
     // An unnamed tour can't be pushed to the server store, and that's exactly
     // the tour worth protecting once a phone is about to be carried around for
     // three hours — so name it automatically rather than prompting mid-tour.
@@ -3465,7 +3529,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   document.getElementById('downloadTourBtn').addEventListener('click', function(){
     syncStopsOrderFromDom();
-    if(!stops.length){ setPortableNote('Add at least one stop first.', 'bad'); return; }
+    if(!stops.length){ setPortableNote('Add a stop first.', 'bad'); return; }
     var slug = (currentTourName() || 'tour').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-').toLowerCase() || 'tour';
     var fileName = slug + '.804tour.json';
     var blob = new Blob([JSON.stringify(serializeTour())], {type:'application/json'});
@@ -3500,7 +3564,7 @@ document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFu
 
   document.getElementById('copyTourLinkBtn').addEventListener('click', function(){
     syncStopsOrderFromDom();
-    if(!stops.length){ setPortableNote('Add at least one stop first.', 'bad'); return; }
+    if(!stops.length){ setPortableNote('Add a stop first.', 'bad'); return; }
     var url = location.origin + location.pathname + '#tour=' + b64urlEncode(JSON.stringify(serializeTour()));
     function done(){ setPortableNote('Tour link copied (' + url.length + ' characters). Paste it into an email or a note — opening it rebuilds this tour.', 'ok'); }
     if(navigator.clipboard && navigator.clipboard.writeText){
