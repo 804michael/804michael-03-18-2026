@@ -493,6 +493,7 @@ async function runScan(sources) {
       status: 'idea',
       notes: '',
       keyPoints: '',
+      photo: '',
       scheduled: '',
       publishedUrl: '',
       refreshOf: '',

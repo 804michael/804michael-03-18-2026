@@ -122,6 +122,10 @@ function cleanIdea(raw) {
     status: cleanStatus(o.status),
     notes: str(o.notes, MAX_STR),
     keyPoints: str(o.keyPoints, MAX_STR),
+    // What to go photograph for this post. Original local photos are the one
+    // image asset a competitor cannot copy, so the shot is decided on the card
+    // rather than settled for with stock at drafting time.
+    photo: str(o.photo, 600),
     scheduled: cleanDate(o.scheduled),
     publishedUrl: cleanUrl(o.publishedUrl),
     refreshOf: cleanUrl(o.refreshOf),

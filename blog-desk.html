@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_17-24-0004                            ║
+  ║  SITE VERSION: 26.09.06_18-45-0005                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-24-0004    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_18-45-0005    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -137,6 +137,7 @@
     .bd-field input,.bd-field textarea,.bd-field select{width:100%;font-family:'Barlow',sans-serif;font-size:.92rem;padding:7px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;background:var(--white);color:var(--black)}
     .bd-field textarea{min-height:70px;resize:vertical;line-height:1.5}
     .bd-field input:focus,.bd-field textarea:focus,.bd-field select:focus{outline:none;border-color:var(--red)}
+    .bd-shot{font-size:.8rem;color:var(--gray-muted);line-height:1.5;margin-top:4px}
     .bd-why{margin:10px 0 0;padding-left:17px;font-size:.85rem;color:var(--gray-text);line-height:1.55}
     .bd-why li{margin-bottom:1px}
     .bd-row{display:flex;gap:10px;flex-wrap:wrap}
@@ -351,7 +352,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-24-0004</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_18-45-0005</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -361,7 +362,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_17-24-0004';
+  const SITE_VERSION = '26.09.06_18-45-0005';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -534,6 +535,23 @@
   // actually generate leads. Decided here, on the card, so it cannot be
   // forgotten at drafting time.
 
+  // ── Photo brief ──────────────────────────────────────────────────────
+  // Stock photography is not penalised by Google, but it earns nothing: the
+  // same Depositphotos house is on a thousand other agent sites, it never
+  // ranks in image search, and it is not evidence you have ever set foot in
+  // Hanover. An original local photo is the one asset on the page a competitor
+  // cannot copy. So each card carries a suggested subject, and the plan is to
+  // shoot a batch of them on a normal week of showings rather than to stage
+  // anything.
+  var PHOTO_IDEAS = {
+    local:   'Somewhere a local recognises on sight: the Ashland tracks, Hanover courthouse, a Glen Allen centre, a Mechanicsville main road. Shoot it in decent light and it beats any stock house.',
+    seller:  'A real listing moment you already have access to: a sign going in, a lockbox on a door, a room right after staging, a kitchen you just photographed for MLS.',
+    buyer:   'A buyer moment: keys changing hands, a walkthrough with a flashlight, a couple on a porch at an open house. A face beats an empty room.',
+    money:   'Make the abstract concrete: a closing table, a settlement statement and a pen, a calculator on a kitchen counter. Avoid stock piggy banks.',
+    market:  'A street of homes in one of your areas, or a for-sale sign in real context. Same street re-shot over time becomes its own running feature.',
+    general: 'You, on location, somewhere in the 804. Your face on your own post is the strongest trust signal available and costs nothing.',
+  };
+
   var TIES = {
     money:   [['Determine Your Budget', '/determine-your-budget'], ['Cash to Buy a Home', '/cash-to-buy-a-home'], ['Financing Commandments', '/financing-commandments']],
     seller:  [['Seller Net Sheet', '/seller-net-sheet'], ['Home Value Estimate', '/home-value-estimate'], ['Market Stats', '/market-stats']],
@@ -649,7 +667,7 @@
     if (!compact || open) {
       h.push('<div class="bd-card-body">');
       h.push('Target length ' + esc(DEPTH_WORDS[idea.depth] || '') + '. Found ' + esc(idea.found) + '.');
-      if (idea.url) h.push('<br><a class="src" href="' + esc(idea.url) + '" target="_blank" rel="noopener nofollow">Open the source &#8599;</a>');
+      if (idea.url) h.push('<br><a class="src" href="' + esc(idea.url) + '" target="_blank" rel="noopener nofollow" data-win="1">Open the source &#8599;</a>');
       h.push('</div>');
     }
 
@@ -661,7 +679,7 @@
           Math.round(clash.score * 100) + '% title overlap with &ldquo;' + esc(clash.title) + '&rdquo; (' + esc(clash.where) +
           (clash.date ? ', ' + esc(clash.date) : '') + ').' +
           ' Publishing both splits their rankings instead of doubling them.' +
-          (clash.url ? ' <a href="' + esc(clash.url) + '" target="_blank" rel="noopener nofollow">Read it first</a>.' : '') +
+          (clash.url ? ' <a href="' + esc(clash.url) + '" target="_blank" rel="noopener nofollow" data-win="1">Read it first</a>.' : '') +
           '<div class="bd-acts">' +
           '<button type="button" data-act="refresh">Make it a refresh of that post</button>' +
           '<button type="button" class="kill" data-act="discard">Discard this idea</button>' +
@@ -682,6 +700,10 @@
 
       h.push('<div class="bd-field"><label for="kp-' + esc(idea.id) + '">Key points to hit</label>' +
         '<textarea id="kp-' + esc(idea.id) + '" data-f="keyPoints" placeholder="One per line.">' + esc(idea.keyPoints) + '</textarea></div>');
+
+      h.push('<div class="bd-field"><label for="ph-' + esc(idea.id) + '">Photo to shoot</label>' +
+        '<textarea id="ph-' + esc(idea.id) + '" data-f="photo" placeholder="' + esc(PHOTO_IDEAS[idea.cluster] || PHOTO_IDEAS.general) + '">' + esc(idea.photo || '') + '</textarea>' +
+        '<p class="bd-shot">Leave it blank to use the suggestion above. Falls back to the plain black hero bar if you never get the shot, so this never blocks a post.</p></div>');
 
       h.push('<div class="bd-row">');
       h.push('<div class="bd-field"><label>Status</label><select data-f="status">' +
@@ -784,7 +806,7 @@
       return '<article class="bd-card cl-market">' +
         '<header class="bd-card-head"><h3>' + esc(c.title) + '</h3></header>' +
         '<div class="bd-card-meta"><span class="bd-chip">' + esc(c.date) + '</span><span class="bd-chip">' + months + ' months old</span><span class="bd-chip">' + esc(c.origin) + '</span></div>' +
-        '<div class="bd-card-body"><a class="src" href="' + esc(c.url) + '" target="_blank" rel="noopener nofollow">Read it &#8599;</a>' +
+        '<div class="bd-card-body"><a class="src" href="' + esc(c.url) + '" target="_blank" rel="noopener nofollow" data-win="1">Read it &#8599;</a>' +
         '<div class="bd-acts"><button type="button" class="go" data-refresh="' + esc(c.url) + '">Queue a refresh</button></div></div>' +
         '</article>';
     }).join('');
@@ -972,6 +994,9 @@
       'KEY POINTS:',
       idea.keyPoints || '(none written yet)',
       '',
+      'PHOTO TO SHOOT: ' + (idea.photo || PHOTO_IDEAS[idea.cluster] || PHOTO_IDEAS.general),
+      'IMAGE PATH: /images/blog/<slug>/  (jpg + webp pair, 1600px wide hero)',
+      '',
       'MUST LINK TO: ' + ties + ', plus one sibling blog post.',
       'PUBLISH DATE: ' + (idea.scheduled || '(unscheduled)'),
     ].filter(function (l) { return l !== ''; }).join('\n');
@@ -1071,6 +1096,48 @@
       var id = row && row.getAttribute('data-src');
       STATE.sources.forEach(function (s) { if (s.id === id) s.enabled = ev.target.checked; });
       save();
+    }
+  });
+
+  // ── Source articles open in a real window, not another tab ───────────
+  // Passing a feature string is what makes a browser open a separate window;
+  // target="_blank" on its own always lands in another tab of this one, which
+  // buries the workbench behind whatever you were reading.
+  //
+  // "noopener" is deliberately NOT in the feature string: Chrome makes
+  // window.open return null when it is there, so the success check below would
+  // fail, preventDefault would never run, and the click would open BOTH a
+  // window and a tab. The opener is severed straight after instead, which
+  // gets the same protection. The anchor keeps its own rel="noopener nofollow"
+  // for the fallback path.
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('a[data-win]');
+    if (!a) return;
+    // Leave the reader's own intent alone: ctrl/cmd/shift-click and middle
+    // click should still do what they always do.
+    if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) return;
+
+    var url = a.getAttribute('href') || '';
+    if (!/^https?:\/\//i.test(url)) return;
+
+    var sw = window.screen.availWidth || 1440;
+    var sh = window.screen.availHeight || 900;
+    var w = Math.max(820, Math.min(1180, sw - 420));
+    var h = Math.max(640, Math.min(1000, sh - 120));
+    // Offset to the right so the workbench stays visible beside it.
+    var left = (window.screen.availLeft || 0) + Math.max(0, sw - w - 30);
+    var top = (window.screen.availTop || 0) + 40;
+
+    var win = window.open(url, '_blank',
+      'popup=yes,width=' + w + ',height=' + h + ',left=' + left + ',top=' + top +
+      ',menubar=no,toolbar=no,location=yes,status=no,resizable=yes,scrollbars=yes');
+
+    // A popup blocker returns null. Falling through to the normal link is
+    // better than swallowing the click and looking broken.
+    if (win) {
+      ev.preventDefault();
+      try { win.opener = null; } catch (e) { /* cross-origin, already safe */ }
+      win.focus();
     }
   });
 
