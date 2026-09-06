@@ -1425,3 +1425,36 @@ and this page are internal.
 
 A pasted CSV is also a snapshot: right the morning you export it, wrong the moment a
 price changes. Anything shown to a client carries the date it was pulled.
+
+### Addendum — what the tour data deliberately does NOT carry (2026-09-06)
+
+Michael's calls after seeing the first version, all of them right, all recorded here
+because the fields are in the export and a future session will otherwise "helpfully"
+put them back:
+
+- **$/sq ft is out.** It is a bad way to compare home values: it treats a finished
+  basement and a primary suite as the same square foot, and it makes a big cheap house
+  look like a better buy than a small good one. It is still in the export (`$/Fin SF`).
+  Do not reintroduce it because it is there.
+- **Schools are out.** Districts get redrawn. A stale boundary told to a buyer with a
+  kindergartener is a real harm, not a cosmetic error.
+- **Age of systems is out** — roof, HVAC, water heater. Not recorded in the MLS with
+  any reliability, so there is nothing honest to show.
+- **HOA is a Yes/No flag, not a fee.** What dues cover varies too much between
+  communities — some include water and yard care, some a pool nobody uses — so a dollar
+  figure in a monthly estimate reads as precision that is not there. The payment view
+  says "Yes — not included" and the legal line says why.
+
+The second export (`804 Home Tour Data.csv`) is the shape to build against: `#`,
+`ML #`, `Status`, `Address`, `Subdivision`, `Type`, `# Bedrooms`, `Total Baths`,
+`SqFtTotal`, `List Price`, `Days On Market`, `Acres`, `Association (Y/N)`,
+`Sales Price`, `Sales Date`, `Assd Total`, `$/Fin SF`. Numbers arrive formatted
+(`"2,127"`, `"$529,900"`) and `num()` strips them. `ML #` squashes to `ml`, which the
+prefix fallback would not have reached, so it is now an explicit alias. Still absent
+and still worth adding to the saved search: **Yr Blt** and **Annual Taxes** — the parse
+note names them.
+
+Two display rules that came out of this: a row or field every listing is blank for is
+dropped rather than printed as a line of dashes, and rows with no meaningful direction
+(Sold, HOA) get no "best" highlight — a lower sale price is not a better house, and an
+association is a preference, not a score.

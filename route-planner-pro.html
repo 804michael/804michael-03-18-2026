@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_07-05-0001                            ║
+  ║  SITE VERSION: 26.09.06_12-06-0002                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_07-05-0001    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_12-06-0002    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Update the version string in THREE places every edit:        ║
@@ -262,7 +262,7 @@
 <script>
 // ⚠ AI: update SITE_VERSION + the top comment's SITE VERSION line + the visible
 // version line on every edit.
-const SITE_VERSION = '26.09.06_07-05-0001';
+const SITE_VERSION = '26.09.06_12-06-0002';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date().getFullYear(); });
 
@@ -273,13 +273,16 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
   // Fake streets, fake numbers, fake MLS ids. This repository is public and
   // MLS content is licensed, so nothing real is ever committed here. It exists
   // so the page demonstrates itself; the real export is pasted at runtime.
+  // Shaped like the real "804 Home Tour Data" export, with Yr Blt and Annual
+  // Taxes added - those two are not in the current saved search, and the demo
+  // shows what those rows look like once they are.
   var SAMPLE_CSV = [
-    '"Address","List Price","Status","Sales Price","Days On Market","# Bedrooms","Total Baths","SqFtTotal","County/City","List Date","Subdivision","Acres","$/Fin SF","Assd Total","Prop Type","ML Number","New/Resale","Yr Blt","Annual Taxes","HOA Fee","HOA Period","Elm School","Mid School","High School"',
-    '"101  Example Ridge Rd ","529900","Active","","34","3","2.1","2127","Hanover","2026-08-18","Sample Farms","0.21","249.13","0","Residential","9900001","New (never occupied)","2024","3180","175.00","Monthly","Sample Elem","Sample Middle","Sample High"',
-    '"202 Demonstration St","389000","Active","","12","4","2","1512","Hanover","2026-08-30","Placeholder Park","0.25","257.28","282100","Residential","9900002","Resale (occupied at least once)","2001","2640","150.00","Yearly","Other Elem","Sample Middle","Sample High"',
-    '"303  Placeholder Ln ","449950","Active","","7","3","2.1","1575","Hanover","2026-09-01","None","0.17","285.68","339100","Residential","9900003","Resale (occupied at least once)","2006","2937","","","Other Elem","Sample Middle","Sample High"',
-    '"404  Mockup Station Rd ","410000","Active","","64","3","2.1","1701","Hanover","2026-07-04","None","0.33","241.03","296000","Residential","9900004","Resale (occupied at least once)","2009","2588","100.00","Yearly","Other Elem","Sample Middle","Sample High"',
-    '"12390 Fictional Gate Way","559950","Active","","267","4","3","2508","Hanover","2026-04-10","None","1.70","223.27","398900","Residential","9900005","New (never occupied)","2012","3801","300.00","Yearly","Other Elem","Sample Middle","Sample High"'
+    '\"#\",\"ML #\",\"Status\",\"Address\",\"Subdivision\",\"Type\",\"# Bedrooms\",\"Total Baths\",\"SqFtTotal\",\"List Price\",\"Days On Market\",\"Acres\",\"Association (Y/N)\",\"Sales Price\",\"Sales Date\",\"Assd Total\",\"Yr Blt\",\"Annual Taxes\"',
+    '\"1\",\"9900001\",\"ACTV\",\"101 Example Ridge RD\",\"Sample Farms\",\"Single Family Residence\",\"3\",\"2.1\",\"2,127\",\"$529,900\",\"34\",\"0.21\",\"Yes\",\"\",\"\",\"$0\",\"2024\",\"$3,180\"',
+    '\"2\",\"9900002\",\"ACTV\",\"202 Demonstration ST\",\"Placeholder Park\",\"Single Family Residence\",\"4\",\"2.0\",\"1,512\",\"$389,000\",\"12\",\"0.25\",\"Yes\",\"\",\"\",\"$282,100\",\"2001\",\"$2,640\"',
+    '\"3\",\"9900003\",\"ACTV\",\"303 Placeholder LN\",\"None\",\"Single Family Residence\",\"3\",\"2.1\",\"1,575\",\"$449,950\",\"7\",\"0.17\",\"No\",\"\",\"\",\"$339,100\",\"2006\",\"$2,937\"',
+    '\"4\",\"9900004\",\"ACTV\",\"404 Mockup Station RD\",\"None\",\"Single Family Residence\",\"3\",\"2.1\",\"1,701\",\"$410,000\",\"64\",\"0.33\",\"Yes\",\"\",\"\",\"$296,000\",\"2009\",\"$2,588\"',
+    '\"5\",\"9900005\",\"ACTV\",\"12390 Fictional Gate WAY\",\"None\",\"Single Family Residence\",\"4\",\"3.0\",\"2,508\",\"$559,950\",\"267\",\"1.70\",\"Yes\",\"\",\"\",\"$398,900\",\"2012\",\"$3,801\"'
   ].join('\n');
 
   // Deliberately messy: a spelled-out suffix, a missing city, extra commas, and
@@ -323,21 +326,27 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     beds:      ['bedrooms','beds','bdrms','totalbedrooms'],
     baths:     ['totalbaths','baths','bathrooms'],
     sqft:      ['sqfttotal','totalfinishedarea','squarefeet','sqft','abovegradefinishedarea'],
-    psf:       ['finsf','pricepersqft','sqftprice','ttlfinar'],
+    // $/sq ft deliberately NOT carried. Michael's call, and he is right: it
+    // treats a finished basement and a primary suite as the same square foot,
+    // and it makes a big cheap house look like a better buy than a small good
+    // one. Do not reintroduce it because the export happens to contain it.
     acres:     ['acres','lotsizeacres','lotacres'],
     year:      ['yrblt','yearbuilt','yrbuilt'],
     taxes:     ['annualtaxes','taxes','taxamount'],
     assessed:  ['assdtotal','totalassmt','assessedvalue'],
-    hoaFee:    ['hoafee','fee','associationfee','condofee'],
-    hoaPeriod: ['hoaperiod','feeperiod'],
+    // A flag, not a figure. Fees vary by what they cover - some include water
+    // and yard care, some a pool nobody uses - so a dollar amount in a monthly
+    // estimate reads as precision that is not there. "There is one, ask" is
+    // the honest version.
+    assoc:     ['associationyn','association','hoacondo','hoayn'],
     sub:       ['subdivision','neighborhood','nghbrhd'],
     county:    ['countycity','county'],
-    mls:       ['mlnumber','mls','mlsnumber','listingid'],
+    mls:       ['mlnumber','ml','mls','mlsnumber','listingid'],
     newResale: ['newresale','newconstruction'],
-    elem:      ['elmschool','elementaryschool','elemschool'],
-    mid:       ['midschool','middleschool'],
-    high:      ['highschool'],
-    listDate:  ['listdate','listingdate']
+    // Schools deliberately NOT carried - districts get redrawn, and a stale
+    // boundary told to a buyer with a kindergartener is a real harm.
+    listDate:  ['listdate','listingdate'],
+    soldDate:  ['salesdate','solddate','closedate','closingdate']
   };
   function squash(s){ return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
   function mapColumns(header){
@@ -412,18 +421,17 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       var o = {};
       Object.keys(map).forEach(function(k){ o[k] = (r[map[k]] || '').trim(); });
       o.key = addrKey(o.address);
-      // $/sqft is usually in the export, but derive it when it is not - it is
-      // the number this whole exercise is really about.
+      // List price drives the payment view; the sale price, when the export
+      // carries one, is shown beside it rather than replacing it.
       var price = num(o.price) || num(o.sold), sqft = num(o.sqft);
       o._price = price; o._sqft = sqft;
-      o._psf = num(o.psf) || (price && sqft ? price / sqft : null);
+      o._sold = num(o.sold);
       o._beds = num(o.beds); o._baths = num(o.baths);
       o._year = num(o.year); o._acres = num(o.acres);
       o._taxes = num(o.taxes); o._dom = num(o.dom);
-      var fee = num(o.hoaFee) || 0;
-      var per = String(o.hoaPeriod || '').toLowerCase();
-      o._hoaMonthly = !fee ? 0 : (per.indexOf('year') === 0 || per.indexOf('ann') === 0) ? fee / 12
-                    : (per.indexOf('quart') === 0) ? fee / 3 : fee;
+      // Yes/No only. Anything that is not a clear no counts as "there is one".
+      var a = String(o.assoc || '').trim().toLowerCase();
+      o._assoc = !a ? null : (a === 'n' || a === 'no' || a === 'none' || a === 'false' || a === '0') ? false : true;
       return o;
     }).filter(function(o){ return o.key; });
     return { listings: out };
@@ -449,8 +457,8 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     var note = document.getElementById('parseNote');
     if(res.error){ listings = []; note.textContent = res.error; return; }
     listings = res.listings;
-    var wanted = { year:'Yr Blt', taxes:'Annual Taxes', hoaFee:'HOA Fee',
-                   elem:'Elm School', acres:'Acres', sub:'Subdivision' };
+    var wanted = { year:'Yr Blt', taxes:'Annual Taxes', acres:'Acres',
+                   sub:'Subdivision', assoc:'Association (Y/N)' };
     var absent = Object.keys(wanted).filter(function(k){ return colsFound.indexOf(k) === -1; })
                        .map(function(k){ return wanted[k]; });
     note.innerHTML = esc(listings.length + (listings.length === 1 ? ' listing' : ' listings') +
@@ -536,11 +544,10 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
         var kv = [
           ['Year built', l.year || '—'],
           ['Lot', l._acres != null ? l._acres.toFixed(2) + ' ac' : '—'],
-          ['$/sq ft', l._psf != null ? '$' + l._psf.toFixed(0) : '—'],
+          ['HOA', l._assoc === null ? '—' : (l._assoc ? 'Yes' : 'No')],
           ['Taxes', l._taxes != null ? money(l._taxes) + '/yr' : '—'],
-          ['HOA', l._hoaMonthly ? money(l._hoaMonthly) + '/mo' : 'None'],
           ['Subdivision', l.sub || '—'],
-          ['Schools', [l.elem, l.mid, l.high].filter(Boolean).join(' · ') || '—'],
+          ['Sold', l._sold != null ? money(l._sold) + (l.soldDate ? ' · ' + l.soldDate : '') : '—'],
           ['Assessed', l.assessed ? money(num(l.assessed)) : '—']
         ];
         return '<div class="rp-fact">' +
@@ -552,7 +559,11 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
             '<div><b>' + (l._sqft != null ? l._sqft.toLocaleString() : '—') + '</b><span>Sq ft</span></div>' +
             '<div><b>' + (l._price != null ? '$' + Math.round(l._price/1000) + 'k' : '—') + '</b><span>Price</span></div>' +
           '</div>' +
-          '<div class="rp-kv"><dl>' + kv.map(function(p){
+          '<div class="rp-kv"><dl>' + kv.filter(function(p){
+            // A field the export does not carry says nothing. Leave it out
+            // rather than printing a dash next to a label.
+            return p[1] && p[1] !== '—';
+          }).map(function(p){
             return '<dt>' + esc(p[0]) + '</dt><dd>' + esc(p[1]) + '</dd>';
           }).join('') + '</dl></div>' +
           (l._dom != null ? '<div class="rp-agentonly">Agent only · ' + l._dom + ' days on market' +
@@ -569,20 +580,26 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       ['Beds',     function(l){ return l._beds; },   String, 'high'],
       ['Baths',    function(l){ return l._baths; },  bathLabel, 'high'],
       ['Sq ft',    function(l){ return l._sqft; },   function(n){ return n == null ? '—' : n.toLocaleString(); }, 'high'],
-      ['$/sq ft',  function(l){ return l._psf; },    function(n){ return n == null ? '—' : '$' + n.toFixed(0); }, 'low'],
       ['Year',     function(l){ return l._year; },   function(n){ return n == null ? '—' : String(n); }, 'high'],
       ['Lot (ac)', function(l){ return l._acres; },  function(n){ return n == null ? '—' : n.toFixed(2); }, 'high'],
       ['Taxes/yr', function(l){ return l._taxes; },  money, 'low'],
-      ['HOA/mo',   function(l){ return l._hoaMonthly; }, function(n){ return !n ? 'None' : money(n); }, 'low'],
+      // No "best" for these two: a lower sold price is not a better house, and
+      // an association is a preference, not a score.
+      ['Sold',     function(l){ return l._sold; },  money, null],
+      ['HOA',      function(l){ return l._assoc; }, function(v){ return v == null ? '—' : (v ? 'Yes' : 'No'); }, null],
       ['Days on mkt', function(l){ return l._dom; }, function(n){ return n == null ? '—' : String(n); }, 'low']
     ];
     var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s, i){
       return '<th>' + esc(s.raw.split(',')[0]) + '</th>';
     }).join('') + '</tr></thead>';
-    var body = '<tbody>' + rows.map(function(r){
+    // A row every listing is blank for says nothing. Drop it rather than
+    // printing a line of dashes - the export decides which rows exist.
+    var body = '<tbody>' + rows.filter(function(r){
+      return live.some(function(s){ var v = r[1](s.listing); return v != null && v !== ''; });
+    }).map(function(r){
       var vals = live.map(function(s){ return r[1](s.listing); });
       var real = vals.filter(function(v){ return v != null && v !== '' && !isNaN(v); }).map(Number);
-      var best = real.length < 2 ? null : (r[3] === 'low' ? Math.min.apply(null, real) : Math.max.apply(null, real));
+      var best = (!r[3] || real.length < 2) ? null : (r[3] === 'low' ? Math.min.apply(null, real) : Math.max.apply(null, real));
       return '<tr><td>' + r[0] + '</td>' + vals.map(function(v){
         var isBest = best != null && v != null && Number(v) === best;
         return '<td class="' + (isBest ? 'rp-best' : '') + '">' + esc(r[2](v)) + '</td>';
@@ -612,16 +629,16 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
       ['P &amp; I',    function(x){ return money(x.pi); }],
       ['Taxes',        function(x){ return money(x.tax); }],
       ['Insurance',    function(x){ return money(x.ins); }],
-      ['HOA',          function(x){ return x.hoa ? money(x.hoa) : '—'; }],
+      ['HOA',          function(x){ return x.assoc === null ? '—' : (x.assoc ? 'Yes — not included' : 'No'); }],
       ['<strong>Monthly</strong>', function(x){ return '<strong>' + money(x.total) + '</strong>'; }]
     ];
     var calc = live.map(function(s){
       var l = s.listing, price = l._price;
       var downAmt = price * down / 100, loan = price - downAmt;
       var pi = monthlyPI(loan, rate, yrs);
-      var tax = (l._taxes || 0) / 12, hoa = l._hoaMonthly || 0, insM = ins / 12;
-      return { price: price, downAmt: downAmt, loan: loan, pi: pi, tax: tax, ins: insM, hoa: hoa,
-               total: pi + tax + insM + hoa };
+      var tax = (l._taxes || 0) / 12, insM = ins / 12;
+      return { price: price, downAmt: downAmt, loan: loan, pi: pi, tax: tax, ins: insM,
+               assoc: l._assoc, total: pi + tax + insM };
     });
     var head = '<thead><tr><th>&nbsp;</th>' + live.map(function(s){
       return '<th>' + esc(s.raw.split(',')[0]) + '</th>';
@@ -636,8 +653,10 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     }).join('') + '</tbody>';
     document.getElementById('payTable').innerHTML = head + body;
     document.getElementById('payLegal').textContent =
-      'Estimate only. Principal and interest at ' + rate + '% over ' + yrs + ' years, plus the listing’s own tax figure, ' +
-      'the HOA fee converted to monthly, and insurance at $' + Math.round(ins).toLocaleString() + '/yr spread evenly. ' +
+      'Estimate only. Principal and interest at ' + rate + '% over ' + yrs + ' years, plus the ' +
+      'listing\u2019s own tax figure and insurance at $' + Math.round(ins).toLocaleString() + '/yr spread evenly. ' +
+      'Association dues are NOT included - what a fee covers varies too much between ' +
+      'communities for a number here to mean anything. '  +
       'No PMI, no escrow shortfall, no closing costs. Michael Hottman is a licensed broker, not a lender — a lender’s ' +
       'quote is the only number to act on.';
   }
