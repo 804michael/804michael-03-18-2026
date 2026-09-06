@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_17-21-0003                            ║
+  ║  SITE VERSION: 26.09.06_17-24-0004                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-21-0003    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-24-0004    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -351,7 +351,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-21-0003</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-24-0004</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -361,7 +361,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_17-21-0003';
+  const SITE_VERSION = '26.09.06_17-24-0004';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -823,6 +823,57 @@
     return null;
   }
 
+  // Taking the straight top N off a score-sorted list produces a monoculture.
+  // The first live scan returned a top 15 that was seven articles from one
+  // mortgage publisher, and all fifteen in the "money" cluster — four of them
+  // about reverse mortgages, which is a niche lending product rather than
+  // something the general public is asking about.
+  //
+  // The scores were not wrong; a ranked list is just the wrong shape for
+  // filling a catalog. This walks the candidates round-robin, best-first,
+  // taking one per source per pass and refusing to let any single source or
+  // cluster take more than a third of the batch. Quality still decides which
+  // item a source contributes; the spread decides how many it gets.
+  function pickDiverse(list, n) {
+    var bySource = {}, order = [];
+    list.forEach(function (c) {
+      if (!bySource[c.source]) { bySource[c.source] = []; order.push(c.source); }
+      bySource[c.source].push(c);
+    });
+
+    var capSource = Math.max(2, Math.ceil(n / 3));
+    var capCluster = Math.max(3, Math.ceil(n / 3));
+    var out = [], usedCluster = {}, usedSource = {};
+
+    // Best-first across sources: a source whose top item scores higher gets
+    // first pick, so pass one is the strongest item from each feed.
+    order.sort(function (a, b) { return bySource[b][0].score - bySource[a][0].score; });
+
+    for (var pass = 0; pass < 12 && out.length < n; pass++) {
+      for (var i = 0; i < order.length && out.length < n; i++) {
+        var src = order[i];
+        var item = bySource[src][pass];
+        if (!item) continue;
+        if ((usedSource[src] || 0) >= capSource) continue;
+        if ((usedCluster[item.cluster] || 0) >= capCluster) continue;
+        usedSource[src] = (usedSource[src] || 0) + 1;
+        usedCluster[item.cluster] = (usedCluster[item.cluster] || 0) + 1;
+        out.push(item);
+      }
+    }
+
+    // If the caps left the batch short (few sources answered, or everything
+    // landed in one cluster), top up by score rather than under-deliver.
+    if (out.length < n) {
+      var taken = {};
+      out.forEach(function (c) { taken[c.id] = 1; });
+      for (var j = 0; j < list.length && out.length < n; j++) {
+        if (!taken[list[j].id]) out.push(list[j]);
+      }
+    }
+    return out;
+  }
+
   function scan() {
     var btn = $('bd-scan');
     btn.disabled = true;
@@ -847,7 +898,7 @@
       var take = parseInt($('bd-take').value, 10) || 0;
       var fresh = (d.candidates || []).filter(function (c) { return !seen[c.url] && !have[c.id]; });
       var available = fresh.length;
-      if (take > 0) fresh = fresh.slice(0, take);
+      if (take > 0) fresh = pickDiverse(fresh, take);
 
       fresh.forEach(function (c) {
         STATE.ideas.push(c);
