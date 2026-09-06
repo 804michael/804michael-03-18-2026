@@ -95,8 +95,15 @@ const DEFAULT_SOURCES = [
   { id: 'michaelhottman',  label: 'michaelhottman.com',  type: 'own',   url: 'http://michaelhottman.com/feed/',           enabled: true },
 ];
 
-const CORPUS_WP_JSON = 'http://michaelhottman.com/wp-json/wp/v2/posts';
-const CORPUS_RSS = 'http://michaelhottman.com/feed/';
+// HTTPS first so this starts working by itself the day michaelhottman.com gets
+// a certificate. Today it has no TLS listener at all, and Cloudflare upgrades
+// outbound http:// subrequests, so BOTH of these currently fail from the
+// runtime with a 421 even though plain http works fine from a laptop. When
+// they fail the page falls back to /blog-corpus.json, a baked snapshot in the
+// repo. See the note in that file.
+const CORPUS_HOSTS = ['https://michaelhottman.com', 'http://michaelhottman.com'];
+const CORPUS_WP_PATH = '/wp-json/wp/v2/posts';
+const CORPUS_RSS_PATH = '/feed/';
 
 function json(data, status) {
   return new Response(JSON.stringify(data), {
@@ -525,38 +532,47 @@ async function runScan(sources) {
 // workbench simply has no corpus until the site gets a certificate.
 
 async function fetchCorpus() {
-  const out = [];
-  try {
-    for (let page = 1; page <= 3; page++) {
-      const url = CORPUS_WP_JSON + '?per_page=100&page=' + page + '&_fields=title,link,date';
-      const text = await fetchText(url, { raw: true });
-      const rows = JSON.parse(text);
-      if (!Array.isArray(rows) || !rows.length) break;
-      rows.forEach(function (r) {
-        const title = cleanText((r && r.title && r.title.rendered) || '');
-        const link = String((r && r.link) || '');
-        if (title && /^https?:\/\//i.test(link)) {
-          out.push({ title: title, url: link, date: toIsoDate(r.date), origin: 'michaelhottman.com' });
-        }
-      });
-      if (rows.length < 100) break;
+  const errors = [];
+
+  for (let h = 0; h < CORPUS_HOSTS.length; h++) {
+    const host = CORPUS_HOSTS[h];
+
+    // WordPress REST API: every post in two calls.
+    try {
+      const out = [];
+      for (let page = 1; page <= 3; page++) {
+        const url = host + CORPUS_WP_PATH + '?per_page=100&page=' + page + '&_fields=title,link,date';
+        const rows = JSON.parse(await fetchText(url, { raw: true }));
+        if (!Array.isArray(rows) || !rows.length) break;
+        rows.forEach(function (r) {
+          const title = cleanText((r && r.title && r.title.rendered) || '');
+          const link = String((r && r.link) || '');
+          if (title && /^https?:\/\//i.test(link)) {
+            out.push({ title: title, url: link, date: toIsoDate(r.date), origin: 'michaelhottman.com' });
+          }
+        });
+        if (rows.length < 100) break;
+      }
+      if (out.length) return { corpus: out, source: 'wp-json (' + host.split(':')[0] + ')' };
+    } catch (err) {
+      errors.push(host.split(':')[0] + ' wp-json: ' + String((err && err.message) || err));
     }
-    if (out.length) return { corpus: out, source: 'wp-json' };
-  } catch (err) {
-    // fall through to RSS
+
+    // RSS gives only the recent handful, but that is better than nothing.
+    try {
+      const out = [];
+      parseFeed(await fetchText(host + CORPUS_RSS_PATH)).forEach(function (it) {
+        out.push({ title: it.title, url: it.url, date: it.date, origin: 'michaelhottman.com' });
+      });
+      if (out.length) return { corpus: out, source: 'rss (' + host.split(':')[0] + ')' };
+    } catch (err) {
+      errors.push(host.split(':')[0] + ' rss: ' + String((err && err.message) || err));
+    }
   }
 
-  try {
-    const xml = await fetchText(CORPUS_RSS);
-    parseFeed(xml).forEach(function (it) {
-      out.push({ title: it.title, url: it.url, date: it.date, origin: 'michaelhottman.com' });
-    });
-    if (out.length) return { corpus: out, source: 'rss' };
-  } catch (err) {
-    return { corpus: [], source: 'none', error: String((err && err.message) || err) };
-  }
-
-  return { corpus: out, source: out.length ? 'rss' : 'none' };
+  // Nothing reachable. The page falls back to the baked /blog-corpus.json, so
+  // this is a degraded path rather than a failure — hence 200 and a reason.
+  return { corpus: [], source: 'none', error: errors.join(' | '), fallback: '/blog-corpus.json' };
 }
 
 // ── Handlers ───────────────────────────────────────────────────────────────

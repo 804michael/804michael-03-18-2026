@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_17-07-0001                            ║
+  ║  SITE VERSION: 26.09.06_17-19-0002                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-07-0001    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-19-0002    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -344,7 +344,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-07-0001</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-19-0002</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -354,7 +354,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_17-07-0001';
+  const SITE_VERSION = '26.09.06_17-19-0002';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -861,20 +861,34 @@
     btn.disabled = true;
     say('Pulling your published posts…');
 
-    fetch('/api/blog-scan?mode=corpus').then(function (r) { return r.json(); }).then(function (d) {
-      if (!d.corpus || !d.corpus.length) {
-        say('No posts came back' + (d.error ? ' (' + d.error + ')' : '') + '. The overlap check has nothing to compare against until this works.', true);
-        return;
-      }
-      // Replace rather than merge: this is a mirror of what is live, and a
-      // deleted post should disappear from the corpus too.
+    // Replace rather than merge: the corpus mirrors what is actually live, so
+    // a post deleted over there should stop blocking ideas over here.
+    function apply(list, how) {
       var mine = STATE.corpus.filter(function (c) { return c.origin !== 'michaelhottman.com'; });
-      STATE.corpus = mine.concat(d.corpus);
-      say(d.corpus.length + ' published posts synced from michaelhottman.com via ' + d.source + '. New ideas are now checked against all of them.');
+      STATE.corpus = mine.concat(list);
       save();
       render();
+      return list.length + ' published posts loaded ' + how + '. New ideas are now checked against all of them.';
+    }
+
+    // The live pull is preferred, but michaelhottman.com is HTTP-only and
+    // Cloudflare upgrades outbound subrequests to HTTPS, which that host does
+    // not answer — so from the deployed site this currently always fails with
+    // a 421. /blog-corpus.json is a snapshot committed to the repo for exactly
+    // that case. The live path stays first so this heals itself the day that
+    // site gets a certificate.
+    fetch('/api/blog-scan?mode=corpus').then(function (r) { return r.json(); }).then(function (d) {
+      if (d.corpus && d.corpus.length) {
+        say(apply(d.corpus, 'live from michaelhottman.com via ' + d.source));
+        return null;
+      }
+      return fetch('/blog-corpus.json').then(function (r) { return r.json(); }).then(function (snap) {
+        if (!snap || !snap.corpus || !snap.corpus.length) throw new Error('snapshot empty');
+        say(apply(snap.corpus, 'from the ' + snap.generated + ' snapshot') +
+          ' Live pull failed (' + (d.error || 'unreachable') + '), which is expected until michaelhottman.com has an SSL certificate.');
+      });
     }).catch(function (e) {
-      say('Could not reach the corpus: ' + (e && e.message || e), true);
+      say('Could not load the corpus: ' + (e && e.message || e) + '. The overlap check has nothing to compare against until this works.', true);
     }).then(function () { btn.disabled = false; });
   }
 

@@ -1,0 +1,679 @@
+{
+ "generated": "2026-09-06",
+ "note": "Baked snapshot of michaelhottman.com posts. Used only when /api/blog-scan?mode=corpus cannot reach that site - it is HTTP-only and Cloudflare upgrades outbound subrequests to HTTPS, which that host does not answer. Regenerate once it has a certificate.",
+ "count": 112,
+ "corpus": [
+  {
+   "title": "How AI Is Changing the Home Search — and How to Make It Work for You",
+   "url": "http://michaelhottman.com/how-ai-is-changing-the-home-search-and-how-to-make-it-work-for-you/",
+   "date": "2026-09-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "2026 Mid-Year Market Check-In: What the First Half of the Year Tells Us About Your Next Move",
+   "url": "http://michaelhottman.com/2026-mid-year-market-check-in-what-the-first-half-of-the-year-tells-us-about-your-next-move/",
+   "date": "2026-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What You Can Negotiate in a Home Purchase (That Most Buyers Don’t Realize)",
+   "url": "http://michaelhottman.com/what-you-can-negotiate-in-a-home-purchase-that-most-buyers-dont-realize/",
+   "date": "2026-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "House Hacking in 2026: What the Hype Got Wrong — and What Actually Works",
+   "url": "http://michaelhottman.com/house-hacking-in-2026-what-the-hype-got-wrong-and-what-actually-works/",
+   "date": "2026-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "2026 Home Design Trends: What’s In, What’s Out, and What Buyers Are Responding To",
+   "url": "http://michaelhottman.com/2026-home-design-trends-whats-in-whats-out-and-what-buyers-are-responding-to/",
+   "date": "2026-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Is Buying a Home Together Right for Your Family? Here’s How to Think It Through",
+   "url": "http://michaelhottman.com/is-buying-a-home-together-right-for-your-family-heres-how-to-think-it-through/",
+   "date": "2026-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What Actually Makes a Listing Stand Out in 2026",
+   "url": "http://michaelhottman.com/what-actually-makes-a-listing-stand-out-in-2026/",
+   "date": "2026-02-28",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The True Cost of Homeownership: What You Pay Beyond the Mortgage",
+   "url": "http://michaelhottman.com/the-true-cost-of-homeownership-what-you-pay-beyond-the-mortgage/",
+   "date": "2026-02-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "2026 Housing Market Forecast: Will the Market Find Its Footing?",
+   "url": "http://michaelhottman.com/2026-housing-market-forecast-will-the-market-find-its-footing/",
+   "date": "2025-12-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Planning Your 2026 Real Estate Moves: A Guide to the Best Buying and Selling Seasons",
+   "url": "http://michaelhottman.com/planning-your-2026-real-estate-moves-a-guide-to-the-best-buying-and-selling-seasons/",
+   "date": "2025-11-30",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Can You Really Trust Online Home Estimates?",
+   "url": "http://michaelhottman.com/can-you-really-trust-online-home-estimates/",
+   "date": "2025-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "How to Spot Real Estate Scams (and Protect Your Investment)",
+   "url": "http://michaelhottman.com/how-to-spot-real-estate-scams-and-protect-your-investment/",
+   "date": "2025-10-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What Makes a Great Long-Term Rental Property? A Checklist for Smart Investors",
+   "url": "http://michaelhottman.com/what-makes-a-great-long-term-rental-property-a-checklist-for-smart-investors/",
+   "date": "2025-09-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "10 Hidden Home Maintenance Tasks That Could Save You Thousands",
+   "url": "http://michaelhottman.com/10-hidden-home-maintenance-tasks-that-could-save-you-thousands/",
+   "date": "2025-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Real Estate Market Update: What Mid-Year Indicators Mean for Your Next Move",
+   "url": "http://michaelhottman.com/real-estate-market-update-what-mid-year-indicators-mean-for-your-next-move/",
+   "date": "2025-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Ready to Buy or Sell a Home? Here Are 5 Key Factors in Choosing the Right Agent",
+   "url": "http://michaelhottman.com/ready-to-buy-or-sell-a-home-here-are-5-key-factors-in-choosing-the-right-agent/",
+   "date": "2025-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Selling Your Home In 2025? Here’s What Buyers Want (And How To Deliver)",
+   "url": "http://michaelhottman.com/selling-your-home-in-2025-heres-what-buyers-want-and-how-to-deliver/",
+   "date": "2025-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Roadblocks To Affordable Homeownership (And Ways To Move Past Them)",
+   "url": "http://michaelhottman.com/5-roadblocks-to-affordable-homeownership-and-ways-to-move-past-them/",
+   "date": "2025-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Home-Related Tax Deductions",
+   "url": "http://michaelhottman.com/home-related-tax-deductions/",
+   "date": "2025-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "4 Home Improvement Projects with the Highest ROI",
+   "url": "http://michaelhottman.com/4-home-improvement-projects-with-the-highest-roi/",
+   "date": "2025-02-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The 2025 Real Estate Report",
+   "url": "http://michaelhottman.com/the-2025-real-estate-report/",
+   "date": "2025-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Tech the Halls: Smart Home Gadgets for a Stress-Free Holiday Season",
+   "url": "http://michaelhottman.com/tech-the-halls-smart-home-gadgets-for-a-stress-free-holiday-season/",
+   "date": "2024-12-09",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Multigenerational Home Buying: How to Find a Home That Fits Your Whole Family",
+   "url": "http://michaelhottman.com/multigenerational-home-buying-how-to-find-a-home-that-fits-your-whole-family/",
+   "date": "2024-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Stage to Sell: 7 Proven Steps to Attract Buyers and Boost Offers",
+   "url": "http://michaelhottman.com/stage-to-sell-7-proven-steps-to-attract-buyers-and-boost-offers/",
+   "date": "2024-09-30",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "7 Mistakes to Avoid When Hiring a Contractor",
+   "url": "http://michaelhottman.com/7-mistakes-to-avoid-when-hiring-a-contractor/",
+   "date": "2024-09-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 4 Factors to Consider When Choosing Your Mortgage",
+   "url": "http://michaelhottman.com/top-4-factors-to-consider-when-choosing-your-mortgage/",
+   "date": "2024-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "7 Weekend Projects to Boost Your Property Value",
+   "url": "http://michaelhottman.com/7-weekend-projects-to-boost-your-property-value/",
+   "date": "2024-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Mid-Year Market Update for 2024: What Buyers and Sellers Need to Know",
+   "url": "http://michaelhottman.com/mid-year-market-update-for-2024-what-buyers-and-sellers-need-to-know/",
+   "date": "2024-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The Ultimate Relocation Guide: From Finding a House to Feeling at Home",
+   "url": "http://michaelhottman.com/the-ultimate-relocation-guide-from-finding-a-house-to-feeling-at-home/",
+   "date": "2024-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "6 Strategies to Save on Home Insurance Premiums",
+   "url": "http://michaelhottman.com/6-strategies-to-save-on-home-insurance-premiums/",
+   "date": "2024-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Downsize Your Home, Rightsize Your Life: How to Choose the Ideal Smaller Home",
+   "url": "http://michaelhottman.com/downsize-your-home-rightsize-your-life-how-to-choose-the-ideal-smaller-home/",
+   "date": "2024-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Upgrade Your Home With These 2024 Design Trends",
+   "url": "http://michaelhottman.com/upgrade-your-home-with-these-2024-design-trends/",
+   "date": "2024-01-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Real Estate Market Forecast: Opportunities for Home Buyers and Sellers in 2024",
+   "url": "http://michaelhottman.com/real-estate-market-forecast-opportunities-for-home-buyers-and-sellers-in-2024/",
+   "date": "2024-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Celebrate Sustainably: 5 Ideas for an Eco-Friendly Holiday at Home",
+   "url": "http://michaelhottman.com/celebrate-sustainably-5-ideas-for-an-eco-friendly-holiday-at-home/",
+   "date": "2023-12-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "35 Tips to Furnish Your New Home for Less",
+   "url": "http://michaelhottman.com/35-tips-to-furnish-your-new-home-for-less/",
+   "date": "2023-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Income Properties Are Trending, But Is Landlord Life for You?",
+   "url": "http://michaelhottman.com/income-properties-are-trending-but-is-landlord-life-for-you/",
+   "date": "2023-09-29",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Renovate or Relocate? 3 Questions To Help You Decide",
+   "url": "http://michaelhottman.com/renovate-or-relocate-3-questions-to-help-you-decide/",
+   "date": "2023-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "National Real Estate Market Update for 2023",
+   "url": "http://michaelhottman.com/national-real-estate-market-update-for-2023/",
+   "date": "2023-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "How to Become a Homeowner on a First-Time Buyer’s Budget",
+   "url": "http://michaelhottman.com/how-to-become-a-homeowner-on-a-first-time-buyers-budget/",
+   "date": "2023-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Stress-Free Home Cleaning: 27 Practical Tactics for Busy Households",
+   "url": "http://michaelhottman.com/stress-free-home-cleaning-27-practical-tactics-for-busy-households/",
+   "date": "2023-03-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "My Home Didn’t Sell! Now What?",
+   "url": "http://michaelhottman.com/my-home-didnt-sell-now-what/",
+   "date": "2023-02-28",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 6 Home Design Trends To Watch in 2023",
+   "url": "http://michaelhottman.com/top-6-home-design-trends-to-watch-in-2023/",
+   "date": "2023-01-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "2023 Real Estate Market Outlook (And What It Means for You)",
+   "url": "http://michaelhottman.com/2023-real-estate-market-outlook-and-what-it-means-for-you/",
+   "date": "2023-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Home for the Holidays: How To Stretch Your Budget in a Season of Inflation",
+   "url": "http://michaelhottman.com/home-for-the-holidays-how-to-stretch-your-budget-in-a-season-of-inflation/",
+   "date": "2022-11-30",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "7 Tips to Maximize Your Home’s Sale Price",
+   "url": "http://michaelhottman.com/7-tips-to-maximize-your-homes-sale-price/",
+   "date": "2022-10-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Buy Now or Rent Longer? 5 Questions to Answer Before Purchasing Your First Home",
+   "url": "http://michaelhottman.com/buy-now-or-rent-longer-5-questions-to-answer-before-purchasing-your-first-home/",
+   "date": "2022-09-30",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "8 Strategies to Secure a Lower Mortgage Rate",
+   "url": "http://michaelhottman.com/8-strategies-to-secure-a-lower-mortgage-rate/",
+   "date": "2022-08-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "10 Pro Tips for a Smooth Home Move",
+   "url": "http://michaelhottman.com/10-pro-tips-for-a-smooth-home-move/",
+   "date": "2022-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "7 Costly Mistakes Home Sellers Make (And How to Avoid Them)",
+   "url": "http://michaelhottman.com/7-costly-mistakes-home-sellers-make-and-how-to-avoid-them/",
+   "date": "2022-06-30",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Higher Rates and Short Supply: The State of Real Estate in 2022",
+   "url": "http://michaelhottman.com/higher-rates-and-short-supply-the-state-of-real-estate-in-2022/",
+   "date": "2022-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Ways to Write a Winning Offer in Today’s Real Estate Market",
+   "url": "http://michaelhottman.com/5-ways-to-write-a-winning-offer-in-todays-real-estate-market/",
+   "date": "2022-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Seller’s Checklist: A Timeline to Prep Your Home for Sale",
+   "url": "http://michaelhottman.com/sellers-checklist-a-timeline-to-prep-your-home-for-sale/",
+   "date": "2022-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Hedge Against Inflation With These 3 Real Estate Investment Types",
+   "url": "http://michaelhottman.com/hedge-against-inflation-with-these-3-real-estate-investment-types/",
+   "date": "2022-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "New Build or Existing Home: Which One Is Right for You?",
+   "url": "http://michaelhottman.com/new-build-or-existing-home-which-one-is-right-for-you/",
+   "date": "2021-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Shut Down Home Intruders With These 7 Safety Strategies",
+   "url": "http://michaelhottman.com/shut-down-home-intruders-with-these-7-safety-strategies/",
+   "date": "2021-10-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Home Price Appreciation Is Skyrocketing in 2021. What About 2022?",
+   "url": "http://michaelhottman.com/market_outlook_2022/",
+   "date": "2021-09-15",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "9 Tips for Buying and Selling Your Home at the Same Time",
+   "url": "http://michaelhottman.com/9-tips-for-buying-and-selling-your-home-at-the-same-time/",
+   "date": "2021-09-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Factors That Reveal Where The Real Estate Market Is Really Headed",
+   "url": "http://michaelhottman.com/5-factors-that-reveal-where-the-real-estate-market-is-really-headed/",
+   "date": "2021-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "How to Bridge the Appraisal Gap in Today’s Real Estate Market",
+   "url": "http://michaelhottman.com/bridge-appraisal-gap-todays-real-estate-market/",
+   "date": "2021-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Could Rising Home Prices Impact Your Net Worth?",
+   "url": "http://michaelhottman.com/could-rising-home-prices-impact-your-net-worth/",
+   "date": "2021-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Finding a New Home for Your Next Stage of Life",
+   "url": "http://michaelhottman.com/finding-a-new-home-for-your-next-stage-of-life/",
+   "date": "2021-05-03",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Can I Buy or Sell a Home Without a Real Estate Agent?",
+   "url": "http://michaelhottman.com/can-i-buy-or-sell-a-home-without-a-real-estate-agent/",
+   "date": "2021-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Is the Real Estate Market Going to Crash?",
+   "url": "http://michaelhottman.com/is-the-real-estate-market-going-to-crash/",
+   "date": "2021-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Inspiring Home Design and Remodeling Trends for 2021",
+   "url": "http://michaelhottman.com/5-inspiring-home-design-remodeling-trends-2021/",
+   "date": "2021-02-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "New Year, New Home? Set Homeownership Goals Whether You’re Buying, Selling, or Staying Put",
+   "url": "http://michaelhottman.com/new-year-new-home-set-homeownership-goals-whether-youre-buying-selling-or-staying-put/",
+   "date": "2021-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "10 Ways to Give Back to Our Local Community This Holiday Season",
+   "url": "http://michaelhottman.com/10-ways-to-give-back-to-our-local-community-this-holiday-season/",
+   "date": "2020-12-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The New Normal: A Strong Housing Market Expected to Continue into 2021",
+   "url": "http://michaelhottman.com/the-new-normal-a-strong-housing-market-expected-to-continue-into-2021/",
+   "date": "2020-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Secrets Buyers and Sellers Must Know About Virtual Home Tours",
+   "url": "http://michaelhottman.com/5-secrets-buyers-and-sellers-must-know-about-virtual-home-tours/",
+   "date": "2020-10-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Move-Up vs. Second Home: Which One Is Right For You?",
+   "url": "http://michaelhottman.com/move-up-vs-second-home-which-one-is-right-for-you/",
+   "date": "2020-09-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Lowest Mortgage Rates in History: What It Means for Homeowners and Buyers",
+   "url": "http://michaelhottman.com/lowest-mortgage-rates-in-history-what-it-means-for-homeowners-and-buyers/",
+   "date": "2020-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Add Value To Your Home With These 9 DIY Improvements",
+   "url": "http://michaelhottman.com/add-value-to-your-home-with-these-9-diy-improvements/",
+   "date": "2020-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Is Now a Good Time to Buy or Sell Real Estate?",
+   "url": "http://michaelhottman.com/is-now-a-good-time-to-buy-or-sell-real-estate/",
+   "date": "2020-05-31",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "20 Ways to Save Money and Stretch Your Household Budget",
+   "url": "http://michaelhottman.com/20-ways-to-save-money-and-stretch-your-household-budget/",
+   "date": "2020-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "#StayHome: How to Create Functional Spaces in Your Home During the Coronavirus Outbreak",
+   "url": "http://michaelhottman.com/stayhome-how-to-create-functional-spaces-in-your-home-during-the-coronavirus-outbreak/",
+   "date": "2020-03-26",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 5 Home Design Trends for a New Decade",
+   "url": "http://michaelhottman.com/top-5-home-design-trends-for-a-new-decade/",
+   "date": "2020-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Take Advantage of Your Home Equity: A Homeowner’s Guide",
+   "url": "http://michaelhottman.com/take-advantage-of-your-home-equity-a-homeowners-guide/",
+   "date": "2020-02-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "2020 Outlook: Real Estate Market Forecast",
+   "url": "http://michaelhottman.com/2020-outlook-real-estate-market-forecast/",
+   "date": "2020-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Gifts and Gadgets for Every Room in the House",
+   "url": "http://michaelhottman.com/gifts-and-gadgets-for-every-room-in-the-house/",
+   "date": "2019-12-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Steps to Finding Your Next Home",
+   "url": "http://michaelhottman.com/5-steps-to-finding-your-next-home/",
+   "date": "2019-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Everything You Need to Know About iBuyers and the “Instant Cash Offer”",
+   "url": "http://michaelhottman.com/everything-you-need-to-know-about-ibuyers-and-the-instant-cash-offer/",
+   "date": "2019-10-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "National Snapshot: What’s Ahead for Real Estate",
+   "url": "http://michaelhottman.com/national-snapshot-whats-ahead-for-real-estate/",
+   "date": "2019-09-02",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Step Strategy for Downsizing Your Home",
+   "url": "http://michaelhottman.com/5-step-strategy-for-downsizing-your-home/",
+   "date": "2019-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Will Your Remodel Pay Off? The Best (and Worst) Ways to Spend Your Budget",
+   "url": "http://michaelhottman.com/will-your-remodel-pay-off-the-best-and-worst-ways-to-spend-your-budget/",
+   "date": "2019-07-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Serious About Selling? 5 Steps to Make Your Home the Best on the Block",
+   "url": "http://michaelhottman.com/serious-about-selling-5-steps-to-make-your-home-the-best-on-the-block/",
+   "date": "2019-06-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 6 Home Organization Upgrades that “Spark Joy” for Buyers",
+   "url": "http://michaelhottman.com/top-6-home-organization-upgrades-that-spark-joy-for-buyers/",
+   "date": "2019-05-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 10 Myths That Trip Up First-Time Home Buyers",
+   "url": "http://michaelhottman.com/top-10-myths-that-trip-up-first-time-home-buyers/",
+   "date": "2019-04-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What’s Your Home Actually Worth? Discover What Buyers Will Pay in Today’s Market",
+   "url": "http://michaelhottman.com/whats-your-home-actually-worth-discover-what-buyers-will-pay-in-todays-market/",
+   "date": "2019-03-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 8 Home Design and Remodeling Trends for 2019",
+   "url": "http://michaelhottman.com/top-8-home-design-and-remodeling-trends-for-2019/",
+   "date": "2019-02-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What’s ahead for Real Estate in 2019?",
+   "url": "http://michaelhottman.com/whats-ahead-for-real-estate-in-2019/",
+   "date": "2019-01-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "9 Ways to Share the Spirit of the Season—Starting From Home",
+   "url": "http://michaelhottman.com/9-ways-to-share-the-spirit-of-the-season-starting-from-home/",
+   "date": "2018-12-05",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "‘Tis the Season: 5 Reasons Why Winter is a Great Time to Buy or Sell a Home",
+   "url": "http://michaelhottman.com/tis-the-season-5-reasons-why-winter-is-a-great-time-to-buy-or-sell-a-home/",
+   "date": "2018-11-07",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "“How’s the Market?” What’s Ahead for Real Estate",
+   "url": "http://michaelhottman.com/hows-the-market-whats-ahead-for-real-estate/",
+   "date": "2018-10-04",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Are You Covered? A Homeowner’s Insurance Guide",
+   "url": "http://michaelhottman.com/are-you-covered-a-homeowners-insurance-guide/",
+   "date": "2018-09-05",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Renters for a Weekend or a While: What’s the Best Use of Your Investment Property?",
+   "url": "http://michaelhottman.com/renters-for-a-weekend-or-a-while-whats-the-best-use-of-your-investment-property/",
+   "date": "2018-08-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "How to Avoid the Top 8 Home Inspection Mistakes",
+   "url": "http://michaelhottman.com/how-to-avoid-the-top-8-home-inspection-mistakes/",
+   "date": "2018-07-04",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Real Estate Relocation Guide: 7 Steps to a Seamless Move",
+   "url": "http://michaelhottman.com/real-estate-relocation-guide-7-steps-to-a-seamless-move/",
+   "date": "2018-06-06",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "10 Staging Secrets From the Pros for a Quick Home Sale at Top Dollar",
+   "url": "http://michaelhottman.com/10-staging-secrets-from-the-pros-for-a-quick-home-sale-at-top-dollar/",
+   "date": "2018-05-02",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "HOUSE CARE CALENDAR: A Seasonal Guide to Maintaining Your Home",
+   "url": "http://michaelhottman.com/house-care-calendar-a-seasonal-guide-to-maintaining-your-home/",
+   "date": "2018-04-04",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The Home Buyer’s Guide to Getting Mortgage Ready",
+   "url": "http://michaelhottman.com/the-home-buyers-guide-to-getting-mortgage-ready/",
+   "date": "2018-03-07",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Home Design Trends to Watch in 2018",
+   "url": "http://michaelhottman.com/home-design-trends-to-watch-in-2018/",
+   "date": "2018-02-07",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Real Estate 2018: What to Expect",
+   "url": "http://michaelhottman.com/real-estate-2018-what-to-expect/",
+   "date": "2018-01-03",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "20 Home Gadget Gift Ideas to Fit Any Budget",
+   "url": "http://michaelhottman.com/20-home-gadget-gift-ideas-to-fit-any-budget/",
+   "date": "2017-12-06",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Welcome Home: 10 Tips to Turn Your Neighborhood Into a Hometown Haven",
+   "url": "http://michaelhottman.com/welcome-home-10-tips-to-turn-your-neighborhood-into-a-hometown-haven/",
+   "date": "2017-11-01",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Why Real Estate Investing Makes (Dollars and) Sense",
+   "url": "http://michaelhottman.com/why-real-estate-investing-makes-dollars-and-sense/",
+   "date": "2017-10-04",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The Consumer’s Guide to Hiring an Amazing Real Estate Agent",
+   "url": "http://michaelhottman.com/the-consumers-guide-to-hiring-an-amazing-real-estate-agent/",
+   "date": "2017-09-06",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 12 Apps for Homeowners and Renters",
+   "url": "http://michaelhottman.com/top-12-apps-for-homeowners-and-renters/",
+   "date": "2017-08-02",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Real Home Value Calculator: Assessed Value vs Market Value",
+   "url": "http://michaelhottman.com/real-home-value-calculator-assessed-value-vs-market-value/",
+   "date": "2017-07-05",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "What’s Your Home Buying Power?",
+   "url": "http://michaelhottman.com/whats-your-home-buying-power/",
+   "date": "2017-06-07",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Top 5 Home Design Trends of 2017",
+   "url": "http://michaelhottman.com/top-5-home-design-trends-of-2017/",
+   "date": "2017-05-03",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "5 Reasons to Sell Before the Selling Season Picks Up",
+   "url": "http://michaelhottman.com/5-reasons-to-sell-before-the-selling-season-picks-up/",
+   "date": "2017-04-28",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "The Compound Effect: Building Your Household’s Wealth",
+   "url": "http://michaelhottman.com/the-compound-effect-building-your-households-wealth/",
+   "date": "2017-04-28",
+   "origin": "michaelhottman.com"
+  },
+  {
+   "title": "Increase Your Home’s Value Up to 28% with These 5 Tips",
+   "url": "http://michaelhottman.com/increase-your-homes-value-up-to-28-with-these-5-tips/",
+   "date": "2017-04-28",
+   "origin": "michaelhottman.com"
+  }
+ ]
+}
