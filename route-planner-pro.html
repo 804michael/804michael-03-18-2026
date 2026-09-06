@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_14-24-0005                            ║
+  ║  SITE VERSION: 26.09.06_16-20-0006                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-24-0005    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_16-20-0006    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Update the version string in THREE places every edit:        ║
@@ -154,6 +154,24 @@
   .er-slider input[type=range]{width:100%;accent-color:var(--red)}
   .er-check{display:flex;align-items:center;gap:8px;font-size:.92rem;margin:4px 0 8px}
   .er-check input{width:17px;height:17px;accent-color:var(--red);flex:0 0 auto}
+  /* The rail sits beside the list, and a marker is dragged to the gap it
+     should break at. Absolute positioning against a relative rail means the
+     handle can land between two rows rather than being stuck on one. */
+  .er-split{display:flex;gap:10px;align-items:stretch;margin-top:14px}
+  .er-split[hidden]{display:none}
+  .er-rail{position:relative;flex:0 0 30px;border-radius:999px;background:var(--gray-light);border:1px solid var(--gray-mid);touch-action:none}
+  .er-mark{position:absolute;left:50%;width:26px;height:26px;margin-left:-13px;margin-top:-13px;border-radius:50%;background:var(--red);color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.8rem;cursor:grab;touch-action:none;user-select:none;z-index:2}
+  .er-mark:active,.er-mark.dragging{cursor:grabbing;transform:scale(1.15)}
+  .er-mark-x{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:#fff;color:var(--red);border:1.5px solid var(--red);font-size:.7rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
+  .er-list{flex:1 1 auto;min-width:0}
+  .er-stop{display:flex;align-items:center;gap:9px;padding:7px 10px;border-left:4px solid transparent;font-size:.92rem;border-bottom:1px solid var(--gray-light)}
+  .er-stop:last-child{border-bottom:0}
+  .er-stop i{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--gray-light);border:1px solid var(--gray-mid);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.76rem;font-style:normal}
+  .er-stop span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* The break itself, drawn across the list so the grouping is readable
+     without tracing the rail. */
+  .er-break{display:flex;align-items:center;gap:9px;padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+  .er-break::after{content:"";flex:1 1 auto;height:2px;background:var(--red);opacity:.35}
   .er-runs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px}
   .er-run{border:1.5px solid var(--gray-mid);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
   .er-run-head{background:var(--black);color:#fff;padding:10px 13px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -177,7 +195,7 @@
   .rp-rate label{flex:1 1 auto;min-width:0;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rp-rate input{flex:0 0 74px;width:74px;padding:5px 7px;border:1.5px solid var(--gray-mid);border-radius:7px;font-size:.9rem;text-align:right}
   .rp-rate input:focus{outline:none;border-color:var(--red)}
-  .rp-legal{font-size:.78rem
+  .rp-legal{font-size:.78rem;color:var(--gray-muted);line-height:1.6;margin-top:16px}
 
   footer{background:var(--black);color:#fff;padding:26px 20px}
   .ft-in{max-width:1180px;margin:0 auto;text-align:center}
@@ -277,32 +295,35 @@
 
   <div class="rp-card" id="errandCard">
     <h2><span class="rp-step">E</span>Errand runs</h2>
-    <p class="rp-hint">A different job from a home tour: twenty-odd stops, no client, and Google will not take them in one link. Google Maps accepts <strong>nine waypoints</strong> per link, which is exactly why the planner caps a tour at ten stops. Splitting an optimised order into runs is how you get past that without giving up the order.</p>
-    <textarea class="rp-paste" id="errBox" spellcheck="false" style="min-height:150px" placeholder="One address per line, in the order you want to drive them."></textarea>
+    <p class="rp-hint">A different job from a home tour: twenty-odd stops, no client. Google Maps accepts <strong>nine waypoints</strong> per link &mdash; which is exactly why the planner caps a tour at ten stops &mdash; so a long day has to be handed over as several links. Paste the stops, then <strong>drag the markers on the rail</strong> to decide where each run ends. Segments do not have to be the same size.</p>
+    <textarea class="rp-paste" id="errBox" spellcheck="false" style="min-height:110px" placeholder="One address per line, in the order you want to drive them."></textarea>
     <div class="rp-row">
       <button type="button" class="btn btn-out" id="errSample">Load a 22-stop sample</button>
+      <button type="button" class="btn btn-red" id="errAddSeg">+ Add segment</button>
+      <button type="button" class="btn btn-out" id="errEven">Even split</button>
       <span class="rp-hint" id="errCount" style="margin:0"></span>
     </div>
 
     <div class="er-controls">
-      <div class="er-slider">
-        <label for="errPer">Stops per run <b id="errPerOut">6</b></label>
-        <input type="range" id="errPer" min="2" max="10" value="6">
-      </div>
       <div class="rp-field" style="flex:0 1 120px"><label for="errStart">Start</label><input type="time" id="errStart" value="09:00"></div>
       <div class="rp-field" style="flex:0 1 110px"><label for="errDwell">Min per stop</label><input type="number" id="errDwell" value="15" min="0" max="180"></div>
       <div class="rp-field" style="flex:0 1 110px"><label for="errDrive">Min between</label><input type="number" id="errDrive" value="10" min="0" max="120"></div>
+      <label class="er-check" style="flex:1 1 220px"><input type="checkbox" id="errBaseOn"> Start and end every run at one place</label>
     </div>
-
-    <label class="er-check"><input type="checkbox" id="errBaseOn"> Start and end every run at one place</label>
     <input type="text" class="rp-mpick" id="errBase" style="width:100%;padding:8px 10px" placeholder="Home or office address" disabled>
     <p class="er-warn" id="errWarn" hidden></p>
 
+    <div class="er-split" id="errSplit" hidden>
+      <div class="er-rail" id="errRail"></div>
+      <div class="er-list" id="errList"></div>
+    </div>
+
     <div class="er-runs" id="errRuns"></div>
 
-    <p class="rp-note"><strong>Where the split belongs.</strong> After optimising, not before, and as contiguous chunks of the optimised order &mdash; a good route does not jump around, so a slice of one is already geographically tidy. The alternative (cluster first, optimise each cluster) only wins when the runs are <em>separate trips on different days</em> that each start from home. If that becomes the real use, the base toggle above is the switch that should trigger it.</p>
-    <p class="rp-note"><strong>What this prototype does not do.</strong> It groups the order you give it. The optimiser lives in the planner and already works &mdash; this is only the half that is new, so the two can be judged separately.</p>
+    <p class="rp-note"><strong>Where the split belongs.</strong> After optimising, not before. A good route does not jump around, so any slice of one is already geographically tidy &mdash; which is why the markers can sit anywhere and every segment stays sensible. The alternative (cluster first, optimise each cluster) only wins when the runs are <em>separate trips on different days</em> that each start from home; the base toggle above is the switch that should trigger that if it becomes the real use.</p>
+    <p class="rp-note"><strong>What this prototype does not do.</strong> It groups the order you give it. The optimiser lives in the planner and already works, so the two can be judged separately. In the planner these rows would be the stop rows you already have, with the rail running down beside them.</p>
   </div>
+
 
   <div class="rp-card">
     <h2>Read me before this goes anywhere near a client</h2>
@@ -330,7 +351,7 @@
 <script>
 // ⚠ AI: update SITE_VERSION + the top comment's SITE VERSION line + the visible
 // version line on every edit.
-const SITE_VERSION = '26.09.06_14-24-0005';
+const SITE_VERSION = '26.09.06_16-20-0006';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date().getFullYear(); });
 
@@ -888,86 +909,201 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
     'Office, 9211 Forest Hill Ave, Richmond, VA'
   ].join('\n');
 
+  var MAX_ERR = 40;
   var errBox = document.getElementById('errBox');
-  var errPer = document.getElementById('errPer');
   var errBaseOn = document.getElementById('errBaseOn');
   var errBase = document.getElementById('errBase');
+  var errRail = document.getElementById('errRail');
+  var errList = document.getElementById('errList');
+
+  // A break BEFORE index i. Sorted, unique, always 1..n-1 - a break before the
+  // first stop or after the last one would make an empty run.
+  var breaks = [];
+  var SEG_COLORS = ['#DA291C','#1F6FB2','#1a7a3c','#8E44AD','#E8871E','#00897B','#C2185B','#6D4C41'];
 
   function errStops(){
-    return errBox.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean).slice(0, 60);
+    return errBox.value.split('\n').map(function(l){ return l.trim(); })
+      .filter(Boolean).slice(0, MAX_ERR);
   }
-  function chunk(arr, n){
-    var out = [];
-    for(var i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+  function clampBreaks(n){
+    breaks = breaks.filter(function(b){ return b >= 1 && b <= n - 1; })
+                   .filter(function(b, i, a){ return a.indexOf(b) === i; })
+                   .sort(function(x, y){ return x - y; });
+  }
+  function segments(all){
+    var out = [], from = 0;
+    breaks.concat([all.length]).forEach(function(to){
+      if(to > from) out.push({ from: from, to: to, stops: all.slice(from, to) });
+      from = to;
+    });
     return out;
+  }
+  // A new marker lands in the middle of whichever segment is longest, which is
+  // the split a person would have made by hand anyway.
+  function addBreak(all){
+    var segs = segments(all);
+    if(!segs.length) return;
+    segs.sort(function(a, b){ return (b.to - b.from) - (a.to - a.from); });
+    var big = segs[0];
+    if(big.to - big.from < 2) return;
+    breaks.push(big.from + Math.ceil((big.to - big.from) / 2));
+    clampBreaks(all.length);
+  }
+  function evenSplit(all, per){
+    breaks = [];
+    for(var i = per; i < all.length; i += per) breaks.push(i);
+    clampBreaks(all.length);
   }
   function hhmm(mins){
     var h = Math.floor(mins / 60) % 24, m = Math.round(mins % 60);
     var ap = h < 12 ? 'a' : 'p', h12 = h % 12; if(h12 === 0) h12 = 12;
     return h12 + ':' + (m < 10 ? '0' : '') + m + ap;
   }
-  // Origin is left off when there is no base, so the phone starts the run from
-  // wherever it actually is - which for the second run of the day is right.
+  // Origin is omitted without a base, so the phone starts the run from wherever
+  // it actually is - which for the second run of the day is the right answer.
   function runUrl(stops, base){
-    var pts = base ? [base].concat(stops).concat([base]) : stops.slice();
-    var dest = pts[pts.length - 1];
-    var mid = pts.slice(base ? 0 : 0, pts.length - 1);
+    if(!stops.length) return '#';
+    var dest = base ? base : stops[stops.length - 1];
+    var mid = base ? stops.slice() : stops.slice(0, -1);
     var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest) + '&travelmode=driving';
-    if(base) { url += '&origin=' + encodeURIComponent(base); mid = stops.slice(); }
-    else { mid = stops.slice(0, -1); }
+    if(base) url += '&origin=' + encodeURIComponent(base);
     if(mid.length) url += '&waypoints=' + mid.map(encodeURIComponent).join('%7C');
     return url;
   }
 
   function renderErrands(){
     var all = errStops();
-    var per = Number(errPer.value);
+    clampBreaks(all.length);
     var base = errBaseOn.checked ? errBase.value.trim() : '';
-    document.getElementById('errPerOut').textContent = per;
-    var groups = chunk(all, per);
-    document.getElementById('errCount').textContent = all.length
-      ? all.length + ' stops \u00b7 ' + groups.length + (groups.length === 1 ? ' run' : ' runs') : '';
+    var segs = segments(all);
 
-    // Nine waypoints is Google's ceiling. With a base at both ends every stop
-    // in the run is a waypoint, so the usable size drops by one.
+    document.getElementById('errSplit').hidden = all.length < 2;
+    document.getElementById('errCount').textContent = all.length
+      ? all.length + ' stops · ' + segs.length + (segs.length === 1 ? ' run' : ' runs') : '';
+
+    // Nine waypoints is Google's ceiling. A base at both ends makes every stop
+    // in the run a waypoint, so the usable size drops by one.
     var cap = base ? 9 : 10;
+    var over = segs.filter(function(g){ return g.stops.length > cap; });
     var warn = document.getElementById('errWarn');
-    if(per > cap){
-      warn.textContent = 'Google takes nine waypoints per link. With a base at both ends that leaves room for ' + cap +
-        ' stops a run, so these links will be truncated. Slide it down to ' + cap + '.';
+    if(over.length){
+      warn.textContent = 'Google takes nine waypoints per link, so a run can hold ' + cap +
+        ' stops' + (base ? ' with a base at both ends' : '') + '. ' + over.length +
+        (over.length === 1 ? ' run is' : ' runs are') + ' over that and would be truncated - add a segment or drag a marker up.';
       warn.hidden = false;
     } else warn.hidden = true;
 
+    // ── the list, with the breaks drawn into it ──
+    var segOf = [];
+    segs.forEach(function(g, gi){ for(var i = g.from; i < g.to; i++) segOf[i] = gi; });
+    errList.innerHTML = all.map(function(a, i){
+      var brk = breaks.indexOf(i) !== -1
+        ? '<div class="er-break" data-gap="' + i + '">Run ' + (segOf[i] + 1) + '</div>' : '';
+      return brk + '<div class="er-stop" data-i="' + i + '" style="border-left-color:' +
+        SEG_COLORS[segOf[i] % SEG_COLORS.length] + '"><i>' + (i + 1) + '</i><span>' + esc(a) + '</span></div>';
+    }).join('');
+
+    placeMarks();
+
+    // ── run cards ──
     var startMin = (function(){
       var m = /^(\d{1,2}):(\d{2})$/.exec(document.getElementById('errStart').value || '');
       return m ? Number(m[1]) * 60 + Number(m[2]) : 9 * 60;
     })();
     var dwell = num(document.getElementById('errDwell').value) || 0;
     var drive = num(document.getElementById('errDrive').value) || 0;
+    var clock = startMin;
 
-    var clock = startMin, n = 0;
-    document.getElementById('errRuns').innerHTML = groups.map(function(g, gi){
+    document.getElementById('errRuns').innerHTML = segs.map(function(g, gi){
       var from = clock;
-      var body = g.map(function(a){
-        n++;
+      var body = g.stops.map(function(a, k){
         clock += dwell + drive;
-        return '<li><i>' + n + '</i><span>' + esc(a) + '</span></li>';
+        return '<li><i>' + (g.from + k + 1) + '</i><span>' + esc(a) + '</span></li>';
       }).join('');
       var to = clock - drive;
-      var baseLi = base ? '<li class="base"><i>\u2302</i><span>' + esc(base) + '</span></li>' : '';
-      return '<div class="er-run">' +
-        '<div class="er-run-head"><b>Run ' + (gi + 1) + ' of ' + groups.length + '</b>' +
-          '<span>' + hhmm(from) + ' \u2013 ' + hhmm(to) + '</span></div>' +
+      var baseLi = base ? '<li class="base"><i>⌂</i><span>' + esc(base) + '</span></li>' : '';
+      var col = SEG_COLORS[gi % SEG_COLORS.length];
+      return '<div class="er-run" style="border-color:' + col + '">' +
+        '<div class="er-run-head" style="background:' + col + '"><b>Run ' + (gi + 1) + ' of ' + segs.length + '</b>' +
+          '<span>' + hhmm(from) + ' – ' + hhmm(to) + '</span></div>' +
         '<ol>' + baseLi + body + baseLi + '</ol>' +
         '<div class="er-run-foot">' +
-          '<a class="btn btn-red" target="_blank" rel="noopener" href="' + esc(runUrl(g, base)) + '">Open in Maps</a>' +
+          '<a class="btn btn-red" target="_blank" rel="noopener" href="' + esc(runUrl(g.stops, base)) + '">Open in Maps</a>' +
           '<button type="button" class="btn btn-out" data-copy="' + gi + '">Copy link</button>' +
         '</div></div>';
     }).join('');
-
-    // Stash the urls for the copy buttons rather than re-deriving them.
-    window.__errUrls = groups.map(function(g){ return runUrl(g, base); });
+    window.__errUrls = segs.map(function(g){ return runUrl(g.stops, base); });
   }
+
+  // ── the rail ───────────────────────────────────────────────────────────
+  // Handles are positioned against the rail from the real row geometry, so they
+  // land in the gap between two rows whatever height those rows happen to be.
+  function gapOffsets(){
+    var rows = [].slice.call(errList.querySelectorAll('.er-stop'));
+    var top = errList.getBoundingClientRect().top;
+    return rows.map(function(r){ return r.getBoundingClientRect().top - top; })
+               .concat([errList.getBoundingClientRect().height]);
+  }
+  function placeMarks(){
+    var offs = gapOffsets();
+    errRail.style.minHeight = errList.getBoundingClientRect().height + 'px';
+    errRail.innerHTML = breaks.map(function(b, k){
+      return '<button type="button" class="er-mark" data-k="' + k + '" style="top:' + (offs[b] || 0) + 'px" ' +
+        'title="Drag to move this break" aria-label="Break before stop ' + (b + 1) + '">' + (k + 2) +
+        '<span class="er-mark-x" data-del="' + k + '">' + '\u00d7' + '</span></button>';
+    }).join('');
+  }
+  function nearestGap(y){
+    var offs = gapOffsets();
+    var best = 1, bestD = Infinity;
+    for(var i = 1; i < offs.length - 1 + 1 && i < offs.length; i++){
+      var d = Math.abs(offs[i] - y);
+      if(d < bestD){ bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  (function railDrag(){
+    var el = null, k = -1;
+    function move(ev){
+      if(!el) return;
+      ev.preventDefault();
+      var y = ev.clientY - errList.getBoundingClientRect().top;
+      var g = nearestGap(y);
+      if(g !== breaks[k] && breaks.indexOf(g) === -1){
+        breaks[k] = g;
+        breaks.sort(function(a, b){ return a - b; });
+        k = breaks.indexOf(g);
+        renderErrands();
+        el = errRail.querySelector('[data-k="' + k + '"]');
+        if(el) el.classList.add('dragging');
+      }
+    }
+    function end(){
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', end, true);
+      document.removeEventListener('pointercancel', end, true);
+      if(el) el.classList.remove('dragging');
+      el = null; k = -1;
+      try{ if(errRail.hasPointerCapture(pid)) errRail.releasePointerCapture(pid); }catch(e){}
+    }
+    var pid = null;
+    errRail.addEventListener('pointerdown', function(ev){
+      var del = ev.target.closest('[data-del]');
+      if(del){ breaks.splice(Number(del.dataset.del), 1); renderErrands(); return; }
+      var m = ev.target.closest('.er-mark');
+      if(!m) return;
+      ev.preventDefault();
+      el = m; k = Number(m.dataset.k); pid = ev.pointerId;
+      m.classList.add('dragging');
+      // Capture on the RAIL, not the handle: the handle is rebuilt on every
+      // move, and capture dies with the element it was taken on.
+      try{ errRail.setPointerCapture(pid); }catch(e){}
+      document.addEventListener('pointermove', move, {passive:false});
+      document.addEventListener('pointerup', end, true);
+      document.addEventListener('pointercancel', end, true);
+    });
+  })();
 
   document.getElementById('errRuns').addEventListener('click', function(e){
     var b = e.target.closest('[data-copy]');
@@ -981,16 +1117,28 @@ document.querySelectorAll('.yr').forEach(function(el){ el.textContent = new Date
   });
 
   document.getElementById('errSample').addEventListener('click', function(){
-    errBox.value = ERR_SAMPLE; renderErrands();
+    errBox.value = ERR_SAMPLE;
+    evenSplit(errStops(), 6);
+    renderErrands();
+  });
+  document.getElementById('errAddSeg').addEventListener('click', function(){
+    addBreak(errStops()); renderErrands();
+  });
+  document.getElementById('errEven').addEventListener('click', function(){
+    var all = errStops();
+    var n = Math.max(1, segments(all).length);
+    evenSplit(all, Math.ceil(all.length / n));
+    renderErrands();
   });
   errBaseOn.addEventListener('change', function(){
     errBase.disabled = !errBaseOn.checked;
     if(errBaseOn.checked && !errBase.value) errBase.value = '9211 Forest Hill Ave, Richmond, VA';
     renderErrands();
   });
-  ['errBox','errPer','errStart','errDwell','errDrive','errBase'].forEach(function(id){
+  ['errBox','errStart','errDwell','errDrive','errBase'].forEach(function(id){
     document.getElementById(id).addEventListener('input', renderErrands);
   });
+  window.addEventListener('resize', function(){ if(errStops().length > 1) placeMarks(); });
 })();
 </script>
 </body>

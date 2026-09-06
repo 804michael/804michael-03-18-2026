@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_14-24-0072                            ║
+  ║  SITE VERSION: 26.09.06_16-20-0073                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_14-24-0072    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_16-20-0073    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -804,7 +804,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_14-24-0072</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_16-20-0073</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -815,7 +815,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_14-24-0072';
+  const SITE_VERSION = '26.09.06_16-20-0073';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -1386,7 +1386,15 @@
     document.getElementById('dev-modal-remove').addEventListener('click', function(){
       if(!editingId) return;
       var wasAdded = (state.added||[]).some(function(c){ return c.id === editingId; });
-      if(!confirm(wasAdded ? 'Delete this card?' : 'Hide this card from the hub?\n\nIt stays in the page source — ask Claude to bring it back.')) return;
+      // Hiding is reversible - the card is still in the page source. Deleting a
+      // card you added is not, so it asks twice and the second question says
+      // plainly that there is no undo.
+      if(wasAdded){
+        if(!confirm('Delete this card?')) return;
+        if(!confirm('Are you sure you want to delete?\n\nThis is not reversable.')) return;
+      } else if(!confirm('Hide this card from the hub?\n\nIt stays in the page source - ask Claude to bring it back.')){
+        return;
+      }
       if(wasAdded){ state.added = state.added.filter(function(c){ return c.id !== editingId; }); }
       else { state.hidden = (state.hidden||[]).concat([editingId]); }
       var el = cardById(editingId);

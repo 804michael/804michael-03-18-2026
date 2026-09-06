@@ -1565,3 +1565,76 @@ check each one against the locality before it reaches a client. A town rate (Ash
 sits inside Hanover) stacks on the county's, which is exactly the kind of thing the
 seeded number will get wrong. Estimated figures are marked "est." in the table and the
 legal line says the basis in full.
+
+## Seventeenth pass — SVG logos, a stylesheet that stopped, drag-to-split segments (2026-09-06)
+
+### STANDING RULE: after any layout change, confirm the logo actually rendered
+
+Michael reported the wordmark on `route-planner-pro` "blown up and missing parts". It
+was rendering at **985×298** instead of 86×26. Two separate faults, and the second is
+the one that matters:
+
+1. **The SVG had no intrinsic size.** `804michael-wordmark-white.svg` carried only a
+   `viewBox`, so an `<img>` pointing at it has no natural dimensions and the browser
+   falls back to a ~300px default; `height:26px; width:auto` then has nothing sensible
+   to compute a width from. Both wordmarks now carry explicit `width`/`height`
+   attributes alongside the viewBox, which costs nothing and makes the file safe to drop
+   into any page — inline, `<img>`, or a CSS background. **Do this to every logo SVG
+   added to the site.**
+
+2. **The page's own CSS had silently stopped parsing.** An earlier edit of mine
+   replaced `.rp-legal{...}` with a block ending `.rp-legal{font-size:.78rem` — the
+   declaration was never closed, so the browser threw away **every rule after it**: the
+   footer sizing, the logo sizing, and the whole mobile media query. Nothing is logged.
+   The page just quietly loses its styles from that point down.
+
+**The check, which is cheap and catches it every time** — count braces in each `<style>`
+block after stripping comments and quoted strings; unbalanced means a rule was
+truncated and everything below it is dead:
+
+```js
+const c = css.replace(/\/\*[\s\S]*?\*\//g,'').replace(/"(?:[^"\]|\.)*"/g,'""').replace(/'(?:[^'\]|\.)*'/g,"''");
+(c.match(/\{/g)||[]).length === (c.match(/\}/g)||[]).length
+```
+
+And in the browser, the direct version: `document.styleSheets[0].cssRules.length`, plus
+`getBoundingClientRect()` on the logo. If a rule you just wrote is missing from
+`cssRules`, parsing died above it.
+
+### The NUL bytes: root cause found
+
+Yesterday's note said 130 stray bytes were stripped but not where they came from. They
+came from **`─` (U+2500), the box-drawing rule in my own comment banners.** In UTF-8 it
+is `E2 94 80`; written through `fs.writeFileSync(f, text, 'latin1')` every character is
+truncated to its low byte, so `─` becomes `0x00`. Same mechanism turned `’` into `0x19`.
+
+So the rule from the last pass has a concrete cause and a concrete fix: when writing
+through a latin1 read, **every** non-ASCII character must be its UTF-8 bytes —
+`'\u00E2\u0094\u0080'` for `─`, `'\u00E2\u0080\u0094'` for `—`, `'\u00E2\u0080\u0099'`
+for `’`, `'\u00C2\u00B7'` for `·`. Comment decoration counts. The banners are back,
+correctly encoded.
+
+### Errand runs, rebuilt around Michael's design
+
+The first version had a "stops per run" slider, which forces every run to the same size.
+His design is better and is what is there now: **a rail beside the stop list carrying
+draggable markers**, each sitting in the gap between two stops.
+
+- **Add segment** drops a marker in the middle of whichever run is currently longest —
+  the split a person would have made anyway.
+- **Dragging** a marker snaps it to the nearest gap, measured from real row geometry, so
+  it works whatever height the rows are.
+- **×** on a marker merges the two runs either side.
+- Runs are colour-coded down the left edge of the list, so the grouping is readable
+  without tracing the rail.
+- Segments are therefore any size: 3 / 9 / 6 / 4 is as valid as 6 / 6 / 6 / 4.
+
+The pointer capture is taken **on the rail, not the handle** — the handle is rebuilt on
+every move, and a capture dies with the element it was taken on. Exactly the lesson from
+the dev-hub card drag.
+
+### Deleting a dev card asks twice
+
+Hiding a seeded card is reversible — it is still in the page source. Deleting one you
+added is not, so it asks twice, and the second question says plainly: "Are you sure you
+want to delete? This is not reversable."
