@@ -210,11 +210,12 @@ export async function onRequestPost(context) {
     const rawSlug = await env.TOURS_KV.get(TOUR_PREFIX + slug);
     let prevSlug = null;
     try { prevSlug = rawSlug ? JSON.parse(rawSlug) : null; } catch (e) { prevSlug = null; }
-    if (prevSlug && (!adminKey || adminKey !== prevSlug.adminKey)) {
+    const prevOwned = !!(prevSlug && prevSlug.adminKey);
+    if (prevOwned && adminKey !== prevSlug.adminKey) {
       return json({ error: 'slug_taken', slug }, 409);
     }
     code = slug;
-    if (prevSlug) adminKey = prevSlug.adminKey;   // keep the key that owns it
+    if (prevOwned) adminKey = prevSlug.adminKey;  // keep the key that owns it
   }
 
   if (code && !slug) {
@@ -228,10 +229,8 @@ export async function onRequestPost(context) {
       adminKey = '';
     }
   }
-  if (!code) {
-    code = randomToken(7);
-    adminKey = randomToken(20);
-  }
+  if (!code) code = randomToken(7);
+  if (!adminKey) adminKey = randomToken(20);
 
   const tour = {
     name: str(body.name, 120),
