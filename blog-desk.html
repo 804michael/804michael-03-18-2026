@@ -1,0 +1,1098 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.06_17-07-0001                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_17-07-0001    ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║                                                               ║
+  ║  📝 WHAT THIS PAGE IS — THE BLOG WORKBENCH (804re.com/blog-desk)
+  ║  The idea catalog and pipeline behind the /blog that does not ║
+  ║  exist yet. It scrapes public feeds for article ideas, scores ║
+  ║  them, guards against writing the same topic twice, and       ║
+  ║  tracks each one from Idea to Published.                      ║
+  ║                                                               ║
+  ║  It talks to two endpoints, both of which degrade instead of  ║
+  ║  failing (see CLAUDE.md):                                     ║
+  ║    /api/blog-scan   — stateless. Fetches + scores feeds.      ║
+  ║    /api/blog-state  — DEV_ORDER_KV under key "blog-state".    ║
+  ║  With no KV binding this page still works, saving to that     ║
+  ║  browser's localStorage only, exactly like /dev does.         ║
+  ║                                                               ║
+  ║  🚧 UNLINKED AND NOINDEX on purpose — rule 2 in CLAUDE.md.    ║
+  ║  Reachable only from its card on dev.html.                    ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Blog Desk — Idea Catalog &amp; Pipeline — 804Michael</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
+  <link rel="stylesheet" href="nav.css">
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888;--green:#1a7a3c;--blue:#3b6ea5;--amber:#b8860b}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    /* ── Page Hero — black bar, no image (site standard, see CLAUDE.md) ──
+       Direct child of <body>, no 100vw breakout: 100vw includes the scrollbar
+       and pulls the bar ~8px left of the content box. */
+    .black-hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;margin-top:calc(var(--banner-h) + var(--nav-h))}
+    .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
+    .black-hero h1 span{color:var(--red)}
+    .black-hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{background:var(--black);padding:12px 0}
+    .breadcrumb-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    .breadcrumb a{color:rgba(255,255,255,.5);transition:color .2s}
+    .breadcrumb a:hover{color:var(--red)}
+    .breadcrumb .sep{color:rgba(255,255,255,.25)}
+    .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
+
+    /* ── Body ── */
+    .bd-body{max-width:1440px;margin:0 auto;padding:16px 24px 70px}
+    .bd-note{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:14px 18px;font-size:1rem;line-height:1.6;margin:0 0 20px}
+    .bd-note b{color:#5a3f0f}
+
+    /* ── Status strip: runway, counts, KV state ── */
+    .bd-strip{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 18px}
+    .bd-stat{flex:1 1 170px;background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:12px;padding:12px 16px;min-width:0}
+    .bd-stat-k{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
+    .bd-stat-v{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;line-height:1.1}
+    .bd-stat-n{font-size:.82rem;color:var(--gray-text);line-height:1.4;margin-top:3px}
+    .bd-stat.warn{background:#fff4f3;border-color:#f0b5b0}
+    .bd-stat.warn .bd-stat-v{color:var(--red)}
+
+    /* ── Toolbar ── */
+    .bd-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
+    .bd-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;cursor:pointer;border:1.5px solid var(--gray-mid);background:var(--white);color:var(--black);padding:8px 16px;font-size:.94rem;transition:background .2s,color .2s,border-color .2s}
+    .bd-btn:hover{border-color:var(--red);color:var(--red)}
+    .bd-btn.primary{background:var(--red);color:var(--white);border-color:var(--red)}
+    .bd-btn.primary:hover{background:var(--red-dark);border-color:var(--red-dark);color:var(--white)}
+    .bd-btn[disabled]{opacity:.5;cursor:default}
+    .bd-btn[disabled]:hover{border-color:var(--gray-mid);color:var(--black)}
+    .bd-views{display:inline-flex;border:1.5px solid var(--gray-mid);border-radius:999px;overflow:hidden}
+    .bd-views button{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.94rem;padding:8px 18px;border:none;background:var(--white);cursor:pointer;color:var(--gray-text)}
+    .bd-views button.on{background:var(--black);color:var(--white)}
+    .bd-spacer{flex:1 1 auto}
+    .bd-search{font-family:'Barlow',sans-serif;font-size:.95rem;padding:8px 14px;border:1.5px solid var(--gray-mid);border-radius:999px;min-width:200px}
+    .bd-search:focus{outline:none;border-color:var(--red)}
+    .bd-sel{font-family:'Barlow',sans-serif;font-size:.92rem;padding:8px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;background:var(--white)}
+    .bd-msg{font-size:.92rem;color:var(--gray-text);margin:0 0 14px;min-height:1.2em}
+    .bd-msg.err{color:var(--red)}
+
+    /* ── Cluster colours. One hue per topic cluster so a glance at either view
+         shows the buyer/seller/money/local balance without reading a word. ── */
+    .cl-buyer{--cl:#2f6f4f}
+    .cl-seller{--cl:#8a4a1f}
+    .cl-money{--cl:#2b4f7d}
+    .cl-local{--cl:#7a2f6b}
+    .cl-market{--cl:#4a4a4a}
+    .cl-general{--cl:#333}
+
+    /* ── Card (shared by both views) ── */
+    .bd-card{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+    .bd-card:hover{border-color:var(--cl,var(--red))}
+    .bd-card-head{background:var(--cl,var(--black));color:var(--white);padding:12px 14px 10px;position:relative;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+    .bd-card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.16rem;line-height:1.2;flex:1 1 auto;min-width:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    /* The score chip is the whole point of the card head: it is what makes the
+       grid sortable by eye. Fixed width so the column of chips lines up. */
+    .bd-score{flex:0 0 auto;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem}
+    .bd-card-meta{display:flex;gap:6px;flex-wrap:wrap;padding:9px 14px;border-bottom:1px solid var(--gray-mid);background:var(--gray-light)}
+    .bd-chip{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--white);border:1px solid var(--gray-mid);color:var(--gray-text);white-space:nowrap}
+    .bd-chip.cl{background:var(--cl,#333);border-color:var(--cl,#333);color:var(--white)}
+    .bd-chip.depth-long{border-color:var(--blue);color:var(--blue)}
+    .bd-chip.depth-short{border-color:var(--green);color:var(--green)}
+    .bd-card-body{padding:11px 14px 13px;font-size:.9rem;color:var(--gray-text);line-height:1.5}
+    .bd-card-body a.src{color:var(--red);font-weight:600;word-break:break-word}
+    .bd-open{padding:0 14px 14px;border-top:1px dashed var(--gray-mid);margin-top:2px}
+    .bd-field{margin-top:11px}
+    .bd-field label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-muted);margin-bottom:4px}
+    .bd-field input,.bd-field textarea,.bd-field select{width:100%;font-family:'Barlow',sans-serif;font-size:.92rem;padding:7px 10px;border:1.5px solid var(--gray-mid);border-radius:8px;background:var(--white);color:var(--black)}
+    .bd-field textarea{min-height:70px;resize:vertical;line-height:1.5}
+    .bd-field input:focus,.bd-field textarea:focus,.bd-field select:focus{outline:none;border-color:var(--red)}
+    .bd-why{margin:10px 0 0;padding-left:17px;font-size:.85rem;color:var(--gray-text);line-height:1.55}
+    .bd-why li{margin-bottom:1px}
+    .bd-row{display:flex;gap:10px;flex-wrap:wrap}
+    .bd-row>*{flex:1 1 150px;min-width:0}
+    .bd-acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+    .bd-acts button{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;padding:6px 12px;border-radius:999px;border:1.5px solid var(--gray-mid);background:var(--white);cursor:pointer}
+    .bd-acts button:hover{border-color:var(--black)}
+    .bd-acts button.go{background:var(--green);border-color:var(--green);color:var(--white)}
+    .bd-acts button.kill{border-color:var(--red);color:var(--red)}
+    .bd-acts button.kill:hover{background:var(--red);color:var(--white)}
+
+    /* ── Cannibalisation warning. Two posts aimed at one query split their own
+         rankings, so this is a blocker, not a note — it gets the loudest
+         treatment on the card. ── */
+    .bd-clash{margin-top:11px;background:#fff4f3;border:1.5px solid var(--red);border-radius:9px;padding:10px 12px;font-size:.86rem;line-height:1.5;color:#7d1b12}
+    .bd-clash b{display:block;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;margin-bottom:3px}
+    .bd-clash a{color:#7d1b12;text-decoration:underline;word-break:break-word}
+    .bd-clash .bd-acts{margin-top:8px}
+    .bd-card.has-clash{border-color:var(--red)}
+    .bd-flag{position:absolute;top:8px;right:8px;background:var(--red);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.7rem;letter-spacing:.1em;padding:2px 7px;border-radius:999px}
+
+    /* Suggested internal links. Every post has to earn its keep by pointing at
+       a tool — that is both the conversion path and how authority reaches the
+       calculator pages. Shown on the card so it is decided before drafting. */
+    .bd-ties{margin-top:11px;font-size:.85rem;color:var(--gray-text)}
+    .bd-ties b{font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:.74rem;color:var(--gray-muted);display:block;margin-bottom:4px}
+    .bd-ties a{display:inline-block;border:1px solid var(--gray-mid);border-radius:999px;padding:2px 9px;margin:0 5px 5px 0;font-size:.82rem;color:var(--gray-text)}
+    .bd-ties a:hover{border-color:var(--red);color:var(--red)}
+
+    /* ── Grid view ── */
+    .bd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start;grid-auto-flow:row dense}
+    .bd-card.is-open{grid-column:1 / -1}
+    @media(max-width:1100px){.bd-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:700px){.bd-grid{grid-template-columns:1fr}}
+
+    /* ── Kanban view ── */
+    .bd-kan{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:start}
+    @media(max-width:1200px){.bd-kan{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:820px){.bd-kan{grid-template-columns:1fr}}
+    .bd-col{background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:14px;padding:10px;min-height:150px;min-width:0}
+    .bd-col.over{border-color:var(--red);border-style:dashed;background:#fff4f3}
+    .bd-col-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 4px 10px}
+    .bd-col-h span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.86rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gray-text)}
+    .bd-col-h em{font-style:normal;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;color:var(--gray-muted);background:var(--white);border:1px solid var(--gray-mid);border-radius:999px;padding:1px 8px}
+    .bd-col .bd-card{margin-bottom:10px}
+    .bd-col .bd-card:last-child{margin-bottom:0}
+    .bd-card.dragging{opacity:.45}
+    .bd-drag{flex:0 0 auto;width:20px;height:20px;border:1.5px solid rgba(255,255,255,.35);border-radius:6px;background:none;color:var(--white);font-size:.7rem;line-height:1;cursor:grab;padding:0;touch-action:none}
+    .bd-drag:active{cursor:grabbing}
+    .bd-empty{color:var(--gray-muted);font-size:.86rem;font-style:italic;padding:8px 4px}
+
+    /* ── Refresh lane. Sits under the board because it is a different job:
+         these are LIVE posts going stale, not new ideas. ── */
+    .bd-refresh{margin-top:26px;border-top:2px solid var(--gray-mid);padding-top:18px}
+    .bd-h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.15rem;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+    .bd-sub{font-size:.92rem;color:var(--gray-text);margin-bottom:14px;line-height:1.55;max-width:70ch}
+
+    /* ── Panels (sources / help) ── */
+    .bd-panel{border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 18px;margin:0 0 18px;background:var(--white)}
+    .bd-panel h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+    .bd-src{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray-light);flex-wrap:wrap}
+    .bd-src:last-of-type{border-bottom:none}
+    .bd-src input[type=checkbox]{width:17px;height:17px;flex:0 0 auto;accent-color:var(--red)}
+    .bd-src .nm{font-weight:600;flex:0 0 180px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bd-src .u{flex:1 1 240px;min-width:0;font-size:.8rem;color:var(--gray-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bd-src .st{flex:0 0 auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase}
+    .bd-src .st.ok{color:var(--green)}
+    .bd-src .st.bad{color:var(--red)}
+    .bd-src button{background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;flex:0 0 auto;padding:0 4px}
+    .bd-addsrc{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-mid)}
+    .bd-addsrc input{font-family:'Barlow',sans-serif;font-size:.9rem;padding:7px 10px;border:1.5px solid var(--gray-mid);border-radius:8px}
+    .bd-addsrc input.lbl{flex:0 0 170px}
+    .bd-addsrc input.url{flex:1 1 260px;min-width:0}
+    .bd-hint{font-size:.84rem;color:var(--gray-muted);line-height:1.55;margin-top:9px}
+    .bd-hint code{background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:4px;padding:1px 5px;font-size:.82rem;word-break:break-all}
+
+    footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<!-- PAGE HERO -->
+<div class="black-hero">
+  <div class="black-hero-in">
+    <h1>Blog Desk — <span>Idea Catalog</span></h1>
+    <p class="black-hero-sub">Scrapes public feeds for topics, scores them by demand, and tracks each one from idea to published</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="/" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
+    <span class="sep">›</span>
+    <a href="/dev">Dev</a>
+    <span class="sep">›</span>
+    <span class="cur">Blog Desk</span>
+  </div>
+</div>
+
+<div class="bd-body">
+
+  <p class="bd-note" id="bd-kv-note" hidden></p>
+
+  <!-- Runway / counts -->
+  <div class="bd-strip" id="bd-strip"></div>
+
+  <!-- Toolbar -->
+  <div class="bd-bar">
+    <div class="bd-views">
+      <button type="button" id="bd-v-grid" class="on">Grid</button>
+      <button type="button" id="bd-v-kan">Pipeline</button>
+    </div>
+    <button type="button" class="bd-btn primary" id="bd-scan">Scan for ideas</button>
+    <button type="button" class="bd-btn" id="bd-corpus">Sync published posts</button>
+    <button type="button" class="bd-btn" id="bd-sources">Sources</button>
+    <div class="bd-spacer"></div>
+    <input type="search" class="bd-search" id="bd-q" placeholder="Search titles…" />
+    <select class="bd-sel" id="bd-f-cluster">
+      <option value="">All clusters</option>
+      <option value="buyer">Buyer</option>
+      <option value="seller">Seller</option>
+      <option value="money">Money</option>
+      <option value="local">Local</option>
+      <option value="market">Market</option>
+      <option value="general">General</option>
+    </select>
+    <select class="bd-sel" id="bd-f-status">
+      <option value="">All statuses</option>
+      <option value="idea">Ideas</option>
+      <option value="approved">Approved</option>
+      <option value="drafted">Drafted</option>
+      <option value="scheduled">Scheduled</option>
+      <option value="published">Published</option>
+      <option value="discarded">Discarded</option>
+    </select>
+  </div>
+
+  <p class="bd-msg" id="bd-msg"></p>
+
+  <!-- Sources panel -->
+  <div class="bd-panel" id="bd-src-panel" hidden>
+    <h2>Source feeds</h2>
+    <div id="bd-src-list"></div>
+    <div class="bd-addsrc">
+      <input type="text" class="lbl" id="bd-src-label" placeholder="Name (e.g. Inman)" maxlength="60" />
+      <input type="url" class="url" id="bd-src-url" placeholder="https://…/feed/" maxlength="400" />
+      <select class="bd-sel" id="bd-src-type">
+        <option value="media">Media</option>
+        <option value="forum">Forum</option>
+        <option value="video">Video</option>
+        <option value="local">Local</option>
+        <option value="own">Own site</option>
+      </select>
+      <button type="button" class="bd-btn" id="bd-src-add">Add</button>
+      <button type="button" class="bd-btn" id="bd-src-reset">Restore defaults</button>
+    </div>
+    <p class="bd-hint">
+      YouTube channels use <code>https://www.youtube.com/feeds/videos.xml?channel_id=UC…</code> — open the channel,
+      View Source, and search for <code>channelId</code> to get the UC id. Most WordPress sites work by adding
+      <code>/feed/</code> to the address. A subreddit works as <code>https://www.reddit.com/r/NAME/top/.rss?t=week</code>.
+      A feed that answers but has no items shows as failed after the next scan, which is how a dead feed gets caught.
+    </p>
+  </div>
+
+  <!-- Views -->
+  <div class="bd-grid" id="bd-grid"></div>
+
+  <div id="bd-kan-wrap" hidden>
+    <div class="bd-kan" id="bd-kan"></div>
+  </div>
+
+  <!-- Refresh radar -->
+  <div class="bd-refresh" id="bd-refresh-wrap" hidden>
+    <h2 class="bd-h2">Refresh radar</h2>
+    <p class="bd-sub">
+      Published posts past six months. After the first year, updating one of these usually beats writing something new:
+      the URL already has history with Google, so a refreshed post recovers rankings far faster than a new one earns them.
+    </p>
+    <div class="bd-grid" id="bd-refresh"></div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in">
+    <a href="/" aria-label="804Michael">
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto" aria-label="804Michael logo">
+        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="white" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="white" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
+        <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+        <path fill="#ED1C24" d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
+        <path fill="#ED1C24" d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
+        <path fill="#ED1C24" d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z M408.938,71.1l1.473-4.6l1.498,4.6h4.815l-3.891,2.866l1.501,4.57l-3.924-2.812l-3.916,2.812l1.495-4.57l-3.883-2.866H408.938z"/>
+        <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
+      </svg>
+    </a>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_17-07-0001</p>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
+      Internal staging page — not part of the public site navigation
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  const SITE_VERSION = '26.09.06_17-07-0001';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
+  document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  State
+  // ══════════════════════════════════════════════════════════════════════
+  // Mirrors functions/api/blog-state.js exactly. KV is the source of truth
+  // when the binding exists; localStorage is always written too, so the page
+  // still works offline and on a deployment where the binding is missing.
+
+  var LS_KEY = 'blog-desk-state-v1';
+  var STATE = { v: 1, ideas: [], sources: [], corpus: [], seen: [], settings: { cadence: 'ramp', phaseStart: '', rampWeeks: 12 } };
+  var kvOk = false;
+  var view = 'grid';
+  var openIds = {};
+  var lastScanStatus = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var msgEl = $('bd-msg');
+
+  function say(text, isErr) {
+    msgEl.textContent = text || '';
+    msgEl.className = 'bd-msg' + (isErr ? ' err' : '');
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function today() { return new Date().toISOString().slice(0, 10); }
+
+  // ── Persistence ──────────────────────────────────────────────────────
+  // Saves are debounced because every keystroke in a notes box calls save().
+
+  var saveTimer = null;
+  function save() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch (e) { /* private mode */ }
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(pushState, 700);
+  }
+
+  function pushState() {
+    if (!kvOk) return;
+    fetch('/api/blog-state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: STATE }),
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) kvNote(d && d.error);
+    }).catch(function () { /* stays in localStorage */ });
+  }
+
+  function kvNote(err) {
+    var el = $('bd-kv-note');
+    if (!err) { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = '<b>Saving to this browser only.</b> The DEV_ORDER_KV binding is not answering (' + esc(err) +
+      '), so the catalog will not follow you to another device. Everything else works.';
+  }
+
+  function loadState() {
+    var local = null;
+    try { local = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { local = null; }
+
+    return fetch('/api/blog-state').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.state) {
+        kvOk = true;
+        // A KV state with no ideas but a local one that has some means this
+        // browser has work that never reached KV (offline edit, or the binding
+        // was added later). Local wins in that one case only.
+        if (!d.state.ideas.length && local && local.ideas && local.ideas.length) {
+          STATE = local;
+          save();
+        } else {
+          STATE = d.state;
+        }
+      } else {
+        kvNote((d && d.error) || 'no response');
+        if (local) STATE = local;
+      }
+    }).catch(function (e) {
+      kvNote(String(e && e.message || e));
+      if (local) STATE = local;
+    }).then(function () {
+      if (!STATE.settings) STATE.settings = { cadence: 'ramp', phaseStart: '', rampWeeks: 12 };
+      if (!STATE.sources || !STATE.sources.length) return seedSources();
+    });
+  }
+
+  function seedSources() {
+    return fetch('/api/blog-scan?mode=sources').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.sources) { STATE.sources = d.sources; save(); }
+    }).catch(function () { /* the scan endpoint falls back to its own defaults anyway */ });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  Similarity — the cannibalisation guard
+  // ══════════════════════════════════════════════════════════════════════
+  // Two posts aimed at the same query do not rank twice; they split the same
+  // signal and neither wins. That is keyword cannibalisation, and with 112
+  // posts already live on michaelhottman.com it is the single easiest way for
+  // this pipeline to do damage. Every idea is compared against that corpus AND
+  // against everything already queued here, before it can be approved.
+  //
+  // Jaccard overlap on title tokens. Deliberately simple: it is a flag for a
+  // human to judge, not a verdict, and a stemmer would make it harder to
+  // reason about when it fires wrongly.
+
+  var STOP = ('a an and are as at be but by for from has have how i in is it its of on or that the this to was what when where which who why with you your ' +
+    'will can do does should could would if not youre about into more most new now than then them they their there these those our we us me my').split(' ');
+  var STOPSET = {};
+  STOP.forEach(function (w) { STOPSET[w] = 1; });
+
+  function toks(s) {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/)
+      .filter(function (w) { return w.length > 2 && !STOPSET[w]; })
+      .map(function (w) { return w.replace(/ies$/, 'y').replace(/(es|s)$/, ''); });
+  }
+
+  function tset(s) {
+    var o = {}, t = toks(s);
+    for (var i = 0; i < t.length; i++) o[t[i]] = 1;
+    return o;
+  }
+
+  function jac(a, b) {
+    var ak = Object.keys(a), bk = Object.keys(b);
+    if (!ak.length || !bk.length) return 0;
+    var inter = 0;
+    for (var i = 0; i < ak.length; i++) if (b[ak[i]]) inter++;
+    return inter / (ak.length + bk.length - inter);
+  }
+
+  var CLASH_AT = 0.45;
+
+  // Anything already committed to counts as "taken": published posts on either
+  // site, plus ideas of ours that are past the Idea column.
+  function clashFor(idea) {
+    var mine = tset(idea.keyword ? idea.title + ' ' + idea.keyword : idea.title);
+    var best = null;
+
+    STATE.corpus.forEach(function (c) {
+      var s = jac(mine, tset(c.title));
+      if (s >= CLASH_AT && (!best || s > best.score)) {
+        best = { score: s, title: c.title, url: c.url, date: c.date, where: c.origin || 'published' };
+      }
+    });
+
+    STATE.ideas.forEach(function (o) {
+      if (o.id === idea.id) return;
+      if (['approved', 'drafted', 'scheduled', 'published'].indexOf(o.status) < 0) return;
+      var s = jac(mine, tset(o.title));
+      if (s >= CLASH_AT && (!best || s > best.score)) {
+        best = { score: s, title: o.title, url: o.publishedUrl || o.url, date: o.scheduled || o.found, where: 'in this queue (' + o.status + ')' };
+      }
+    });
+
+    return best;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  Internal link ties
+  // ══════════════════════════════════════════════════════════════════════
+  // Every post links to at least two tools and one sibling post. This is not
+  // decoration: those links are the conversion path off an informational page,
+  // and they are how a blog post's authority reaches the calculator pages that
+  // actually generate leads. Decided here, on the card, so it cannot be
+  // forgotten at drafting time.
+
+  var TIES = {
+    money:   [['Determine Your Budget', '/determine-your-budget'], ['Cash to Buy a Home', '/cash-to-buy-a-home'], ['Financing Commandments', '/financing-commandments']],
+    seller:  [['Seller Net Sheet', '/seller-net-sheet'], ['Home Value Estimate', '/home-value-estimate'], ['Market Stats', '/market-stats']],
+    buyer:   [['Find a Home', '/find-a-home'], ['Tour a Home', '/tour-a-home'], ['Due Diligence', '/due-diligence']],
+    local:   [['Ashland', '/ashland'], ['Hanover', '/hanover'], ['Glen Allen', '/glen-allen'], ['Mechanicsville', '/mechanicsville'], ['Map Search', '/map-search']],
+    market:  [['Market Stats', '/market-stats'], ['Home Value Estimate', '/home-value-estimate'], ['Map Search', '/map-search']],
+    general: [['Determine Your Budget', '/determine-your-budget'], ['Find a Home', '/find-a-home'], ['Seller Net Sheet', '/seller-net-sheet']],
+  };
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  Runway
+  // ══════════════════════════════════════════════════════════════════════
+  // The cadence Michael chose: 2 posts a week for the first 12 weeks to build
+  // enough of a cluster for Google to read the site as a source on these
+  // topics, then one new post every OTHER week, with a refresh of an older
+  // post filling the alternate weeks. So weekly demand is 2 during the ramp
+  // and 0.5 after it. This turns "do I need to sit down with this?" into a
+  // number of weeks.
+
+  function runway() {
+    var queue = STATE.ideas.filter(function (i) {
+      return ['approved', 'drafted', 'scheduled'].indexOf(i.status) >= 0;
+    }).length;
+
+    var start = STATE.settings.phaseStart;
+    var rampWeeks = STATE.settings.rampWeeks || 12;
+    var elapsed = 0;
+    if (start) {
+      var ms = Date.now() - new Date(start + 'T00:00:00Z').getTime();
+      elapsed = Math.max(0, Math.floor(ms / 604800000));
+    }
+    var rampLeft = start ? Math.max(0, rampWeeks - elapsed) : rampWeeks;
+
+    // Burn the queue through the remaining ramp at 2/week, then 0.5/week.
+    var weeks = 0, left = queue;
+    var inRampWeeks = Math.min(rampLeft, Math.floor(left / 2));
+    weeks += inRampWeeks;
+    left -= inRampWeeks * 2;
+    if (rampLeft - inRampWeeks > 0 && left > 0) { weeks += 1; left = 0; }
+    if (left > 0) weeks += left * 2;
+
+    return {
+      queue: queue,
+      weeks: weeks,
+      inRamp: rampLeft > 0,
+      rampLeft: rampLeft,
+      elapsed: elapsed,
+      started: !!start,
+      perWeek: rampLeft > 0 ? 2 : 0.5,
+    };
+  }
+
+  function renderStrip() {
+    var r = runway();
+    var ideas = STATE.ideas.filter(function (i) { return i.status === 'idea'; }).length;
+    var pub = STATE.ideas.filter(function (i) { return i.status === 'published'; }).length;
+    var clashes = STATE.ideas.filter(function (i) {
+      return i.status !== 'discarded' && i.status !== 'published' && clashFor(i);
+    }).length;
+
+    var runwayWarn = r.weeks < 4;
+    var phaseLine = !r.started
+      ? 'Ramp has not started. Set the first publish date when the blog goes live.'
+      : (r.inRamp
+        ? 'In ramp: week ' + (r.elapsed + 1) + ' of ' + (STATE.settings.rampWeeks || 12) + ', 2 posts a week'
+        : 'Past ramp: one new post every other week, refresh on the alternate weeks');
+
+    $('bd-strip').innerHTML =
+      stat('Runway', r.weeks + (r.weeks === 1 ? ' week' : ' weeks'), r.queue + ' approved or drafted &middot; ' + phaseLine, runwayWarn) +
+      stat('Unreviewed ideas', String(ideas), 'Scraped and waiting on your call', false) +
+      stat('Published', String(pub), STATE.corpus.length + ' older posts synced for the overlap check', false) +
+      stat('Overlap flags', String(clashes), clashes ? 'Ideas that would compete with something already live' : 'Nothing in the queue competes with itself', clashes > 0);
+  }
+
+  function stat(k, v, note, warn) {
+    return '<div class="bd-stat' + (warn ? ' warn' : '') + '">' +
+      '<div class="bd-stat-k">' + esc(k) + '</div>' +
+      '<div class="bd-stat-v">' + esc(v) + '</div>' +
+      '<div class="bd-stat-n">' + note + '</div></div>';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  Card rendering
+  // ══════════════════════════════════════════════════════════════════════
+
+  var DEPTH_WORDS = { short: '700-1,000 words', standard: '900-1,400 words', long: '1,500-2,500 words' };
+  var STATUS_ORDER = ['idea', 'approved', 'drafted', 'scheduled', 'published'];
+  var STATUS_LABEL = { idea: 'Ideas', approved: 'Approved', drafted: 'Drafted', scheduled: 'Scheduled', published: 'Published' };
+
+  function cardHtml(idea, compact) {
+    var open = !!openIds[idea.id];
+    var clash = clashFor(idea);
+    var h = [];
+
+    h.push('<article class="bd-card cl-' + esc(idea.cluster) + (open ? ' is-open' : '') + (clash ? ' has-clash' : '') +
+      '" data-id="' + esc(idea.id) + '" draggable="' + (compact ? 'true' : 'false') + '">');
+
+    h.push('<header class="bd-card-head" data-act="toggle">');
+    if (compact) h.push('<button type="button" class="bd-drag" data-act="nodrag" title="Drag to another column">&#10495;</button>');
+    h.push('<h3>' + esc(idea.title) + '</h3>');
+    h.push('<div class="bd-score" title="Demand score">' + idea.score + '</div>');
+    if (clash) h.push('<span class="bd-flag">Overlap</span>');
+    h.push('</header>');
+
+    h.push('<div class="bd-card-meta">');
+    h.push('<span class="bd-chip cl">' + esc(idea.cluster) + '</span>');
+    h.push('<span class="bd-chip depth-' + esc(idea.depth) + '">' + esc(idea.depth) + '</span>');
+    h.push('<span class="bd-chip">' + esc(idea.source) + '</span>');
+    if (idea.status !== 'idea') h.push('<span class="bd-chip">' + esc(idea.status) + '</span>');
+    if (idea.scheduled) h.push('<span class="bd-chip">' + esc(idea.scheduled) + '</span>');
+    h.push('</div>');
+
+    if (!compact || open) {
+      h.push('<div class="bd-card-body">');
+      h.push('Target length ' + esc(DEPTH_WORDS[idea.depth] || '') + '. Found ' + esc(idea.found) + '.');
+      if (idea.url) h.push('<br><a class="src" href="' + esc(idea.url) + '" target="_blank" rel="noopener nofollow">Open the source &#8599;</a>');
+      h.push('</div>');
+    }
+
+    if (open) {
+      h.push('<div class="bd-open">');
+
+      if (clash) {
+        h.push('<div class="bd-clash"><b>Overlaps something already live</b>' +
+          Math.round(clash.score * 100) + '% title overlap with &ldquo;' + esc(clash.title) + '&rdquo; (' + esc(clash.where) +
+          (clash.date ? ', ' + esc(clash.date) : '') + ').' +
+          ' Publishing both splits their rankings instead of doubling them.' +
+          (clash.url ? ' <a href="' + esc(clash.url) + '" target="_blank" rel="noopener nofollow">Read it first</a>.' : '') +
+          '<div class="bd-acts">' +
+          '<button type="button" data-act="refresh">Make it a refresh of that post</button>' +
+          '<button type="button" class="kill" data-act="discard">Discard this idea</button>' +
+          '</div></div>');
+      }
+
+      if (idea.scoreWhy && idea.scoreWhy.length) {
+        h.push('<ul class="bd-why">');
+        idea.scoreWhy.forEach(function (w) { h.push('<li>' + esc(w) + '</li>'); });
+        h.push('</ul>');
+      }
+
+      h.push('<div class="bd-field"><label for="kw-' + esc(idea.id) + '">Target keyword</label>' +
+        '<input id="kw-' + esc(idea.id) + '" type="text" data-f="keyword" value="' + esc(idea.keyword) + '" maxlength="160"></div>');
+
+      h.push('<div class="bd-field"><label for="np-' + esc(idea.id) + '">Your angle — what would you say about this?</label>' +
+        '<textarea id="np-' + esc(idea.id) + '" data-f="notes" placeholder="The thing you actually believe about this, in your words. This is what makes the article yours instead of a rewrite of the source.">' + esc(idea.notes) + '</textarea></div>');
+
+      h.push('<div class="bd-field"><label for="kp-' + esc(idea.id) + '">Key points to hit</label>' +
+        '<textarea id="kp-' + esc(idea.id) + '" data-f="keyPoints" placeholder="One per line.">' + esc(idea.keyPoints) + '</textarea></div>');
+
+      h.push('<div class="bd-row">');
+      h.push('<div class="bd-field"><label>Status</label><select data-f="status">' +
+        STATUS_ORDER.concat(['refresh', 'discarded']).map(function (s) {
+          return '<option value="' + s + '"' + (idea.status === s ? ' selected' : '') + '>' + s + '</option>';
+        }).join('') + '</select></div>');
+      h.push('<div class="bd-field"><label>Cluster</label><select data-f="cluster">' +
+        ['buyer', 'seller', 'money', 'local', 'market', 'general'].map(function (s) {
+          return '<option value="' + s + '"' + (idea.cluster === s ? ' selected' : '') + '>' + s + '</option>';
+        }).join('') + '</select></div>');
+      h.push('<div class="bd-field"><label>Depth</label><select data-f="depth">' +
+        ['short', 'standard', 'long'].map(function (s) {
+          return '<option value="' + s + '"' + (idea.depth === s ? ' selected' : '') + '>' + s + '</option>';
+        }).join('') + '</select></div>');
+      h.push('<div class="bd-field"><label>Publish date</label><input type="date" data-f="scheduled" value="' + esc(idea.scheduled) + '"></div>');
+      h.push('</div>');
+
+      var ties = TIES[idea.cluster] || TIES.general;
+      h.push('<div class="bd-ties"><b>Link this post to</b>');
+      ties.forEach(function (t) { h.push('<a href="' + t[1] + '" target="_blank" rel="noopener">' + esc(t[0]) + '</a>'); });
+      h.push('</div>');
+
+      h.push('<div class="bd-acts">');
+      if (idea.status === 'idea') h.push('<button type="button" class="go" data-act="approve">Approve</button>');
+      if (idea.status !== 'discarded') h.push('<button type="button" class="kill" data-act="discard">Discard</button>');
+      else h.push('<button type="button" data-act="restore">Restore</button>');
+      h.push('<button type="button" data-act="copy">Copy brief</button>');
+      h.push('</div>');
+
+      h.push('</div>');
+    }
+
+    h.push('</article>');
+    return h.join('');
+  }
+
+  // ── Filtering ────────────────────────────────────────────────────────
+
+  function visibleIdeas() {
+    var q = ($('bd-q').value || '').trim().toLowerCase();
+    var fc = $('bd-f-cluster').value;
+    var fs = $('bd-f-status').value;
+    return STATE.ideas.filter(function (i) {
+      if (fc && i.cluster !== fc) return false;
+      if (fs) { if (i.status !== fs) return false; }
+      else if (i.status === 'discarded') return false;
+      if (q && i.title.toLowerCase().indexOf(q) < 0 && (i.keyword || '').toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+
+  function render() {
+    renderStrip();
+    var list = visibleIdeas();
+
+    if (view === 'grid') {
+      $('bd-grid').hidden = false;
+      $('bd-kan-wrap').hidden = true;
+      list.sort(function (a, b) { return b.score - a.score; });
+      $('bd-grid').innerHTML = list.length
+        ? list.map(function (i) { return cardHtml(i, false); }).join('')
+        : '<p class="bd-empty">Nothing here yet. Hit &ldquo;Scan for ideas&rdquo; to pull from your source feeds.</p>';
+    } else {
+      $('bd-grid').hidden = true;
+      $('bd-kan-wrap').hidden = false;
+      $('bd-kan').innerHTML = STATUS_ORDER.map(function (st) {
+        var col = list.filter(function (i) { return i.status === st; }).sort(function (a, b) { return b.score - a.score; });
+        return '<section class="bd-col" data-col="' + st + '">' +
+          '<div class="bd-col-h"><span>' + STATUS_LABEL[st] + '</span><em>' + col.length + '</em></div>' +
+          (col.length ? col.map(function (i) { return cardHtml(i, true); }).join('') : '<p class="bd-empty">Drop a card here</p>') +
+          '</section>';
+      }).join('');
+    }
+
+    renderRefresh();
+    renderSources();
+  }
+
+  // ── Refresh radar ────────────────────────────────────────────────────
+  // Corpus posts older than six months, newest first. These are the highest
+  // ROI work available once the blog has history: the URL is already known to
+  // Google, so an update recovers position much faster than a new post earns
+  // it. Turning one into a card creates a normal pipeline idea that carries
+  // the original URL in refreshOf.
+
+  function renderRefresh() {
+    var cutoff = new Date(Date.now() - 180 * 86400000).toISOString().slice(0, 10);
+    var taken = {};
+    STATE.ideas.forEach(function (i) { if (i.refreshOf) taken[i.refreshOf] = 1; });
+
+    var stale = STATE.corpus.filter(function (c) {
+      return c.date && c.date < cutoff && !taken[c.url];
+    }).sort(function (a, b) { return b.date < a.date ? -1 : 1; }).slice(0, 12);
+
+    $('bd-refresh-wrap').hidden = !stale.length;
+    if (!stale.length) return;
+
+    $('bd-refresh').innerHTML = stale.map(function (c) {
+      var months = Math.round((Date.now() - new Date(c.date + 'T00:00:00Z').getTime()) / 2592000000);
+      return '<article class="bd-card cl-market">' +
+        '<header class="bd-card-head"><h3>' + esc(c.title) + '</h3></header>' +
+        '<div class="bd-card-meta"><span class="bd-chip">' + esc(c.date) + '</span><span class="bd-chip">' + months + ' months old</span><span class="bd-chip">' + esc(c.origin) + '</span></div>' +
+        '<div class="bd-card-body"><a class="src" href="' + esc(c.url) + '" target="_blank" rel="noopener nofollow">Read it &#8599;</a>' +
+        '<div class="bd-acts"><button type="button" class="go" data-refresh="' + esc(c.url) + '">Queue a refresh</button></div></div>' +
+        '</article>';
+    }).join('');
+  }
+
+  // ── Sources panel ────────────────────────────────────────────────────
+
+  function renderSources() {
+    var panel = $('bd-src-list');
+    if (!panel) return;
+    var statusById = {};
+    if (lastScanStatus) lastScanStatus.forEach(function (s) { statusById[s.id] = s; });
+
+    panel.innerHTML = (STATE.sources || []).map(function (s) {
+      var st = statusById[s.id];
+      var stHtml = st
+        ? '<span class="st ' + (st.ok ? 'ok' : 'bad') + '">' + (st.ok ? st.count + ' items' : esc(st.error || 'failed')) + '</span>'
+        : '<span class="st">not scanned</span>';
+      return '<div class="bd-src" data-src="' + esc(s.id) + '">' +
+        '<input type="checkbox"' + (s.enabled ? ' checked' : '') + ' data-src-toggle aria-label="Enable ' + esc(s.label) + '">' +
+        '<span class="nm">' + esc(s.label) + '</span>' +
+        '<span class="bd-chip">' + esc(s.type) + '</span>' +
+        '<span class="u">' + esc(s.url) + '</span>' +
+        stHtml +
+        '<button type="button" data-src-del title="Remove">&times;</button>' +
+        '</div>';
+    }).join('') || '<p class="bd-empty">No sources. Restore defaults below.</p>';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  Actions
+  // ══════════════════════════════════════════════════════════════════════
+
+  function findIdea(id) {
+    for (var i = 0; i < STATE.ideas.length; i++) if (STATE.ideas[i].id === id) return STATE.ideas[i];
+    return null;
+  }
+
+  function scan() {
+    var btn = $('bd-scan');
+    btn.disabled = true;
+    say('Scanning ' + (STATE.sources || []).filter(function (s) { return s.enabled !== false; }).length + ' feeds…');
+
+    fetch('/api/blog-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sources: STATE.sources }),
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      lastScanStatus = d.sources || [];
+
+      var seen = {};
+      STATE.seen.forEach(function (u) { seen[u] = 1; });
+      var have = {};
+      STATE.ideas.forEach(function (i) { have[i.id] = 1; });
+
+      var added = 0;
+      (d.candidates || []).forEach(function (c) {
+        if (seen[c.url] || have[c.id]) return;
+        STATE.ideas.push(c);
+        STATE.seen.push(c.url);
+        added++;
+      });
+      if (STATE.seen.length > 2000) STATE.seen = STATE.seen.slice(-2000);
+
+      var ok = lastScanStatus.filter(function (s) { return s.ok; }).length;
+      var bad = lastScanStatus.filter(function (s) { return !s.ok; });
+      var note = added + ' new idea' + (added === 1 ? '' : 's') + ' from ' + ok + ' of ' + lastScanStatus.length + ' feeds';
+      if (d.dropped) note += ' (' + d.dropped + ' off-topic items dropped)';
+      if (bad.length) note += '. Not answering: ' + bad.map(function (s) { return s.label + ' — ' + s.error; }).join('; ');
+      say(note, bad.length > 0);
+
+      save();
+      render();
+    }).catch(function (e) {
+      say('Scan failed: ' + (e && e.message || e), true);
+    }).then(function () { btn.disabled = false; });
+  }
+
+  function syncCorpus() {
+    var btn = $('bd-corpus');
+    btn.disabled = true;
+    say('Pulling your published posts…');
+
+    fetch('/api/blog-scan?mode=corpus').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.corpus || !d.corpus.length) {
+        say('No posts came back' + (d.error ? ' (' + d.error + ')' : '') + '. The overlap check has nothing to compare against until this works.', true);
+        return;
+      }
+      // Replace rather than merge: this is a mirror of what is live, and a
+      // deleted post should disappear from the corpus too.
+      var mine = STATE.corpus.filter(function (c) { return c.origin !== 'michaelhottman.com'; });
+      STATE.corpus = mine.concat(d.corpus);
+      say(d.corpus.length + ' published posts synced from michaelhottman.com via ' + d.source + '. New ideas are now checked against all of them.');
+      save();
+      render();
+    }).catch(function (e) {
+      say('Could not reach the corpus: ' + (e && e.message || e), true);
+    }).then(function () { btn.disabled = false; });
+  }
+
+  function briefFor(idea) {
+    var ties = (TIES[idea.cluster] || TIES.general).slice(0, 3).map(function (t) { return t[0] + ' (' + t[1] + ')'; }).join(', ');
+    return [
+      'TITLE IDEA: ' + idea.title,
+      'TARGET KEYWORD: ' + (idea.keyword || '(not set)'),
+      'CLUSTER: ' + idea.cluster + '   DEPTH: ' + idea.depth + ' (' + (DEPTH_WORDS[idea.depth] || '') + ')',
+      'SOURCE: ' + idea.source + ' — ' + idea.url,
+      idea.refreshOf ? 'THIS IS A REFRESH OF: ' + idea.refreshOf : '',
+      '',
+      'MICHAEL’S ANGLE:',
+      idea.notes || '(none written yet)',
+      '',
+      'KEY POINTS:',
+      idea.keyPoints || '(none written yet)',
+      '',
+      'MUST LINK TO: ' + ties + ', plus one sibling blog post.',
+      'PUBLISH DATE: ' + (idea.scheduled || '(unscheduled)'),
+    ].filter(function (l) { return l !== ''; }).join('\n');
+  }
+
+  // ── Event delegation ─────────────────────────────────────────────────
+
+  document.addEventListener('click', function (ev) {
+    var refreshBtn = ev.target.closest('[data-refresh]');
+    if (refreshBtn) {
+      var url = refreshBtn.getAttribute('data-refresh');
+      var src = null;
+      STATE.corpus.forEach(function (c) { if (c.url === url) src = c; });
+      if (!src) return;
+      var id = 'refresh-' + url.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(-50);
+      if (findIdea(id)) { say('That refresh is already in the pipeline.'); return; }
+      STATE.ideas.push({
+        id: id, title: 'Refresh: ' + src.title, url: src.url, source: src.origin, sourceType: 'own',
+        found: today(), score: 70, scoreWhy: ['Existing URL with history, cheaper to rank than a new post (+70)'],
+        cluster: 'general', keyword: '', depth: 'standard', status: 'approved', notes: '',
+        keyPoints: 'What has changed since ' + src.date + '?\nWhat is now wrong or out of date?\nWhat did it never answer?',
+        scheduled: '', publishedUrl: '', refreshOf: src.url,
+      });
+      save(); render();
+      say('Queued a refresh of that post. It went straight to Approved, since the topic is already proven.');
+      return;
+    }
+
+    var card = ev.target.closest('.bd-card[data-id]');
+    if (!card) return;
+    var idea = findIdea(card.getAttribute('data-id'));
+    if (!idea) return;
+
+    var actEl = ev.target.closest('[data-act]');
+    var act = actEl ? actEl.getAttribute('data-act') : '';
+
+    if (act === 'nodrag') return;
+
+    if (act === 'toggle') {
+      if (openIds[idea.id]) delete openIds[idea.id]; else openIds[idea.id] = 1;
+      render();
+      return;
+    }
+    if (act === 'approve') { idea.status = 'approved'; save(); render(); return; }
+    if (act === 'discard') { idea.status = 'discarded'; save(); render(); return; }
+    if (act === 'restore') { idea.status = 'idea'; save(); render(); return; }
+    if (act === 'refresh') {
+      var cl = clashFor(idea);
+      if (cl) {
+        idea.refreshOf = cl.url || '';
+        idea.title = 'Refresh: ' + cl.title;
+        idea.status = 'approved';
+        idea.keyPoints = (idea.keyPoints ? idea.keyPoints + '\n' : '') + 'Update rather than replace: keep the original URL.';
+        save(); render();
+        say('Turned into a refresh. Drafting will update that existing post instead of competing with it.');
+      }
+      return;
+    }
+    if (act === 'copy') {
+      var text = briefFor(idea);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () { say('Brief copied. Paste it into Claude Code to draft this one.'); },
+          function () { say('Could not copy. Select the notes manually.', true); });
+      }
+      return;
+    }
+  });
+
+  // Field edits. 'input' for text so typing saves, 'change' for selects/dates.
+  document.addEventListener('input', function (ev) {
+    var f = ev.target.getAttribute && ev.target.getAttribute('data-f');
+    if (!f) return;
+    var card = ev.target.closest('.bd-card[data-id]');
+    if (!card) return;
+    var idea = findIdea(card.getAttribute('data-id'));
+    if (!idea) return;
+    idea[f] = ev.target.value;
+    save();
+    // Keyword edits change the overlap verdict, but re-rendering on every
+    // keystroke would steal focus from the box being typed in.
+    if (f !== 'keyword' && f !== 'notes' && f !== 'keyPoints') render();
+  });
+
+  document.addEventListener('change', function (ev) {
+    var f = ev.target.getAttribute && ev.target.getAttribute('data-f');
+    if (f) {
+      var card = ev.target.closest('.bd-card[data-id]');
+      if (!card) return;
+      var idea = findIdea(card.getAttribute('data-id'));
+      if (!idea) return;
+      idea[f] = ev.target.value;
+      save(); render();
+      return;
+    }
+    if (ev.target.hasAttribute && ev.target.hasAttribute('data-src-toggle')) {
+      var row = ev.target.closest('[data-src]');
+      var id = row && row.getAttribute('data-src');
+      STATE.sources.forEach(function (s) { if (s.id === id) s.enabled = ev.target.checked; });
+      save();
+    }
+  });
+
+  // ── Kanban drag and drop ─────────────────────────────────────────────
+  // Dragging is the fast path on a desktop; the Status dropdown inside every
+  // open card does the same job and is the one that works on a phone, so
+  // neither is load-bearing on its own.
+
+  var dragId = null;
+
+  document.addEventListener('dragstart', function (ev) {
+    var card = ev.target.closest && ev.target.closest('.bd-card[data-id]');
+    if (!card || view !== 'kanban') return;
+    dragId = card.getAttribute('data-id');
+    card.classList.add('dragging');
+    if (ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', dragId); }
+  });
+
+  document.addEventListener('dragend', function () {
+    dragId = null;
+    document.querySelectorAll('.bd-card.dragging').forEach(function (c) { c.classList.remove('dragging'); });
+    document.querySelectorAll('.bd-col.over').forEach(function (c) { c.classList.remove('over'); });
+  });
+
+  document.addEventListener('dragover', function (ev) {
+    var col = ev.target.closest && ev.target.closest('.bd-col');
+    if (!col || !dragId) return;
+    ev.preventDefault();
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.bd-col.over').forEach(function (c) { if (c !== col) c.classList.remove('over'); });
+    col.classList.add('over');
+  });
+
+  document.addEventListener('drop', function (ev) {
+    var col = ev.target.closest && ev.target.closest('.bd-col');
+    if (!col || !dragId) return;
+    ev.preventDefault();
+    var idea = findIdea(dragId);
+    var to = col.getAttribute('data-col');
+    if (idea && to) {
+      idea.status = to;
+      // Moving a card to Scheduled with no date set is almost always a
+      // mistake, so it gets today's date rather than sitting undated in a
+      // column whose whole job is dates.
+      if (to === 'scheduled' && !idea.scheduled) idea.scheduled = today();
+      save(); render();
+    }
+    dragId = null;
+  });
+
+  // ── Toolbar wiring ───────────────────────────────────────────────────
+
+  $('bd-scan').addEventListener('click', scan);
+  $('bd-corpus').addEventListener('click', syncCorpus);
+  $('bd-sources').addEventListener('click', function () {
+    var p = $('bd-src-panel');
+    p.hidden = !p.hidden;
+    if (!p.hidden) renderSources();
+  });
+  $('bd-v-grid').addEventListener('click', function () {
+    view = 'grid'; this.classList.add('on'); $('bd-v-kan').classList.remove('on'); render();
+  });
+  $('bd-v-kan').addEventListener('click', function () {
+    view = 'kanban'; this.classList.add('on'); $('bd-v-grid').classList.remove('on'); render();
+  });
+  $('bd-q').addEventListener('input', render);
+  $('bd-f-cluster').addEventListener('change', render);
+  $('bd-f-status').addEventListener('change', render);
+
+  $('bd-src-add').addEventListener('click', function () {
+    var label = ($('bd-src-label').value || '').trim();
+    var url = ($('bd-src-url').value || '').trim();
+    if (!/^https?:\/\//i.test(url)) { say('That needs to be a full http or https feed address.', true); return; }
+    var id = (label || url).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || ('src-' + Date.now());
+    STATE.sources.push({ id: id, label: label || url, type: $('bd-src-type').value, url: url, enabled: true });
+    $('bd-src-label').value = ''; $('bd-src-url').value = '';
+    save(); renderSources();
+    say('Added. Run a scan to see whether it answers.');
+  });
+
+  $('bd-src-reset').addEventListener('click', function () {
+    seedSources().then(function () { renderSources(); say('Source list restored to the built-in defaults.'); });
+  });
+
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.hasAttribute || !ev.target.hasAttribute('data-src-del')) return;
+    var row = ev.target.closest('[data-src]');
+    var id = row && row.getAttribute('data-src');
+    STATE.sources = STATE.sources.filter(function (s) { return s.id !== id; });
+    save(); renderSources();
+  });
+
+  // ── Boot ─────────────────────────────────────────────────────────────
+
+  loadState().then(function () {
+    render();
+    if (!STATE.ideas.length) {
+      say('Nothing in the catalog yet. Hit "Sync published posts" first so the overlap check has something to work with, then "Scan for ideas".');
+    }
+  });
+</script>
+
+</body>
+</html>
