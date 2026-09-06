@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_05-58-0063                            ║
+  ║  SITE VERSION: 26.09.06_06-19-0064                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_05-58-0063    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-19-0064    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -80,6 +80,12 @@
     .ct-plan[hidden]{display:none}
     .ct-plan-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
     .ct-plan-title{flex:1 1 auto;min-width:0;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-text)}
+    /* Wraps to two lines on the narrowest phones rather than squeezing three
+       pills and a label onto one. */
+    .ct-cal-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-mid)}
+    .ct-cal-row[hidden]{display:none}
+    .ct-cal-lbl{flex:0 0 auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-muted)}
+    .ct-cal-btns{display:flex;gap:6px;margin-left:auto}
     .ct-cal{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1.5px solid var(--gray-mid);color:var(--gray-text);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     .ct-cal:hover{border-color:var(--red);color:var(--red)}
     .ct-cal[hidden]{display:none}
@@ -202,9 +208,16 @@
   <section class="ct-plan" id="ctPlan" hidden>
     <div class="ct-plan-head">
       <h2 class="ct-plan-title">Today's stops</h2>
-      <a class="ct-cal" id="ctCal" download="home-tour.ics" hidden>Add to calendar</a>
     </div>
     <ol class="ct-plan-list" id="ctPlanList"></ol>
+    <div class="ct-cal-row" id="ctCalRow" hidden>
+      <span class="ct-cal-lbl">Add to calendar</span>
+      <span class="ct-cal-btns">
+        <a class="ct-cal" id="ctCalGoogle" target="_blank" rel="noopener">Google</a>
+        <a class="ct-cal" id="ctCalApple" download="home-tour.ics">Apple</a>
+        <a class="ct-cal" id="ctCalIcs" download="home-tour.ics">.ics</a>
+      </span>
+    </div>
   </section>
 
   <p class="ct-privacy">Your ratings &amp; notes are saved &amp; shared with 804-Michael. No one else sees them.</p>
@@ -230,7 +243,7 @@
 // ⚠ AI MAINTENANCE RULE — update SITE_VERSION + the top comment's SITE VERSION
 // line + the visible version line every edit. Start chat replies with:
 // "📌 Version: v" + SITE_VERSION
-const SITE_VERSION = '26.09.06_05-58-0063';
+const SITE_VERSION = '26.09.06_06-19-0064';
 (function(){ var el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 (function(){
@@ -411,14 +424,25 @@ const SITE_VERSION = '26.09.06_05-58-0063';
       .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
       .replace(/\r?\n/g, '\\n');
   }
+  // Google's URL only ever carries ONE event, so it gets the whole-tour block
+  // with every address in the details. Apple and the plain .ics get the full
+  // file, one event per timed showing. Same underlying moments either way.
+  function googleCalUrl(ev){
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=' + encodeURIComponent(ev.title) +
+      '&dates=' + icsDate(ev.start) + '/' + icsDate(ev.end) +
+      '&location=' + encodeURIComponent(ev.loc) +
+      '&details=' + encodeURIComponent(ev.desc);
+  }
+
   function buildCalendar(list){
-    var link = document.getElementById('ctCal');
-    if(!link) return;
+    var row = document.getElementById('ctCalRow');
+    if(!row) return;
     var base = tour.startISO ? new Date(tour.startISO) : null;
-    if(!base || isNaN(base.getTime())){ link.hidden = true; return; }
+    if(!base || isNaN(base.getTime())){ row.hidden = true; return; }
 
     var live = list.filter(function(s){ return !s.skipped; });
-    if(!live.length){ link.hidden = true; return; }
+    if(!live.length){ row.hidden = true; return; }
 
     var events = [];
     live.forEach(function(s, n){
@@ -427,20 +451,22 @@ const SITE_VERSION = '26.09.06_05-58-0063';
       events.push({ start: from, end: to, title: 'Showing: ' + splitAddr(s.address).street, loc: s.address, desc: s.blurb || '' });
     });
 
-    // Nothing may be lost. If any live stop has no window - or none of them do
-    // - one umbrella event holds the whole day and lists every address, and the
-    // timed showings above become detail on top of it rather than the only
-    // record of the tour.
-    if(events.length < live.length){
-      var lastEnd = events.length ? events[events.length - 1].end : null;
-      var end = (lastEnd && lastEnd > base) ? lastEnd : new Date(base.getTime() + 3 * 60 * 60 * 1000);
-      events.unshift({
-        start: base, end: end,
-        title: 'Home tour with 804Michael',
-        loc: live[0].address,
-        desc: live.map(function(s, n){ return (n+1) + '. ' + s.address; }).join('\n')
-      });
-    }
+    // One block standing for the whole day: what the Google link uses, and what
+    // keeps a showing with no window from being lost out of the file.
+    var lastEnd = events.length ? events[events.length - 1].end : null;
+    var whole = {
+      start: base,
+      end: (lastEnd && lastEnd > base) ? lastEnd : new Date(base.getTime() + 3 * 60 * 60 * 1000),
+      title: 'Home tour with 804Michael',
+      loc: live[0].address,
+      desc: live.map(function(s, n){
+        var w = fmtWindow(s.windowStart, s.windowEnd);
+        return (n+1) + '. ' + s.address + (w ? '  (' + w + ')' : '');
+      }).join('\n')
+    };
+    // In the file it is only needed when a timed event would otherwise miss a
+    // stop - otherwise it just duplicates what is already there.
+    if(events.length < live.length) events.unshift(whole);
 
     var stamp = icsDate(new Date());
     var lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//804Michael//Home Tour//EN','CALSCALE:GREGORIAN'];
@@ -459,8 +485,14 @@ const SITE_VERSION = '26.09.06_05-58-0063';
     lines.push('END:VCALENDAR');
 
     var blob = new Blob([lines.join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
-    link.href = URL.createObjectURL(blob);
-    link.hidden = false;
+    var href = URL.createObjectURL(blob);
+    // Apple Calendar opens an .ics directly on iPhone and Mac, so it is the
+    // same file - the two names are here because that is what a client looks
+    // for, not because the bytes differ.
+    document.getElementById('ctCalApple').href = href;
+    document.getElementById('ctCalIcs').href = href;
+    document.getElementById('ctCalGoogle').href = googleCalUrl(whole);
+    row.hidden = false;
   }
 
   function skippedStopHtml(a, i, total){

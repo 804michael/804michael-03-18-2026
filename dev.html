@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_01-25-0067                            ║
+  ║  SITE VERSION: 26.09.06_06-18-0068                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_01-25-0067    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.06_06-18-0068    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -195,11 +195,20 @@
        The dashed .dev-card-dropline placeholder is gone with it: the card
        itself moves live through the grid, so a second ghost slot was only
        ever one more thing to leave behind. */
-    .dev-card.drag-active{outline:2px solid var(--card-accent,var(--red));outline-offset:2px;box-shadow:0 12px 28px rgba(0,0,0,.22);transform:scale(1.02);transition:none}
+    .dev-card.drag-active{outline:2px solid var(--card-accent,var(--red));outline-offset:2px;box-shadow:0 12px 28px rgba(0,0,0,.22);transition:none;position:relative;z-index:5}
     /* Body-level flag while a drag is live: kills the hover lift on every
        other card so the grid does not twitch under the finger. */
     body.dev-dragging .dev-card:hover{transform:none}
     body.dev-dragging{user-select:none;-webkit-user-select:none}
+    /* touch-action:none on the 24px grip only covers the moment the finger
+       lands. The instant the dragged card is re-inserted into the DOM its
+       implicit pointer capture is released, Chrome on Android re-decides what
+       the finger is doing against whatever is under it now - which scrolls -
+       and fires pointercancel. The drag ended before it had moved anything:
+       the card lit up, sprang back as .drag-active's scale(1.02) transitioned
+       off, and would not move. Locking the whole page for the duration of the
+       gesture is what stops the browser re-deciding. */
+    body.dev-dragging, body.dev-dragging *{touch-action:none}
 
     /* ── Card colour swatches in the editor ── */
     .dev-swatches{display:flex;flex-wrap:wrap;gap:7px}
@@ -766,7 +775,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_01-25-0067</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_06-18-0068</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -777,7 +786,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_01-25-0067';
+  const SITE_VERSION = '26.09.06_06-18-0068';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -1416,12 +1425,38 @@
     var dragPointerId = null;
     var dragMoved = false;
     var autoScrollTimer = null;
+    // Where inside the card the finger landed. Everything below is measured
+    // from the card's projected position rather than from the raw pointer, so
+    // "where would this card be if I let go now" is the same question the
+    // reorder answers and the eye sees.
+    var grabOffsetY = 0;
 
-    function cardUnderPoint(x, y){
-      var el = document.elementFromPoint(x, y);
-      while(el && el !== document.body){
-        if(el.classList && el.classList.contains('dev-card')) return el;
-        el = el.parentElement;
+    // Lift the card and keep it under the finger. Until this existed nothing
+    // moved at all until a swap fired ~160px in, so a real drag that had not
+    // yet crossed a neighbour was indistinguishable from a broken one.
+    function followPointer(y){
+      dragEl.style.transform = '';                    // measure where it sits now
+      var r = dragEl.getBoundingClientRect();
+      dragEl.style.transform = 'translateY(' + (y - grabOffsetY - r.top) + 'px) scale(1.02)';
+    }
+
+    // Which card should the dragged one sit BEFORE, given the pointer is at y?
+    // null means "past every card", i.e. append.
+    //
+    // This replaced document.elementFromPoint (2026-09-06). Asking "which card
+    // is under the finger" works on a three-column desktop grid, where a small
+    // sideways move lands on a neighbour immediately. On a phone the grid is a
+    // single column and a card is ~145px tall, so the finger stays inside the
+    // card it grabbed for the whole of a normal swipe and the test never fired
+    // - the card lit up and then would not move. Midpoints react as soon as the
+    // pointer crosses a neighbour, and keep reacting as the card follows.
+    function insertionRef(y){
+      var kids = Array.prototype.slice.call(dragEl.parentNode.children);
+      for(var i = 0; i < kids.length; i++){
+        var c = kids[i];
+        if(c === dragEl || !c.classList || !c.classList.contains('dev-card')) continue;
+        var r = c.getBoundingClientRect();
+        if(y < r.top + r.height / 2) return c;
       }
       return null;
     }
@@ -1443,14 +1478,15 @@
       e.preventDefault();
       edgeScroll(e.clientY);
 
-      var over = cardUnderPoint(e.clientX, e.clientY);
-      if(!over || over === dragEl) return;
-
-      // Insert before or after the hovered card depending on which half of it
-      // the pointer is in, so the drop position matches what you can see.
-      var r = over.getBoundingClientRect();
-      var after = (e.clientY - r.top) > r.height / 2;
-      over.parentNode.insertBefore(dragEl, after ? over.nextSibling : over);
+      followPointer(e.clientY);
+      // The card's own midpoint where it currently appears - not the finger's -
+      // is what decides the slot, so grabbing a card by its bottom edge behaves
+      // the same as grabbing it by its top.
+      var ref = insertionRef(e.clientY - grabOffsetY + dragEl.offsetHeight / 2);
+      // Already in that slot - moving it there again would churn the DOM on
+      // every pointermove and fight the finger.
+      if(ref === dragEl || ref === dragEl.nextSibling) return;
+      dragEl.parentNode.insertBefore(dragEl, ref);
       dragMoved = true;
     }
 
@@ -1478,8 +1514,12 @@
       window.removeEventListener('blur', endDrag);
       if(autoScrollTimer){ clearInterval(autoScrollTimer); autoScrollTimer = null; }
       document.body.classList.remove('dev-dragging');
+      if(dragPointerId != null){
+        try{ if(grid.hasPointerCapture(dragPointerId)) grid.releasePointerCapture(dragPointerId); }catch(err){}
+      }
       dragPointerId = null;
       if(!dragEl) return;
+      dragEl.style.transform = '';
       dragEl.classList.remove('drag-active');
       dragEl = null;
       swallowNextClick();
@@ -1502,16 +1542,29 @@
         dragEl = card;
         dragPointerId = e.pointerId;
         dragMoved = false;
+        grabOffsetY = e.clientY - card.getBoundingClientRect().top;
         card.classList.add('drag-active');
         document.body.classList.add('dev-dragging');
 
         // No setPointerCapture here on purpose — see the note above. Touch
         // pointers get implicit capture on the grip anyway, and these document
         // listeners keep receiving the gesture after the DOM move releases it.
+        // Capture on the GRID, not on the grip (2026-09-06). Capturing to the
+        // grip was the original bug: the grip lives inside the card, so every
+        // insertBefore detached it and dropped the capture. Dropping capture
+        // altogether was not the answer either - without it the browser keeps
+        // re-hit-testing the finger and can take the gesture back mid-drag.
+        // The grid is never moved, so a capture held there survives every
+        // reorder and the gesture stays ours start to finish. The listeners
+        // stay on document, which sees the events either way.
+        try{ grid.setPointerCapture(e.pointerId); }catch(err){}
+
         document.addEventListener('pointermove', onDragMove, {passive:false});
         document.addEventListener('pointerup', onDragEnd, true);
         document.addEventListener('pointercancel', onDragEnd, true);
-        window.addEventListener('blur', endDrag);
+        // Mouse only. On Android the address bar sliding in or out during a
+        // drag blurs the window, which ended the gesture on the spot.
+        if(e.pointerType === 'mouse') window.addEventListener('blur', endDrag);
       });
     }
     window.devBindCardDrag = bindCardDrag;

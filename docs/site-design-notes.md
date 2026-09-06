@@ -1189,10 +1189,12 @@ Measured at 412px (Michael's S24 Ultra) and 320px.
   as a second uppercase heading competing with the address.
 - The client's stars sit on one row with the Directions button, between the client's
   comment and the agent's note — where the eye already is on the way to the next tap.
-- The agent note is a full-width cream band bled past the body padding, not a dashed
-  box. **Note it is shown twice**: once as that band and once in the editable textarea
-  below it, which are the same `s.notes` field. Michael asked for both, so both are
-  there, and the band now tracks the textarea live — but one of the two could go.
+- The read-only agent-note band is **gone** (same day, at Michael's call once he saw
+  it rendered). It and the textarea under it were the same `s.notes` field drawn
+  twice, which cost a whole phone screen to say one thing. The textarea is the one you
+  can type into during a tour, so it is the one that stays; its own label already says
+  the note never reaches a client. With the band gone a full stop fits one screen at
+  412px with room to spare.
 - "Rate this home" is capped at `5.5em` so it stacks to two short lines, and the five
   rating buttons are pills (`flex:1 1 0`) that give up width before the row overflows.
 - Tour Mode was still showing `14:00–14:45` while every other surface had moved to
@@ -1222,3 +1224,51 @@ Local static server plus a stubbed `/api/tour-page`, at 320 / 375 / 412px:
 
 Not exercised live: the "wipe feedback on tour load" path needs the `/api/tours`
 endpoint and was verified by reading the code only.
+
+### Addendum, same day — three ways into a calendar, and the dev-hub drag
+
+**Calendar: Google, Apple, .ics.** Michael asked for all three rather than one link.
+They are not three formats — Apple and `.ics` are the same blob, because opening an
+`.ics` *is* how you add to Apple Calendar on an iPhone or Mac. The two names are there
+because that is what a person looks for. Google is genuinely different: its
+`calendar/render?action=TEMPLATE` URL carries exactly **one** event, so it gets the
+whole-tour block with every address and window in the details, while the file carries
+one event per timed showing. The umbrella event is therefore always built now; it is
+only written *into the file* when a live stop has no window and would otherwise be
+lost from it.
+
+Note this is the opposite call from the Directions button, which auto-detects Apple vs
+Google rather than offering both. That was deliberate then (nobody wants to pick a maps
+app from a car) and this is deliberate now — adding to a calendar happens once, sitting
+still, and people know which calendar they keep.
+
+**Dev hub drag on a phone — three causes, all real.** "Red outline shows, card bounces
+a little, will not move."
+
+1. **The gesture was being taken back mid-drag.** `touch-action:none` sat only on the
+   24px grip. The moment the dragged card is re-inserted into the DOM its implicit
+   pointer capture is released, Chrome on Android re-hit-tests the finger against
+   whatever is under it now — which scrolls — and fires `pointercancel`. The drag
+   ended before it had moved anything, and `.drag-active`'s `scale(1.02)` transitioning
+   off is the "bounce". Fixed by `body.dev-dragging, body.dev-dragging *{touch-action:none}`
+   and by **capturing the pointer on `.dev-grid`** — the grid is never moved, unlike the
+   grip, so one capture holds for the whole gesture. Capturing on the grip was the
+   original 2026-09-05 bug; the fix then was to drop capture entirely, which was an
+   over-correction. Capture on something stable is the right answer.
+2. **`window blur` ended the drag.** On Android the address bar sliding in or out
+   during a drag blurs the window. That listener is now mouse-only.
+3. **`document.elementFromPoint` never fired on a phone.** Asking "which card is under
+   the finger" works on a three-column desktop grid, where a small sideways move lands
+   on a neighbour at once. On a phone the grid is one column and a card is ~145px tall,
+   so the finger stays inside the card it grabbed for the whole of a normal swipe.
+   Replaced with sibling **midpoints**, and the dragged card now **follows the finger**
+   (`translateY` recomputed each move, insertion decided by the card's projected
+   midpoint rather than the raw pointer). Two 145px cards still need ~165px of travel to
+   swap — that is just the geometry — but the card visibly moves the whole way, so a
+   drag in progress no longer looks like a broken one.
+
+Verified with stepwise touch-type PointerEvents at 412px: the card translates from the
+first move, swaps one slot at ~170px, moves three slots on a 500px drag, returns
+exactly on the reverse drag, no oscillation, no stuck `.drag-active`, order persisted.
+A real finger drag still could not be run — the browser pane will not render for
+`left_click_drag` — so Michael's phone is the confirming test.
