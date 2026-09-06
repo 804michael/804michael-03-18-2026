@@ -32,10 +32,20 @@ const ISGD_URL = 'https://is.gd/create.php';
 const TINYURL_URL = 'https://tinyurl.com/api-create.php';
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
-// Same 2-year sliding-ish TTL as saved tours (see tours.js) — plenty long
-// for a link that's meant to be texted/printed and used within days or
-// weeks, without keeping short codes in KV forever.
-const SHORT_TTL_SECONDS = 60 * 60 * 24 * 365 * 2;
+// 90 days (shortened from 2 years, 2026-09-06). A new short code is minted on
+// every Calculate Route, so these accumulate faster than anything else in the
+// namespace - hundreds a year in real use - while the link itself is only
+// useful for the days or weeks around one tour. 90 days is far longer than any
+// route link stays relevant and stops the namespace filling with dead codes.
+//
+// This only affects codes minted from here on: KV fixes an expiry at write
+// time, so links created before this change keep their original 2-year expiry
+// and have to be removed by hand if that matters.
+//
+// The client tour page is NOT affected. That lives under tourpage_ with its own
+// TTL - 2 years for a random code, none at all for a custom slug - and the
+// texting box now prefers that link anyway.
+const SHORT_TTL_SECONDS = 60 * 60 * 24 * 90;
 const SHORT_CODE_LEN = 7;
 // Unambiguous alphabet — no 0/O, 1/l/I, etc, in case a code is ever read
 // off a printout instead of tapped/scanned.
