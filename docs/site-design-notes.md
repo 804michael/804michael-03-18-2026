@@ -1754,3 +1754,22 @@ Loading the real MLS export matched **5 of 14** (the five listings; the nine err
 correctly did not match), 14 fact cards rendered, and tax estimated from Hanover 0.81%
 against list price. Map, Optimize, Calculate, Save, Publish, Print and share links all
 present and working.
+
+### Housekeeping — the Pro tools moved into the left column (2026-09-06)
+
+They were sitting a screen below the whole layout, which put the controls that act *on*
+the stops nowhere near the stops. MLS import, Match stops and Errand runs now live in
+`.tp-col-left` after Stops and Save/Reuse Tours, styled to the panel metrics around them
+(`border-radius:16px; padding:20px 20px 22px`) so they read as part of the tool column
+rather than something pasted in from another page.
+
+**What deliberately did NOT move:** the Facts / Compare / Payment tabs and the read-me
+note stay full width below. A comparison table across ten stops cannot live in a 440px
+column, and squeezing it there would have been the wrong trade.
+
+Three grid rules had to narrow for the column: `.er-runs`, `.rp-facts` and
+`.rp-rates-rows` all stop trying to sit multiple cards abreast.
+
+Verified at 1280px with 14 stops: left column 440px, right 751px, side by side, the rail
+still aligned to its list, two "+ Add segment" clicks giving 4 / 3 / 7, no horizontal
+overflow, and the document's 223 divs balanced.
