@@ -89,18 +89,28 @@ const DEFAULT_SOURCES = [
 
   { id: 'rva-bizsense',    label: 'Richmond BizSense',   type: 'local', url: 'https://richmondbizsense.com/feed/',        enabled: true },
 
-  // Michael's own former (Paperless Agent) site. Pulled for two reasons: it is
-  // a topic source in its own right, and its 112 posts are the main
-  // cannibalisation corpus — see ?mode=corpus below.
-  { id: 'michaelhottman',  label: 'michaelhottman.com',  type: 'own',   url: 'http://michaelhottman.com/feed/',           enabled: true },
+  // Michael's own former (Paperless Agent) site. Disabled by default since
+  // 2026-09-06: that domain is now Cloudflare-proxied on the same account as
+  // this one, so a Pages Function subrequest to it always returns 421 (see the
+  // CORPUS note below). Nothing is lost — the corpus sync pulls all 112 of his
+  // posts from the browser instead, which is the same topic signal plus the
+  // dates. Left in the list, off, so the reason is visible rather than a
+  // mystery gap.
+  { id: 'michaelhottman',  label: 'michaelhottman.com',  type: 'own',   url: 'https://michaelhottman.com/feed/',          enabled: false },
 ];
 
-// HTTPS first so this starts working by itself the day michaelhottman.com gets
-// a certificate. Today it has no TLS listener at all, and Cloudflare upgrades
-// outbound http:// subrequests, so BOTH of these currently fail from the
-// runtime with a 421 even though plain http works fine from a laptop. When
-// they fail the page falls back to /blog-corpus.json, a baked snapshot in the
-// repo. See the note in that file.
+// michaelhottman.com moved onto Cloudflare on 2026-09-06 and now serves HTTPS
+// correctly. This still fails from HERE, for a different reason than before:
+// both sites are Cloudflare-proxied on the same account, and a Pages Function
+// subrequest to another proxied zone goes edge-to-edge and comes back 421
+// Misdirected Request. Fetching any non-Cloudflare host from this same
+// function works fine, which is how that was isolated.
+//
+// So this path is expected to fail and is kept only in case that ever changes.
+// The page no longer depends on it: blog-desk.html fetches the corpus straight
+// from the browser, which works because WordPress echoes the request Origin in
+// Access-Control-Allow-Origin. The baked /blog-corpus.json remains the last
+// resort. See syncCorpus() in blog-desk.html for the full order.
 const CORPUS_HOSTS = ['https://michaelhottman.com', 'http://michaelhottman.com'];
 const CORPUS_WP_PATH = '/wp-json/wp/v2/posts';
 const CORPUS_RSS_PATH = '/feed/';

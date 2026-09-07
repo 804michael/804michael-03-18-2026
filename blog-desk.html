@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_22-56-0006                            ║
+  ║  SITE VERSION: 26.09.07_00-57-0007                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_22-56-0006    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.07_00-57-0007    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -386,7 +386,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_22-56-0006</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.07_00-57-0007</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -396,7 +396,7 @@
 
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
-  const SITE_VERSION = '26.09.06_22-56-0006';
+  const SITE_VERSION = '26.09.07_00-57-0007';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(function (el) { el.textContent = new Date().getFullYear(); });
@@ -1058,21 +1058,58 @@
       return list.length + ' published posts loaded ' + how + '. New ideas are now checked against all of them.';
     }
 
-    // The live pull is preferred, but michaelhottman.com is HTTP-only and
-    // Cloudflare upgrades outbound subrequests to HTTPS, which that host does
-    // not answer — so from the deployed site this currently always fails with
-    // a 421. /blog-corpus.json is a snapshot committed to the repo for exactly
-    // that case. The live path stays first so this heals itself the day that
-    // site gets a certificate.
-    fetch('/api/blog-scan?mode=corpus').then(function (r) { return r.json(); }).then(function (d) {
-      if (d.corpus && d.corpus.length) {
-        say(apply(d.corpus, 'live from michaelhottman.com via ' + d.source));
-        return null;
+    // Three ways to get the corpus, best first.
+    //
+    // 1. Straight from the browser. Works since michaelhottman.com moved onto
+    //    Cloudflare and got HTTPS (2026-09-06): WordPress echoes the request
+    //    Origin back in Access-Control-Allow-Origin, so this page may read it
+    //    cross-origin. This is now the normal path.
+    // 2. The Pages Function. Expected to fail with 421 while both sites are
+    //    Cloudflare-proxied on the same account - a subrequest between two
+    //    proxied zones goes edge-to-edge and is refused. Kept in case that
+    //    changes, and because it is the only path that would work if the
+    //    WordPress CORS behaviour were ever locked down.
+    // 3. The committed snapshot, which is always there and always stale.
+    function fromBrowser() {
+      var base = 'https://michaelhottman.com/wp-json/wp/v2/posts?per_page=100&_fields=title,link,date&page=';
+      var all = [];
+      function page(n) {
+        return fetch(base + n).then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        }).then(function (rows) {
+          if (!Array.isArray(rows) || !rows.length) return all;
+          rows.forEach(function (x) {
+            var t = (x && x.title && x.title.rendered) || '';
+            // Titles come back with entities and the odd inline tag.
+            var tmp = document.createElement('textarea');
+            tmp.innerHTML = String(t).replace(/<[^>]*>/g, ' ');
+            t = tmp.value.replace(/\s+/g, ' ').trim();
+            if (t && /^https?:\/\//i.test(x.link || '')) {
+              all.push({ title: t, url: x.link, date: String(x.date || '').slice(0, 10), origin: 'michaelhottman.com' });
+            }
+          });
+          return rows.length < 100 || n >= 3 ? all : page(n + 1);
+        });
       }
-      return fetch('/blog-corpus.json').then(function (r) { return r.json(); }).then(function (snap) {
-        if (!snap || !snap.corpus || !snap.corpus.length) throw new Error('snapshot empty');
-        say(apply(snap.corpus, 'from the ' + snap.generated + ' snapshot') +
-          ' Live pull failed (' + (d.error || 'unreachable') + '), which is expected until michaelhottman.com has an SSL certificate.');
+      return page(1);
+    }
+
+    fromBrowser().then(function (list) {
+      if (!list.length) throw new Error('no posts returned');
+      say(apply(list, 'live from michaelhottman.com'));
+    }).catch(function (browserErr) {
+      return fetch('/api/blog-scan?mode=corpus').then(function (r) { return r.json(); }).then(function (d) {
+        if (d.corpus && d.corpus.length) {
+          say(apply(d.corpus, 'live via the server (' + d.source + ')'));
+          return null;
+        }
+        return fetch('/blog-corpus.json').then(function (r) { return r.json(); }).then(function (snap) {
+          if (!snap || !snap.corpus || !snap.corpus.length) throw new Error('snapshot empty');
+          say(apply(snap.corpus, 'from the ' + snap.generated + ' snapshot') +
+            ' Both live paths failed (browser: ' + (browserErr && browserErr.message || browserErr) +
+            '; server: ' + (d.error || 'unreachable') + ').');
+        });
       });
     }).catch(function (e) {
       say('Could not load the corpus: ' + (e && e.message || e) + '. The overlap check has nothing to compare against until this works.', true);
