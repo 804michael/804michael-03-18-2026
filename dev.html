@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.06_18-34-0074                            ║
+  ║  SITE VERSION: 26.09.07_01-20-0075                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.06_18-34-0074    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.07_01-20-0075    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -581,6 +581,25 @@
       </div>
     </div>
 
+    <div class="dev-card" data-id="route-planner-demo" data-created="2026-09-06">
+      <div class="dev-card-head">
+        <h3>Route Planner Demo</h3>
+        <span class="dev-badge unlinked">Shareable</span>
+      </div>
+      <div class="dev-card-body">
+        <p>The planner, sandboxed, to hand to someone outside the business. Everything they do stays in their own browser — there is nothing on the server to clean up afterwards, by design rather than by discipline.</p>
+        <ul>
+          <li>The three endpoints that write to KV (saved tours, published client pages, short links) are cut off at the fetch layer before the planner script runs — blocking there rather than at each call site means a future edit cannot quietly re-open one</li>
+          <li>Both localStorage keys are namespaced <code>804m_demo_*</code>, so the demo and the real planner cannot see each other even in the same browser</li>
+          <li>Wipe this demo clears only those keys. Verified: real planner data sitting beside it was untouched</li>
+          <li>Route optimising and address lookup stay live — they compute and return, they store nothing, and without them there is no planner to show</li>
+          <li>Publishing a client page is switched off with a note saying why, rather than failing at someone</li>
+          <li>Safe to share the URL: noindex keeps it out of search, but a direct link works</li>
+        </ul>
+        <a class="dev-card-link" href="/route-planner-demo">View page →</a>
+      </div>
+    </div>
+
     <div class="dev-card" data-id="home-value" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Home Value Estimate</h3>
@@ -804,7 +823,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.06_18-34-0074</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.07_01-20-0075</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -815,7 +834,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.06_18-34-0074';
+  const SITE_VERSION = '26.09.07_01-20-0075';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());

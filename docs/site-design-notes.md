@@ -1773,3 +1773,51 @@ Three grid rules had to narrow for the column: `.er-runs`, `.rp-facts` and
 Verified at 1280px with 14 stops: left column 440px, right 751px, side by side, the rail
 still aligned to its list, two "+ Add segment" clicks giving 4 / 3 / 7, no horizontal
 overflow, and the document's 223 divs balanced.
+
+## Twentieth pass — a sandboxed demo copy of the planner (2026-09-06)
+
+`route-planner-demo.html` exists to be handed to someone outside the business. The
+requirement was "don't want the extra data/saves they might make" plus an easy wipe.
+
+### The answer is that there is nothing to wipe on the server
+
+A visitor's browser was never the risk — their localStorage is their own. The risk is
+that **three endpoints write into Michael's Cloudflare KV**: `/api/tours` (saved tours),
+`/api/tour-page` (published client pages and the ratings clients leave on them) and
+`/api/shorten-link` (`804re.com/s/...` codes). A stranger clicking Publish would create a
+real, live, shareable page.
+
+All three are cut off **at the fetch layer, before the planner's own script runs**:
+
+```js
+var WRITES = /\/api\/(tours|tour-page|shorten-link)\b/;
+window.fetch = function(input, init){ ... 503 {error:'demo_sandbox'} ... };
+```
+
+**Blocking there rather than at the six call sites is the point.** A call site missed in
+a later edit would silently start writing again; anything going through `fetch` has to
+pass this. And the planner already handles those endpoints failing — it falls back to
+localStorage — so the page degrades into exactly the mode it was built to degrade into
+rather than into an error state nobody designed.
+
+`/api/route-optimize` and `/api/address-autocomplete` stay live on purpose: they compute
+and return, they store nothing, and without them there is no route planner to show.
+
+### Namespaced storage, and a wipe that cannot overreach
+
+Both keys become `804m_demo_tour_saved_lists` and `804m_demo_tour_working_draft`, so the
+demo and the real planner cannot see each other even in one browser. "Wipe this demo"
+removes only keys under the `804m_demo_` prefix.
+
+Verified by planting real planner data beside the demo's, saving a tour in the demo, then
+wiping: demo keys gone, `804m_tour_saved_lists` and `804m_tour_working_draft` byte-identical.
+
+Publishing a client page is **disabled with a note explaining why**, rather than left to
+fail at someone — a 503 they cannot act on is worse than a button that says it is off.
+
+### It is a fork, so it is a debt
+
+Same rule as `route-planner-pro.html`: `tour-planner.html` ships and stays untouched, and
+a fix made in either fork has to be carried back deliberately. **If nobody is being shown
+the demo any more, delete the file.** Being `noindex` and out of the sitemap keeps it out
+of search while a direct link still works, which is exactly what a shareable demo needs.
