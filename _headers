@@ -36,3 +36,28 @@
 # remembered, so a future routing mistake can't strand a client the same way.
 /t/*
   Cache-Control: no-store
+
+# Shared HTML fragments must not be indexed (added 2026-09-06).
+#
+# nav-partial.html and Unified_footer.html are not pages. They are fetched by
+# JS and injected into real pages (nav.js does `placeholder.outerHTML = html`).
+# Requested on their own they render as a bare nav or a bare footer with no
+# hero, no content and no context - precisely the thin, duplicate-ish page
+# Google should never list under this domain. Both are publicly fetchable and
+# neither carries a canonical tag, so nothing was stopping that.
+#
+# This MUST be an HTTP header. It must NOT be a <meta name="robots"> inside
+# either file. Everything in nav-partial.html is injected into the DOM of
+# EVERY page on the site, Google honours a noindex it finds after rendering,
+# and a meta tag there would therefore deindex the entire site. An HTTP header
+# applies only to a direct request for these URLs, so it cannot leak into the
+# pages that include them.
+#
+# nav-partial.html also appears above with a Cache-Control rule. Cloudflare
+# Pages applies every matching rule, and these are different header names, so
+# both take effect.
+/nav-partial.html
+  X-Robots-Tag: noindex
+
+/Unified_footer.html
+  X-Robots-Tag: noindex
