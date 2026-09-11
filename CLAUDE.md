@@ -124,8 +124,10 @@ extracted inline script, a tag-balance check, and a real headless render
 (measuring computed styles / bounding boxes, and `page.pdf()` for print layout)
 before delivering. Several bugs in the history were caught only by rendering.
 
-Note the repo lives inside OneDrive, and a first write to a file has repeatedly
-reported success without landing — read the file back after writing it.
+The repo lives at `C:\Users\Micha\804 ai Websites\804michael-website`. It was
+moved out of OneDrive on 2026-09-11 because writes there repeatedly reported
+success without landing. If a write ever looks like it didn't take, read the
+file back.
 
 ## Reporting back — how to end every reply
 

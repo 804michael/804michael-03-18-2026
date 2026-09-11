@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.07_01-20-0075                            ║
+  ║  SITE VERSION: 26.09.11_13-01-0076                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.07_01-20-0075    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_13-01-0076    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -417,6 +417,67 @@
 
   <div class="dev-grid">
 
+    <div class="dev-card" data-id="privacy" data-created="2026-09-11">
+      <div class="dev-card-head">
+        <h3>Privacy Policy</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Adapted from malcolmrealestate.com for a seller/buyer site: what the forms, map, calculators and tour pages collect, who sees it, and how long it is kept.</p>
+        <ul>
+          <li>Covers EmailJS forms, address lookups, browser-only calculators, tour pages</li>
+          <li>Includes a wire fraud warning</li>
+          <li>Confirm the 24-month retention period before launch</li>
+        </ul>
+        <a class="dev-card-link" href="/privacy">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="terms" data-created="2026-09-11">
+      <div class="dev-card-head">
+        <h3>Terms of Use</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Site terms adapted from malcolmrealestate.com, rewritten around estimates and tools instead of rental listings.</p>
+        <ul>
+          <li>No agency relationship without a written brokerage agreement</li>
+          <li>Home value estimate is not an appraisal; calculators are estimates</li>
+        </ul>
+        <a class="dev-card-link" href="/terms">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="accessibility" data-created="2026-09-11">
+      <div class="dev-card-head">
+        <h3>Accessibility</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Accessibility statement adapted from malcolmrealestate.com. Claims only what the site actually does today and lists the known gaps.</p>
+        <ul>
+          <li>Known gaps: map tools need mouse/touch, no skip link, focus outline, reduced motion</li>
+          <li>Fixing those gaps lets the "not right yet" list shrink</li>
+        </ul>
+        <a class="dev-card-link" href="/accessibility">View page →</a>
+      </div>
+    </div>
+
+    <div class="dev-card" data-id="fair-housing" data-created="2026-09-11">
+      <div class="dev-card-head">
+        <h3>Fair Housing</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>Fair housing commitment adapted from malcolmrealestate.com for sellers and buyers instead of tenants.</p>
+        <ul>
+          <li>Seller and buyer practices, reasonable accommodations, VA and HUD complaint contacts</li>
+          <li>Recommends deciding offers without buyer letters or photos</li>
+        </ul>
+        <a class="dev-card-link" href="/fair-housing">View page →</a>
+      </div>
+    </div>
+
     <div class="dev-card" data-id="due-diligence" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Due Diligence</h3>
@@ -823,7 +884,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.07_01-20-0075</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_13-01-0076</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -834,7 +895,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.07_01-20-0075';
+  const SITE_VERSION = '26.09.11_13-01-0076';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
