@@ -278,3 +278,56 @@
 .msg-modal-status{font-size:.86rem;margin-top:10px;text-align:center;min-height:1.2em}
 .msg-modal-status.error{color:#c0392b}
 .msg-modal-status.success{color:#2f7d3a}
+
+/* ── Skip link (added 2026-09-11) ──
+   First element in nav-partial.html. Parked above the viewport until it
+   gets keyboard focus, then drops in at the top-left, above the banner
+   (z-index higher than #banner's 9999). nav.js handles the click: it moves
+   focus to the page's first visible <h1>. */
+.skip-link{position:fixed;top:8px;left:8px;z-index:10001;transform:translateY(-150%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.skip-link:focus{transform:none}
+
+/* ── Keyboard focus outline (added 2026-09-11) ──
+   :focus-visible only fires for keyboard-style focus, never for a mouse
+   click or a tap, so mouse and touch users see no change. Form fields are
+   left to each page, which already shows their focus as a red border.
+   tabindex="-1" is excluded because that is the skip link's landing spot
+   (the page title), which shouldn't get a box drawn around it. */
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="button"]:focus-visible,[tabindex]:not([tabindex="-1"]):focus-visible{outline:3px solid var(--red,#DA291C);outline-offset:2px}
+
+/* ── Toolbar placeholder + fade-in (added 2026-09-11) ──
+   #site-nav is the empty div nav.js swaps for nav-partial.html once that
+   arrives. It used to be empty, so every page drew with a blank strip at
+   the top and the toolbar popped in a moment later. Now the placeholder
+   paints the red banner strip and the white bar at their real sizes from
+   the first frame (this file loads in <head>, before anything draws), and
+   when the real toolbar replaces it only the CONTENTS fade in. The bars
+   themselves never blink. */
+#site-nav{position:fixed;top:0;left:0;right:0;z-index:5000;height:calc(var(--banner-h) + var(--nav-h));
+  background:linear-gradient(90deg,#b01f15 0%,#DA291C 40%,#e8372a 60%,#b01f15 100%) top/100% var(--banner-h) no-repeat,rgba(255,255,255,.88);
+  border-bottom:1px solid rgba(218,41,28,.1)}
+@keyframes navFadeIn{from{opacity:0}to{opacity:1}}
+#banner>*,#nav .nav-in{animation:navFadeIn .35s ease-out both}
+
+/* ── Reduced motion (added 2026-09-11) ──
+   Applies only to visitors whose device is set to "reduce motion", an
+   accessibility setting used by people for whom on-screen movement causes
+   dizziness or migraines. Everyone else sees no difference.
+   Decorative motion stops: scroll fade-ins, hero fade-up and zoom, the
+   banner shimmer, pulsing icons, map-search's hint fingers, smooth
+   scrolling, the toolbar fade. Loading spinners keep turning, because they
+   tell you something is still working.
+   animation:none leaves each element in its normal resting state. Every
+   fade-up on the site is written with fill-mode "both", so its end state
+   IS the element's normal state, and nothing is left invisible. */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto!important}
+  *,*::before,*::after{animation:none!important}
+  /* map-search declares this hint animation !important at higher specificity */
+  html .map-hint .hint-line-1 span[aria-hidden]{animation:none!important}
+  .reveal,.reveal.js-ready{opacity:1!important;transform:none!important;transition:none!important}
+  #nav{transition:none}
+  .val-btn-spinner,.btn-spinner,.search-spinner,.lp-btn-spinner{animation:spin .7s linear infinite!important}
+  .tp-spinner{animation:tpSpin .8s linear infinite!important}
+  .anim-ellipsis::after{animation:ellipsis 1.2s steps(1,end) infinite!important}
+}

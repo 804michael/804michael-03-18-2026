@@ -48,7 +48,13 @@
     document.head.appendChild(s);
   }
 
-  fetch('nav-partial.html')
+  // Fetch the extensionless URL first. On Cloudflare Pages, nav-partial.html
+  // answers with a 308 redirect to /nav-partial, so asking for the .html name
+  // cost every page load an extra round trip before the toolbar could appear.
+  // Local static servers (python -m http.server) don't do extensionless URLs,
+  // so a miss falls back to the .html name.
+  fetch('/nav-partial')
+    .then(res => res.ok ? res : fetch('nav-partial.html'))
     .then(res => {
       if (!res.ok) throw new Error('nav-partial.html fetch failed: ' + res.status);
       return res.text();
@@ -124,6 +130,26 @@
     // Re-check once more shortly after load in case a late web-font swap
     // (FOUT → the real Barlow Condensed) reflowed the banner's line count.
     setTimeout(scheduleBannerSync, 500);
+
+    // Skip link (first element in nav-partial.html, visible only when it has
+    // keyboard focus). Jumps past the banner and menu to the page's title:
+    // the first visible <h1>, else <main>, else the first <section>. Found at
+    // click time rather than tagged per page, so no page needs editing and a
+    // new page gets it for free. Scrolls manually because #nav is fixed and
+    // would otherwise sit on top of the target.
+    const skip = document.getElementById('skip-link');
+    if (skip) {
+      skip.addEventListener('click', function (e) {
+        const target = Array.from(document.querySelectorAll('h1')).find(h => h.offsetParent !== null) ||
+          document.querySelector('main') || document.querySelector('section');
+        if (!target) return;
+        e.preventDefault();
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+        const chrome = (banner ? banner.offsetHeight : 0) + (nav ? nav.offsetHeight : 0);
+        window.scrollTo(0, Math.max(0, target.getBoundingClientRect().top + window.scrollY - chrome - 12));
+      });
+    }
 
     // Nav shrink on scroll
     window.addEventListener('scroll', () => {

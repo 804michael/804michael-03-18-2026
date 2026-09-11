@@ -61,3 +61,17 @@
 
 /Unified_footer.html
   X-Robots-Tag: noindex
+
+# The extensionless twins (added 2026-09-11). Cloudflare Pages answers
+# /nav-partial.html with a 308 to /nav-partial, and _headers rules match the
+# path actually served, so the two .html rules above never reached the
+# response anyone received: the live fragment went out with no noindex and
+# no 5-minute cache. nav.js now fetches /nav-partial directly (skipping that
+# redirect), which makes these the rules that matter. The .html versions
+# stay for anything still requesting the old name.
+/nav-partial
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Robots-Tag: noindex
+
+/Unified_footer
+  X-Robots-Tag: noindex
