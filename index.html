@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.05_15-54-0051                            ║
+  ║  SITE VERSION: 26.09.11_13-17-0052                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.05_15-54-0051    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_13-17-0052    ║
   ║                                                               ║
   ║  📍 DEPLOYMENT MAP — WHERE THIS SITE ACTUALLY LIVES           ║
   ║  Live repo:      804michael/804michael-03-18-2026             ║
@@ -614,6 +614,8 @@
       </div>
       <p id="val-modal-status" class="val-modal-status"></p>
       <button type="submit" id="val-submit-btn" class="btn btn-red" style="display:flex;width:fit-content;max-width:100%;margin:0 auto;justify-content:center">Get My Custom Report</button>
+      <!-- Contact consent. Link "privacy policy" to /privacy here when the policy pages launch. -->
+      <p class="form-consent" style="font-size:.8rem;line-height:1.5;color:var(--gray-text,#555);text-align:center;margin:12px auto 0;max-width:46ch">By sending this, you agree that Michael Hottman may call, text, or email you about this request. Never marketing, and your information is never sold. Message and data rates may apply. Reply STOP to any text to opt out.</p>
     </form>
   </div>
 </div>
@@ -988,7 +990,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.05_15-54-0051</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_13-17-0052</p>
     <p class="ft-copy">
       &copy; <span id="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Malcolm Real Estate, Ashland, Virginia<br/>
@@ -1003,7 +1005,7 @@
   // ⚠ AI MAINTENANCE RULE
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.05_15-54-0051';
+  const SITE_VERSION = '26.09.11_13-17-0052';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
