@@ -34,6 +34,22 @@
   const EMAILJS_PUBLIC_KEY = 'OKJ28y1nsaYakyCX3';
   const EMAILJS_SERVICE_ID = 'service_wfjv62c';
   const MESSAGE_TEMPLATE_ID = 'template_contact_message';
+
+  // Lead mailer (added 2026-09-12). EmailJS's free plan has only 2 template
+  // slots, both used by Home Value and Map Search, so the Message modal sends
+  // through the Google Apps Script in docs/lead-mailer.gs first: it emails
+  // Michael and logs the lead in the "804re.com Leads" Sheet. An empty URL, or
+  // any failure, falls back to EmailJS; if that fails too the visitor sees
+  // call/text. seller-intake.html and buyer-intake.html carry the same helper.
+  const LEAD_SCRIPT_URL = '';
+  function sendLead(form, fields) {
+    function viaEmailJS() { return emailjs.send(EMAILJS_SERVICE_ID, MESSAGE_TEMPLATE_ID, fields); }
+    if (!LEAD_SCRIPT_URL) return viaEmailJS();
+    return fetch(LEAD_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ form: form, fields: fields, page_url: location.href }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (!d || d.status !== 'ok') throw new Error((d && d.message) || 'lead mailer error'); return d; })
+      .catch(function (err) { console.warn('Lead mailer failed, trying EmailJS:', err); return viaEmailJS(); });
+  }
   let _emailjsReady = false;
   function loadEmailJS(cb) {
     if (window.emailjs) {
@@ -276,7 +292,7 @@
         msgStatus.className = 'msg-modal-status';
 
         loadEmailJS(function () {
-          emailjs.send(EMAILJS_SERVICE_ID, MESSAGE_TEMPLATE_ID, {
+          sendLead('contact', {
             from_name: nameEl.value.trim(),
             from_email: emailEl.value.trim() || '(not provided)',
             phone: phoneEl.value.trim() || '(not provided)',

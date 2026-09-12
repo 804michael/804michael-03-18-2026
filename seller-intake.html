@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_21-59-0053                            ║
+  ║  SITE VERSION: 26.09.12_13-43-0054                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -363,7 +363,7 @@
 
 <p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-  <span id="site-version-display">v26.09.11_21-59-0053</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+  <span id="site-version-display">v26.09.12_13-43-0054</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
 </p>
 
 <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
@@ -371,7 +371,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_21-59-0053';
+  const SITE_VERSION = '26.09.12_13-43-0054';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -383,6 +383,21 @@
   var EMAILJS_PUBLIC_KEY  = 'OKJ28y1nsaYakyCX3';
   var EMAILJS_SERVICE_ID  = 'service_wfjv62c';
   var SELLER_INTAKE_TEMPLATE_ID = 'template_seller_intake';
+
+  // Lead mailer (added 2026-09-12). EmailJS's free plan has only 2 template
+  // slots, both used by Home Value and Map Search, so this form sends through
+  // the Google Apps Script in docs/lead-mailer.gs first: it emails Michael and
+  // logs the lead in the "804re.com Leads" Sheet. An empty URL, or any failure,
+  // falls back to EmailJS; if that fails too the visitor sees call/text.
+  var LEAD_SCRIPT_URL = '';
+  function sendLead(form, fields){
+    function viaEmailJS(){ return emailjs.send(EMAILJS_SERVICE_ID, SELLER_INTAKE_TEMPLATE_ID, fields); }
+    if (!LEAD_SCRIPT_URL) return viaEmailJS();
+    return fetch(LEAD_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ form: form, fields: fields, page_url: location.href }) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if (!d || d.status !== 'ok') throw new Error((d && d.message) || 'lead mailer error'); return d; })
+      .catch(function(err){ console.warn('Lead mailer failed, trying EmailJS:', err); return viaEmailJS(); });
+  }
   function _initEmailJS(){ if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', _initEmailJS); } else { _initEmailJS(); }
 
@@ -504,7 +519,7 @@
 
     const state = valStateEl.value.trim() || 'VA';
 
-    emailjs.send(EMAILJS_SERVICE_ID, SELLER_INTAKE_TEMPLATE_ID, {
+    sendLead('seller', {
       from_name: (fnameEl.value.trim() + ' ' + lnameEl.value.trim()).trim(),
       from_email: emailEl.value.trim() || '(not provided)',
       phone: phoneEl.value.trim() || '(not provided)',
