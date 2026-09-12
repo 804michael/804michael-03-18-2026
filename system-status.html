@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-34-0065                        ║
+  ║  SITE VERSION: 26.09.11_23-42-0066                       ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -370,7 +370,7 @@
         <div class="cmd-num">1</div>
         <div class="cmd-body">
           <div class="cmd-head"><h4><a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare<span class="ext">↗</span></a></h4><span class="svc-tag">Hosting, DNS, KV</span></div>
-          <p>Hosts and deploys the whole site (Pages project, git-connected), serves every <code>/api/</code> function, runs DNS for 804re.com, and holds the KV namespaces behind saved tours, client tour pages, the short-link redirector, and the dev hub's card order, notes and card edits. Deploys run when you run <code>push-live.bat</code>.</p>
+          <p>Hosts and deploys the whole site (Pages project, git-connected), serves every <code>/api/</code> function, runs DNS for 804re.com, and holds the KV namespaces behind saved tours, client tour pages, the short-link redirector, and the dev hub's card order, notes and card edits. A push to GitHub (branch <code>main</code>) is the deploy: Cloudflare rebuilds the site from the repo automatically.</p>
           <div class="svc-where"><b>Where:</b> Workers &amp; Pages → the 804re.com project. KV namespaces live under their own "Workers KV" item, not nested under Workers &amp; Pages.</div>
         </div>
       </div>
@@ -461,7 +461,7 @@
       <div class="cmd-item">
         <div class="cmd-num">11</div>
         <div class="cmd-body">
-          <div class="cmd-head"><h4><a href="https://script.google.com/" target="_blank" rel="noopener">Google Sheets + Apps Script<span class="ext">↗</span></a></h4><span class="svc-tag">Farm stand map</span></div>
+          <div class="cmd-head"><h4><a href="https://script.google.com/" target="_blank" rel="noopener">Google Sheets + Apps Script<span class="ext">↗</span></a> <span style="font-weight:400;font-size:.8em;color:var(--gray-muted)">(open in Incognito)</span></h4><span class="svc-tag">Farm stand map</span></div>
           <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails.</p>
           <div class="svc-where"><b>Where:</b> script.google.com, plus the Sheet itself.</div>
         </div>
@@ -509,7 +509,7 @@
           <li><a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare dashboard <span class="arr">›</span></a></li>
           <li><a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener">EmailJS templates <span class="arr">›</span></a></li>
           <li><a href="https://account.heigit.org/" target="_blank" rel="noopener">HeiGIT account (ORS key) <span class="arr">›</span></a></li>
-          <li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script <span class="arr">›</span></a></li>
+          <li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script <span style="font-weight:400;color:var(--gray-muted);font-size:.85em">(open in Incognito)</span> <span class="arr">›</span></a></li>
           <li><a href="https://github.com/804michael/804michael-03-18-2026" target="_blank" rel="noopener">GitHub repo <span class="arr">›</span></a></li>
           <li><a href="https://porkbun.com/account/domainsSpeedy" target="_blank" rel="noopener">Porkbun (domain) <span class="arr">›</span></a></li>
         </ul>
@@ -552,7 +552,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-34-0065</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-42-0066</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -565,7 +565,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-34-0065';
+  const SITE_VERSION = '26.09.11_23-42-0066';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
