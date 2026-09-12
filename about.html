@@ -1,0 +1,777 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.12_11-06-0051                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
+  ║  every single write to this file. There is no separate        ║
+  ║  counter file — the next session reads the LAST revision      ║
+  ║  number off this file itself (any of the 3 spots below)       ║
+  ║  and increments it by 1.                                      ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.12_11-06-0051    ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date/time, format YY.MM.DD_HH-MM, and ║
+  ║  the revision number from spot #2 above, PLUS ONE.            ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                           ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ║                                                               ║
+  ║  🚧 STAGING PAGE — NOT YET LAUNCHED                           ║
+  ║  This page is intentionally NOT linked from nav-partial.html  ║
+  ║  and NOT listed in sitemap.xml yet, and <meta name="robots">  ║
+  ║  below is set to "noindex, nofollow" on purpose. It is linked ║
+  ║  only from dev.html (804re.com/dev), Michael's internal       ║
+  ║  staging hub. When Michael says this page is ready to go live:║
+  ║    1. Add a link to it in nav-partial.html                    ║
+  ║    2. Add it to sitemap.xml                                   ║
+  ║    3. Change the robots meta tag below to "index, follow"     ║
+  ║    4. Breadcrumb: drop the "Dev" crumb (Home › About Michael) ║
+  ║    5. Move the staged /about line in llms.txt into Core pages ║
+  ║    6. Remove every .idea-flag box once each item is settled   ║
+  ║  Interview source: chat with Michael, 2026-09-12. Facts here  ║
+  ║  are his; do not add claims he has not confirmed.             ║
+  ╚═══════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────── -->
+  <title>About Michael Hottman | Ashland VA Real Estate Broker | 804Michael</title>
+  <meta name="description" content="Meet Michael Hottman (804Michael), Ashland VA broker with his family's Malcolm Real Estate. Licensed at 19, GRI, and the contract expert Central Virginia agents call." />
+  <meta name="keywords" content="Michael Hottman, 804Michael, about Michael Hottman realtor, Ashland VA real estate broker, Malcolm Real Estate, Hanover County real estate agent, Richmond VA contract expert, GRI Realtor Ashland VA" />
+  <link rel="canonical" href="https://804re.com/about" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- ── Open Graph (social sharing) ─────────────────────────────────────── -->
+  <meta property="og:type"        content="profile" />
+  <meta property="og:locale"      content="en_US" />
+  <meta property="og:url"         content="https://804re.com/about" />
+  <meta property="og:title"       content="About Michael Hottman | 804Michael" />
+  <meta property="og:description" content="Licensed at 19, raised in a family brokerage, and the broker other agents call when a contract goes sideways. Meet Ashland VA's 804Michael." />
+  <meta property="og:image"       content="https://804re.com/images/804michael_headshot-web.png" />
+  <meta property="og:site_name"   content="804Michael — Ashland VA Real Estate" />
+  <meta property="profile:first_name" content="Michael" />
+  <meta property="profile:last_name"  content="Hottman" />
+  <!-- ── Twitter / X ──────────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:site"        content="@804Michael" />
+  <meta name="twitter:title"       content="About Michael Hottman | 804Michael" />
+  <meta name="twitter:description" content="Licensed at 19, raised in a family brokerage, and the broker other agents call when a contract goes sideways." />
+  <meta name="twitter:image"       content="https://804re.com/images/804michael_headshot-web.png" />
+
+  <!-- ── Structured data: ProfilePage + Person + RealEstateAgent + brokerage
+       + BreadcrumbList + FAQPage, linked by @id in one graph.
+       The Person (#michael) is the entity this page establishes. Keep every
+       FAQPage answer word-for-word identical to the visible FAQ below. ──── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": "https://804re.com/about#page",
+        "url": "https://804re.com/about",
+        "name": "About Michael Hottman",
+        "dateModified": "2026-09-12",
+        "mainEntity": { "@id": "https://804re.com/about#michael" },
+        "breadcrumb": { "@id": "https://804re.com/about#breadcrumb" },
+        "isPartOf": { "@type": "WebSite", "@id": "https://804re.com/#website", "url": "https://804re.com/", "name": "804Michael" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://804re.com/about#michael",
+        "name": "Michael Hottman",
+        "givenName": "Michael",
+        "familyName": "Hottman",
+        "alternateName": "804Michael",
+        "jobTitle": "Real Estate Broker",
+        "description": "Michael Hottman is a Virginia real estate broker with Malcolm Real Estate, the family brokerage his grandfather founded, based in Ashland, VA. First licensed at 19, he spent about a decade in marketing, IT and graphic design and about a decade as a Licensed Professional Counselor, then returned to real estate in 2012. At Keller Williams he served as the informal broker support for an office of more than 200 agents, teaching the Virginia residential purchase agreement and helping agents out of contract trouble.",
+        "url": "https://804re.com/about",
+        "image": { "@type": "ImageObject", "url": "https://804re.com/images/804michael_headshot-web.png", "width": 1272, "height": 1696 },
+        "telephone": "+18046424235",
+        "email": "michael@804michael.com",
+        "worksFor": { "@id": "https://804re.com/about#malcolm" },
+        "homeLocation": { "@type": "Place", "name": "Ashland, Virginia" },
+        "alumniOf": [
+          { "@type": "CollegeOrUniversity", "name": "Virginia Tech", "sameAs": "https://en.wikipedia.org/wiki/Virginia_Tech" },
+          { "@type": "CollegeOrUniversity", "name": "Virginia Commonwealth University", "sameAs": "https://en.wikipedia.org/wiki/Virginia_Commonwealth_University" }
+        ],
+        "hasCredential": [
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Virginia Real Estate Broker License",
+            "credentialCategory": "license",
+            "identifier": "0225224914",
+            "recognizedBy": { "@type": "GovernmentOrganization", "name": "Virginia Real Estate Board, Department of Professional and Occupational Regulation" }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Graduate, REALTOR Institute (GRI)",
+            "credentialCategory": "certification",
+            "recognizedBy": { "@type": "Organization", "name": "National Association of REALTORS" }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Master Certified Negotiation Expert (MCNE)",
+            "credentialCategory": "certification",
+            "recognizedBy": { "@type": "Organization", "name": "Real Estate Negotiation Institute" }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Licensed Professional Counselor",
+            "credentialCategory": "license",
+            "recognizedBy": { "@type": "GovernmentOrganization", "name": "Virginia Board of Counseling" }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Master's degree in Rehabilitation Counseling",
+            "credentialCategory": "degree",
+            "recognizedBy": { "@type": "CollegeOrUniversity", "name": "Virginia Commonwealth University" }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Degree in Architecture",
+            "credentialCategory": "degree",
+            "recognizedBy": { "@type": "CollegeOrUniversity", "name": "Virginia Tech" }
+          }
+        ],
+        "knowsAbout": [
+          "Virginia residential purchase agreement",
+          "Real estate contract addenda and form modifications",
+          "Appraisal reconsideration of value",
+          "Seller representation",
+          "First-time home buyer representation",
+          "Real estate negotiation",
+          "Urban growth and development patterns",
+          "Hanover County real estate",
+          "Henrico County real estate",
+          "Rental property investment"
+        ],
+        "sameAs": [
+          "https://www.zillow.com/profile/804Michael",
+          "https://www.realtor.com/realestateagents/56b05db30fa41701007434f7",
+          "https://www.homes.com/real-estate-agents/michael-hottman/h3njsd1/",
+          "https://x.com/804Michael",
+          "https://www.tiktok.com/@804michael.com",
+          "https://www.youtube.com/@804michael"
+        ]
+      },
+      {
+        "@type": "RealEstateAgent",
+        "@id": "https://804re.com/#business",
+        "name": "804Michael — Michael Hottman Real Estate",
+        "alternateName": "804Michael",
+        "url": "https://804re.com/",
+        "image": "https://804re.com/images/804michael_headshot-web.png",
+        "telephone": "+18046424235",
+        "email": "michael@804michael.com",
+        "address": { "@type": "PostalAddress", "addressLocality": "Ashland", "addressRegion": "VA", "addressCountry": "US" },
+        "founder": { "@id": "https://804re.com/about#michael" },
+        "employee": { "@id": "https://804re.com/about#michael" },
+        "parentOrganization": { "@id": "https://804re.com/about#malcolm" },
+        "areaServed": [
+          { "@type": "City", "name": "Ashland", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "City", "name": "Richmond", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "City", "name": "Glen Allen", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "City", "name": "Mechanicsville", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Hanover County", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Henrico County", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Chesterfield County", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Powhatan County", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Goochland County", "containedInPlace": { "@type": "State", "name": "Virginia" } },
+          { "@type": "AdministrativeArea", "name": "Caroline County", "containedInPlace": { "@type": "State", "name": "Virginia" } }
+        ]
+      },
+      {
+        "@type": "RealEstateAgent",
+        "@id": "https://804re.com/about#malcolm",
+        "name": "Malcolm Real Estate",
+        "description": "Family-owned boutique real estate brokerage headquartered in Ashland, VA, founded by Michael Hottman's grandfather. Handles residential sales for sellers and buyers and manages the family's own rental portfolio.",
+        "address": { "@type": "PostalAddress", "addressLocality": "Ashland", "addressRegion": "VA", "addressCountry": "US" },
+        "identifier": { "@type": "PropertyValue", "name": "Virginia Real Estate Firm License", "value": "0226039677" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://804re.com/about#breadcrumb",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://804re.com/" },
+          { "@type": "ListItem", "position": 2, "name": "About Michael", "item": "https://804re.com/about" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://804re.com/about#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Who is 804Michael?",
+            "acceptedAnswer": { "@type": "Answer", "text": "804Michael is Michael Hottman, a licensed Virginia real estate broker with Malcolm Real Estate in Ashland, VA. He helps sellers and buyers across Hanover County, Henrico County, the City of Richmond, Chesterfield, Powhatan, Goochland and Caroline counties." }
+          },
+          {
+            "@type": "Question",
+            "name": "How long has Michael Hottman been in real estate?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Michael grew up in a real estate family and earned his license at 19. After careers in marketing, IT and graphic design and then counseling, he was licensed again in 2012 and has worked in real estate full time since 2013." }
+          },
+          {
+            "@type": "Question",
+            "name": "What is Malcolm Real Estate?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Malcolm Real Estate is a small, family-owned brokerage in Ashland, VA, founded by Michael's grandfather. Only family members work there. It represents residential sellers and buyers and manages the family's own rental properties." }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does growing up in Fairfax County matter for Richmond-area real estate?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Michael grew up in Annandale while Fairfax County filled in: golf courses and a former Army base became townhomes, Tysons Corner boomed, and small postwar homes were torn down for much larger ones. Growth tends to follow the same pattern from place to place, and the Richmond area is now in the earlier stages of it. That history helps him judge which neighborhoods are likely to gain value and which homes may be hard to sell later." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Michael Hottman practice dual agency?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Michael never represents both the seller and the buyer in the same transaction, so each client gets undivided loyalty." }
+          },
+          {
+            "@type": "Question",
+            "name": "What credentials does Michael Hottman hold?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Michael holds a Virginia real estate broker license and the GRI (Graduate, REALTOR Institute) and MCNE (Master Certified Negotiation Expert) designations. He also holds a Virginia Licensed Professional Counselor license, a Master's degree in Rehabilitation Counseling from VCU, and a degree in Architecture from Virginia Tech." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ─────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" />
+
+  <!-- ── Shared site navigation (banner, nav bar, hamburger menu) ──────────── -->
+  <link rel="stylesheet" href="nav.css">
+
+  <style>
+    :root{--red:#DA291C;--red-dark:#b01f15;--black:#111;--white:#fff;--gray-light:#f5f5f5;--gray-mid:#e0e0e0;--gray-text:#555;--gray-muted:#888}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%}
+    a{text-decoration:none;color:inherit}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.44rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s,transform .15s;cursor:pointer;border:2px solid transparent}
+    .btn-red{background:var(--red);color:var(--white);border-color:var(--red)}
+    .btn-red:hover{background:var(--red-dark);border-color:var(--red-dark)}
+    .btn-outline{background:transparent;color:var(--black);border-color:var(--gray-mid)}
+    .btn-outline:hover{border-color:var(--black)}
+
+    /* ── Page Hero — black bar, no image ── */
+      /* No 100vw breakout: this bar is a direct child of <body>, so it already
+         spans the full content width. See the black-hero standard in
+         site-design-notes.md. */
+    .black-hero{
+      background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;
+      margin-top:calc(var(--banner-h) + var(--nav-h));
+    }
+    .black-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red)}
+    .black-hero h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;letter-spacing:-.01em;margin:0 0 10px}
+    .black-hero h1 span{color:var(--red)}
+    .black-hero-sub{display:flex;gap:18px;flex-wrap:wrap;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{background:var(--black);padding:12px 0}
+    .breadcrumb-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    .breadcrumb a{color:rgba(255,255,255,.5);transition:color .2s}
+    .breadcrumb a:hover{color:var(--red)}
+    .breadcrumb .sep{color:rgba(255,255,255,.25)}
+    .breadcrumb .cur{color:rgba(255,255,255,.85)}
+    .breadcrumb-home{display:inline-flex;align-items:center}
+
+    /* ── Main Layout ── */
+    .pg-body{max-width:1200px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+    @media(max-width:900px){.pg-body{grid-template-columns:1fr;gap:40px}}
+    .pg-main,.pg-side{min-width:0}
+
+    .pg-main h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.1rem;text-transform:uppercase;letter-spacing:-.01em;line-height:1.05;margin-bottom:10px}
+    .pg-main h2 .r{color:var(--red)}
+    .pg-main h3{font-family:'Barlow',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:10px}
+    .pg-main p.body-p{font-size:1rem;line-height:1.75;color:#3d3d3d;margin-bottom:14px;max-width:66ch}
+    .pg-main p.body-p a{color:var(--red);text-decoration:underline}
+
+    /* ── Step label ── */
+    .step-lbl{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+    .step-lbl-line{display:inline-block;width:22px;height:2px;background:var(--red)}
+    section.stage{margin-bottom:52px;scroll-margin-top:calc(var(--banner-h) + var(--nav-h) + 16px)}
+    section.stage:last-of-type{margin-bottom:0}
+
+    /* ── Intro: photo + at-a-glance facts. The fact list is written in plain,
+       self-contained sentences on purpose: it is the block search engines and
+       AI assistants are most likely to lift as a summary of who Michael is. ── */
+    .intro{display:grid;grid-template-columns:200px 1fr;gap:20px 28px;align-items:center;margin:8px 0 36px}
+    .intro .glance{grid-column:1/-1;margin-top:6px}
+    .intro-lede{margin-bottom:0}
+    .intro-photo{border-radius:14px;overflow:hidden;background:var(--gray-light)}
+    .intro-photo img{width:100%;height:auto}
+    .intro h2{margin-bottom:14px}
+    .glance{list-style:none;border-top:1.5px solid var(--gray-mid)}
+    .glance li{display:grid;grid-template-columns:130px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid var(--gray-mid);font-size:.98rem;line-height:1.5;color:#3d3d3d}
+    .glance li b{font-family:'Barlow',sans-serif;font-weight:600;color:var(--black)}
+    @media(max-width:640px){
+      .intro{grid-template-columns:1fr}
+      .intro-photo{max-width:240px;margin:0 auto}
+      .glance li{grid-template-columns:1fr;gap:2px}
+    }
+
+    /* ── Pull quote ── */
+    .pull{border-left:5px solid var(--red);padding:6px 0 6px 20px;margin:22px 0 26px;font-family:'Barlow',sans-serif;font-weight:600;font-size:1.3rem;line-height:1.45;color:var(--black);max-width:60ch}
+    .pull cite{display:block;margin-top:8px;font-style:normal;font-weight:500;font-size:.9rem;color:var(--gray-text)}
+
+    /* ── Then/now pattern table (Fairfax then vs. Richmond area now) ── */
+    .tbl-wrap{overflow-x:auto;margin:18px 0 24px;border:1.5px solid var(--gray-mid);border-radius:14px}
+    .pattern-tbl{width:100%;border-collapse:collapse;min-width:560px;font-size:.95rem;line-height:1.55}
+    .pattern-tbl th{background:var(--black);color:var(--white);text-align:left;padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}
+    .pattern-tbl th:first-child{width:22%}
+    .pattern-tbl td{padding:12px 16px;border-top:1px solid var(--gray-mid);vertical-align:top;color:#3d3d3d}
+    .pattern-tbl td:first-child{font-weight:700;color:var(--black)}
+    .pattern-tbl tr:nth-child(even) td{background:#fafafa}
+
+    /* ── Timeline ── */
+    .timeline{list-style:none;margin:18px 0 8px;border-left:3px solid var(--gray-mid);padding-left:22px}
+    .timeline li{position:relative;padding:0 0 18px}
+    .timeline li::before{content:"";position:absolute;left:-30px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--white);border:3px solid var(--red)}
+    .timeline .yr-lbl{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:.06em;color:var(--red)}
+    .timeline p{font-size:.98rem;line-height:1.6;color:#3d3d3d;max-width:62ch}
+
+    /* ── Numbered principle cards (reuses the .cmd-list pattern from
+       financing-commandments.html) ── */
+    .cmd-list{display:flex;flex-direction:column;gap:14px;margin:20px 0 8px}
+    .cmd-item{display:flex;gap:18px;align-items:flex-start;background:var(--white);border:1.5px solid var(--gray-mid);border-radius:14px;padding:18px 20px;transition:border-color .2s,transform .2s}
+    .cmd-item:hover{border-color:var(--red);transform:translateY(-2px)}
+    .cmd-num{flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem}
+    .cmd-text{min-width:0}
+    .cmd-text strong{display:block;font-family:'Barlow',sans-serif;font-weight:700;font-size:1.3rem;color:var(--black);margin-bottom:4px}
+    .cmd-text p{font-size:.98rem;line-height:1.65;color:#3d3d3d}
+
+    /* ── Story cards ── */
+    .story{background:var(--gray-light);border-radius:14px;padding:20px 22px;margin:16px 0}
+    .story h3{font-size:1.15rem;margin-bottom:8px}
+    .story p{font-size:.98rem;line-height:1.7;color:#3d3d3d;margin-bottom:10px}
+    .story p:last-child{margin-bottom:0}
+    .story .story-num{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.06em;color:var(--red)}
+    .said{list-style:none;display:grid;gap:14px;margin:16px 0 8px}
+    .said li{border:1.5px solid var(--gray-mid);border-radius:14px;padding:16px 20px;font-size:1.05rem;line-height:1.55;font-weight:500}
+    .said li span{display:block;margin-top:6px;font-size:.88rem;font-weight:400;color:var(--gray-text)}
+
+    /* ── FAQ accordion (same pattern as find-a-home.html's .faq-box) ── */
+    .faq-box{background:var(--white);border:1.5px solid var(--gray-mid);border-radius:14px;margin:12px 0;overflow:hidden}
+    .faq-box summary{cursor:pointer;list-style:none;padding:16px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .faq-box summary::-webkit-details-marker{display:none}
+    .faq-box summary::after{content:"+";font-size:1.4rem;color:var(--red);flex-shrink:0;transition:transform .2s}
+    .faq-box[open] summary::after{transform:rotate(45deg)}
+    .faq-box summary:hover{color:var(--red)}
+    .faq-box-body{padding:0 20px 18px}
+    .faq-box-body p{font-size:.98rem;line-height:1.7;color:#3d3d3d}
+
+    /* ── Idea flag: TEMPORARY "for discussion" notes, same as find-a-home.html.
+       Delete each one once Michael settles it. Never ship one to a live page. ── */
+    .idea-flag{background:#f1eefb;border:1.5px dashed #8b6fd6;color:#3c2d70;border-radius:10px;padding:14px 18px;font-size:.92rem;line-height:1.6;margin:16px 0 24px}
+    .idea-flag .if-lbl{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;color:#5b3fb0;margin-bottom:6px}
+
+    /* ── CTA block (in-content) ── */
+    .rg-cta{background:transparent;border-top:2px solid var(--gray-mid);border-bottom:2px solid var(--gray-mid);padding:28px 0;margin-top:8px}
+    .rg-cta h3{color:var(--black);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;text-transform:uppercase;margin-bottom:8px}
+    .rg-cta p{color:var(--gray-text);font-size:.96rem;line-height:1.6;margin-bottom:18px;max-width:56ch}
+    .rg-cta-flex{display:flex;gap:26px;align-items:stretch}
+    .rg-cta-flex>.rg-cta-text{min-width:0;flex:1}
+    .rg-cta-photo{flex-shrink:0;border-radius:12px;overflow:hidden;max-width:150px}
+    .rg-cta-photo picture,.rg-cta-photo img{display:block;height:100%;width:auto;max-width:150px;object-fit:contain;border-radius:12px}
+    @media(max-width:640px){.rg-cta-photo{max-width:100%}.rg-cta-photo picture,.rg-cta-photo img{height:auto;max-height:220px;width:auto;margin:0 auto}}
+    .rg-cta-btns{display:flex;gap:12px;flex-wrap:wrap}
+    .rg-cta-btns .btn{font-size:1.1rem;padding:11px 20px}
+    @media(max-width:640px){.rg-cta-flex{flex-direction:column;text-align:center}.rg-cta-btns{justify-content:center}}
+
+    /* ── Sidebar ── */
+    .pg-side{display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(var(--banner-h) + var(--nav-h) + 24px)}
+    .side-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:16px;overflow:hidden}
+    .side-card-head{background:var(--black);padding:13px 18px}
+    .side-card-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
+    .side-card-body{padding:14px 18px}
+    .side-va{background:var(--black);border-radius:16px;padding:20px 20px 18px;border-left:5px solid var(--red)}
+    .side-va h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:.03em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+    .side-va p{color:rgba(255,255,255,.78);font-size:.92rem;line-height:1.55}
+    .cred-list{list-style:none}
+    .cred-list li{padding:10px 0;border-bottom:1px solid var(--gray-mid);font-size:.95rem;line-height:1.45;color:#3d3d3d}
+    .cred-list li:last-child{border-bottom:none}
+    .cred-list li b{display:block;font-weight:600;color:var(--black)}
+    .explore-links{list-style:none}
+    .explore-links li a{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-mid);font-family:'Barlow',sans-serif;font-weight:600;font-size:1.05rem;color:var(--black);transition:color .2s}
+    .explore-links li:last-child a{border-bottom:none}
+    .explore-links li a:hover{color:var(--red)}
+    .explore-links li a .arr{font-size:1.1rem;color:var(--red)}
+    @media(max-width:900px){.pg-side{position:static}}
+
+    /* ── Footer ── */
+    footer{background:var(--black);padding:40px 24px 32px;border-top:1px solid rgba(255,255,255,.07)}
+    .ft-in{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+    .ft-copy{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.9}
+
+    .reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+    .reveal.js-ready{opacity:0;transform:translateY(20px)}
+    .reveal.vis{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<!-- PAGE HERO (black bar, no image) -->
+<div class="black-hero">
+  <div class="black-hero-in">
+    <h1>Meet Michael Hottman, <span>804Michael</span></h1>
+    <p class="black-hero-sub">Ashland VA real estate broker, third generation in the family business, and the agent other agents call about contracts</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB (staging: drop the Dev crumb at launch, see top comment) -->
+<div class="breadcrumb">
+  <div class="breadcrumb-in">
+    <a href="/" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
+    <span class="sep">›</span>
+    <a href="/dev">Dev</a>
+    <span class="sep">›</span>
+    <span class="cur">About Michael</span>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="pg-body">
+
+  <main class="pg-main">
+
+    <!-- INTRO + AT A GLANCE -->
+    <section class="stage intro" id="at-a-glance">
+      <div class="intro-photo">
+        <picture>
+          <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
+          <img src="images/804michael_headshot-web.png" alt="Michael Hottman, 804Michael, real estate broker with Malcolm Real Estate in Ashland, Virginia" width="1272" height="1696" />
+        </picture>
+      </div>
+      <div>
+        <div class="step-lbl"><span class="step-lbl-line"></span>At a Glance</div>
+        <h2>Michael Hottman <span class="r">in Brief</span></h2>
+        <p class="body-p intro-lede">Michael Hottman is a real estate broker in Ashland, Virginia, and the third generation of his family in the business. Central Virginia agents know him for his contract expertise, and he uses what he watched happen in Fairfax County to help sellers and buyers see where the Richmond area is heading.</p>
+      </div>
+      <ul class="glance">
+          <li><b>Role</b><span>Virginia real estate broker with Malcolm Real Estate, the Ashland brokerage his grandfather founded.</span></li>
+          <li><b>Licensed</b><span>First at age 19. Licensed again in 2012 and full time in real estate since 2013.</span></li>
+          <li><b>Known for</b><span>Contract expertise. At Keller Williams he was the go-to broker support for an office of more than 200 agents.</span></li>
+          <li><b>Designations</b><span>GRI (Graduate, REALTOR Institute) and MCNE (Master Certified Negotiation Expert).</span></li>
+          <li><b>Education</b><span>Architecture degree, Virginia Tech. Master's in Rehabilitation Counseling, VCU. Licensed Professional Counselor.</span></li>
+          <li><b>Home base</b><span>Lives just west of Ashland, VA, and has since 2006. Grew up in Annandale, Fairfax County.</span></li>
+          <li><b>Serves</b><span>Sellers and buyers in Hanover, Henrico, the City of Richmond, Chesterfield, Powhatan, Goochland and Caroline.</span></li>
+      </ul>
+    </section>
+
+    <div class="idea-flag">
+      <span class="if-lbl">For Michael: photos</span>
+      You mentioned needing new photos. This page uses the current headshot for now. A second, candid photo (downtown Ashland by the tracks, at a property, or with a client) would go in the Fairfax section or next to the stories. Send one over and I'll add it with proper alt text.
+    </div>
+
+    <!-- ROOTS -->
+    <section class="stage" id="roots">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Where It Started</div>
+      <h2>Raised on <span class="r">Real Estate</span></h2>
+      <p class="body-p">I grew up in Annandale, in Fairfax County, helping my father maintain our family's rental properties. Some families talk about the weather or football at dinner. Mine talked about real estate. My grandfather started the brokerage I work under today, now called Malcolm Real Estate, and it has stayed in the family ever since. It is a small, family-only boutique firm. We help sellers and buyers with residential homes, and we have built, sold and still manage our own rental portfolio.</p>
+      <p class="body-p">I earned my real estate license at 19. The exam felt easy, and I didn't understand why until people my age started joining my study groups and asking how I already knew this stuff. I had been absorbing it at the kitchen table for years. That was my first taste of teaching real estate, and I still enjoy taking something complicated and making it simple enough that anyone can follow it.</p>
+    </section>
+
+    <!-- FAIRFAX PATTERN -->
+    <section class="stage" id="growth-patterns">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Why It Matters to You</div>
+      <h2>What Fairfax County Taught Me About <span class="r">Richmond's Future</span></h2>
+      <p class="body-p">Growing up in Fairfax County in the 1980s and 90s meant watching a suburb fill in. Every open piece of land eventually got built on. Pinecrest Golf Course, near Route 236 and Braddock Road, became a large townhome development. Cameron Station, the Army base my father had worked on, was converted into townhomes and other high-density housing. Tysons Corner went from a crossroads to a major business and shopping center while I was in middle and high school.</p>
+      <p class="body-p">By the time I finished college, land in close-in Fairfax was so valuable that 1,200 to 1,400 square foot homes from the 1940s and 50s, the three-bedroom, one-and-a-half-bath houses that had been starter homes, were being torn down. Houses of 3,000 to 4,000 square feet went up on the same lots. Places people once thought of as too far out became "close in."</p>
+      <p class="body-p">Urban growth follows patterns, and the Richmond area is walking the same path a few decades behind. Here is how I see it lining up:</p>
+
+      <div class="tbl-wrap">
+        <table class="pattern-tbl">
+          <thead>
+            <tr><th>Pattern</th><th>Fairfax County, then</th><th>Richmond area, now</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A retail hub rises from farmland</td><td>Tysons Corner grows from a crossroads into a regional business and shopping center.</td><td>Short Pump was farmland when I first came to Richmond. Today it is a busy shopping destination with high-end stores.</td></tr>
+            <tr><td>Infill on every open parcel</td><td>A golf course and a former Army base become townhome communities.</td><td>Infill projects are appearing across Henrico County.</td></tr>
+            <tr><td>"Too far" becomes close</td><td>Areas once considered out in the sticks become desirable, close-in addresses.</td><td>Eastern Henrico, once too far for many buyers, is now a popular and more affordable place for new construction. Growth is also stretching along Hanover County's major road corridors.</td></tr>
+            <tr><td>Teardowns of small older homes</td><td>1940s and 50s homes are replaced by houses two to three times their size.</td><td>Not common here yet. I expect it to start in the next 10 to 15 years.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="idea-flag">
+        <span class="if-lbl">For Michael: name the corridors?</span>
+        "Hanover County's major road corridors" is accurate but vague. Naming them (for example Route 360 in Mechanicsville, Route 1 and I-95 through Ashland, or Route 301) makes the prediction more specific and more quotable by search engines and AI assistants. Which ones do you see growing?
+      </div>
+
+      <p class="body-p">I'm not the only one who sees it. Years ago, while I was working in local government mental health, I had lunch with Hanover County's county administrator and mentioned that Hanover felt a lot like Northern Virginia. He laughed and told me the county had been consulting with Loudoun County, just west of Fairfax, on how to manage growth, and was learning from the lessons Loudoun learned the hard way.</p>
+      <p class="pull">Knowing where growth is heading helps you avoid a home that will be hard to sell later, and spot the areas likely to gain value first.</p>
+    </section>
+
+    <!-- DETOUR -->
+    <section class="stage" id="career">
+      <div class="step-lbl"><span class="step-lbl-line"></span>The Long Way Around</div>
+      <h2>A Detour That Became an <span class="r">Advantage</span></h2>
+      <p class="body-p">Real estate wasn't a straight line for me. I avoided the family business for years, partly because I remembered all the nights and weekends it took when I was a kid.</p>
+      <ol class="timeline">
+        <li><span class="yr-lbl">Architecture</span><p>Earned a degree in Architecture from Virginia Tech, which is still how I look at a house: layout, flow, construction and how a floor plan will age.</p></li>
+        <li><span class="yr-lbl">About 10 years in marketing, IT and design</span><p>One job that combined marketing, IT and graphic design, with a lot of travel. It taught me how to connect with people and figure out what they actually want, which is not always what they first ask for.</p></li>
+        <li><span class="yr-lbl">2007: counseling</span><p>Went back to school at VCU for a Master's in Rehabilitation Counseling and practiced for about a decade as a Licensed Professional Counselor, including work in local government mental health. I still hold my counseling license.</p></li>
+        <li><span class="yr-lbl">2012: back to real estate</span><p>At a transition point in my counseling career, I opened a private counseling office and a real estate office side by side and gave both a year. Real estate won, because I enjoyed it far more. Getting relicensed was harder the second time, because I knew too much and kept overthinking the test questions. That led me to write short study primers that help others pass the real estate exam and other licensing tests by following a few simple rules.</p></li>
+        <li><span class="yr-lbl">2013 onward: full time</span><p>Went out on my own in real estate full time and haven't looked back.</p></li>
+      </ol>
+      <p class="body-p">The counseling years matter more than people expect. Selling or buying a home is one of the most emotional things most people ever do, and one of the biggest reasons to hire an agent is emotional distance. I can stay calm and steady when a negotiation gets heated, and I can help a client think clearly when they are too close to the decision.</p>
+    </section>
+
+    <!-- CONTRACT EXPERT -->
+    <section class="stage" id="contract-expert">
+      <div class="step-lbl"><span class="step-lbl-line"></span>The Differentiator</div>
+      <h2>The Broker Agents Called When a Deal <span class="r">Went Sideways</span></h2>
+      <p class="body-p">After a 20-year gap, I wanted to know exactly how real estate had changed. Virginia required 16 hours of continuing education for my first license renewal. I completed more than 100, because I basically lived in the classroom for my first year and a half.</p>
+      <p class="body-p">I spent my first two to three years back at RE/MAX, learning the local contracts from excellent brokers. Too often, though, the answer to "why do we do it this way?" was "that's just how we do it." That wasn't enough for me. I went back to the original sources: the Code of Virginia, the regulations published by the Virginia Real Estate Board, and guidance from Virginia REALTORS and the National Association of REALTORS.</p>
+      <p class="body-p">In 2015 I moved to Keller Williams, where my contract knowledge got noticed quickly. I held a broker's license, and I became the office's informal broker support for more than 200 agents, essentially a supervising broker without the formal title. That meant:</p>
+      <ul class="glance" style="margin-bottom:18px">
+        <li><b>Teaching</b><span>Classes on the Virginia residential purchase agreement, how to modify it correctly, and the addenda used for special situations.</span></li>
+        <li><b>Reviewing</b><span>Checking the changes agents made to standard forms so their clients were actually covered.</span></li>
+        <li><b>Rescuing</b><span>Being the call when a deal went sideways, for brand-new agents and top producers alike, and smoothing things over when clients got upset.</span></li>
+        <li><b>Mediating</b><span>Settling disputes between agents over how a contract should be handled. Sometimes that meant telling a very experienced agent that the newer agent was right, because that is what the contract says.</span></li>
+      </ul>
+      <p class="body-p">My test for every transaction is simple. If this ended up in front of a judge, what does the paper say? It comes down to what is written in black and white, not how anyone feels about it. Many agents get emotionally attached to their deals. I stay calm and stick to the documents, and that keeps my clients out of trouble.</p>
+      <p class="pull">I know most of the ways a contract can go wrong. I use that to protect sellers from inexperienced agents on the other side of the deal, and to protect buyers from their own blind spots.</p>
+
+      <div class="idea-flag">
+        <span class="if-lbl">For Michael: confirm two facts</span>
+        (1) Your "MCSE" came through as a voice transcription. I've written it as <b>MCNE, Master Certified Negotiation Expert</b> (the Real Estate Negotiation Institute's designation). Is that right? (2) The site says "nearly a decade" at one of Central Virginia's largest offices. What years were you at Keller Williams, and when did Malcolm become your full-time brokerage? I'd like to add one line about that move.
+      </div>
+    </section>
+
+    <!-- LESSONS -->
+    <section class="stage" id="lessons">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Hard-Won Lessons</div>
+      <h2>What Losing Rental Homes <span class="r">Taught Me</span></h2>
+      <p class="body-p">During my years away from the business, I invested on my own and bought about a dozen homes in Orlando, Florida. I got overextended, carrying about $1.5 million in loans when the 2008 housing crash hit, and I lost six or seven of those homes to foreclosure.</p>
+      <p class="body-p">It was a painful way to learn, and it shapes how I advise clients today. It is easy to buy real estate and much harder to sell it. Your money is really made on the purchase, so you have to buy right. It also means I don't judge anyone who has made a financial mistake or is facing a hard situation with a property. I have been there, and I know how to help people through it.</p>
+    </section>
+
+    <!-- HOW I WORK -->
+    <section class="stage" id="how-i-work">
+      <div class="step-lbl"><span class="step-lbl-line"></span>How I Work</div>
+      <h2>Precision Over <span class="r">Volume</span></h2>
+      <p class="body-p">My goal is not to sell 100 or 500 homes a year. I would rather be precise and protect the people I work with, because clients who were well protected are the ones who send their friends and family to me later.</p>
+      <div class="cmd-list">
+        <div class="cmd-item">
+          <div class="cmd-num">1</div>
+          <div class="cmd-text">
+            <strong>Know how to get out before you get in</strong>
+            <p>Before you buy, we talk about how you would eventually sell. A home that is hard to exit is a risk, however much you love it today.</p>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <div class="cmd-num">2</div>
+          <div class="cmd-text">
+            <strong>I'll tell you why not to buy</strong>
+            <p>I get paid when you buy, and I still tell clients when a property is a bad idea. The last thing I want is for you to buy a money pit.</p>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <div class="cmd-num">3</div>
+          <div class="cmd-text">
+            <strong>Sellers get a steady hand at the contract table</strong>
+            <p>Once offers arrive, I spot problems in the terms and in the other agent's paperwork early, before they turn into delays or a lost deal.</p>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <div class="cmd-num">4</div>
+          <div class="cmd-text">
+            <strong>Buyers get real protection</strong>
+            <p>Many experienced agents lean toward listings because they are easier to scale. I still enjoy working with buyers, especially first-timers, because they are the ones who need protection most.</p>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <div class="cmd-num">5</div>
+          <div class="cmd-text">
+            <strong>One side only</strong>
+            <p>I never represent both the seller and the buyer in the same transaction. You get my undivided loyalty.</p>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <div class="cmd-num">6</div>
+          <div class="cmd-text">
+            <strong>Reasonable hours, except when it counts</strong>
+            <p>Most business happens during regular business hours, which keeps me sharp. When we are negotiating a contract, I'm available when you need me, late nights included.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORIES -->
+    <section class="stage" id="stories">
+      <div class="step-lbl"><span class="step-lbl-line"></span>From the Contract Table</div>
+      <h2>A Few Stories <span class="r">Worth Telling</span></h2>
+
+      <div class="story">
+        <span class="story-num">A reverse reconsideration of value</span>
+        <h3>$39,000 saved in a hot seller's market</h3>
+        <p>In the 2021 to 2022 market, when most buyers were paying well over asking, I studied the tax records and the sale history on a home and knew it was priced above what the market supported. We negotiated $30,000 off the list price and still wrote an offer strong enough to be accepted.</p>
+        <p>Then the appraisal came back exactly at the contract price. When an appraisal comes in low, a buyer's agent usually asks for a reconsideration of value with better comparable sales to push the value up. I did the opposite. I submitted comparable sales that supported a lower value, and the price came down another $9,000. In a heavy seller's market, the seller ended up bringing money to closing.</p>
+      </div>
+
+      <p class="body-p">And a couple of things clients have said to me that I think explain my approach better than I can:</p>
+      <ul class="said">
+        <li>"I learned more in the first two or three showings with you than I learned in six months with my other agents."<span>A buyer who had worked with other agents before, after one tour of six homes</span></li>
+        <li>"I feel like I have a PhD in real estate after spending all this time with you, and it wasn't that hard to understand."<span>A buyer, after finally choosing their home</span></li>
+      </ul>
+    </section>
+
+    <!-- FAQ (must match the FAQPage schema in <head> word for word) -->
+    <section class="stage" id="faq">
+      <div class="step-lbl"><span class="step-lbl-line"></span>Questions</div>
+      <h2>About <span class="r">804Michael</span></h2>
+      <details class="faq-box">
+        <summary>Who is 804Michael?</summary>
+        <div class="faq-box-body"><p>804Michael is Michael Hottman, a licensed Virginia real estate broker with Malcolm Real Estate in Ashland, VA. He helps sellers and buyers across Hanover County, Henrico County, the City of Richmond, Chesterfield, Powhatan, Goochland and Caroline counties.</p></div>
+      </details>
+      <details class="faq-box">
+        <summary>How long has Michael Hottman been in real estate?</summary>
+        <div class="faq-box-body"><p>Michael grew up in a real estate family and earned his license at 19. After careers in marketing, IT and graphic design and then counseling, he was licensed again in 2012 and has worked in real estate full time since 2013.</p></div>
+      </details>
+      <details class="faq-box">
+        <summary>What is Malcolm Real Estate?</summary>
+        <div class="faq-box-body"><p>Malcolm Real Estate is a small, family-owned brokerage in Ashland, VA, founded by Michael's grandfather. Only family members work there. It represents residential sellers and buyers and manages the family's own rental properties.</p></div>
+      </details>
+      <details class="faq-box">
+        <summary>Why does growing up in Fairfax County matter for Richmond-area real estate?</summary>
+        <div class="faq-box-body"><p>Michael grew up in Annandale while Fairfax County filled in: golf courses and a former Army base became townhomes, Tysons Corner boomed, and small postwar homes were torn down for much larger ones. Growth tends to follow the same pattern from place to place, and the Richmond area is now in the earlier stages of it. That history helps him judge which neighborhoods are likely to gain value and which homes may be hard to sell later.</p></div>
+      </details>
+      <details class="faq-box">
+        <summary>Does Michael Hottman practice dual agency?</summary>
+        <div class="faq-box-body"><p>No. Michael never represents both the seller and the buyer in the same transaction, so each client gets undivided loyalty.</p></div>
+      </details>
+      <details class="faq-box">
+        <summary>What credentials does Michael Hottman hold?</summary>
+        <div class="faq-box-body"><p>Michael holds a Virginia real estate broker license and the GRI (Graduate, REALTOR Institute) and MCNE (Master Certified Negotiation Expert) designations. He also holds a Virginia Licensed Professional Counselor license, a Master's degree in Rehabilitation Counseling from VCU, and a degree in Architecture from Virginia Tech.</p></div>
+      </details>
+    </section>
+
+    <!-- CTA -->
+    <section class="stage" style="margin-bottom:0">
+      <div class="rg-cta">
+        <div class="rg-cta-flex">
+          <div class="rg-cta-photo">
+            <picture>
+              <source srcset="images/804michael_headshot-web.webp" type="image/webp" />
+              <img src="images/804michael_headshot-web.png" alt="Michael Hottman" loading="lazy" onerror="this.closest('.rg-cta-photo').style.display='none'" />
+            </picture>
+          </div>
+          <div class="rg-cta-text">
+            <div class="step-lbl"><span class="step-lbl-line"></span>Let's Talk</div>
+            <h3>Thinking About Selling or Buying?</h3>
+            <p>Whether you are pricing your home or wondering if a neighborhood will hold its value, I'm happy to talk it through, with no pressure and no sales pitch.</p>
+            <div class="rg-cta-btns">
+              <a href="tel:8046424235" class="btn btn-red">Call 804-Michael</a>
+              <a href="sms:8046424235" class="btn btn-outline">Text 804-642-4235</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="pg-side">
+
+    <div class="side-va reveal">
+      <h4>Buy Right</h4>
+      <p>"It's easy to buy real estate. It can be much harder to sell it. Know how you'll get out before you get in."</p>
+    </div>
+
+    <div class="side-card reveal">
+      <div class="side-card-head"><h4>Credentials</h4></div>
+      <div class="side-card-body">
+        <ul class="cred-list">
+          <li><b>Virginia Real Estate Broker</b>License 0225224914</li>
+          <li><b>GRI</b>Graduate, REALTOR Institute</li>
+          <li><b>MCNE</b>Master Certified Negotiation Expert</li>
+          <li><b>Licensed Professional Counselor</b>Virginia</li>
+          <li><b>Education</b>Virginia Tech (Architecture), VCU (M.S., Rehabilitation Counseling)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="side-card reveal">
+      <div class="side-card-head"><h4>Keep Going</h4></div>
+      <div class="side-card-body">
+        <ul class="explore-links">
+          <li><a href="/home-value-estimate">Free Home Value Estimate <span class="arr">›</span></a></li>
+          <li><a href="/seller-net-sheet">Seller Net Sheet <span class="arr">›</span></a></li>
+          <li><a href="/determine-your-budget">Determine Your Budget <span class="arr">›</span></a></li>
+          <li><a href="/find-a-home">Keys to Finding a Great Home <span class="arr">›</span></a></li>
+          <li><a href="/dev">← Dev Hub <span class="arr">›</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in ft-compact">
+    <a href="/" aria-label="804Michael">
+      <svg viewBox="0 0 786.329 238.272" style="height:28px;width:auto">
+        <path fill="white" d="M61.798,87.856c12.848-5.668,20.589-15.859,23.236-30.574c0.687-3.645,1.03-7.016,1.03-10.122c0-8.371-2.239-14.847-6.712-19.434c-4.474-4.59-10.783-6.887-18.931-6.887c-9.639,0-17.813,3.204-24.524,9.616S24.797,45.813,22.736,57.283c-0.58,3.238-0.862,6.212-0.862,8.913c0,9.851,4.361,17.071,13.08,21.661c-15.379,5.535-24.781,17.813-28.223,36.847c-0.687,4.052-1.034,7.963-1.034,11.749c0,20.376,9.466,30.57,28.395,30.57c12.736,0,23.207-5.197,31.407-15.586c8.207-10.397,12.305-23.016,12.305-37.867C77.803,100.878,72.471,92.31,61.798,87.856z M37.876,57.69c2.757-15.656,9.465-23.49,20.136-23.49c8.375,0,12.562,5.201,12.562,15.596c0,2.43-0.228,5.057-0.687,7.894c-2.87,15.659-9.638,23.484-20.306,23.484c-8.378,0-12.564-5.194-12.564-15.589C37.017,63.155,37.304,60.521,37.876,57.69z M61.63,124.097c-3.559,19.712-11.935,29.56-25.128,29.56c-10.325,0-15.491-6.342-15.491-19.03c0-3.241,0.345-6.75,1.035-10.529c3.553-19.704,11.93-29.561,25.124-29.561c10.325,0,15.491,6.342,15.491,19.033C62.661,116.809,62.317,120.319,61.63,124.097z"/>
+        <path fill="white" d="M162.304,55.06c0-22.816-8.722-34.219-26.161-34.219c-14.453,0-25.815,8.299-34.073,24.902c-5.394,10.662-10.041,26.929-13.941,48.793c-2.979,16.603-4.476,29.357-4.476,38.265c0,22.815,8.719,34.222,26.16,34.222c14.456,0,25.871-8.308,34.25-24.903c5.274-10.534,9.81-26.387,13.595-47.583C160.755,77.258,162.304,64.103,162.304,55.06z M142.511,94.537c-3.438,19.173-6.827,32.804-10.153,40.9c-5.051,12.148-11.762,18.22-20.134,18.22c-9.065,0-13.595-7.287-13.595-21.868c0-7.691,1.546-20.108,4.647-37.252c3.553-19.842,7.052-33.813,10.493-41.91c5.052-12.284,11.705-18.427,19.968-18.427c9.06,0,13.593,7.224,13.593,21.668C147.33,63.835,145.724,76.724,142.511,94.537z"/>
+        <path fill="white" d="M211.731,145.705l2.888-16.139h6.95c3.075-4.9,6.214-9.762,9.417-14.584h-13.613l16.865-94.141h-14.457l-60.749,92.729l-2.928,15.996h44.06l-6.195,34.618h7.137c0.733-1.215,1.374-2.302,1.88-3.216C205.84,155.84,208.753,150.75,211.731,145.705z M171.939,114.982l42.508-66.205h0.343l-11.87,66.205H171.939z"/>
+        <path fill="white" d="M211.731,145.705c-2.978,5.045-5.891,10.136-8.745,15.264c-0.506,0.914-1.147,2.001-1.88,3.216h7.319L211.731,145.705z"/>
+        <path fill="#ED1C24" d="M773.772,15.952c-1.946-1.861-4.43-2.79-7.504-2.79c-9.514,0-21.539,7.631-36.048,22.899c-18.181,19.011-36.015,43.176-53.453,72.499c-4.121,6.954-7.536,13.204-10.433,18.885c-0.346,0.298-0.664,0.527-1.019,0.878c-16.648,15.588-31.323,23.362-44.009,23.362c-5.775,0-9.965-1.494-12.497-4.51c-1.128-1.29-1.682-2.832-1.682-4.618v-2.192c20.634-4.96,36.037-13.937,46.3-26.929c4.96-6.247,7.445-11.521,7.445-15.808c0-2.787-1.301-5.019-3.947-6.73c-2.128-1.292-4.52-1.947-7.15-1.947c-9.739,0-21.175,5.388-34.244,16.079c-16.155,13.171-24.23,26.606-24.23,40.351c0,5.019,1.476,8.977,4.417,11.916c4.349,4.232,10.341,6.33,17.975,6.33c7.386,0,15.424-1.864,24.051-5.582c7.182-3.122,13.989-7.043,20.477-11.682c-1.294,4.104-2.02,7.655-2.02,10.433c0,2.682,0.865,4.967,2.59,6.831c2.431,2.604,5.57,3.893,9.44,3.893c8.94,0,18.623-5.567,29.091-16.688c10.056-10.657,15.061-17.71,15.061-21.208c0-2.034-1.316-3.028-3.959-3.028c-2.338,0-4.558,1.371-6.705,4.134c-5.379,6.979-9.423,11.813-12.16,14.502c-5.812,5.537-10.517,8.271-14.161,8.271c-2.454,0-3.67-1.009-3.67-3.04c0-1.543,0.769-4.261,2.296-8.173c1.512-3.89,3.813-9.017,6.852-15.334c7.2-5.19,12.904-9.332,17.04-12.431c15.854-11.781,29.446-23.57,40.806-35.329c25.389-26.486,38.076-45.405,38.076-56.786C776.797,19.979,775.802,17.835,773.772,15.952z M632.257,106.496c4.863-3.158,8.642-4.739,11.278-4.739c1.92,0,2.886,0.801,2.886,2.43c0,1.549-0.744,3.283-2.287,5.235c-4.148,5.51-9.793,10.484-16.877,14.867c-4.092,2.427-9.67,4.634-16.763,6.579C616.273,120.237,623.516,112.123,632.257,106.496z M748.326,52.76c-16.639,22.087-35.528,40.354-56.651,54.817c11.986-21.114,24.061-38.997,36.247-53.608c14.7-17.787,24.874-26.668,30.475-26.668c1.904,0,2.866,0.872,2.866,2.666C761.263,33.708,756.962,41.316,748.326,52.76z"/>
+        <path fill="#ED1C24" d="M332.365,166.521c6.351-18.818,16.301-41.573,29.937-68.276c4.956-9.758,14.425-26.022,28.36-48.825c7.802-12.678,12.125-19.758,12.978-21.19c4.319-7.144,6.493-12.335,6.493-15.659c0-2.255-0.835-4.106-2.54-5.55c-1.889-1.851-4.278-2.786-7.123-2.786c-4.961,0-10.651,3.314-17.103,9.937c-10.76,11.018-22.796,24.661-36.116,40.956c-22.898,28.035-39.582,49.543-50.034,64.454c-12.266,17.444-20.068,28.448-23.447,33.046c2.645-14.918,8.541-33.093,17.727-54.531c10.681-23.789,22.345-45.227,35.018-64.338c4.443-6.734,6.647-11.534,6.647-14.446c0-2.654-1.224-4.984-3.648-7.036c-1.991-1.75-4.065-2.627-6.165-2.627c-3.4,0-7.671,2.271-12.836,6.87c-4.96,4.476-13.93,14.206-26.93,29.225c-19.112,22.151-36.642,45.237-52.597,69.239h0.153l-2.754,14.584h-6.816c-3.356,5.327-6.635,10.708-9.838,16.139l-3.306,18.479h-7.319c-5.628,9.417-17.169,27.236-24.561,43.361c-3.925,8.289-5.866,13.367-5.866,15.223c0,1.267,0.419,2.336,1.259,3.226c1.06,1.253,2.379,1.889,3.963,1.889c6.234,0,11.725-5.284,16.482-15.795c9.485-20.661,24.845-44.448,31.503-56.841c14.034-25.712,29.969-50.809,47.819-75.278c9.83-13.264,20.07-24.896,30.721-34.954c-31.344,52.349-47.019,90.7-47.019,115.055c0,2.823,0.627,5.324,1.887,7.468c1.896,3.213,4.847,4.829,8.877,4.829c4.012,0,8.238-1.826,12.672-5.42c4.536-3.693,10.29-10.768,17.278-21.192c31.674-47.955,60.539-84.788,86.602-110.533c-49.826,80.816-76.411,141.013-77.76,168.583c-0.304,6.241,0.153,16.331,1.757,18.778c1.892,3.22,4.357,4.423,7.273,4.806c3.753,0.494,5.85,0.038,7.859-2.202c2.313-2.455,1.795-4.032,1.515-6.852c-0.391-3.893-1.816-8.672,0.152-19.893C325.558,186.844,328.668,177.71,332.365,166.521z"/>
+        <path fill="#ED1C24" d="M228.386,129.566l2.754-14.584h-0.153c-3.203,4.822-6.342,9.684-9.417,14.584H228.386z"/>
+        <path fill="#ED1C24" d="M399.131,95.045c0-0.9-0.385-1.788-1.218-2.675c-1.113-1.072-2.545-1.582-4.262-1.582c-1.914,0-3.824,0.758-5.637,2.313c-1.839,1.447-4.573,4.335-8.209,8.655c-11.385,13.14-19.591,25.16-24.674,36.038c-6.515,13.83-9.764,21.941-9.764,24.39c0,1.212,0.556,2.343,1.679,3.401c1.242,1.3,2.847,1.952,4.876,1.952c3.469,0,5.986-2.026,7.624-6.104c3.652-9.188,7.851-18.086,12.641-26.788c4.461-8.454,11.973-19.212,22.542-32.272C397.681,98.957,399.131,96.508,399.131,95.045z"/>
+        <path fill="#ED1C24" d="M401.438,73.25c0,4.975,4.02,8.976,8.973,8.976c4.949,0,8.979-4,8.979-8.976c0-4.962-4.03-8.957-8.979-8.957C405.458,64.294,401.438,68.301,401.438,73.25z M408.938,71.1l1.473-4.6l1.498,4.6h4.815l-3.891,2.866l1.501,4.57l-3.924-2.812l-3.916,2.812l1.495-4.57l-3.883-2.866H408.938z"/>
+        <path fill="#ED1C24" d="M587.64,159.014c-3.455-1.318-5.534-2.25-6.257-2.8c-2.516-2.196-3.803-5.005-3.803-8.416c0-4.23,1.582-9.832,4.727-16.81c2.968-6.586,5.867-11.858,8.828-15.841c2.841-3.9,4.272-6.693,4.272-8.398c0-1.31-0.776-2.824-2.284-4.522c1.729-3.175,2.596-5.643,2.596-7.412c0-2.366-1.228-4.479-3.667-6.349c-2.841-2.109-6.406-3.168-10.669-3.168c-6.794,0-13.839,2.119-21.16,6.346c-11.175,6.489-20.722,15.783-28.632,27.889c-0.375,0.588-2.686,3.197-3.584,4.259c-12.961,15.593-22.205,23.383-27.698,23.383c-2.637,0-3.959-1.09-3.959-3.265c0-2.265,1.939-6.581,5.779-12.922c4.382-7.304,10.776-15.434,19.196-24.366c4.368-4.618,6.545-8.034,6.545-10.241c0-1.708-0.914-3.203-2.721-4.51c-1.64-1.126-3.301-1.692-5.053-1.692c-4.143,0-11.048,2.678-20.703,8.019c-7.515,4.247-15.027,9.476-22.53,15.716c2.647-6.33,9.794-18.181,21.474-35.567c10.862-16.229,21.76-31.14,32.721-44.69c3.268-3.83,4.896-6.877,4.896-9.141c0-1.47-0.514-2.768-1.538-3.925c-1.297-1.527-2.888-2.299-4.713-2.299c-1.928,0-3.778,0.721-5.483,2.178c-1.712,1.495-4.122,4.326-7.152,8.55c-12.797,17.46-24.43,34.295-34.884,50.562c-8.131,12.507-16.776,27.269-25.94,44.133c-1.904,1.341-4.007,2.858-6.527,4.732c-5.967,4.457-13,11.837-20.392,17.287c-8.74,6.347-16.291,9.498-22.697,9.498c-3.248,0-5.85-1.059-7.779-3.151c-1.303-1.4-1.971-3.01-1.971-4.765c0-5.535,3.563-13.079,10.643-22.663c6.9-9.174,13.821-15.904,20.714-20.214c4.377-2.681,7.631-4.024,9.763-4.024c1.837,0,2.744,0.636,2.744,1.959c0,1.106-0.66,2.624-1.985,4.485c-1.924,2.762-3.813,4.835-5.636,6.234c-2.135,1.508-3.354,2.462-3.66,2.78c-0.802,0.821-1.226,1.921-1.226,3.307c0,2.59,1.423,3.887,4.281,3.887c3.35,0,7.253-2.28,11.715-6.832c5.792-6.004,8.672-11.965,8.672-17.888c0-6.737-3.989-10.127-12.012-10.127c-4.883,0-10.573,1.892-17.056,5.62c-11.056,6.492-20.817,15.042-29.246,25.694c-8.723,11.116-13.086,20.914-13.086,29.352c0,4.307,1.416,8.037,4.275,11.216c3.932,4.316,9.669,6.457,17.188,6.457c12.444,0,26.265-6.762,41.517-20.293c-3.887,7.958-5.85,12.977-5.85,15.046c0,1.628,0.624,3.021,1.826,4.153c1.242,1.057,2.789,1.578,4.724,1.578c2.757,0,4.77-1.578,6.097-4.741c14.303-27.796,31.832-45.844,52.539-54.221c-7.633,10.318-12.181,16.572-13.705,18.753c-6.391,9.274-9.597,17.51-9.597,24.743c0,2.271,0.599,4.339,1.81,6.216c1.96,3.002,5.093,4.509,9.464,4.509c4.151,0,8.833-1.427,14.014-4.257c5.245-2.989,10.344-6.971,15.288-11.831c-0.074,1.063-0.134,2.127-0.134,3.168c0,3.659,0.947,6.833,2.854,9.512c3.071,4.128,7.346,6.206,12.836,6.206c6.279,0,12.63-3.179,19.008-9.516c3.248-3.244,6.564-7.22,9.892-11.927c-0.391,3.741-0.602,6.406-0.602,8.028c0,4.791,1.626,8.779,4.881,11.941c3.939,3.911,8.683,5.864,14.144,5.864c2.037,0,3.805-0.533,5.335-1.603c1.425-0.973,2.145-2.25,2.145-3.773C591.448,161.688,590.186,159.98,587.64,159.014z M558.876,138.66c-6.521,8.271-12.201,12.414-17.086,12.414c-1.914,0-3.341-0.519-4.323-1.564c-0.982-1.069-1.444-2.589-1.444-4.618c0-8.296,4.956-18.401,14.905-30.348c9.068-10.811,17.411-16.196,25.141-16.196c1.615,0,3.144,0.407,4.548,1.26c1.455,0.871,2.742,2.182,3.958,3.976c-2.109,1.377-3.591,2.551-4.402,3.511c-1.635,1.864-4.209,5.688-7.752,11.463C567.038,127.406,562.519,134.118,558.876,138.66z"/>
+      </svg>
+    </a>
+    <!-- Equal Housing Opportunity + REALTOR/MLS marks (white versions, for the black footer). -->
+    <div class="ft-marks" style="display:flex;gap:20px;align-items:center;justify-content:center"><img src="/images/equal-housing-opportunity-reverse.svg" alt="Equal Housing Opportunity" width="50" height="48" loading="lazy" style="height:48px;width:auto;opacity:.9"><img src="/images/realtor-mls-reverse.svg" alt="REALTOR&reg; and Multiple Listing Service" width="99" height="48" loading="lazy" style="height:48px;width:auto;opacity:.9"></div>
+    <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
+    <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD_HH-MM-XXXX" -->
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_11-06-0051</p>
+    <p class="ft-copy">
+      &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
+      Malcolm Real Estate, Ashland, Virginia &middot;
+      Helping people sell and buy homes in Ashland, Hanover County &amp; Glen Allen, VA and surrounding areas &middot;
+      Licensed Real Estate Broker in Virginia
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
+  // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
+  const SITE_VERSION = '26.09.12_11-06-0051';
+  var _siteVersionEl = document.getElementById('site-version-display');
+  if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
+
+  document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
+  const obs = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>{ el.classList.add('js-ready'); obs.observe(el); });
+</script>
+</body>
+</html>

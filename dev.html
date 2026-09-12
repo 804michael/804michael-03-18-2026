@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_00-14-0082                            ║
+  ║  SITE VERSION: 26.09.12_11-00-0083                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -432,6 +432,23 @@
 
   <div class="dev-grid">
 
+    <div class="dev-card" data-id="about" data-created="2026-09-12">
+      <div class="dev-card-head">
+        <h3>About / Meet Michael</h3>
+        <span class="dev-badge">In Progress</span>
+      </div>
+      <div class="dev-card-body">
+        <p>The page that establishes Michael as the author and agent behind the site, built from the 2026-09-12 interview. Hidden (noindex, nofollow, not in nav or sitemap) until Michael approves launch.</p>
+        <ul>
+          <li>Story: Annandale roots, grandfather's brokerage, licensed at 19, design/IT and counseling detour, RE/MAX then Keller Williams broker support for 200+ agents</li>
+          <li>Fairfax-then vs. Richmond-now growth table, stories, six-question FAQ</li>
+          <li>Schema graph: ProfilePage + Person + RealEstateAgent + Malcolm brokerage + FAQPage</li>
+          <li>Open: new photos, confirm MCNE, Keller Williams years, which Hanover corridors to name</li>
+        </ul>
+        <a class="dev-card-link" href="/about">View page →</a>
+      </div>
+    </div>
+
     <div class="dev-card" data-id="due-diligence" data-created="2026-09-01">
       <div class="dev-card-head">
         <h3>Due Diligence</h3>
@@ -841,7 +858,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_00-14-0082</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_11-00-0083</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -852,7 +869,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.12_00-14-0082';
+  const SITE_VERSION = '26.09.12_11-00-0083';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
