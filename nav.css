@@ -309,6 +309,37 @@ a:focus-visible,button:focus-visible,summary:focus-visible,[role="button"]:focus
 @keyframes navFadeIn{from{opacity:0}to{opacity:1}}
 #banner>*,#nav .nav-in{animation:navFadeIn .35s ease-out both}
 
+/* ── Compact footer (added 2026-09-11) ──
+   Footers used to be one tall centred stack: logo, version, four copyright
+   lines, the marks, the policy links. Now the Equal Housing + REALTOR/MLS
+   marks sit to the LEFT of a single text block (copyright, policy links,
+   version), the way malcolmrealestate.com lays out its footer, and the
+   padding, gaps and line height are tighter. On a phone it stacks: marks,
+   then the block, centred.
+   Lives here rather than in each page's <style> because every page with this
+   footer loads nav.css; the markup opts in with .ft-compact on .ft-in, so a
+   footer that hasn't been converted is untouched. The !important overrides
+   beat inline styles the policy links and version line carry. */
+footer:has(> .ft-compact){padding-top:24px;padding-bottom:20px}
+.ft-in.ft-compact{gap:12px}
+.ft-row{display:flex;align-items:center;justify-content:center;gap:28px;width:100%;max-width:900px;text-align:left}
+.ft-row .ft-marks{flex:none}
+/* The block wraps as a row: the copyright (and the policy pages' Equal
+   Housing sentence) take a full line each, and the short items after them
+   (site link, policy links, version) share one line when they fit. Stacking
+   those one per line is what made the home page footer taller, not shorter.
+   text-align:inherit undoes the home page's own centred .ft-copy so the
+   block reads as one aligned column. */
+.ft-block{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:flex-start;gap:6px 18px;min-width:0}
+.ft-block .ft-copy,.ft-block .ft-eho{flex-basis:100%;margin:0;line-height:1.55;text-align:inherit}
+.ft-block .ft-pol{justify-content:flex-start!important}
+.ft-block #site-version-display{margin:0!important;font-size:.95rem!important}
+@media(max-width:640px){
+  .ft-row{flex-direction:column;gap:14px;text-align:center}
+  .ft-block{justify-content:center}
+  .ft-block .ft-pol{justify-content:center!important}
+}
+
 /* ── Reduced motion (added 2026-09-11) ──
    Applies only to visitors whose device is set to "reduce motion", an
    accessibility setting used by people for whom on-screen movement causes

@@ -128,6 +128,10 @@ paid sthan.io API server-side to keep those credentials off the page.
 - **Per-page CSS.** `:root` tokens, `.btn`, and the hero rules are duplicated in
   every file — only `nav.css`/`nav.js`/`nav-partial.html` are shared. A change to
   a "shared" component is an every-file sweep, and nothing in code enforces it.
+  One exception: the compact footer layout (marks beside a text block, added
+  2026-09-11) lives in `nav.css` under "Compact footer", because every page
+  with that footer already loads it. A footer opts in with
+  `<div class="ft-in ft-compact">` wrapping `.ft-row` > `.ft-marks` + `.ft-block`.
 
 ## Verifying work
 
