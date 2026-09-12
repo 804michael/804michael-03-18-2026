@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_13-43-0070                       ║
+  ║  SITE VERSION: 26.09.12_15-02-0071                       ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -462,8 +462,8 @@
         <div class="cmd-num">11</div>
         <div class="cmd-body">
           <div class="cmd-head"><h4><a href="https://script.google.com/" target="_blank" rel="noopener">Google Sheets + Apps Script<span class="ext">↗</span></a> <span style="font-weight:400;font-size:.8em;color:var(--gray-muted)">(open in Incognito)</span></h4><span class="svc-tag">Farm stand map</span></div>
-          <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails.</p>
-          <div class="svc-where"><b>Where:</b> script.google.com, plus the Sheet itself.</div>
+          <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails. <strong>Account:</strong> the site's Google tools belong in <strong>804re.com@gmail.com</strong>, created 2026-09-12 so they stay separate from personal mail and storage. The lead mailer and its "804re.com Leads" Sheet are set up there. The Farm Stand Sheet, its Google Form and both of its scripts still run under Michael's personal account until they are moved. Moving them gives the add-a-stand script a new web app URL (<code>ADD_STAND_URL</code> in farmstand.html); the published CSV link stays the same if the Sheet's ownership is transferred rather than copied.</p>
+          <div class="svc-where"><b>Where:</b> script.google.com and the Sheets, signed in as 804re.com@gmail.com. Use Incognito or a separate Chrome profile so a personal account doesn't open instead.</div>
         </div>
       </div>
     </div>
@@ -553,7 +553,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_13-43-0070</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_15-02-0071</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -566,7 +566,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.12_13-43-0070';
+  const SITE_VERSION = '26.09.12_15-02-0071';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 

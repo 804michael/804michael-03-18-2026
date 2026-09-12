@@ -32,6 +32,21 @@ answers them with the site's 404 so repo notes aren't served on 804re.com. To
 block another file, add it to BOTH lists. The GitHub repo is public, so this
 hides files from the site, not from the world.
 
+**Google account for site tools (since 2026-09-12): 804re.com@gmail.com.**
+Every Apps Script web app the site calls, the Sheet behind it, and any
+published CSV belong in this account, not in Michael's personal Gmail. Write
+setup steps as "signed in as 804re.com@gmail.com". Set up there: the lead
+mailer (`docs/lead-mailer.gs`, "804re.com Leads" Sheet; its URL goes in
+`LEAD_SCRIPT_URL` in `nav.js`, `seller-intake.html`, `buyer-intake.html`).
+Still to move: the Farm Stand Sheet, its Google Form, `addstand.gs` and the
+geocode script. The move changes `ADD_STAND_URL` in `farmstand.html`; the CSV
+URL (also copied into `system-status.html`) only changes if the Sheet is
+copied instead of transferred. The Seasonal Map Sheet (`docs/seasonal-submit.gs`)
+should be created there from the start. A personal Google account can email
+100 recipients a day from Apps Script; Google One / AI Pro doesn't raise it.
+Any `.gs` file must stay free of raw control characters: a NUL byte in the
+source truncates copy-paste into the Apps Script editor.
+
 ## Cloudflare bindings — which endpoint needs what
 
 Configured in the Cloudflare dashboard, never in this repo. Nothing here is

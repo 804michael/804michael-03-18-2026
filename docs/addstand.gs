@@ -4,7 +4,9 @@
  * them to the same response sheet used by the Google Form, so both
  * paths feed one map.
  *
- * DEPLOY:
+ * DEPLOY (signed in as 804re.com@gmail.com, the site's Google account; the
+ * Farm Stand Sheet, Form and scripts are moving there from the personal
+ * account, which gives this web app a new URL for ADD_STAND_URL):
  *  1. In the response Sheet: Extensions > Apps Script.
  *  2. Paste this in its own script file (e.g. "addstand.gs") — keep it
  *     separate from the geocode-on-submit.gs file since function names

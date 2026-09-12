@@ -7,7 +7,7 @@
  * says which map a row belongs to, and Year keeps last year's houses from
  * reappearing automatically.
  *
- * SETUP (one time, about 10 minutes):
+ * SETUP (one time, about 10 minutes, signed in as 804re.com@gmail.com):
  *  1. Create a new Google Sheet, e.g. "Seasonal Decoration Map".
  *  2. Extensions > Apps Script. Paste this whole file in (replace the
  *     sample code). Save.
