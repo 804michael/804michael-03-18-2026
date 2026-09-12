@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_21-59-0003                            ║
+  ║  SITE VERSION: 26.09.11_22-05-0006                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file. The next session reads the LAST revision       ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_21-59-0003    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-05-0006    ║
   ║                                                               ║
   ║  AI ASSISTANT INSTRUCTIONS: PLEASE READ BEFORE EDITING        ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -26,14 +26,10 @@
   ║  The four pages share one layout; a layout change here is     ║
   ║  a change to all four.                                        ║
   ║                                                               ║
-  ║  STAGING PAGE: NOT YET LAUNCHED                               ║
-  ║  Intentionally NOT linked from nav-partial.html, NOT in       ║
-  ║  sitemap.xml, and robots is "noindex, follow" on purpose.     ║
-  ║  Linked only from dev.html and the other policy pages.        ║
-  ║  When Michael says to launch:                                 ║
-  ║    1. Set live: true in the generator (robots, links)         ║
-  ║    2. Add it to sitemap.xml                                   ║
-  ║    3. Add it to the policy links in every page footer         ║
+  ║  STATUS: LIVE since 2026-09-11 (Michael approved launch).     ║
+  ║  Indexed, listed in sitemap.xml, linked from every page       ║
+  ║  footer and from the consent line under each form. Links      ║
+  ║  to a still-hidden policy page render here as plain text.     ║
   ╚═══════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -44,7 +40,7 @@
   <title>Fair Housing | 804Michael</title>
   <meta name="description" content="Michael Hottman's fair housing commitment to sellers and buyers, and how to raise a concern." />
   <link rel="canonical" href="https://804re.com/fair-housing" />
-  <meta name="robots" content="noindex, follow" />
+  <meta name="robots" content="index, follow" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -149,6 +145,8 @@
     .ft-pol span[aria-current]{color:var(--white)}
     .ft-eho{max-width:720px;font-size:.76rem;line-height:1.7;color:rgba(255,255,255,.4)}
     .ft-eho strong{color:rgba(255,255,255,.7)}
+    .ft-marks{display:flex;gap:20px;align-items:center;justify-content:center}
+    .ft-marks img{height:48px;width:auto;opacity:.9}
   </style>
 </head>
 <body>
@@ -168,8 +166,6 @@
 <div class="breadcrumb">
   <div class="breadcrumb-in">
     <a href="/" aria-label="Home" class="breadcrumb-home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg></a>
-    <span class="sep">›</span>
-    <a href="/dev">Dev</a>
     <span class="sep">›</span>
     <span class="cur">Fair Housing</span>
   </div>
@@ -399,7 +395,6 @@
           <li><a href="/terms">Terms of Use <span class="arr">›</span></a></li>
           <li><a href="/accessibility">Accessibility <span class="arr">›</span></a></li>
           <li><span aria-current="page">Fair Housing</span></li>
-          <li><a href="/dev">← Dev Hub <span class="arr">›</span></a></li>
         </ul>
       </div>
     </div>
@@ -438,7 +433,11 @@
       <span aria-current="page">Fair Housing</span>
     </nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD_HH-MM-XXXX" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_21-59-0003</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-05-0006</p>
+    <div class="ft-marks">
+      <img src="/images/equal-housing-opportunity-reverse.svg" alt="Equal Housing Opportunity" width="50" height="48" loading="lazy">
+      <img src="/images/realtor-mls-reverse.svg" alt="REALTOR&reg; and Multiple Listing Service" width="99" height="48" loading="lazy">
+    </div>
     <p class="ft-eho">
       <strong>Equal Housing Opportunity.</strong> Michael Hottman and Malcolm Real Estate comply with the
       federal Fair Housing Act and the Virginia Fair Housing Law.
@@ -455,7 +454,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_21-59-0003';
+  const SITE_VERSION = '26.09.11_22-05-0006';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 

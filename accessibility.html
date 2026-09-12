@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_21-59-0003                            ║
+  ║  SITE VERSION: 26.09.11_22-05-0006                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file. The next session reads the LAST revision       ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_21-59-0003    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-05-0006    ║
   ║                                                               ║
   ║  AI ASSISTANT INSTRUCTIONS: PLEASE READ BEFORE EDITING        ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -145,6 +145,8 @@
     .ft-pol span[aria-current]{color:var(--white)}
     .ft-eho{max-width:720px;font-size:.76rem;line-height:1.7;color:rgba(255,255,255,.4)}
     .ft-eho strong{color:rgba(255,255,255,.7)}
+    .ft-marks{display:flex;gap:20px;align-items:center;justify-content:center}
+    .ft-marks img{height:48px;width:auto;opacity:.9}
   </style>
 </head>
 <body>
@@ -260,7 +262,7 @@
       This page is about the website. If you need help finding a home with particular features,
       such as single-level living, a wide entry, or a roll-in shower, say so and Michael will
       search for it. Requests for changes in how we work with you are covered on the
-      fair housing page.
+      <a href="/fair-housing">fair housing page</a>.
     </p>
 
     <h2 id="feedback">Tell us about a problem</h2>
@@ -310,6 +312,7 @@
           <li><a href="/privacy">Privacy <span class="arr">›</span></a></li>
           <li><a href="/terms">Terms of Use <span class="arr">›</span></a></li>
           <li><span aria-current="page">Accessibility</span></li>
+          <li><a href="/fair-housing">Fair Housing <span class="arr">›</span></a></li>
         </ul>
       </div>
     </div>
@@ -345,9 +348,14 @@
       <a href="/privacy">Privacy</a>
       <a href="/terms">Terms of Use</a>
       <span aria-current="page">Accessibility</span>
+      <a href="/fair-housing">Fair Housing</a>
     </nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD_HH-MM-XXXX" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_21-59-0003</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-05-0006</p>
+    <div class="ft-marks">
+      <img src="/images/equal-housing-opportunity-reverse.svg" alt="Equal Housing Opportunity" width="50" height="48" loading="lazy">
+      <img src="/images/realtor-mls-reverse.svg" alt="REALTOR&reg; and Multiple Listing Service" width="99" height="48" loading="lazy">
+    </div>
     <p class="ft-eho">
       <strong>Equal Housing Opportunity.</strong> Michael Hottman and Malcolm Real Estate comply with the
       federal Fair Housing Act and the Virginia Fair Housing Law.
@@ -364,7 +372,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_21-59-0003';
+  const SITE_VERSION = '26.09.11_22-05-0006';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 

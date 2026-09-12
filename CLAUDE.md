@@ -78,7 +78,11 @@ paid sthan.io API server-side to keep those credentials off the page.
    section order (Buyer Tools above Seller Tools) is a confirmed exception.
 
 6. **Never commit a third-party logo image** for a portal-style reference. Style
-   the brand's name as text in its own colour instead.
+   the brand's name as text in its own colour instead. Exception (2026-09-11,
+   Michael's request): `images/equal-housing-opportunity-reverse.svg` and
+   `images/realtor-mls-reverse.svg` are marks he is entitled to display as a
+   REALTOR® and MLS participant, copied from the Malcolm site. They sit in the
+   footers; keep them.
 
 7. **Client-facing output must never carry agent-only data.** `client-tour.html`
    and `/api/tour-page.js` enforce an allow-list server-side; private notes and
