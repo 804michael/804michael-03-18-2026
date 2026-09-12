@@ -41,7 +41,7 @@
   // Michael and logs the lead in the "804re.com Leads" Sheet. An empty URL, or
   // any failure, falls back to EmailJS; if that fails too the visitor sees
   // call/text. seller-intake.html and buyer-intake.html carry the same helper.
-  const LEAD_SCRIPT_URL = '';
+  const LEAD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlN-Kr-nNbZK5k19owUTIDfeHK9f-gbgjZGWJmBdbhdhaMkNU1YWg5S_qzEQRphOnMng/exec';
   function sendLead(form, fields) {
     function viaEmailJS() { return emailjs.send(EMAILJS_SERVICE_ID, MESSAGE_TEMPLATE_ID, fields); }
     if (!LEAD_SCRIPT_URL) return viaEmailJS();

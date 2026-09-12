@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_13-43-0054                            ║
+  ║  SITE VERSION: 26.09.12_15-19-0055                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -363,7 +363,7 @@
 
 <p class="lp-legal" style="margin-left:auto;margin-right:auto;padding:0 16px">
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-  <span id="site-version-display">v26.09.12_13-43-0054</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
+  <span id="site-version-display">v26.09.12_15-19-0055</span> &nbsp;·&nbsp; &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate, Licensed Real Estate Broker in Virginia
 </p>
 
 <script defer src="https://unpkg.com/emailjs-com@3/dist/email.min.js"></script>
@@ -371,7 +371,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.12_13-43-0054';
+  const SITE_VERSION = '26.09.12_15-19-0055';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -389,7 +389,7 @@
   // the Google Apps Script in docs/lead-mailer.gs first: it emails Michael and
   // logs the lead in the "804re.com Leads" Sheet. An empty URL, or any failure,
   // falls back to EmailJS; if that fails too the visitor sees call/text.
-  var LEAD_SCRIPT_URL = '';
+  var LEAD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlN-Kr-nNbZK5k19owUTIDfeHK9f-gbgjZGWJmBdbhdhaMkNU1YWg5S_qzEQRphOnMng/exec';
   function sendLead(form, fields){
     function viaEmailJS(){ return emailjs.send(EMAILJS_SERVICE_ID, SELLER_INTAKE_TEMPLATE_ID, fields); }
     if (!LEAD_SCRIPT_URL) return viaEmailJS();

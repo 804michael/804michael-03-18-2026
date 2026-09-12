@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_15-02-0071                       ║
+  ║  SITE VERSION: 26.09.12_15-19-0072                       ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -434,7 +434,7 @@
         <div class="cmd-num">8</div>
         <div class="cmd-body">
           <div class="cmd-head"><h4><a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener">EmailJS<span class="ext">↗</span></a></h4><span class="svc-tag">Lead forms</span></div>
-          <p>Every lead form on the site. Called straight from the page, no server function involved, so it can't be checked from here: a broken template only shows up when a real visitor submits. <strong>Plan:</strong> Free, which allows 2 templates and 200 emails a month, shared by every form (tests count too). Both template slots are used, so a third template can't be created until the plan is upgraded (Personal, $9/month: 6 templates, 2,000 emails). <strong>Templates in use:</strong> <code>template_valuation_request</code> "Home Value Report" (Home Value page, the homepage popup and the four town pages) and <code>template_qbvwd6k</code> "Home Search Area Map Drawing" (Map Search share form, sends to HomeSearchMap@804michael.com). Both checked 2026-09-12: Reply To is <code>{{from_email}}</code> and every field the form sends appears in the email. <strong>Not created (no free slot):</strong> <code>template_contact_message</code> (the Message button in the menu, on every page), <code>template_seller_intake</code>, <code>template_buyer_intake</code>. Those three forms send through the <strong>lead mailer</strong> instead: a Google Apps Script (<code>docs/lead-mailer.gs</code>, in the 804re.com Google account) that emails Michael and logs every lead in the "804re.com Leads" Sheet. Each form tries the script first once its <code>LEAD_SCRIPT_URL</code> is filled in (nav.js, seller-intake.html, buyer-intake.html), then EmailJS, and only then shows "please call or text instead", so no lead is silently lost. Until the script is deployed and the URL added, those three forms go straight to EmailJS and fail politely.</p>
+          <p>Every lead form on the site. Called straight from the page, no server function involved, so it can't be checked from here: a broken template only shows up when a real visitor submits. <strong>Plan:</strong> Free, which allows 2 templates and 200 emails a month, shared by every form (tests count too). Both template slots are used, so a third template can't be created until the plan is upgraded (Personal, $9/month: 6 templates, 2,000 emails). <strong>Templates in use:</strong> <code>template_valuation_request</code> "Home Value Report" (Home Value page, the homepage popup and the four town pages) and <code>template_qbvwd6k</code> "Home Search Area Map Drawing" (Map Search share form, sends to HomeSearchMap@804michael.com). Both checked 2026-09-12: Reply To is <code>{{from_email}}</code> and every field the form sends appears in the email. <strong>Not created (no free slot):</strong> <code>template_contact_message</code> (the Message button in the menu, on every page), <code>template_seller_intake</code>, <code>template_buyer_intake</code>. Those three forms send through the <strong>lead mailer</strong> instead: a Google Apps Script (<code>docs/lead-mailer.gs</code>, in the 804re.com Google account) that emails Michael and logs every lead in the "804re.com Leads" Sheet. Each form tries the script first once its <code>LEAD_SCRIPT_URL</code> is filled in (nav.js, seller-intake.html, buyer-intake.html), then EmailJS, and only then shows "please call or text instead", so no lead is silently lost. Deployed 2026-09-12 as the "804re.com Lead Mailer" web app in 804re.com@gmail.com, and its URL is in all three pages. Seller leads are emailed the moment they arrive; Message and Buyer leads come in one digest email at 8 AM, 12 PM, 4 PM and 8 PM Eastern (a digest is skipped when nothing is waiting). The weekly site check pings the web app.</p>
           <div class="svc-where"><b>Where:</b> dashboard.emailjs.com → Email Templates.</div>
         </div>
       </div>
@@ -553,7 +553,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_15-02-0071</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_15-19-0072</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -566,7 +566,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.12_15-02-0071';
+  const SITE_VERSION = '26.09.12_15-19-0072';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 

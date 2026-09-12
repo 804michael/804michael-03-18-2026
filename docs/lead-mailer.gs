@@ -77,7 +77,7 @@ var FORMS = {
            ['Message', 'message', 'long']]
   },
   seller: {
-    title: 'New Seller Lead', short: 'seller', delivery: 'digest',
+    title: 'New Seller Lead', short: 'seller', delivery: 'immediate',  // speed matters on listings
     subject: function (f) { return 'New Seller Lead from ' + f.from_name + ' for ' + f.address + ', ' + f.city + ' (' + f.timeline + ')'; },
     rows: [['Name', 'from_name'], ['Preferred Contact', 'preferred_contact'], ['Best Time to Reach', 'preferred_time'],
            ['Email', 'from_email'], ['Phone', 'phone'],

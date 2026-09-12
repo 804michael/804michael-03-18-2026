@@ -61,6 +61,14 @@ for p in /api/rates /api/dev-cards /api/dev-notes /api/heigit-status /api/tours 
          "/api/address-autocomplete?q=100%20Main%20St" "/api/tour-page?code=healthcheck"; do
   expect api "$p"; done
 
+# Lead mailer: the Google Apps Script web app (804re.com@gmail.com) that the
+# Message, Seller and Buyer forms post to. A GET just answers "live".
+LEAD_URL="https://script.google.com/macros/s/AKfycbxlN-Kr-nNbZK5k19owUTIDfeHK9f-gbgjZGWJmBdbhdhaMkNU1YWg5S_qzEQRphOnMng/exec"
+total=$((total+1))
+if ! curl -s -L -m 30 "$LEAD_URL" 2>/dev/null | grep -q "lead mailer is live"; then
+  fails=$((fails+1)); echo "FAIL  lead mailer web app not answering ($LEAD_URL)"
+fi
+
 # Config gaps worth nagging about until fixed
 cfg=$(curl -s -m 20 "$BASE/api/tours?cb=$RANDOM" 2>/dev/null)
 if [[ $cfg == *agent_key_not_configured* ]]; then
