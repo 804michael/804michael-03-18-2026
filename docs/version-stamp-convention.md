@@ -42,6 +42,8 @@ The chat-response rule also stands: open the reply to Michael by stating the cur
 
 Note `client-tour.html` has only **three** occurrences of the version string, not four — its visible version line is written by JS from the constant rather than hard-coded in the markup.
 
+**`map-search.html` shows one version, not two (2026-09-11, Michael's request).** The bold "map version v…" line (`#map-version-display`) at the bottom of the share panel read as a second version number above the footer, so it was removed. `MAP_VERSION` still lives in the top comment block and in `const MAP_VERSION`, and still gets bumped on every write alongside `SITE_VERSION`; it just has no visible spot any more (the JS that filled it skips a missing element). The page's one visible version is the plain `SITE_VERSION` line in the footer.
+
 **Not covered, deliberately:**
 
 - `nav.css` / `nav.js` / `nav-partial.html` — shared components have never carried a version stamp. This is a per-page convention, not a per-component one. Editing the shared nav needs no bump.
