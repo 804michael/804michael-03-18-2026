@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_00-02-0003                            ║
+  ║  SITE VERSION: 26.09.12_00-28-0004                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.12_00-02-0003   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.12_00-28-0004   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -179,6 +179,15 @@
   .divider{margin:24px 20px 8px;text-align:center;color:var(--gray-muted);
     font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;}
   .list-wrap{width:90vw;margin:8px calc(50% - 45vw) 0;}
+  /* Off-season: last year's houses sit under their own heading, a little faded. */
+  .grid-heading{grid-column:1/-1;margin:14px 0 2px;font-family:'Barlow',sans-serif;font-weight:800;font-size:1.35rem;color:var(--black);
+    display:flex;align-items:center;gap:10px;}
+  .grid-heading::after{content:"";flex:1;height:1px;background:var(--gray-mid);}
+  .grid-heading:first-child{margin-top:0;}
+  .grid-heading:not(:has(~ .house-card.past:not(.hidden))){display:none;}
+  .house-card.past{background:#fafafa;}
+  .house-card.past .name{color:#444;}
+  .popup-past{font-size:14px;font-weight:600;color:var(--accent2);margin:-2px 0 6px;}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
   .house-card{background:#fff;border:1px solid var(--gray-mid);border-left:5px solid var(--accent);min-width:0;
     border-radius:10px;padding:12px 14px;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease;}
@@ -346,7 +355,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.12_00-02-0003</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.12_00-28-0004</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:#555;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:#555;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:#555;text-decoration:underline">Accessibility</a> &middot; <a href="/fair-housing" style="color:#555;text-decoration:underline">Fair Housing</a></footer>
 </div>
 
@@ -496,7 +505,7 @@ const SAMPLE = {
 };
 
 // ⚠ AI MAINTENANCE RULE: update SITE_VERSION and both other stamp spots on every edit.
-const SITE_VERSION = '26.09.12_00-02-0003';
+const SITE_VERSION = '26.09.12_00-28-0004';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 // =========================================================================
@@ -815,20 +824,32 @@ function normSeason(v){
 // Approved must be exactly TRUE. farmstand.html also treats a blank as
 // approved (for its old Google Form rows); private homes get no such pass.
 function isApproved(r){ return (r['Approved'] || '').toString().trim().toLowerCase() === 'true'; }
+// Which rows go on the map. In season: this season's year only (a blank
+// Year counts as this year). Off-season: this year's approved houses plus
+// LAST year's, flagged `past`, so the map is never empty between seasons.
+// On opening day last year's drop off by themselves; nothing to switch.
 function rowYearOk(r){
   const y = parseInt(r['Year'], 10);
   return isNaN(y) || y === seasonYear(season, NOW);
 }
+function rowIsLastYear(r){
+  return !inWindow(season, NOW) && parseInt(r['Year'], 10) === seasonYear(season, NOW) - 1;
+}
 function parseRows(rows){
-  return rows
-    .filter(r => normSeason(r['Season']) === season && rowYearOk(r) && isApproved(r))
+  const houses = rows
+    .filter(r => normSeason(r['Season']) === season && isApproved(r) && (rowYearOk(r) || rowIsLastYear(r)))
     .map(r => {
       const cats = normCats(r['Category']);
       return { name: (r['Name'] || '').trim(), addr: titleCaseAddress((r['Address'] || '').trim()),
                cats, cat: cats[0], when: (r['When'] || '').trim(), desc: (r['Description'] || '').trim(),
-               lat: parseFloat(r['Lat']), lng: parseFloat(r['Lng']) };
+               lat: parseFloat(r['Lat']), lng: parseFloat(r['Lng']), past: !rowYearOk(r) };
     })
     .filter(h => !isNaN(h.lat) && !isNaN(h.lng));
+  // A house that's back again this year shows once, as this year's. Same
+  // spot to 4 decimals (about 10 m) counts as the same house.
+  const spot = h => h.lat.toFixed(4) + ',' + h.lng.toFixed(4);
+  const thisYear = new Set(houses.filter(h => !h.past).map(spot));
+  return houses.filter(h => !h.past || !thisYear.has(spot(h)));
 }
 function countPending(rows){
   let pending = 0, needsFix = 0;
@@ -884,7 +905,9 @@ function applySeason(){
   const notes = [];
   let houses;
   if(!CSV_URL){
-    houses = SAMPLE[season].map(h => Object.assign({}, h, {cat: h.cats[0]}));
+    // Off-season the samples stand in for last year's list, so the
+    // "Last year's favorites" grouping can be previewed before the Sheet exists.
+    houses = SAMPLE[season].map(h => Object.assign({}, h, {cat: h.cats[0], past: !inWindow(season, NOW)}));
     notes.push('📋 Sample houses. Sheet not connected yet.');
   } else if(loadError){
     houses = [];
@@ -894,7 +917,11 @@ function applySeason(){
     const {pending, needsFix} = countPending(RAW_ROWS);
     renderReviewPill(pending, needsFix);
   }
-  if(!inWindow(season, NOW)) notes.push(`${S.label} map opens ${opensLabel(season)}. Add a house now.`);
+  if(!inWindow(season, NOW)){
+    notes.push(houses.some(h => h.past)
+      ? `${S.label} map opens ${opensLabel(season)}. Until then, here's last year's list. Add yours now.`
+      : `${S.label} map opens ${opensLabel(season)}. Add a house now.`);
+  }
   if(notes.length) setStatus(loadError ? 'error' : 'demo', notes.join(' · ')); else clearStatus();
 
   renderHouses(houses);
@@ -902,7 +929,8 @@ function applySeason(){
 }
 
 function renderHouses(houses){
-  houses = houses.slice().sort((a,b)=> displayName(a).localeCompare(displayName(b)));
+  // This year's houses first, then last year's; A-Z within each group.
+  houses = houses.slice().sort((a,b)=> (!!a.past - !!b.past) || displayName(a).localeCompare(displayName(b)));
   houses.forEach((h,i)=>{ h.n = i+1; });
   HOUSES = houses;
   document.getElementById('stopCount').textContent = houses.length + (houses.length === 1 ? ' house' : ' houses');
@@ -924,7 +952,9 @@ function renderHouses(houses){
   for(const k in markers) delete markers[k];
   const bounds = [];
   houses.forEach(h=>{
-    const m = L.marker([h.lat, h.lng], {icon: houseIcon(h), title: displayName(h)}).addTo(map);
+    // Last year's pins are faded so this year's stand out once both are on the map.
+    const m = L.marker([h.lat, h.lng], {icon: houseIcon(h), title: displayName(h) + (h.past ? ' (last year)' : ''),
+                                        opacity: h.past ? 0.55 : 1}).addTo(map);
     m.bindPopup(()=>popupHtml(h), {maxWidth:300, minWidth:230, autoPanPadding:[20,80]});
     m.on('click', ()=> highlightCard(h.n));
     markers[h.n] = m;
@@ -944,6 +974,7 @@ function actsHtml(h){
 }
 function popupHtml(h){
   return `<div class="popup-title"><a href="#card-${h.n}" data-jump="${h.n}">${esc(displayName(h))}</a></div>
+    ${h.past ? `<div class="popup-past">On last year's map. May not be up this year.</div>` : ''}
     <div class="popup-addr">${formatAddr(h.addr)}</div>
     ${h.when ? `<div class="popup-when">🕘 ${esc(h.when)}</div>` : ''}
     ${actsHtml(h)}`;
@@ -958,6 +989,10 @@ function cardHtml(h){
     ${h.desc ? `<div class="desc">${esc(h.desc)}</div>` : ''}
     ${actsHtml(h)}`;
 }
+// This year's cards, then a "Last year's favorites" heading and last year's
+// cards. Grouped here rather than by sort order, so Near Me can re-sort by
+// distance and the two groups still stay apart. The heading hides itself
+// (CSS :has) when a filter leaves none of last year's cards showing.
 function renderCards(){
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
@@ -965,16 +1000,25 @@ function renderCards(){
     grid.innerHTML = `<div class="empty-state">No houses on the ${esc(SEASONS[season].label)} map yet. Know a good one? Tap Add a House.</div>`;
     return;
   }
-  HOUSES.forEach(h=>{
-    const S = SEASONS[season];
+  const S = SEASONS[season];
+  const addCard = h=>{
     const card = document.createElement('div');
-    card.className = 'house-card' + (picked.has(h.n) ? ' picked' : '');
+    card.className = 'house-card' + (picked.has(h.n) ? ' picked' : '') + (h.past ? ' past' : '');
     card.id = 'card-' + h.n;
     card.style.borderLeftColor = (S.cats[h.cat] || S.cats.other).color;
     card.innerHTML = cardHtml(h);
     if(activeCat !== 'all' && !h.cats.includes(activeCat)) card.classList.add('hidden');
     grid.appendChild(card);
-  });
+  };
+  const lastYear = HOUSES.filter(h => h.past);
+  HOUSES.filter(h => !h.past).forEach(addCard);
+  if(lastYear.length){
+    const head = document.createElement('div');
+    head.className = 'grid-heading';
+    head.textContent = `Last year's favorites (${seasonYear(season, NOW) - 1})`;
+    grid.appendChild(head);
+    lastYear.forEach(addCard);
+  }
 }
 function highlightCard(n){
   document.querySelectorAll('.house-card.selected').forEach(c=>c.classList.remove('selected'));
@@ -1079,7 +1123,7 @@ document.getElementById('trayPlan').addEventListener('click', ()=>{
 
 function printList(list, which){
   const S = SEASONS[season];
-  const rows = list.map((h,i)=>`<tr><td class="box">☐</td><td>${i+1}</td><td><b>${esc(displayName(h))}</b>${h.desc ? '<br>' + esc(h.desc.slice(0,140)) : ''}</td>
+  const rows = list.map((h,i)=>`<tr><td class="box">☐</td><td>${i+1}</td><td><b>${esc(displayName(h))}</b>${h.past ? ' (last year)' : ''}${h.desc ? '<br>' + esc(h.desc.slice(0,140)) : ''}</td>
     <td>${formatAddr(h.addr)}</td><td>${esc(h.when)}</td></tr>`).join('');
   document.getElementById('printSheet').innerHTML =
     `<h2>${esc(S.h1)} ${esc(S.h1Span)} ${seasonYear(season, NOW)}</h2>
