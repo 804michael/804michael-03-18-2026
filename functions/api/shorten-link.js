@@ -155,6 +155,18 @@ export async function onRequestPost(context) {
   return new Response(JSON.stringify({ error: 'shorten_failed', detail: attempts.join(' | ') }), { status: 502, headers: jsonHeaders });
 }
 
+// Health probe for system-status.html. A POST mints a real code, so the status
+// page can't use one. Without this handler a GET fell through to the static
+// 404 page, and the status page showed "Endpoint not deployed" even though
+// shortening worked. This writes nothing; it only reports which store a POST
+// would use right now.
+export async function onRequestGet(context) {
+  const { request, env } = context;
+  return new Response(JSON.stringify({ ok: true, store: env.TOURS_KV ? 'kv' : 'fallback' }), {
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeadersFor(request) },
+  });
+}
+
 export async function onRequestOptions(context) {
   return new Response(null, { headers: corsHeadersFor(context.request) });
 }

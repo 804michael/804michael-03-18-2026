@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_22-42-0062                            ║
+  ║  SITE VERSION: 26.09.11_23-27-0063                           ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -209,12 +209,21 @@
        without the usual table-overflow gymnastics. */
     .st-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--gray-text);margin:0 0 18px}
     .st-legend span{display:inline-flex;align-items:center;gap:6px}
-    .st-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:var(--gray-muted)}
+    .st-dot{width:20px;height:20px;border-radius:50%;flex:0 0 auto;background:var(--gray-muted)}
     .st-dot.ok{background:#1a7a3c}.st-dot.warn{background:#c98a00}.st-dot.bad{background:var(--red)}
     .st-dot.checking{background:var(--gray-mid)}
-    .st-row{display:grid;grid-template-columns:14px 1fr 200px;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--gray-mid)}
+    /* A failing check pulses so it can't be missed on a scan of the page. The
+       ring is a box-shadow, so it grows without shifting the row's layout. */
+    .st-dot.bad{animation:st-pulse 1.4s ease-out infinite}
+    @keyframes st-pulse{
+      0%{box-shadow:0 0 0 0 rgba(218,41,28,.7)}
+      70%{box-shadow:0 0 0 10px rgba(218,41,28,0)}
+      100%{box-shadow:0 0 0 0 rgba(218,41,28,0)}
+    }
+    @media (prefers-reduced-motion:reduce){.st-dot.bad{animation:none}}
+    .st-row{display:grid;grid-template-columns:24px 1fr 200px;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--gray-mid)}
     .st-row:last-child{border-bottom:none}
-    .st-row .st-dot{margin-top:6px}
+    .st-row .st-dot{margin-top:1px}
     .st-name{font-weight:700;font-size:1.02rem;color:var(--black)}
     .st-name code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92rem;background:var(--gray-light);padding:1px 5px;border-radius:4px}
     .st-what{font-size:.94rem;color:#3d3d3d;margin-top:2px}
@@ -222,7 +231,7 @@
     .st-msg.bad{color:var(--red)}.st-msg.warn{color:#a06f00}.st-msg.ok{color:#1a7a3c}
     .st-where{font-size:.86rem;color:var(--gray-muted);line-height:1.5}
     @media(max-width:700px){
-      .st-row{grid-template-columns:14px 1fr}
+      .st-row{grid-template-columns:24px 1fr}
       .st-where{grid-column:2;margin-top:4px}
     }
     .st-recheck{background:var(--red);color:var(--white);border:none;border-radius:999px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
@@ -437,7 +446,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-42-0062</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-27-0063</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -450,7 +459,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_22-42-0062';
+  const SITE_VERSION = '26.09.11_23-27-0063';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -541,9 +550,13 @@
       where: 'KV binding TOURS_KV (shared)',
       run: function(){
         // GET only — a POST here would mint a real short code as a side effect.
-        return fetch('/api/shorten-link').then(function(res){
-          if(res.status === 404) return bad('Endpoint not deployed (404).');
-          return ok('Deployed. Riding the same TOURS_KV binding as saved tours.');
+        // The GET is a dedicated health probe in shorten-link.js that writes
+        // nothing and reports which store a real POST would use.
+        return fetch('/api/shorten-link').then(readJson).then(function(r){
+          if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(!r.json) return bad('Responded ' + r.status + ' with no JSON.');
+          if(r.json.store === 'kv') return ok('Working. Codes stored in TOURS_KV, served from 804re.com/s/.');
+          return warn('TOURS_KV not bound, so links fall back to is.gd or TinyURL.');
         });
       }
     },
