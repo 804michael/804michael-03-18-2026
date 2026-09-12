@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-44-0001                            ║
+  ║  SITE VERSION: 26.09.12_00-00-0002                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-44-0001   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.12_00-00-0002   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -251,6 +251,22 @@
   /* Snow: one fixed canvas, never takes a click. Christmas only. */
   #snow{position:fixed;inset:0;z-index:900;pointer-events:none;}
 
+  /* Halloween critters: one ghost or spider at a time, pure CSS animation on
+     a single element that removes itself when done. Never takes a click, and
+     sits under the fixed nav so the spider looks like it drops from behind it. */
+  .critter{position:fixed;z-index:900;pointer-events:none;will-change:transform;}
+  .critter-ghost{left:0;animation:ghostX 14s linear forwards;}
+  .critter-ghost .bobber{animation:ghostBob 2.2s ease-in-out infinite;opacity:.9;}
+  .critter-ghost svg{width:56px;height:66px;display:block;}
+  @keyframes ghostX{from{transform:translateX(-90px)}to{transform:translateX(calc(100vw + 90px))}}
+  @keyframes ghostBob{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-18px) rotate(5deg)}}
+  .critter-spider{top:0;animation:spiderDrop 10s ease-in-out forwards;}
+  .critter-spider::before{content:"";position:absolute;left:50%;bottom:100%;width:1px;height:100vh;background:rgba(30,30,30,.5);}
+  .critter-spider .wiggle{animation:spiderWiggle .7s ease-in-out infinite;transform-origin:50% 0;}
+  .critter-spider svg{display:block;}
+  @keyframes spiderDrop{0%{transform:translateY(-60px)}30%,70%{transform:translateY(38vh)}100%{transform:translateY(-60px)}}
+  @keyframes spiderWiggle{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
   @media(max-width:480px){
     .leaflet-popup-content-wrapper{max-width:265px;}
     #map{height:380px;}
@@ -304,7 +320,7 @@
     <button class="btn btn-ghost" id="printBtn">🖨 Print List</button>
     <button class="btn btn-ghost" id="shareBtn">📤 Share</button>
     <button class="btn btn-ghost" id="resetBtn">Reset</button>
-    <button class="btn btn-ghost hidden" id="snowBtn" aria-pressed="true">❄ Snow On</button>
+    <button class="btn btn-ghost" id="fxBtn" aria-pressed="true">👻 Spooks On</button>
     <button class="btn btn-ghost btn-icon hidden" id="reviewBtn" title="" aria-label="Pending submissions">
       🔔<span class="badge-count" id="reviewBadgeCount">0</span>
     </button>
@@ -330,7 +346,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_23-44-0001</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.12_00-00-0002</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:#555;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:#555;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:#555;text-decoration:underline">Accessibility</a> &middot; <a href="/fair-housing" style="color:#555;text-decoration:underline">Fair Housing</a></footer>
 </div>
 
@@ -430,10 +446,14 @@ const SEASONS = {
     hint: "Yours, or one you've driven past. Reviewed before it goes on the map.",
     share: 'Halloween decorations around Hanover and Ashland, on one map',
     cats: {
-      spooky:      { label: 'Spooky & Scary',      color: '#5B2A86', marker: 'ghost',   match: /spook|scar|haunt|ghost|grave/ },
+      // "haunt" belongs to Haunted House alone, so a haunted house never
+      // lands in Spooky & Scary just because it was listed first.
+      spooky:      { label: 'Spooky & Scary',      color: '#5B2A86', marker: 'ghost',   match: /spook|scar|ghost|grave/ },
       family:      { label: 'Family Friendly',     color: '#E0661B', marker: 'pumpkin', match: /family|kid|friendly|cute/ },
       inflatables: { label: 'Inflatables',         color: '#2f7d3a', marker: 'pumpkin', match: /inflat|blow/ },
-      lights:      { label: 'Lights & Projection', color: '#a16207', marker: 'ghost',   match: /light|project/ },
+      haunted:     { label: 'Haunted House',       color: '#1f2937', marker: 'ghost',   match: /haunt/ },
+      maze:        { label: 'Corn Maze',           color: '#a16207', marker: 'pumpkin', match: /maze|corn/ },
+      patch:       { label: 'Pumpkin Patch',       color: '#d97706', marker: 'pumpkin', match: /patch/ },
       candy:       { label: 'Candy Stop',          color: '#c2410c', marker: 'pumpkin', match: /candy|treat/ },
       other:       { label: 'Other',               color: '#666666', marker: 'pumpkin', match: /^$/ }
     }
@@ -462,8 +482,9 @@ const SAMPLE = {
     {name:'Sample: Graveyard Lawn', cats:['spooky'], addr:'Sample stop, Ashland', when:'Dusk-10pm nightly', desc:'Sample entry. Fog machine, tombstones, a skeleton band.', lat:37.7581, lng:-77.4802},
     {name:'Sample: Pumpkin Porch', cats:['family','candy'], addr:'Sample stop, Mechanicsville', when:'Weekends', desc:'Sample entry. 60 carved pumpkins, full-size bars on the 31st.', lat:37.6089, lng:-77.3530},
     {name:'Sample: Giant Inflatables', cats:['inflatables','family'], addr:'Sample stop, Hanover', when:'5-9pm', desc:'Sample entry. A 20-foot inflatable cat.', lat:37.6680, lng:-77.3720},
-    {name:'Sample: Projection House', cats:['lights','spooky'], addr:'Sample stop, Glen Allen', when:'Dusk-11pm', desc:'Sample entry. Ghosts projected on the windows.', lat:37.6660, lng:-77.5060},
-    {name:'Sample: Haunted Walk', cats:['spooky'], addr:'Sample stop, Beaverdam', when:'Oct 30-31 only', desc:'Sample entry. Walk-through, not for little ones.', lat:37.8120, lng:-77.6250}
+    {name:'Sample: Corn Maze', cats:['maze','family'], addr:'Sample stop, Montpelier', when:'Sat-Sun 10am-6pm', desc:'Sample entry. Five acres of corn, a hayride to get there.', lat:37.8210, lng:-77.6840},
+    {name:'Sample: Pumpkin Patch', cats:['patch','family'], addr:'Sample stop, Rockville', when:'Daily 9am-5pm', desc:'Sample entry. Pick your own, wagons provided.', lat:37.7010, lng:-77.6560},
+    {name:'Sample: Haunted House', cats:['haunted','spooky'], addr:'Sample stop, Beaverdam', when:'Oct 30-31 only', desc:'Sample entry. Walk-through, not for little ones.', lat:37.8120, lng:-77.6250}
   ],
   christmas: [
     {name:'Sample: Music Light Show', cats:['music','lights'], addr:'Sample stop, Ashland', when:'5:30-10pm nightly', desc:'Sample entry. Tune the car radio to 99.1 FM.', lat:37.7549, lng:-77.4705},
@@ -475,7 +496,7 @@ const SAMPLE = {
 };
 
 // ⚠ AI MAINTENANCE RULE: update SITE_VERSION and both other stamp spots on every edit.
-const SITE_VERSION = '26.09.11_23-44-0001';
+const SITE_VERSION = '26.09.12_00-00-0002';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 // =========================================================================
@@ -680,26 +701,71 @@ const Snow = (function(){
   }
   let rt = 0;
   window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(()=>{ if(running) size(); }, 150); });
-  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stop(); else syncSnow(); });
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stop(); else syncFx(); });
   return { start, stop };
 })();
+
+// =========================================================================
+// CRITTERS (Halloween only). Every 18-32 seconds, one ghost floats across
+// or one spider drops on a thread and climbs back up. Plain CSS animation on
+// a single element that removes itself, so it costs next to nothing between
+// appearances. Skipped while the tab is hidden or the Add a House form is open.
+// =========================================================================
+function svgSpider(){
+  return `<svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true">
+    <line x1="20" y1="0" x2="20" y2="11" stroke="rgba(30,30,30,.5)" stroke-width="1"/>
+    <g stroke="#1b1b1b" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M16 18Q8 12 4 16"/><path d="M16 21Q7 19 3 24"/><path d="M16 24Q8 26 5 32"/><path d="M17 26Q12 31 10 37"/>
+      <path d="M24 18Q32 12 36 16"/><path d="M24 21Q33 19 37 24"/><path d="M24 24Q32 26 35 32"/><path d="M23 26Q28 31 30 37"/></g>
+    <ellipse cx="20" cy="25" rx="6" ry="7" fill="#1b1b1b"/><circle cx="20" cy="15" r="4.5" fill="#1b1b1b"/>
+    <circle cx="18.3" cy="14.5" r="1.1" fill="#fff"/><circle cx="21.7" cy="14.5" r="1.1" fill="#fff"/></svg>`;
+}
+const Critters = (function(){
+  let timer = 0, running = false;
+  function schedule(ms){ clearTimeout(timer); timer = setTimeout(spawn, ms); }
+  function spawn(){
+    if(!running) return;
+    if(document.hidden || document.getElementById('modalOverlay').classList.contains('show')){ schedule(5000); return; }
+    const el = document.createElement('div');
+    el.setAttribute('aria-hidden', 'true');
+    if(Math.random() < 0.6){
+      el.className = 'critter critter-ghost';
+      el.style.top = (22 + Math.random()*50) + 'vh';
+      el.innerHTML = `<div class="bobber">${svgGhost()}</div>`;
+    } else {
+      el.className = 'critter critter-spider';
+      el.style.left = (8 + Math.random()*80) + 'vw';
+      el.innerHTML = `<div class="wiggle">${svgSpider()}</div>`;
+    }
+    // Only the outer element's own animation ends; the inner bob/wiggle loop forever.
+    el.addEventListener('animationend', e=>{ if(e.target === el) el.remove(); });
+    document.body.appendChild(el);
+    schedule(18000 + Math.random()*14000);
+  }
+  function start(){ if(running) return; running = true; schedule(3000); }
+  function stop(){ running = false; clearTimeout(timer); document.querySelectorAll('.critter').forEach(n=>n.remove()); }
+  return { start, stop };
+})();
+
+// One button for the season's effect: snow at Christmas, critters at
+// Halloween. Remembered per season; off by default for reduced motion.
 const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function snowWanted(){
-  const pref = lsGet('seasonalMap.snow');
+function fxWanted(){
+  const pref = lsGet('seasonalMap.fx.' + season);
   return pref ? pref === 'on' : !reducedMotion;
 }
-function syncSnow(){
-  const btn = document.getElementById('snowBtn');
+function syncFx(){
+  const btn = document.getElementById('fxBtn');
   const xmas = season === 'christmas';
-  btn.classList.toggle('hidden', !xmas);
-  const on = xmas && snowWanted();
+  const on = fxWanted();
   btn.setAttribute('aria-pressed', String(on));
-  btn.textContent = on ? '❄ Snow On' : '❄ Snow Off';
-  if(on) Snow.start(); else Snow.stop();
+  btn.textContent = xmas ? (on ? '❄ Snow On' : '❄ Snow Off') : (on ? '👻 Spooks On' : '👻 Spooks Off');
+  if(on && xmas) Snow.start(); else Snow.stop();
+  if(on && !xmas) Critters.start(); else Critters.stop();
 }
-document.getElementById('snowBtn').addEventListener('click', ()=>{
-  lsSet('seasonalMap.snow', snowWanted() ? 'off' : 'on');
-  syncSnow();
+document.getElementById('fxBtn').addEventListener('click', ()=>{
+  lsSet('seasonalMap.fx.' + season, fxWanted() ? 'off' : 'on');
+  syncFx();
 });
 
 // =========================================================================
@@ -810,7 +876,7 @@ function applySeason(){
   document.getElementById('fCatGroup').innerHTML = Object.keys(S.cats).filter(k => k !== 'other')
     .map(k => `<label class="cat-check"><input type="checkbox" value="${k}"> ${esc(S.cats[k].label)}</label>`).join('');
   drawGarland();
-  syncSnow();
+  syncFx();
 
   picked.clear(); activeCat = 'all';
   if(meMarker){ map.removeLayer(meMarker); meMarker = null; }
