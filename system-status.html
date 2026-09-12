@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-30-0064                          ║
+  ║  SITE VERSION: 26.09.11_23-34-0065                        ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -163,6 +163,57 @@
     /* ── Warning / caution callouts (matches calculator's red + amber notice colors) ── */
     .cal-caution{background:#fff8e1;border:1px solid #f0d78c;color:#6b4d16;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
     .cal-caution b{color:#5a3f0f}
+    /* Red callout + icon row, copied from find-a-home.html. The markup below
+       used these classes without the rules, so the 480px caution GIF rendered
+       at its natural size. */
+    .cal-warn{background:#fdeaea;border:1px solid #f3b7b3;color:#8a1f1a;border-radius:10px;padding:16px 18px;font-size:.92rem;line-height:1.6;margin:18px 0 24px}
+    .cal-warn b{color:#6e1712}
+    .warn-flex{display:flex;gap:14px;align-items:flex-start}
+    .warn-flex p{margin:0}
+    .warn-icon{width:34px;height:34px;flex-shrink:0;margin-top:2px}
+
+    /* ── Accounts & Services cards ─────────────────────────────────────
+       Card shell adapted from the .cmd-* list on financing-commandments.html.
+       These classes were in the markup with no rules at all, so the section
+       rendered as bare stacked text. Each card: number, linked title with a
+       short tag on the right, the description, then a separated "Where" line
+       so the dashboard location lines up in the same spot on every card. */
+    .svc-group{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-muted);margin:26px 0 0}
+    .cmd-list{display:flex;flex-direction:column;gap:12px;margin:10px 0 8px}
+    .cmd-item{display:flex;gap:18px;align-items:flex-start;background:var(--white);border:1.5px solid var(--gray-mid);border-radius:14px;padding:18px 20px;transition:border-color .2s}
+    .cmd-item:hover{border-color:var(--red)}
+    .cmd-num{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem}
+    .cmd-body{min-width:0;flex:1}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0 6px}
+    .cmd-body h4{font-family:'Barlow',sans-serif;font-weight:700;font-size:1.15rem;line-height:1.25;color:var(--black);margin:0}
+    .cmd-body h4 a{color:inherit;text-decoration:none;border-bottom:2px solid var(--red)}
+    .cmd-body h4 a:hover{color:var(--red)}
+    .cmd-body h4 .ext{font-size:.8em;color:var(--red);margin-left:3px}
+    .svc-tag{font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-text);background:var(--gray-light);border-radius:999px;padding:3px 10px;white-space:nowrap}
+    .cmd-body p{font-size:.95rem;line-height:1.65;color:var(--gray-text);margin:0}
+    .svc-where{margin-top:10px;padding-top:10px;border-top:1px dashed var(--gray-mid);font-size:.88rem;line-height:1.55;color:var(--gray-text)}
+    .svc-where b{color:var(--black)}
+    .cmd-body code,.bind-grid code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--gray-light);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+
+    /* ── Cloudflare bindings: a 3-column grid (name / kind / what it powers)
+       so the names line up instead of running into the sentence after them. */
+    .bind-grid{display:grid;grid-template-columns:max-content max-content 1fr;border:1.5px solid var(--gray-mid);border-radius:14px;overflow:hidden;margin:16px 0 8px}
+    .bind-grid > div{padding:12px 16px;border-bottom:1px solid var(--gray-mid);font-size:.94rem;line-height:1.5;color:var(--gray-text)}
+    .bind-grid > div:nth-last-child(-n+3){border-bottom:none}
+    .bind-grid .bh{background:var(--black);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.07em;text-transform:uppercase}
+    .bind-grid .bn{font-weight:600;color:var(--black)}
+    .bind-grid .bk{white-space:nowrap}
+    @media(max-width:640px){
+      .cmd-item{padding:16px;gap:14px}
+      .cmd-num{width:32px;height:32px;font-size:1rem}
+      .cmd-head{margin-top:4px}
+      .bind-grid{grid-template-columns:1fr}
+      .bind-grid .bh{display:none}
+      .bind-grid > div{border-bottom:none;padding:2px 16px}
+      .bind-grid .bn{padding-top:14px}
+      .bind-grid .bp{padding-bottom:14px;border-bottom:1px solid var(--gray-mid)}
+      .bind-grid > div.bp:last-child{border-bottom:none}
+    }
     .cal-note{font-size:.88rem;color:var(--gray-muted);font-style:italic;margin:14px 0 0}
 
     /* ── CTA block (in-content) ── */
@@ -210,7 +261,7 @@
     .st-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--gray-text);margin:0 0 18px}
     .st-legend span{display:inline-flex;align-items:center;gap:6px}
     .st-dot{width:20px;height:20px;border-radius:50%;flex:0 0 auto;background:var(--gray-muted)}
-    .st-dot.ok{background:#1a7a3c}.st-dot.warn{background:#c98a00}.st-dot.bad{background:var(--red)}
+    .st-dot.ok{background:#1a7a3c}.st-dot.warn{background:#FFC400}.st-dot.bad{background:var(--red)}
     .st-dot.checking{background:var(--gray-mid)}
     /* A failing check pulses so it can't be missed on a scan of the page. The
        ring is a box-shadow, so it grows without shifting the row's layout. */
@@ -251,11 +302,11 @@
     .st-count-bad:not(.is-zero){animation:st-pulse 1.4s ease-out infinite}
     @media (prefers-reduced-motion:reduce){.st-count-bad{animation:none}}
     .st-count-ok{background:#1a7a3c}
-    .st-count-warn{background:#c98a00}
+    .st-count-warn{background:#FFC400;color:#111}
     .st-count-bad{background:var(--red)}
-    /* A zero in a red circle reads as an alarm when it's actually the good
-       case, so an empty failing/fallback count goes quiet grey instead. */
-    .st-count.is-zero{background:var(--gray-mid);color:var(--gray-text)}
+    /* Every lamp keeps its colour at zero, like a real traffic light (Michael's
+       call, 2026-09-11; zeros used to go grey). Only a non-zero failing count
+       pulses, which is what separates an alarm from a quiet red 0. */
   </style>
 <body>
 
@@ -311,63 +362,108 @@
     <div id="stRows"></div>
 
     <h2 id="accounts">Accounts &amp; <span class="r">Services</span></h2>
-    <p>The full inventory, including the ones that can't be probed from here because they run entirely in the visitor's browser or on someone else's schedule.</p>
+    <p>The full inventory, including the ones that can't be probed from here because they run entirely in the visitor's browser or on someone else's schedule. Titles with a <span style="color:var(--red)">↗</span> open that service's dashboard in a new tab.</p>
 
+    <h3 class="svc-group">Hosting, domain &amp; code</h3>
     <div class="cmd-list">
       <div class="cmd-item">
         <div class="cmd-num">1</div>
         <div class="cmd-body">
-          <h4>Cloudflare</h4>
-          <p>Hosts and deploys the whole site (Pages project, git-connected), serves every <code>/api/</code> function, and holds the KV namespace behind saved tours, the dev hub's card order, notes and card edits, and the short-link redirector. Deploys run when you run <code>push-live.bat</code>. <strong>Where:</strong> Workers &amp; Pages → the 804re.com project. KV namespaces live under their own "Workers KV" item, not nested under Workers &amp; Pages.</p>
+          <div class="cmd-head"><h4><a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare<span class="ext">↗</span></a></h4><span class="svc-tag">Hosting, DNS, KV</span></div>
+          <p>Hosts and deploys the whole site (Pages project, git-connected), serves every <code>/api/</code> function, runs DNS for 804re.com, and holds the KV namespaces behind saved tours, client tour pages, the short-link redirector, and the dev hub's card order, notes and card edits. Deploys run when you run <code>push-live.bat</code>.</p>
+          <div class="svc-where"><b>Where:</b> Workers &amp; Pages → the 804re.com project. KV namespaces live under their own "Workers KV" item, not nested under Workers &amp; Pages.</div>
         </div>
       </div>
       <div class="cmd-item">
         <div class="cmd-num">2</div>
         <div class="cmd-body">
-          <h4>EmailJS</h4>
-          <p>Every lead form on the site. Called straight from the page, no server function involved, so it can't be checked from here — a broken template only shows up when a real visitor submits. <strong>Templates in use:</strong> <code>template_valuation_request</code> (Home Value + the index popup). <strong>Still not created:</strong> <code>template_buyer_intake</code>, <code>template_seller_intake</code>, <code>template_contact_message</code> — until each exists, that form shows a "please call or text instead" error rather than silently losing the lead. <strong>Where:</strong> dashboard.emailjs.com → Email Templates.</p>
+          <div class="cmd-head"><h4><a href="https://porkbun.com/account/domainsSpeedy" target="_blank" rel="noopener">Porkbun<span class="ext">↗</span></a></h4><span class="svc-tag">Domain registrar</span></div>
+          <p>Where 804re.com is registered (since January 2019). The registration expires <strong>January 14, 2027</strong>, so confirm auto-renew is on. DNS is not managed here: the nameservers point to Cloudflare, so records are edited in Cloudflare, not Porkbun.</p>
+          <div class="svc-where"><b>Where:</b> porkbun.com → Account → Domain Management.</div>
         </div>
       </div>
       <div class="cmd-item">
         <div class="cmd-num">3</div>
         <div class="cmd-body">
-          <h4>OpenRouteService / HeiGIT</h4>
-          <p>Real driving order and route geometry for the Tour Planner. Free tier covers both the Optimization and Directions calls at this volume. The API moved to <code>api.heigit.org</code> — the old <code>api.openrouteservice.org</code> domain shut down. <strong>Where:</strong> the key is <code>ORS_API_KEY</code> in Workers &amp; Pages → Settings → Environment variables; the account itself is at account.heigit.org.</p>
+          <div class="cmd-head"><h4><a href="https://github.com/804michael/804michael-03-18-2026" target="_blank" rel="noopener">GitHub<span class="ext">↗</span></a></h4><span class="svc-tag">Source code</span></div>
+          <p>The repo <code>804michael/804michael-03-18-2026</code>, branch <code>main</code>. Cloudflare Pages rebuilds on every push to <code>main</code>, so a push is the deploy. The repo is <strong>public</strong>: anything committed, including the project notes in <code>CLAUDE.md</code> and <code>docs/</code>, can be read by anyone.</p>
+          <div class="svc-where"><b>Where:</b> github.com/804michael/804michael-03-18-2026. Local copy: <code>C:\Users\Micha\804 ai Websites\804michael-website</code>.</div>
         </div>
       </div>
+    </div>
+
+    <h3 class="svc-group">Server-side APIs (keys live in Cloudflare)</h3>
+    <div class="cmd-list">
       <div class="cmd-item">
         <div class="cmd-num">4</div>
         <div class="cmd-body">
-          <h4>FRED (St. Louis Fed)</h4>
-          <p>Live mortgage-rate figures. Falls back to a hardcoded recent rate if the key is missing, so a stale rate on the site is the symptom. <strong>Where:</strong> <code>FRED_API_KEY</code> in the same Environment variables screen.</p>
+          <div class="cmd-head"><h4><a href="https://account.heigit.org/" target="_blank" rel="noopener">OpenRouteService / HeiGIT<span class="ext">↗</span></a></h4><span class="svc-tag">ORS_API_KEY</span></div>
+          <p>Real driving order and route geometry for the Tour Planner. Free tier covers both the Optimization and Directions calls at this volume. The API moved to <code>api.heigit.org</code> — the old <code>api.openrouteservice.org</code> domain shut down.</p>
+          <div class="svc-where"><b>Where:</b> the key is <code>ORS_API_KEY</code> in Workers &amp; Pages → Settings → Environment variables; the account itself is at account.heigit.org.</div>
         </div>
       </div>
       <div class="cmd-item">
         <div class="cmd-num">5</div>
         <div class="cmd-body">
-          <h4>Google Sheets + Apps Script</h4>
-          <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails. <strong>Where:</strong> script.google.com, plus the Sheet itself.</p>
+          <div class="cmd-head"><h4><a href="https://fredaccount.stlouisfed.org/apikeys" target="_blank" rel="noopener">FRED (St. Louis Fed)<span class="ext">↗</span></a></h4><span class="svc-tag">FRED_API_KEY</span></div>
+          <p>Live mortgage-rate figures. Falls back to a hardcoded recent rate if the key is missing, so a stale rate on the site is the symptom.</p>
+          <div class="svc-where"><b>Where:</b> <code>FRED_API_KEY</code> in the same Environment variables screen.</div>
         </div>
       </div>
       <div class="cmd-item">
         <div class="cmd-num">6</div>
         <div class="cmd-body">
-          <h4>Nominatim (OpenStreetMap)</h4>
-          <p>Address autocomplete and geocoding on the Tour Planner and the valuation forms. Free, no key, no account — but it is a shared public service with usage limits, so heavy automated use would get rate-limited. Nothing to configure.</p>
+          <div class="cmd-head"><h4><a href="https://sthan.io/" target="_blank" rel="noopener">sthan.io<span class="ext">↗</span></a></h4><span class="svc-tag">STHAN_* keys</span></div>
+          <p>Address suggestions on the valuation form, proxied through <code>/api/address-autocomplete</code> so the account login never reaches the page. Paid service. Not the same thing as the free Nominatim autocomplete in the home-value popup.</p>
+          <div class="svc-where"><b>Where:</b> <code>STHAN_PROFILE_NAME</code> and <code>STHAN_PROFILE_PASSWORD</code> in the same Environment variables screen.</div>
         </div>
       </div>
       <div class="cmd-item">
         <div class="cmd-num">7</div>
         <div class="cmd-body">
-          <h4>Short links</h4>
+          <div class="cmd-head"><h4>Short links</h4><span class="svc-tag">Self-hosted</span></div>
           <p>Now self-hosted: <code>/api/shorten-link</code> writes a code into the same KV namespace and <code>/s/&lt;code&gt;</code> redirects. No third party in the path. ElkQR and Replug accounts still exist and remain an option if a shorter branded domain (804re.link) is ever wanted on top of this.</p>
+          <div class="svc-where"><b>Where:</b> the <code>TOURS_KV</code> namespace, keys starting <code>slink_</code>. Codes expire after 90 days.</div>
         </div>
       </div>
+    </div>
+
+    <h3 class="svc-group">In the visitor's browser (can't be checked from here)</h3>
+    <div class="cmd-list">
       <div class="cmd-item">
         <div class="cmd-num">8</div>
         <div class="cmd-body">
-          <h4>CDNs</h4>
+          <div class="cmd-head"><h4><a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener">EmailJS<span class="ext">↗</span></a></h4><span class="svc-tag">Lead forms</span></div>
+          <p>Every lead form on the site. Called straight from the page, no server function involved, so it can't be checked from here — a broken template only shows up when a real visitor submits. <strong>Templates in use:</strong> <code>template_valuation_request</code> (Home Value + the index popup). <strong>Still not created:</strong> <code>template_buyer_intake</code>, <code>template_seller_intake</code>, <code>template_contact_message</code> — until each exists, that form shows a "please call or text instead" error rather than silently losing the lead.</p>
+          <div class="svc-where"><b>Where:</b> dashboard.emailjs.com → Email Templates.</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">9</div>
+        <div class="cmd-body">
+          <div class="cmd-head"><h4><a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank" rel="noopener">Nominatim (OpenStreetMap)<span class="ext">↗</span></a></h4><span class="svc-tag">No key</span></div>
+          <p>Address autocomplete and geocoding on the Tour Planner and the home-value popup. Free, no key, no account — but it is a shared public service with usage limits, so heavy automated use would get rate-limited.</p>
+          <div class="svc-where"><b>Where:</b> nothing to configure. The link is its usage policy.</div>
+        </div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-num">10</div>
+        <div class="cmd-body">
+          <div class="cmd-head"><h4>CDNs</h4><span class="svc-tag">No key</span></div>
           <p>Leaflet (maps) from cdnjs, the EmailJS SDK from unpkg, QR images from api.qrserver.com, Google Fonts for Barlow. All keyless. If a map or a QR code fails to render and everything else on the page works, suspect one of these rather than anything of ours.</p>
+          <div class="svc-where"><b>Where:</b> nothing to configure.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="svc-group">Google</h3>
+    <div class="cmd-list">
+      <div class="cmd-item">
+        <div class="cmd-num">11</div>
+        <div class="cmd-body">
+          <div class="cmd-head"><h4><a href="https://script.google.com/" target="_blank" rel="noopener">Google Sheets + Apps Script<span class="ext">↗</span></a></h4><span class="svc-tag">Farm stand map</span></div>
+          <p>The farm-stand map. New submissions land in the Sheet with <code>Approved = FALSE</code> and only appear on the public map once you flip that cell. The page reads the Sheet's "publish to web" CSV, which has its own cache delay of several minutes, so a new row won't show up instantly. The Apps Script (<code>addstand.gs</code>) geocodes addresses and emails you when one fails.</p>
+          <div class="svc-where"><b>Where:</b> script.google.com, plus the Sheet itself.</div>
         </div>
       </div>
     </div>
@@ -375,12 +471,14 @@
     <h2 id="setup">Cloudflare Keys &amp; <span class="r">Bindings</span></h2>
     <p>The complete list of what has to exist in the Cloudflare dashboard for the site to run at full capability. A new key or binding only takes effect on a <strong>new deployment</strong> — either push a commit, or use Deployments → ⋯ → Retry deployment.</p>
 
-    <ul class="check-list">
-      <li><strong><code>ORS_API_KEY</code></strong> — environment variable, encrypted. Powers route optimization and driving directions in the Tour Planner.</li>
-      <li><strong><code>FRED_API_KEY</code></strong> — environment variable. Powers live mortgage rates.</li>
-      <li><strong><code>TOURS_KV</code></strong> — KV namespace binding. Saved tours, and the short-link store.</li>
-      <li><strong><code>DEV_ORDER_KV</code></strong> — KV namespace binding. The dev hub's card order, its notes, and card edits — all three share this one binding.</li>
-    </ul>
+    <div class="bind-grid">
+      <div class="bh">Name</div><div class="bh">Kind</div><div class="bh">Powers</div>
+      <div class="bn"><code>ORS_API_KEY</code></div><div class="bk">Env var, encrypted</div><div class="bp">Route optimization and driving directions in the Tour Planner.</div>
+      <div class="bn"><code>FRED_API_KEY</code></div><div class="bk">Env var</div><div class="bp">Live mortgage rates.</div>
+      <div class="bn"><code>STHAN_PROFILE_NAME</code><br><code>STHAN_PROFILE_PASSWORD</code></div><div class="bk">Env vars</div><div class="bp">Address suggestions on the valuation form (sthan.io).</div>
+      <div class="bn"><code>TOURS_KV</code></div><div class="bk">KV binding</div><div class="bp">Saved tours, client tour pages, and the short-link store.</div>
+      <div class="bn"><code>DEV_ORDER_KV</code></div><div class="bk">KV binding</div><div class="bp">The dev hub's card order, its notes, and card edits. All three share this one binding.</div>
+    </div>
 
     <div class="cal-warn">
       <div class="warn-flex">
@@ -412,6 +510,8 @@
           <li><a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener">EmailJS templates <span class="arr">›</span></a></li>
           <li><a href="https://account.heigit.org/" target="_blank" rel="noopener">HeiGIT account (ORS key) <span class="arr">›</span></a></li>
           <li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script <span class="arr">›</span></a></li>
+          <li><a href="https://github.com/804michael/804michael-03-18-2026" target="_blank" rel="noopener">GitHub repo <span class="arr">›</span></a></li>
+          <li><a href="https://porkbun.com/account/domainsSpeedy" target="_blank" rel="noopener">Porkbun (domain) <span class="arr">›</span></a></li>
         </ul>
       </div>
     </div>
@@ -452,7 +552,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-30-0064</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-34-0065</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -465,7 +565,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-30-0064';
+  const SITE_VERSION = '26.09.11_23-34-0065';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -670,7 +770,7 @@
     {
       id: 'autocomplete', name: 'Address autocomplete', code: '/api/address-autocomplete',
       what: 'Address suggestions on the valuation form.',
-      where: 'No key required (proxies Nominatim)',
+      where: 'Env vars STHAN_PROFILE_NAME + STHAN_PROFILE_PASSWORD (sthan.io)',
       run: function(){
         return fetch('/api/address-autocomplete').then(function(res){
           if(res.status === 404) return bad('Endpoint not deployed (404).');
