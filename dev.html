@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-43-0080                            ║
+  ║  SITE VERSION: 26.09.11_23-53-0081                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-43-0080    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-53-0081    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -833,7 +833,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-43-0080</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-53-0081</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -844,7 +844,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-43-0080';
+  const SITE_VERSION = '26.09.11_23-53-0081';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -1627,14 +1627,18 @@
     // "where would this card be if I let go now" is the same question the
     // reorder answers and the eye sees.
     var grabOffsetY = 0;
+    var grabOffsetX = 0;
 
     // Lift the card and keep it under the finger. Until this existed nothing
     // moved at all until a swap fired ~160px in, so a real drag that had not
     // yet crossed a neighbour was indistinguishable from a broken one.
-    function followPointer(y){
+    // Follows sideways as well as up and down (2026-09-11): on the 3-column
+    // desktop grid a card has to travel across columns, and a card that only
+    // slid vertically gave no hint it could.
+    function followPointer(x, y){
       dragEl.style.transform = '';                    // measure where it sits now
       var r = dragEl.getBoundingClientRect();
-      dragEl.style.transform = 'translateY(' + (y - grabOffsetY - r.top) + 'px) scale(1.02)';
+      dragEl.style.transform = 'translate(' + (x - grabOffsetX - r.left) + 'px,' + (y - grabOffsetY - r.top) + 'px) scale(1.02)';
     }
 
     // Which card should the dragged one sit BEFORE, given the pointer is at y?
@@ -1647,13 +1651,30 @@
     // card it grabbed for the whole of a normal swipe and the test never fired
     // - the card lit up and then would not move. Midpoints react as soon as the
     // pointer crosses a neighbour, and keep reacting as the card follows.
-    function insertionRef(y){
-      var kids = Array.prototype.slice.call(dragEl.parentNode.children);
+    //
+    // Two-dimensional since 2026-09-11. The y-only version below asked "is the
+    // point above this card's middle?" card by card in DOM order, and on the
+    // 3-column grid every card in a row shares the same top, so the first card
+    // of each row always answered yes: a card could only ever be dropped at
+    // the START of a row, never into the middle or right column. Now the grid
+    // is read the way it is laid out - rows top to bottom, left to right
+    // within a row. The point comes before a card when it is in a higher row,
+    // or in that card's row and left of its middle. A card that spans the
+    // whole grid width (every card on a phone, or an expanded card) keeps the
+    // old rule, the vertical midpoint, which is what made phone dragging work.
+    function insertionRef(x, y){
+      var grid = dragEl.parentNode, gw = grid.getBoundingClientRect().width;
+      var kids = Array.prototype.slice.call(grid.children);
       for(var i = 0; i < kids.length; i++){
         var c = kids[i];
         if(c === dragEl || !c.classList || !c.classList.contains('dev-card')) continue;
         var r = c.getBoundingClientRect();
-        if(y < r.top + r.height / 2) return c;
+        if(r.width >= gw * 0.9){                       // full-width card
+          if(y < r.top + r.height / 2) return c;
+          continue;
+        }
+        if(y < r.top) return c;                        // point is in a row above
+        if(y <= r.bottom && x < r.left + r.width / 2) return c;   // same row, to its left
       }
       return null;
     }
@@ -1675,11 +1696,12 @@
       e.preventDefault();
       edgeScroll(e.clientY);
 
-      followPointer(e.clientY);
-      // The card's own midpoint where it currently appears - not the finger's -
-      // is what decides the slot, so grabbing a card by its bottom edge behaves
-      // the same as grabbing it by its top.
-      var ref = insertionRef(e.clientY - grabOffsetY + dragEl.offsetHeight / 2);
+      followPointer(e.clientX, e.clientY);
+      // The card's own centre where it currently appears - not the finger's -
+      // is what decides the slot, so grabbing a card by an edge behaves the
+      // same as grabbing it by its middle.
+      var ref = insertionRef(e.clientX - grabOffsetX + dragEl.offsetWidth / 2,
+                             e.clientY - grabOffsetY + dragEl.offsetHeight / 2);
       // Already in that slot - moving it there again would churn the DOM on
       // every pointermove and fight the finger.
       if(ref === dragEl || ref === dragEl.nextSibling) return;
@@ -1740,6 +1762,7 @@
         dragPointerId = e.pointerId;
         dragMoved = false;
         grabOffsetY = e.clientY - card.getBoundingClientRect().top;
+        grabOffsetX = e.clientX - card.getBoundingClientRect().left;
         card.classList.add('drag-active');
         document.body.classList.add('dev-dragging');
 
