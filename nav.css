@@ -328,7 +328,11 @@ footer:has(> .ft-compact){padding-top:26px;padding-bottom:22px}
 .ft-compact .ft-marks{gap:48px!important}
 .ft-compact .ft-pol{justify-content:center!important}
 .ft-compact #site-version-display{margin:0!important;font-weight:400!important}
-.ft-compact .ft-copy,.ft-compact .ft-eho{margin:0;line-height:1.6;text-align:center;max-width:760px}
+/* Copyright block matches the Draw Your Search page exactly (Michael's pick):
+   its own .ft-copy values, and no width cap, so the text runs the full
+   footer width and wraps into a couple of long lines instead of a narrow
+   column. The line breaks that used to split it are " · " separators now. */
+.ft-compact .ft-copy,.ft-compact .ft-eho{margin:0;font-size:.72rem;line-height:1.45;color:rgba(255,255,255,.35);text-align:center;max-width:none}
 
 /* ── Reduced motion (added 2026-09-11) ──
    Applies only to visitors whose device is set to "reduce motion", an
