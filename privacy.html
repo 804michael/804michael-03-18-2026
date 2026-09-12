@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_22-59-0010                            ║
+  ║  SITE VERSION: 26.09.11_23-01-0011                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file. The next session reads the LAST revision       ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-59-0010    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-01-0011    ║
   ║                                                               ║
   ║  AI ASSISTANT INSTRUCTIONS: PLEASE READ BEFORE EDITING        ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -109,6 +109,12 @@
     .pol-table th{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;background:var(--black);color:var(--white);padding:10px 12px}
     .pol-table td{padding:10px 12px;border-bottom:1px solid var(--gray-mid);color:var(--gray-text);line-height:1.55;vertical-align:top}
     .pol-table tr:nth-child(even) td{background:var(--gray-light)}
+    /* Source logos in the Fair Housing table header (HUD seal, Virginia seal,
+       REALTOR mark). Each sits on its own white tile because the header row is
+       black and the REALTOR mark is dark. alt="" since the column name follows. */
+    .pol-table th{vertical-align:bottom}
+    .pol-table th .src-logo{display:flex;align-items:center;justify-content:center;width:50px;height:50px;margin:0 0 8px;padding:5px;background:#fff;border-radius:10px}
+    .pol-table th .src-logo img{display:block;max-width:100%;max-height:100%;width:auto;height:auto}
 
     .pol-contact{background:var(--black);border-left:5px solid var(--red);border-radius:14px;padding:22px 24px;margin-top:40px}
     .pol-contact h2{color:var(--white);margin:0 0 10px;font-size:1.5rem}
@@ -464,7 +470,7 @@
       <a href="/fair-housing">Fair Housing</a>
     </nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD_HH-MM-XXXX" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-59-0010</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-01-0011</p>
     <p class="ft-eho">
       <strong>Equal Housing Opportunity.</strong> Michael Hottman and Malcolm Real Estate comply with the
       federal Fair Housing Act and the Virginia Fair Housing Law.
@@ -481,7 +487,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_22-59-0010';
+  const SITE_VERSION = '26.09.11_23-01-0011';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
