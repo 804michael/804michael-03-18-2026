@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-27-0063                           ║
+  ║  SITE VERSION: 26.09.11_23-30-0064                          ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -242,8 +242,14 @@
        the same three colours as the status dots beside each check so the
        sidebar and the rows read as one scale. A fixed width/height plus
        border-radius:50% keeps a 2-digit count circular rather than oval;
-       flex:0 0 auto stops .stat-row's layout from squashing it. */
-    .st-count{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:34px;height:34px;border-radius:50%;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.15rem;line-height:1;letter-spacing:0}
+       flex:0 0 auto stops .stat-row's layout from squashing it.
+       The dark border is the traffic-light housing around each lamp; it's a
+       border, not a box-shadow, so the red pulse below can use box-shadow
+       without the two overriding each other. The inset shadow gives the
+       lamp a little depth. Numerals are regular weight (400 is loaded). */
+    .st-count{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;box-sizing:border-box;width:46px;height:46px;border-radius:50%;border:4px solid #1a1a1a;box-shadow:inset 0 -4px 6px rgba(0,0,0,.25);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:1.7rem;line-height:1;letter-spacing:0}
+    .st-count-bad:not(.is-zero){animation:st-pulse 1.4s ease-out infinite}
+    @media (prefers-reduced-motion:reduce){.st-count-bad{animation:none}}
     .st-count-ok{background:#1a7a3c}
     .st-count-warn{background:#c98a00}
     .st-count-bad{background:var(--red)}
@@ -446,7 +452,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-27-0063</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-30-0064</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -459,7 +465,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-27-0063';
+  const SITE_VERSION = '26.09.11_23-30-0064';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
