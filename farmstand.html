@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_17-30-0054                            ║
+  ║  SITE VERSION: 26.09.11_21-59-0055                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_17-30-0054   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_21-59-0055   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -383,8 +383,8 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_17-30-0054</p>
-  <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia</footer>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_21-59-0055</p>
+  <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:inherit;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:inherit;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:inherit;text-decoration:underline">Accessibility</a></footer>
 </div>
 
 <!-- Add Stand Modal -->
@@ -447,7 +447,7 @@
       <button class="btn btn-ghost" id="cancelAdd">Cancel</button>
       <button class="btn btn-primary" id="submitAdd">Submit</button>
     </div>
-    <p class="submit-note" style="color:var(--gray-text,#555)">Submissions are reviewed before appearing on the public map. What you enter about a stand may be shown publicly, so leave out personal contact details. Your location is used only to place the stand.</p>
+    <p class="submit-note" style="color:var(--gray-text,#555)">Submissions are reviewed before appearing on the public map. What you enter about a stand may be shown publicly, so leave out personal contact details. Your location is used only to place the stand. See the <a href="/privacy" style="color:inherit;text-decoration:underline">privacy policy</a>.</p>
   </div>
 </div>
 
@@ -615,7 +615,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.11_17-30-0054';
+const SITE_VERSION = '26.09.11_21-59-0055';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
