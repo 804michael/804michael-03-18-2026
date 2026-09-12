@@ -27,6 +27,19 @@
 // is.gd and TinyURL are kept as a fallback ONLY for the case where TOURS_KV
 // isn't bound yet (before the one-time KV setup described in tours.js) —
 // so short links keep working either way while KV is being set up.
+//
+// LOCKED DOWN 2026-09-12. Until now a POST here took any http(s) URL from
+// anyone and handed back an 804re.com/s/ link that 302-redirected to it. That
+// is an open redirect on Michael's own domain: a phishing text reading
+// "804re.com/s/AbC1234" would carry the trust of his brand and land wherever
+// the sender chose. Two checks now sit in front of the write:
+//   1. The same AGENT_KEY / X-Agent-Key check as /api/tours (see tours.js).
+//      The planner already keeps the key in localStorage, so nothing new to
+//      type. Fails closed: no key set, no codes minted.
+//   2. The long URL must point at a Google Maps host or at 804re.com itself.
+//      That is every link the planner has ever asked to shorten, and it means
+//      even a leaked key cannot turn this into a general-purpose redirector.
+// The GET health probe and the /s/<code> redirect side are unchanged.
 
 const ISGD_URL = 'https://is.gd/create.php';
 const TINYURL_URL = 'https://tinyurl.com/api-create.php';
@@ -58,8 +71,49 @@ function corsHeadersFor(request){
   return {
     'Access-Control-Allow-Origin': corsOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Agent-Key',
   };
+}
+
+// ── Agent key (same contract as tours.js) ────────────────────────────────
+const AGENT_HEADER = 'X-Agent-Key';
+
+async function sameSecret(a, b){
+  const enc = new TextEncoder();
+  const [ha, hb] = await Promise.all([a, b].map((s) => crypto.subtle.digest('SHA-256', enc.encode(s))));
+  const x = new Uint8Array(ha), y = new Uint8Array(hb);
+  let diff = 0;
+  for(let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+// Returns a Response to send back when the caller is not allowed in, or null
+// when they are. 501 when AGENT_KEY is unset (fails closed), 401 otherwise.
+async function agentKeyDenied(request, env, jsonHeaders){
+  const deny = (status, error) => new Response(JSON.stringify({ error }), { status, headers: jsonHeaders });
+  const expected = typeof env.AGENT_KEY === 'string' ? env.AGENT_KEY.trim() : '';
+  if(!expected) return deny(501, 'agent_key_not_configured');
+  const given = (request.headers.get(AGENT_HEADER) || '').trim();
+  if(!given) return deny(401, 'agent_key_required');
+  if(!(await sameSecret(given, expected))) return deny(401, 'agent_key_wrong');
+  return null;
+}
+
+// ── Destination allow-list ───────────────────────────────────────────────
+// Hosts an 804re.com/s/ code may point at. Google Maps in every spelling the
+// planner produces, plus our own domain (client tour pages). Subdomains of
+// each entry are accepted; nothing else is.
+const ALLOWED_HOSTS = [
+  'google.com', 'maps.google.com', 'maps.app.goo.gl', 'goo.gl',
+  '804re.com',
+];
+
+function destinationAllowed(longUrl){
+  let u;
+  try { u = new URL(longUrl); } catch (e) { return false; }
+  if(u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  const host = u.hostname.toLowerCase();
+  return ALLOWED_HOSTS.some((h) => host === h || host.endsWith('.' + h));
 }
 
 function randomCode(len){
@@ -111,6 +165,9 @@ export async function onRequestPost(context) {
   const corsHeaders = corsHeadersFor(request);
   const jsonHeaders = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeaders };
 
+  const denied = await agentKeyDenied(request, env, jsonHeaders);
+  if(denied) return denied;
+
   let payload;
   try {
     payload = await request.json();
@@ -121,6 +178,9 @@ export async function onRequestPost(context) {
   const longUrl = payload && typeof payload.url === 'string' ? payload.url : '';
   if(!longUrl || !/^https?:\/\//i.test(longUrl)){
     return new Response(JSON.stringify({ error: 'invalid_url' }), { status: 400, headers: jsonHeaders });
+  }
+  if(longUrl.length > 4000 || !destinationAllowed(longUrl)){
+    return new Response(JSON.stringify({ error: 'destination_not_allowed', detail: 'only Google Maps and 804re.com links can be shortened' }), { status: 400, headers: jsonHeaders });
   }
 
   const attempts = [];

@@ -75,3 +75,30 @@
 
 /Unified_footer
   X-Robots-Tag: noindex
+
+# Security headers (added 2026-09-12). Cloudflare already sends
+# X-Content-Type-Options: nosniff and Referrer-Policy on its own; these are
+# the ones it does not. None of them change routing or caching.
+#
+#   X-Frame-Options       Stops another site framing 804re.com pages
+#                         (clickjacking). Nothing on this site is embedded in
+#                         an iframe anywhere, so SAMEORIGIN costs nothing.
+#   Strict-Transport-Security
+#                         Browsers that have seen this refuse plain-http to
+#                         804re.com for a year. Cloudflare already forces
+#                         https, so this only closes the first-request gap.
+#                         No includeSubDomains and no preload on purpose:
+#                         both are hard to undo.
+#   Permissions-Policy    Declares which browser features pages may ask for.
+#                         geolocation=(self) is required: the Farm Stand,
+#                         Seasonal and Map Search pages use "near me".
+#                         Camera, microphone and payment are never used.
+#
+# No Content-Security-Policy yet: every page carries its own inline <script>
+# and <style>, and third-party scripts load from unpkg and cdnjs, so a real
+# CSP needs nonces or hashes on every page first. Start with
+# Content-Security-Policy-Report-Only if that is ever attempted.
+/*
+  X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=31536000
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=()

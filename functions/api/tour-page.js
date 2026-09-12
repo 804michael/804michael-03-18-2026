@@ -32,6 +32,16 @@
 //
 // Without the binding this responds { error: "kv_not_configured" } (HTTP 501)
 // and the planner keeps its old behaviour of sharing a plain Google Maps link.
+//
+// AGENT KEY ON PUBLISH AND DELETE (added 2026-09-12). Publishing needed no
+// credentials, so anyone who found the planner could mint real 804re.com/t/
+// pages under Michael's name (with any text in the "blurb" fields), squat
+// custom slugs, and fill the KV namespace. Publishing (POST without
+// action:"feedback") and DELETE now require the same AGENT_KEY / X-Agent-Key
+// check as /api/tours. The two client-side calls stay open on purpose: the
+// GET that loads a tour page, and the feedback POST, because the client
+// holds no key and never should. The per-tour adminKey keeps doing what it
+// did (it gates reading feedback and re-publishing an existing code).
 
 const TOUR_PREFIX = 'tourpage_';
 const FB_PREFIX = 'tourfb_';
@@ -43,7 +53,7 @@ const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Agent-Key',
 };
 
 function json(data, status) {
@@ -51,6 +61,29 @@ function json(data, status) {
     status: status || 200,
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...CORS_HEADERS },
   });
+}
+
+// ── Agent key (same contract as tours.js) ────────────────────────────────
+const AGENT_HEADER = 'X-Agent-Key';
+
+async function sameSecret(a, b) {
+  const enc = new TextEncoder();
+  const [ha, hb] = await Promise.all([a, b].map((s) => crypto.subtle.digest('SHA-256', enc.encode(s))));
+  const x = new Uint8Array(ha), y = new Uint8Array(hb);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+// Returns a Response to send back when the caller is not allowed in, or null
+// when they are. 501 when AGENT_KEY is unset (fails closed), 401 otherwise.
+async function agentKeyDenied(request, env) {
+  const expected = typeof env.AGENT_KEY === 'string' ? env.AGENT_KEY.trim() : '';
+  if (!expected) return json({ error: 'agent_key_not_configured' }, 501);
+  const given = (request.headers.get(AGENT_HEADER) || '').trim();
+  if (!given) return json({ error: 'agent_key_required' }, 401);
+  if (!(await sameSecret(given, expected))) return json({ error: 'agent_key_wrong' }, 401);
+  return null;
 }
 
 function notConfigured() {
@@ -207,6 +240,11 @@ export async function onRequestPost(context) {
   }
 
   // ── Agent publishing a tour ──────────────────────────────────────────
+  // Checked here, after the feedback branch, so a client's phone never hits
+  // it. See "AGENT KEY ON PUBLISH AND DELETE" at the top of this file.
+  const denied = await agentKeyDenied(request, env);
+  if (denied) return denied;
+
   const stops = Array.isArray(body && body.stops) ? body.stops.slice(0, MAX_STOPS) : [];
   if (!stops.length) return json({ error: 'no_stops' }, 400);
 
@@ -290,6 +328,8 @@ export async function onRequestPost(context) {
 export async function onRequestDelete(context) {
   const { request, env } = context;
   if (!env.TOURS_KV) return notConfigured();
+  const denied = await agentKeyDenied(request, env);
+  if (denied) return denied;
 
   let body;
   try { body = await request.json(); } catch (e) {

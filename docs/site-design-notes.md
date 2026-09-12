@@ -1918,3 +1918,71 @@ server as In Progress on every other device. The live KV state confirmed it: no 
 override had a colour field. Both are now accepted; colours are checked against the
 DEV_COLORS ids. Colours picked before this fix were never stored and have to be picked
 again.
+
+## Twenty-third pass - security review: publish, short links, headers (2026-09-12)
+
+A full read of every Pages Function, the edge config and the pages' DOM sinks, looking for
+what a stranger could do to the site. The escaping on every page that renders external or
+user text (client-tour, dev, blog-desk, farmstand, seasonal-map) was already sound. The
+holes were all the same shape: a write endpoint that trusted anyone.
+
+### What was open
+
+- `/api/shorten-link` took any http(s) URL from anyone and returned an `804re.com/s/…`
+  code that 302-redirected to it. That is an open redirect on Michael's own domain: a
+  phishing text reading "804re.com/s/AbC1234" would carry his brand's trust and land
+  wherever the sender chose. Nothing rate-limited it either.
+- `/api/tour-page` published for anyone. A stranger could mint real `804re.com/t/` pages
+  with arbitrary blurb text under the 804Michael name, squat custom slugs forever (a slug
+  has no TTL), and fill the KV namespace.
+- No `X-Frame-Options`, `Strict-Transport-Security` or `Permissions-Policy` on any
+  response. Cloudflare adds `nosniff` and a referrer policy itself; the rest was absent.
+
+### The fix
+
+Both endpoints now use the `AGENT_KEY` / `X-Agent-Key` check the Twenty-first pass added
+to `/api/tours`, with the same fail-closed table (501 unset, 401 missing or wrong). The
+helper is copied into each file rather than shared, matching how every endpoint here is
+self-contained. Where the check sits matters:
+
+- `tour-page.js`: on the publish branch of POST and on DELETE only. The GET that loads a
+  client's page and the `action:"feedback"` POST stay open, because the client holds no
+  key and never should. The per-tour `adminKey` keeps its old job.
+- `shorten-link.js`: on POST. Also, independently of the key, the long URL must now be on
+  a Google Maps host or 804re.com itself, which is every link the planner has ever
+  produced. So even a leaked key cannot turn this into a general redirector. The GET
+  health probe and `/s/<code>` are untouched.
+
+`tour-planner.html` and `route-planner-pro.html` gained `agentJsonHeaders()` (JSON
+headers plus the stored key) on the three write calls, and `agentKeyProblem()` so a 401
+or 501 from any of them reads as the same plain sentence pointing at "Enter agent key"
+under Saved tours. `route-planner-demo.html` needed nothing: its fetch shim already cuts
+off all three endpoints. `system-status.html`'s "no endpoints need auth" paragraph now
+tells the truth.
+
+`_headers` gained a `/*` block: `X-Frame-Options: SAMEORIGIN`, a one-year HSTS without
+includeSubDomains or preload (both hard to undo), and `Permissions-Policy` with
+`geolocation=(self)` because Farm Stand, Seasonal and Map Search use "near me". No CSP:
+every page has inline script and style and loads from unpkg and cdnjs, so a real one
+needs nonces or hashes first. Start Report-Only if it is ever attempted.
+
+### Until AGENT_KEY is set in Cloudflare
+
+Saving tours, publishing a client page and minting short links are all off, for
+everyone. The planner still works and still hands out the plain Google Maps link. Setting
+the secret (Pages project > Settings > Variables and Secrets > `AGENT_KEY`) and
+redeploying turns them back on; then "Enter agent key" once per browser.
+
+### Checked and not changed
+
+- The dev-hub endpoints (`dev-order`, `dev-notes`, `dev-cards`, `blog-state`,
+  `blog-scan`) still take no key. They hold labels and article ideas, and Michael made
+  that call knowingly. Worth the same treatment if the notes list ever holds anything
+  private; `blog-scan` POST will also fetch any feed URL it is given.
+- `address-autocomplete` and `route-optimize` spend paid quota (sthan.io, HeiGIT) for
+  anyone who calls them directly; CORS only stops browsers on other sites. A key or a
+  Cloudflare rate-limit rule would close that.
+- The EmailJS public key in `nav.js` and the intake pages is public by design. The
+  Farm Stand Apps Script URL likewise.
+- Third-party scripts (Leaflet, PapaParse, EmailJS, xlsx-populate) load without
+  Subresource Integrity. `emailjs-com@3` is pinned to a major only.
