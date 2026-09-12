@@ -23,6 +23,15 @@ There is no build step: pages are hand-written HTML with their own embedded
 secrets and KV bindings from the Cloudflare dashboard; a new binding or key only
 takes effect on a NEW deployment.
 
+**`_routes.json` is hand-written (since 2026-09-12).** It tells Pages which paths
+run Functions, and because it exists Pages no longer generates one from the
+`functions/` tree. A new `functions/<dir>/` endpoint does nothing until
+`"/<dir>/*"` is added to its `include` list. The same file routes internal paths
+(`/CLAUDE.md`, `/docs/*`, `/.claude/*`, …) to `functions/_middleware.js`, which
+answers them with the site's 404 so repo notes aren't served on 804re.com. To
+block another file, add it to BOTH lists. The GitHub repo is public, so this
+hides files from the site, not from the world.
+
 ## Cloudflare bindings — which endpoint needs what
 
 Configured in the Cloudflare dashboard, never in this repo. Nothing here is

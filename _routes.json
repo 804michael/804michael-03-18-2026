@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/s/*",
+    "/CLAUDE.md",
+    "/docs/*",
+    "/.claude/*",
+    "/.gitignore",
+    "/.gitattributes",
+    "/push-live.bat",
+    "/tools/*"
+  ],
+  "exclude": []
+}
