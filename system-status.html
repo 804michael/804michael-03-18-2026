@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-42-0066                       ║
+  ║  SITE VERSION: 26.09.11_23-59-0067                       ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -477,6 +477,7 @@
       <div class="bn"><code>FRED_API_KEY</code></div><div class="bk">Env var</div><div class="bp">Live mortgage rates.</div>
       <div class="bn"><code>STHAN_PROFILE_NAME</code><br><code>STHAN_PROFILE_PASSWORD</code></div><div class="bk">Env vars</div><div class="bp">Address suggestions on the valuation form (sthan.io).</div>
       <div class="bn"><code>TOURS_KV</code></div><div class="bk">KV binding</div><div class="bp">Saved tours, client tour pages, and the short-link store.</div>
+      <div class="bn"><code>AGENT_KEY</code></div><div class="bk">Env var, encrypted</div><div class="bp">The password for saved tours in the Tour Planner. Until it is set, the saved-tours list is locked for everyone, Michael included.</div>
       <div class="bn"><code>DEV_ORDER_KV</code></div><div class="bk">KV binding</div><div class="bp">The dev hub's card order, its notes, and card edits. All three share this one binding.</div>
     </div>
 
@@ -552,7 +553,7 @@
     <!-- Policy links (all four policy pages live since 2026-09-11). -->
     <nav class="ft-pol" aria-label="Policies" style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase"><a href="/privacy" style="color:rgba(255,255,255,.6)">Privacy</a><a href="/terms" style="color:rgba(255,255,255,.6)">Terms of Use</a><a href="/accessibility" style="color:rgba(255,255,255,.6)">Accessibility</a><a href="/fair-housing" style="color:rgba(255,255,255,.6)">Fair Housing</a></nav>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-42-0066</p>
+    <p id="site-version-display" style="font-size:1.17rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-59-0067</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate &middot;
       Malcolm Real Estate, Ashland, Virginia &middot;
@@ -565,7 +566,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-42-0066';
+  const SITE_VERSION = '26.09.11_23-59-0067';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
 
@@ -639,10 +640,15 @@
     {
       id: 'tours', name: 'Saved tours', code: '/api/tours',
       what: 'Cross-device saved tours in the Tour Planner.',
-      where: 'KV binding TOURS_KV',
+      where: 'KV binding TOURS_KV + env var AGENT_KEY',
       run: function(){
-        return fetch('/api/tours').then(readJson).then(function(r){
+        // Sends the agent key the Tour Planner stored in this browser, if any.
+        // Without it a 401 is the healthy answer: the list is locked.
+        var k = ''; try{ k = localStorage.getItem('804m_agent_key') || ''; }catch(e){}
+        return fetch('/api/tours', k ? { headers: { 'X-Agent-Key': k } } : undefined).then(readJson).then(function(r){
           if(r.status === 404) return bad('Endpoint not deployed (404).');
+          if(r.status === 501 && r.json && r.json.error === 'agent_key_not_configured') return warn('AGENT_KEY not set in Cloudflare. List locked for everyone; planner saves per-browser.');
+          if(r.status === 401) return ok('Locked, as intended. Unlock in Tour Planner to see count here.');
           if(r.status === 501) return bad('TOURS_KV not bound — saved tours are per-browser.');
           if(!r.ok) return bad('Responded ' + r.status + '.');
           var n = r.json && r.json.tours ? Object.keys(r.json.tours).length : 0;

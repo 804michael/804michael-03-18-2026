@@ -35,6 +35,7 @@ checked in, so a missing one looks like a bug in the page, not in the setup.
 | `ORS_API_KEY` | env var | `api/route-optimize.js` (OpenRouteService/HeiGIT) |
 | `FRED_API_KEY` | env var | `api/rates.js` (Freddie Mac PMMS via FRED) |
 | `STHAN_PROFILE_NAME` + `STHAN_PROFILE_PASSWORD` | env vars | `api/address-autocomplete.js` |
+| `AGENT_KEY` | env var (secret) | `api/tours.js`. The Tour Planner and Route Planner Pro send it as an `X-Agent-Key` header. Unset means the saved-tours list is locked for everyone (501), never open |
 
 `api/county-lookup.js` and `api/heigit-status.js` need nothing — they are plain
 server-side fetches that exist only to dodge CORS.

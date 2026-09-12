@@ -181,8 +181,11 @@ export async function onRequestPost(context) {
     try { existing = rawFb ? JSON.parse(rawFb) : {}; } catch (e) { existing = {}; }
 
     // The published tour is the authority on which address is at which index.
+    // (Until 2026-09-11 this parsed an undeclared `rawTour`. The ReferenceError
+    // landed in the catch, so publishedStops was always empty and no entry was
+    // ever stamped with its address. `raw` is the tour read just above.)
     let publishedStops = [];
-    try { publishedStops = (JSON.parse(rawTour).stops) || []; } catch (e) { publishedStops = []; }
+    try { publishedStops = (JSON.parse(raw).stops) || []; } catch (e) { publishedStops = []; }
 
     const items = Array.isArray(body.items) ? body.items.slice(0, MAX_STOPS) : [];
     items.forEach((it) => {

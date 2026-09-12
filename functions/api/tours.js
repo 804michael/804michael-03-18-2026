@@ -30,6 +30,29 @@
 // goes 2 full years without being saved/re-saved even once. Use the page's
 // "Select tours to delete" tool or the per-tour Delete button for actual,
 // intentional cleanup.
+//
+// AGENT KEY (added 2026-09-11). Every method here needs a shared secret.
+// Before this, GET handed every saved tour to anyone who asked: client names
+// in the tour titles, every stop address, private notes, and each tour's
+// tourPageAdminKey, which is what unlocks a client's feedback on
+// /api/tour-page. DELETE {clearAll:true} wiped the lot with no check at all.
+//
+// The secret is an env var named AGENT_KEY in the Cloudflare dashboard
+// (804re.com Pages project > Settings > Variables and Secrets, type Secret).
+// The planner sends it in an X-Agent-Key header; Michael types it once per
+// browser and the page keeps it in localStorage under "804m_agent_key".
+// Like a binding, a new or changed env var only reaches a NEW deployment.
+//
+// Nothing hard-fails. Each case below lands the planner in the localStorage
+// mode it already had, and the page says which one it hit:
+//   TOURS_KV missing   501 kv_not_configured (checked first, unchanged, so
+//                      another agent's copy still hides the cloud block)
+//   AGENT_KEY missing  501 agent_key_not_configured. Fails CLOSED: with no
+//                      secret set, nobody can read or change the list.
+//   header missing     401 agent_key_required
+//   header wrong       401 agent_key_wrong (the page drops its stored key)
+// The compare hashes both sides first, so it takes the same time whatever
+// the length or content of the guess.
 
 const KV_KEY = 'tours';
 const TTL_SECONDS = 60 * 60 * 24 * 365 * 2; // 2 years, refreshed on every Save
@@ -41,12 +64,35 @@ function corsHeadersFor(request){
   return {
     'Access-Control-Allow-Origin': corsOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Agent-Key',
   };
 }
 
 function notConfigured(jsonHeaders){
   return new Response(JSON.stringify({ error: 'kv_not_configured' }), { status: 501, headers: jsonHeaders });
+}
+
+const AGENT_HEADER = 'X-Agent-Key';
+
+async function sameSecret(a, b){
+  const enc = new TextEncoder();
+  const [ha, hb] = await Promise.all([a, b].map((s) => crypto.subtle.digest('SHA-256', enc.encode(s))));
+  const x = new Uint8Array(ha), y = new Uint8Array(hb);
+  let diff = 0;
+  for(let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+// Returns a Response to send back when the caller is not allowed in, or null
+// when they are. See "AGENT KEY" at the top of this file.
+async function agentKeyDenied(request, env, jsonHeaders){
+  const deny = (status, error) => new Response(JSON.stringify({ error }), { status, headers: jsonHeaders });
+  const expected = typeof env.AGENT_KEY === 'string' ? env.AGENT_KEY.trim() : '';
+  if(!expected) return deny(501, 'agent_key_not_configured');
+  const given = (request.headers.get(AGENT_HEADER) || '').trim();
+  if(!given) return deny(401, 'agent_key_required');
+  if(!(await sameSecret(given, expected))) return deny(401, 'agent_key_wrong');
+  return null;
 }
 
 async function readTours(kv){
@@ -63,6 +109,8 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const jsonHeaders = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeadersFor(request) };
   if(!env.TOURS_KV) return notConfigured(jsonHeaders);
+  const denied = await agentKeyDenied(request, env, jsonHeaders);
+  if(denied) return denied;
 
   const tours = await readTours(env.TOURS_KV);
   return new Response(JSON.stringify({ tours }), { headers: jsonHeaders });
@@ -72,6 +120,8 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   const jsonHeaders = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeadersFor(request) };
   if(!env.TOURS_KV) return notConfigured(jsonHeaders);
+  const denied = await agentKeyDenied(request, env, jsonHeaders);
+  if(denied) return denied;
 
   let payload;
   try { payload = await request.json(); } catch (e) {
@@ -108,6 +158,8 @@ export async function onRequestDelete(context) {
   const { request, env } = context;
   const jsonHeaders = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeadersFor(request) };
   if(!env.TOURS_KV) return notConfigured(jsonHeaders);
+  const denied = await agentKeyDenied(request, env, jsonHeaders);
+  if(denied) return denied;
 
   let payload;
   try { payload = await request.json(); } catch (e) { payload = {}; }

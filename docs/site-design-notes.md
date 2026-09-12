@@ -1821,3 +1821,63 @@ Same rule as `route-planner-pro.html`: `tour-planner.html` ships and stays untou
 a fix made in either fork has to be carried back deliberately. **If nobody is being shown
 the demo any more, delete the file.** Being `noindex` and out of the sitemap keeps it out
 of search while a direct link still works, which is exactly what a shareable demo needs.
+
+## Twenty-first pass - saved tours need an agent key (2026-09-11)
+
+### What was open
+
+`GET /api/tours` returned the whole saved-tours object to anyone, with no credentials:
+tour names (which carry client names, "Smith Family - Sat"), every stop address, private
+notes, and each tour's `tourPageAdminKey`, the one secret that unlocks a client's
+feedback on `/api/tour-page`. `DELETE {clearAll:true}` wiped everything, and `POST`
+overwrote any tour by name, also unauthenticated. The planner loads that list on page
+open, so anyone who opened `/tour-planner` saw it. It became urgent because
+`seasonal-map.html` hands visitors to the planner through a `#tour=` link.
+
+### The fix
+
+`functions/api/tours.js` checks a shared secret on GET, POST and DELETE: env var
+`AGENT_KEY`, compared (SHA-256 of both sides, then a constant-time compare) against an
+`X-Agent-Key` request header. The order of checks, and what each returns:
+
+| Situation | Response | Planner shows |
+| --- | --- | --- |
+| `TOURS_KV` not bound | 501 `kv_not_configured` | cloud block hidden (unchanged) |
+| `AGENT_KEY` not set | 501 `agent_key_not_configured` | "Cloud tours off until AGENT_KEY is set" |
+| no header | 401 `agent_key_required` | "Cloud tours locked here" + Enter agent key |
+| wrong header | 401 `agent_key_wrong` | same, and the stored key is forgotten |
+
+**It fails closed.** With no `AGENT_KEY` set, nobody gets the list, Michael included.
+The alternative (open until a key is set) would have left the hole in place on every
+deploy that forgot the step, which is the failure this is here to stop.
+
+The key is typed once per browser (the "Enter agent key" link under the store note) and
+kept in localStorage as `804m_agent_key`. `route-planner-pro.html` got the identical
+change and shares the key, since it shares the saved tours. `route-planner-demo.html`
+needed nothing: its fetch shim already blocks `/api/tours`. Once synced, the same link
+reads "Lock this browser" and forgets the key, for a client's or a shared computer.
+
+`system-status.html` now treats a 401 as healthy ("Locked, as intended"), sends the
+stored key when it has one so it can still count tours, and lists `AGENT_KEY` in its
+Cloudflare Keys & Bindings table.
+
+### Checked and not changed
+
+- `/api/tour-page` has no read exposure of this kind. A published tour is meant to be
+  read by whoever holds the link, feedback needs the per-tour `adminKey`, and overwrite
+  or delete need it too. But **anyone can publish a new page** (a random code, or any
+  unclaimed slug) with their own text on it under `804re.com/t/`.
+- `/api/shorten-link` reads nothing back, but **anyone can mint `804re.com/s/CODE`
+  pointing at any http(s) URL**: an open redirect on Michael's domain.
+- Both are write-abuse, not a data leak, and both are reachable from the planner by a
+  visitor arriving from the seasonal map. They were left for Michael to decide; the
+  launch-blocker comment in `seasonal-map.html` now says so.
+
+### Found in passing: feedback was never address-stamped
+
+`tour-page.js` meant to stamp each client rating with the address it was about (the
+Fourteenth pass guard against a reorder sliding an opinion onto the wrong house), but it
+parsed an undeclared `rawTour`. In an ES module that throws a ReferenceError, which the
+surrounding `try` swallowed, so no entry was ever stamped and the planner's mismatch guard
+never had anything to compare. Fixed to parse `raw`. Only feedback written from now on
+carries the stamp; older entries still read as unstamped and are trusted, as before.

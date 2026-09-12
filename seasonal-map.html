@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.12_00-00-0002                            ║
+  ║  SITE VERSION: 26.09.12_00-02-0003                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.12_00-00-0002   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.12_00-02-0003   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -346,7 +346,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.12_00-00-0002</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.12_00-02-0003</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:#555;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:#555;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:#555;text-decoration:underline">Accessibility</a> &middot; <a href="/fair-housing" style="color:#555;text-decoration:underline">Fair Housing</a></footer>
 </div>
 
@@ -496,7 +496,7 @@ const SAMPLE = {
 };
 
 // ⚠ AI MAINTENANCE RULE: update SITE_VERSION and both other stamp spots on every edit.
-const SITE_VERSION = '26.09.12_00-00-0002';
+const SITE_VERSION = '26.09.12_00-02-0003';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 // =========================================================================
@@ -1058,9 +1058,12 @@ document.getElementById('trayClear').addEventListener('click', ()=>{ [...picked]
 // windowStart, windowEnd, rating, skipped], ...]]), so the planner opens with
 // these houses loaded and its optimiser works out the driving order.
 // ⚠ LAUNCH BLOCKER: the planner is Michael's agent tool, and its Save/Reuse
-// Tours panel lists his saved client tours to whoever opens it (GET
-// /api/tours has no auth). Fine while this page is hidden; must be fixed, or
-// this handoff pointed somewhere visitor-safe, before the page goes public.
+// Tours panel used to list his saved client tours to whoever opened it.
+// FIXED 2026-09-11: /api/tours now needs AGENT_KEY, so a visitor sees only
+// tours saved in their own browser. STILL OPEN: anyone landing on the planner
+// can Publish a real 804re.com/t/ page and mint 804re.com/s/ short links,
+// because /api/tour-page and /api/shorten-link take no key. Settle those, or
+// point this handoff somewhere visitor-safe, before the page goes public.
 function tourPlannerUrl(list){
   const S = SEASONS[season];
   const rows = list.map(h => [h.addr || `${round5(h.lat)}, ${round5(h.lng)}`, round5(h.lat), round5(h.lng),
