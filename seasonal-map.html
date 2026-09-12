@@ -1,0 +1,1265 @@
+<!--
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║  SITE VERSION: 26.09.11_23-44-0001                            ║
+  ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
+  ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
+  ║  every single write to this file. There is no separate       ║
+  ║  counter file — the next session reads the LAST revision     ║
+  ║  number off this file itself (any of the 3 spots below)      ║
+  ║  and increments it by 1.                                     ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-44-0001   ║
+  ║                                                               ║
+  ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
+  ║  Whenever you modify this file you MUST update the version    ║
+  ║  string in THREE places:                                      ║
+  ║    1. The SITE VERSION line above (in this comment block)     ║
+  ║    2. const SITE_VERSION in the main <script> block           ║
+  ║    3. The visible site-version text above the footer copy     ║
+  ║  Use the actual current date/time, format YY.MM.DD_HH-MM, and║
+  ║  the revision number from spot #2 above, PLUS ONE.           ║
+  ║  DO NOT skip this step — it is required on every revision.   ║
+  ║                                                               ║
+  ║  💬 CHAT RESPONSE RULE:                                       ║
+  ║  Every reply to the user MUST begin by stating the current   ║
+  ║  version number in this format:                              ║
+  ║    📌 Version: vYY.MM.DD_HH-MM-XXXX                          ║
+  ║  State the version BEFORE describing any changes made.       ║
+  ╚═══════════════════════════════════════════════════════════════╝
+
+  SEASONAL DECORATION MAP — hidden draft (noindex, nofollow; no nav link, no
+  sitemap entry; reachable only from its dev.html card). Launch checklist,
+  run ONLY when Michael says so: robots -> index, follow; nav-partial.html
+  link; sitemap.xml entry.
+
+  One page, two skins. body[data-season] swaps the palette tokens, markers,
+  categories and copy; everything else (submission modal, Sheet backing,
+  Approved column, geocoding, directions, print, route handoff) is shared, so
+  a fix to one season is a fix to both.
+
+  Season choice: date-based default (SEASONS[].from/to below), overridden by
+  ?season=halloween|christmas in the URL or the switch in the hero. Outside
+  both windows the page shows whichever season opens next. ?date=YYYY-MM-DD
+  pretends it is that day, for previewing a season early.
+
+  Backend: its OWN Google Sheet + Apps Script (docs/seasonal-submit.gs), not
+  the Farm Stand sheet. Until CSV_URL / SUBMIT_URL are filled in, the page
+  runs on clearly labelled sample houses and the modal says it isn't
+  connected.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seasonal Decoration Map | 804Michael</title>
+<meta name="description" content="A map of the best Halloween and Christmas light displays around Hanover County and Ashland VA. Find decorated houses near you, get directions, and add one you know about." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="canonical" href="https://804re.com/seasonal-map" />
+<meta property="og:type"        content="website" />
+<meta property="og:url"         content="https://804re.com/seasonal-map" />
+<meta property="og:title"       content="Seasonal Decoration Map | 804Michael" />
+<meta property="og:description" content="Halloween yards and Christmas lights around Hanover County and Ashland VA, on one map." />
+<meta property="og:image"       content="https://804re.com/images/Tool-og1.png" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nav.css">
+<style>
+  :root{
+    --red:#DA291C; --red-dark:#b01f15;
+    --black:#111; --white:#fff;
+    --gray-light:#f5f5f5; --gray-mid:#e0e0e0;
+    --gray-text:#555; --gray-muted:#888;
+    --nav-h:68px; --banner-h:38px;
+    /* Season tokens. Defaults are the site red so nothing looks broken if
+       data-season is ever missing; each skin below overrides them. */
+    --accent:var(--red); --accent-dark:var(--red-dark); --accent-soft:#fff4f2; --accent2:#111;
+  }
+  body[data-season="halloween"]{ --accent:#E0661B; --accent-dark:#b94f0f; --accent-soft:#fff3e8; --accent2:#5B2A86; }
+  body[data-season="christmas"]{ --accent:#C8102E; --accent-dark:#9d0c24; --accent-soft:#fdeef0; --accent2:#1E6B3A; }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--white);color:var(--black);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;
+    padding-top:calc(var(--banner-h) + var(--nav-h));}
+  body.tray-open{padding-bottom:84px;}
+  .page{max-width:1100px;margin:0 auto;padding:0 0 56px;}
+  a{color:inherit;}
+  .hidden{display:none !important;}
+
+  /* Hero: the shared black-bar standard, unchanged (see CLAUDE.md). The season
+     shows in the h1 accent, the switch, and the garland hung under the bar. */
+  .hero{background:var(--black);color:var(--white);padding:24px 28px 20px;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--red);}
+  h1{font-family:'Barlow',sans-serif;font-weight:800;font-size:clamp(26px,4.5vw,42px);line-height:1.05;
+    letter-spacing:-.01em;margin:0 0 10px;}
+  h1 span{color:var(--accent);}
+  body[data-season="christmas"] h1 span{color:#ff5a6e;} /* the deep red disappears on black */
+  .sub{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-weight:600;font-size:14px;letter-spacing:.02em;color:rgba(255,255,255,.75);}
+  .sub b{color:var(--white);}
+  .season-switch{display:inline-flex;border:1.5px solid rgba(255,255,255,.35);border-radius:999px;overflow:hidden;margin-left:auto;}
+  .season-switch button{background:none;border:0;color:rgba(255,255,255,.75);cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;}
+  .season-switch button[aria-pressed="true"]{background:#fff;color:var(--black);}
+
+  /* Garland: hangs from the hero's red strip. Drawn by drawGarland() at the
+     real pixel width so the ornaments never stretch. */
+  .garland{height:40px;margin-bottom:-18px;position:relative;z-index:1;pointer-events:none;overflow:hidden;}
+  .garland svg{display:block;}
+  .garland .tw{animation:twinkle 2.4s ease-in-out infinite;}
+  .garland .bob{animation:bob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0;}
+  @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.4}}
+  @keyframes bob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  @media (prefers-reduced-motion: reduce){ .garland .tw,.garland .bob{animation:none;} }
+
+  .status-bar{width:90vw;margin:14px calc(50% - 45vw) 0;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;
+    display:none;align-items:center;gap:8px;}
+  .status-bar.show{display:flex;}
+  .status-bar.demo{background:#fdf1ee;color:#b0451f;border:1px solid #f3d2c6;}
+  .status-bar.error{background:#fbe4de;color:#933;border:1px solid #f0bdb0;}
+  .status-bar.loading{background:var(--gray-light);color:var(--gray-text);border:1px solid var(--gray-mid);}
+  .status-bar.locating{background:#eef6ee;color:#2f6b30;border:1px solid #cfe6cf;}
+
+  .action-row{width:90vw;margin:14px calc(50% - 45vw) 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .btn{
+    border:none;border-radius:100px;padding:11px 20px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+    text-decoration:none;
+  }
+  .btn:hover{transform:scale(1.04);}
+  .btn-primary{background:var(--accent);color:#fff;border:2px solid var(--accent);}
+  .btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+  .btn-secondary{background:var(--black);color:#fff;border:2px solid var(--black);}
+  .btn-ghost{background:#fff;color:var(--black);border:2px solid var(--gray-mid);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-ghost[aria-pressed="true"]{border-color:var(--accent2);color:var(--accent2);}
+  .btn-icon{margin-left:auto;position:relative;padding:11px 15px;font-size:1.35rem;line-height:1;}
+  .btn-icon:hover{transform:none;border-color:var(--gray-mid);color:var(--black);}
+  .badge-count{position:absolute;top:3px;right:3px;background:var(--red);color:#fff;
+    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.6rem;line-height:16px;min-width:16px;height:16px;
+    border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 0 2px #fff;}
+
+  .toolbar{background:#fff;width:90vw;margin:14px calc(50% - 45vw) 0;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);
+    padding:10px 18px;position:relative;z-index:400;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--gray-mid);}
+  .toolbar-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-muted);margin-right:4px;}
+  .chip{border:1.5px solid var(--gray-mid);background:#fff;color:var(--black);
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;
+    padding:6px 13px;border-radius:999px;cursor:pointer;}
+  .chip:hover{border-color:var(--accent);}
+  .chip.active{background:var(--black);border-color:var(--black);color:#fff;}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+
+  #map{height:480px;width:90vw;margin:16px calc(50% - 45vw) 0;border-radius:14px;border:1px solid var(--gray-mid);
+    box-shadow:0 6px 20px rgba(0,0,0,.08);}
+  .leaflet-top,.leaflet-bottom{z-index:400 !important;}
+  .leaflet-control-attribution{margin:0 !important;background:rgba(255,255,255,.08) !important;
+    backdrop-filter:blur(12px) saturate(2) !important;-webkit-backdrop-filter:blur(12px) saturate(2) !important;
+    border-radius:8px 0 0 0 !important;padding:3px 8px !important;font-size:.6rem !important;color:rgba(0,0,0,.55) !important;}
+  .leaflet-control-attribution a{color:rgba(0,0,0,.5) !important;}
+  .leaflet-popup-content-wrapper{border-radius:10px;font-family:'Barlow',sans-serif;}
+  .leaflet-popup-content{margin:16px 20px 18px !important;line-height:1.4;}
+  .house-pin{filter:drop-shadow(0 2px 2px rgba(0,0,0,.45));}
+  .popup-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;margin:2px 0 5px;line-height:1.15;}
+  .popup-title a{color:var(--black);text-decoration:none;border-bottom:1.5px dotted var(--gray-mid);}
+  .popup-title a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+  .popup-addr{font-size:18px;color:#555;margin-bottom:6px;line-height:1.3;}
+  .popup-when{font-size:17px;color:var(--gray-muted);margin-bottom:8px;}
+
+  /* One actions row, shared by popups and cards: Directions + the route toggle. */
+  .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px;}
+  .dir-btn,.route-btn{display:inline-flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:7px 14px;border-radius:100px;cursor:pointer;text-decoration:none;}
+  .dir-btn{background:var(--accent);color:#fff !important;border:2px solid var(--accent);}
+  .dir-btn:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+  .route-btn{background:#fff;color:var(--black);border:2px solid var(--gray-mid);}
+  .route-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+  .route-btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff;}
+
+  .divider{margin:24px 20px 8px;text-align:center;color:var(--gray-muted);
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;}
+  .list-wrap{width:90vw;margin:8px calc(50% - 45vw) 0;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+  .house-card{background:#fff;border:1px solid var(--gray-mid);border-left:5px solid var(--accent);min-width:0;
+    border-radius:10px;padding:12px 14px;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease;}
+  .house-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.1);}
+  .house-card.selected{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent), 0 10px 24px rgba(0,0,0,.12);}
+  .house-card.picked{border-color:var(--accent2);}
+  .house-card .name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1.15;margin-bottom:3px;overflow-wrap:anywhere;}
+  .house-card:hover .name{color:var(--accent);}
+  .house-card .cat{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;
+    color:var(--accent);letter-spacing:.06em;margin-bottom:5px;}
+  .house-card .addr{font-size:18px;color:#666;margin-bottom:3px;line-height:1.25;overflow-wrap:anywhere;}
+  .house-card .when{font-size:17px;color:var(--gray-muted);margin-bottom:4px;}
+  .house-card .dist{font-size:17px;color:var(--accent);font-weight:700;margin-bottom:4px;}
+  .house-card .desc{font-size:18px;color:#3d3d3d;max-height:7em;overflow-y:auto;line-height:1.4;}
+  .empty-state{padding:30px;text-align:center;color:var(--gray-muted);font-size:15px;
+    background:var(--gray-light);border:1px dashed var(--gray-mid);border-radius:12px;grid-column:1/-1;}
+
+  /* Route tray: appears once a house is picked. Fixed to the bottom so it is
+     reachable from anywhere in a long list. */
+  .route-tray{position:fixed;left:0;right:0;bottom:0;z-index:950;background:var(--black);color:#fff;
+    padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;justify-content:center;
+    box-shadow:0 -6px 20px rgba(0,0,0,.25);}
+  .route-tray .tray-count{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.04em;}
+  .route-tray .tray-note{font-size:12.5px;color:rgba(255,255,255,.6);flex-basis:100%;text-align:center;margin:-2px 0 0;}
+  .route-tray .btn{padding:9px 16px;font-size:.9rem;}
+  .route-tray .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35);}
+
+  .sponsor-block{background:#fff;border-top:1px solid var(--gray-mid);margin:28px 20px 20px;padding:26px 20px;text-align:center;}
+  .sponsor-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-muted);margin:0 0 14px;}
+  .sponsor-logo{height:68px;width:auto;display:inline-block;margin-bottom:16px;}
+  .sponsor-contact{font-size:21px;color:var(--black);margin:0 0 8px;}
+  .sponsor-contact a{color:var(--red);font-weight:700;text-decoration:none;}
+  footer{text-align:center;font-size:12.5px;color:var(--gray-muted);margin-top:26px;padding:0 20px;}
+
+  /* Modal (from farmstand.html, trimmed: houses need no hours builder) */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.6);z-index:1000;
+    align-items:flex-start;justify-content:center;padding:calc(var(--banner-h) + var(--nav-h) + 20px) 20px 20px;overflow-y:auto;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px;position:relative;}
+  .modal h3{font-weight:800;font-size:24px;margin:0 0 4px;}
+  .modal p.hint{font-size:14.3px;color:var(--gray-muted);margin:0 0 16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:13.8px;font-weight:700;margin-bottom:4px;}
+  .field .opt{font-weight:400;color:var(--gray-muted);}
+  .field input[type=text],.field textarea{width:100%;border:1.5px solid var(--gray-mid);border-radius:8px;padding:9px 11px;font-size:15px;font-family:'Barlow',sans-serif;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .cat-check-group{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;}
+  .cat-check,.consent{display:flex;align-items:center;gap:8px;font-size:14.9px;font-weight:500;cursor:pointer;}
+  .consent{align-items:flex-start;font-size:14px;line-height:1.35;background:var(--gray-light);border-radius:8px;padding:10px;}
+  .cat-check input,.consent input{width:16px;height:16px;accent-color:var(--accent);margin:0;flex:none;}
+  .consent input{margin-top:2px;}
+  .loc-toggle{display:flex;gap:6px;}
+  .loc-chip{flex:1;min-width:0;border:1.5px solid var(--gray-mid);background:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    font-size:.86rem;letter-spacing:.03em;text-transform:uppercase;padding:10px 8px;border-radius:7px;cursor:pointer;}
+  .loc-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .geo-status{font-size:13.8px;border-radius:8px;padding:8px 10px;margin-bottom:14px;}
+  .geo-status.waiting{background:var(--gray-light);color:var(--gray-muted);}
+  .geo-status.ok{background:#eef6ee;color:#2f6b30;}
+  .geo-status.fail{background:#fbe4de;color:#933;}
+  .addr-ac-wrap{position:relative}
+  .addr-ac-list{position:absolute;top:100%;left:0;right:0;z-index:1001;margin:4px 0 0;padding:6px;list-style:none;background:#fff;border:1.5px solid var(--gray-mid);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.15);max-height:180px;overflow-y:auto}
+  .addr-ac-item{padding:9px 10px;border-radius:6px;font-size:.88rem;cursor:pointer;line-height:1.3}
+  .addr-ac-item.active,.addr-ac-item:hover{background:var(--accent);color:#fff}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions .btn{flex:1;justify-content:center;font-size:1.05rem;}
+  .close-x{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-muted);}
+  .submit-note{font-size:12.7px;color:var(--gray-text);margin-top:10px;text-align:center;}
+
+  /* Snow: one fixed canvas, never takes a click. Christmas only. */
+  #snow{position:fixed;inset:0;z-index:900;pointer-events:none;}
+
+  @media(max-width:480px){
+    .leaflet-popup-content-wrapper{max-width:265px;}
+    #map{height:380px;}
+    .hero{padding-left:20px;padding-right:20px;}
+    .season-switch{margin-left:0;}
+  }
+
+  /* Printable list. On screen #printSheet is empty and hidden; printList()
+     fills it just before window.print() and it is the only thing printed. */
+  #printSheet{display:none;}
+  @media print{
+    body{padding:0 !important;}
+    body > *:not(#printSheet){display:none !important;}
+    #printSheet{display:block !important;font-family:'Barlow',sans-serif;color:#000;}
+    #printSheet h2{font-weight:800;font-size:22px;margin:0 0 2px;}
+    #printSheet .ps-sub{font-size:12px;margin:0 0 10px;color:#444;}
+    #printSheet table{width:100%;border-collapse:collapse;font-size:12px;}
+    #printSheet th,#printSheet td{border-bottom:1px solid #bbb;padding:6px 5px;text-align:left;vertical-align:top;}
+    #printSheet th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:11px;}
+    #printSheet td.box{width:18px;font-size:15px;}
+    #printSheet tr{page-break-inside:avoid;}
+    #printSheet .ps-foot{margin-top:12px;font-size:11px;color:#444;}
+  }
+</style>
+</head>
+<body data-season="halloween">
+
+<div id="site-nav"></div>
+<script src="nav.js" defer></script>
+
+<div class="hero">
+  <h1 id="heroTitle">Halloween <span>Decoration Map</span></h1>
+  <div class="sub">
+    <span>📍 <b id="stopCount">0 houses</b></span>
+    <span id="heroTag">🎃 Spooky yards around 804</span>
+    <span class="season-switch" role="group" aria-label="Season">
+      <button type="button" data-season="halloween" aria-pressed="true">🎃 Halloween</button>
+      <button type="button" data-season="christmas" aria-pressed="false">🎄 Christmas</button>
+    </span>
+  </div>
+</div>
+<div class="garland" id="garland" aria-hidden="true"></div>
+
+<div class="page">
+
+  <div class="status-bar" id="statusBar"></div>
+
+  <div class="action-row">
+    <button class="btn btn-primary" id="nearMeBtn">📍 Near Me</button>
+    <button class="btn btn-secondary" id="addBtn">➕ Add a House</button>
+    <button class="btn btn-ghost" id="printBtn">🖨 Print List</button>
+    <button class="btn btn-ghost" id="shareBtn">📤 Share</button>
+    <button class="btn btn-ghost" id="resetBtn">Reset</button>
+    <button class="btn btn-ghost hidden" id="snowBtn" aria-pressed="true">❄ Snow On</button>
+    <button class="btn btn-ghost btn-icon hidden" id="reviewBtn" title="" aria-label="Pending submissions">
+      🔔<span class="badge-count" id="reviewBadgeCount">0</span>
+    </button>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <span class="toolbar-label">Filter:</span>
+    <button class="chip active" data-cat="all">All</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="divider">tap a pin or card · + route to plan a drive</div>
+
+  <div class="list-wrap">
+    <div class="grid" id="cardGrid"></div>
+  </div>
+
+  <div class="sponsor-block">
+    <p class="sponsor-label">Sponsored by</p>
+    <img src="https://804re.com/images/basic%20804%20michael.png" alt="804Michael Real Estate" class="sponsor-logo">
+    <p class="sponsor-contact">For real estate tips or for help selling or buying real estate, <a href="tel:8046424235">Call 804-Michael</a> or <a href="sms:8046424235">text 804-642-4235</a></p>
+  </div>
+
+  <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. -->
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_23-44-0001</p>
+  <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:#555;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:#555;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:#555;text-decoration:underline">Accessibility</a> &middot; <a href="/fair-housing" style="color:#555;text-decoration:underline">Fair Housing</a></footer>
+</div>
+
+<div class="route-tray hidden" id="routeTray">
+  <span class="tray-count" id="trayCount">0 picked</span>
+  <button class="btn btn-ghost" id="trayClear">Clear</button>
+  <button class="btn btn-ghost" id="trayPrint">🖨 Print</button>
+  <button class="btn btn-primary" id="trayPlan">Plan Route →</button>
+  <p class="tray-note" id="trayNote">Up to 10. Opens in the Tour Planner in driving order.</p>
+</div>
+
+<!-- Add a House modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="close-x" id="closeModal" aria-label="Close">✕</button>
+    <h3 id="modalTitle">Add a House</h3>
+    <p class="hint" id="modalHint">Yours, or one you've driven past. Reviewed before it goes on the map.</p>
+
+    <div class="field">
+      <label for="fName">Display name <span class="opt">(optional, no last names)</span></label>
+      <input type="text" id="fName" maxlength="80" placeholder="e.g. Maple St Haunted Yard">
+    </div>
+    <div class="field">
+      <label>Location</label>
+      <div class="loc-toggle">
+        <button type="button" class="loc-chip" data-mode="gps">📍 Use My Location</button>
+        <button type="button" class="loc-chip" data-mode="address">✏️ Enter Address</button>
+      </div>
+    </div>
+    <div class="geo-status waiting hidden" id="geoStatus">📡 Locating…</div>
+    <div class="field hidden" id="fAddressWrap">
+      <label for="fAddress">Address</label>
+      <input type="text" id="fAddress" maxlength="160" placeholder="e.g. 100 Maple St, Ashland" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>What's there <span class="opt">(pick any)</span></label>
+      <div class="cat-check-group" id="fCatGroup"></div>
+    </div>
+    <div class="field">
+      <label for="fWhen">When to see it <span class="opt">(optional)</span></label>
+      <input type="text" id="fWhen" maxlength="80" placeholder="Dusk-10pm nightly">
+    </div>
+    <div class="field">
+      <label for="fDesc">What to look for <span class="opt">(optional)</span></label>
+      <textarea id="fDesc" maxlength="500" placeholder="Synced to music on 99.1 FM"></textarea>
+    </div>
+    <!-- Honeypot: invisible to people, filled in by form-spamming bots. -->
+    <div class="hp" aria-hidden="true"><label for="fCompany">Company</label><input type="text" id="fCompany" tabindex="-1" autocomplete="off"></div>
+    <label class="consent"><input type="checkbox" id="fOwnerOk"> <span>This is my home, or the owner is happy for it to be on the map.</span></label>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelAdd">Cancel</button>
+      <button class="btn btn-primary" id="submitAdd">Submit</button>
+    </div>
+    <p class="submit-note">Submissions are reviewed before appearing on the public map. The address, name and notes you enter may be shown publicly, so leave out personal contact details. Your location is used only to place the house. See the <a href="/privacy" style="color:inherit;text-decoration:underline">privacy policy</a>.</p>
+  </div>
+</div>
+
+<canvas id="snow" hidden aria-hidden="true"></canvas>
+<div id="printSheet"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+// =========================================================================
+// CONFIG
+// =========================================================================
+// Both empty until Michael sets up the Sheet + Apps Script (steps at the top
+// of docs/seasonal-submit.gs). Empty CSV_URL = sample houses; empty
+// SUBMIT_URL = the modal says it isn't connected. Nothing hard-fails.
+const CSV_URL = "";
+const SUBMIT_URL = "";
+
+const MAP_CENTER = [37.6667, -77.3358]; // Hanover County, VA
+const MAP_ZOOM = 10;
+const NOMINATIM = 'https://nominatim.openstreetmap.org/search';
+const ADDR_VIEWBOX = '-78.3,38.3,-76.3,37.0';
+const ADDR_DEBOUNCE_MS = 300;
+const ADDR_MIN_CHARS = 3;
+
+// Must match tour-planner.html: MAX_STOPS and the serializeTour() format.
+const MAX_ROUTE = 10;
+const TOUR_FILE_V = 1;
+// OSRM's table service answers one request for many houses; beyond this many
+// nearest houses we fall back to straight-line distance.
+const DRIVE_LOOKUP_MAX = 25;
+
+// ---- Seasons ------------------------------------------------------------
+// from/to are [month, day], inclusive. Christmas wraps the new year. Outside
+// both windows the page shows whichever season opens next (see pickSeason).
+// Each category's `match` maps whatever is in the Sheet's Category cell
+// (the modal writes the keys; hand-typed labels also work) onto a key.
+const SEASONS = {
+  halloween: {
+    label: 'Halloween', from: [10, 1], to: [11, 2],
+    h1: 'Halloween', h1Span: 'Decoration Map', tag: '🎃 Spooky yards around 804',
+    hint: "Yours, or one you've driven past. Reviewed before it goes on the map.",
+    share: 'Halloween decorations around Hanover and Ashland, on one map',
+    cats: {
+      spooky:      { label: 'Spooky & Scary',      color: '#5B2A86', marker: 'ghost',   match: /spook|scar|haunt|ghost|grave/ },
+      family:      { label: 'Family Friendly',     color: '#E0661B', marker: 'pumpkin', match: /family|kid|friendly|cute/ },
+      inflatables: { label: 'Inflatables',         color: '#2f7d3a', marker: 'pumpkin', match: /inflat|blow/ },
+      lights:      { label: 'Lights & Projection', color: '#a16207', marker: 'ghost',   match: /light|project/ },
+      candy:       { label: 'Candy Stop',          color: '#c2410c', marker: 'pumpkin', match: /candy|treat/ },
+      other:       { label: 'Other',               color: '#666666', marker: 'pumpkin', match: /^$/ }
+    }
+  },
+  christmas: {
+    label: 'Christmas', from: [11, 20], to: [1, 6],
+    h1: 'Christmas', h1Span: 'Lights Map', tag: "🎅 Santa's route through 804",
+    hint: "Yours, or one you've driven past. Reviewed before it goes on the map.",
+    share: 'Christmas light displays around Hanover and Ashland, on one map',
+    cats: {
+      lights:      { label: 'Light Display',      color: '#C8102E', marker: 'bulb',  match: /light|display/ },
+      music:       { label: 'Synced to Music',    color: '#1d4ed8', marker: 'bulb',  match: /music|sync|radio/ },
+      inflatables: { label: 'Inflatables',        color: '#1E6B3A', marker: 'bulb',  match: /inflat|blow/ },
+      classic:     { label: 'Classic & Nativity', color: '#a16207', marker: 'bulb',  match: /classic|nativ|tradition/ },
+      santa:       { label: 'Santa Sighting',     color: '#C8102E', marker: 'santa', match: /santa|claus/ },
+      other:       { label: 'Other',              color: '#666666', marker: 'bulb',  match: /^$/ }
+    }
+  }
+};
+const BULB_COLORS = ['#e11d2e', '#16a34a', '#f5b301', '#2563eb', '#db2777'];
+
+// Addresses deliberately have no house numbers: these are placeholders,
+// and a made-up number could still be somebody's real front door.
+const SAMPLE = {
+  halloween: [
+    {name:'Sample: Graveyard Lawn', cats:['spooky'], addr:'Sample stop, Ashland', when:'Dusk-10pm nightly', desc:'Sample entry. Fog machine, tombstones, a skeleton band.', lat:37.7581, lng:-77.4802},
+    {name:'Sample: Pumpkin Porch', cats:['family','candy'], addr:'Sample stop, Mechanicsville', when:'Weekends', desc:'Sample entry. 60 carved pumpkins, full-size bars on the 31st.', lat:37.6089, lng:-77.3530},
+    {name:'Sample: Giant Inflatables', cats:['inflatables','family'], addr:'Sample stop, Hanover', when:'5-9pm', desc:'Sample entry. A 20-foot inflatable cat.', lat:37.6680, lng:-77.3720},
+    {name:'Sample: Projection House', cats:['lights','spooky'], addr:'Sample stop, Glen Allen', when:'Dusk-11pm', desc:'Sample entry. Ghosts projected on the windows.', lat:37.6660, lng:-77.5060},
+    {name:'Sample: Haunted Walk', cats:['spooky'], addr:'Sample stop, Beaverdam', when:'Oct 30-31 only', desc:'Sample entry. Walk-through, not for little ones.', lat:37.8120, lng:-77.6250}
+  ],
+  christmas: [
+    {name:'Sample: Music Light Show', cats:['music','lights'], addr:'Sample stop, Ashland', when:'5:30-10pm nightly', desc:'Sample entry. Tune the car radio to 99.1 FM.', lat:37.7549, lng:-77.4705},
+    {name:'Sample: Santa on the Porch', cats:['santa','classic'], addr:'Sample stop, Mechanicsville', when:'Sat 6-8pm', desc:'Sample entry. Santa waves from the porch on Saturdays.', lat:37.6150, lng:-77.3380},
+    {name:'Sample: Inflatable Village', cats:['inflatables'], addr:'Sample stop, Hanover', when:'Dusk-10pm', desc:'Sample entry. Thirty inflatables and a snow machine.', lat:37.6720, lng:-77.3610},
+    {name:'Sample: Nativity Lane', cats:['classic'], addr:'Sample stop, Glen Allen', when:'Nightly', desc:'Sample entry. Hand-built wooden nativity.', lat:37.6700, lng:-77.4980},
+    {name:'Sample: 100,000 Lights', cats:['lights'], addr:'Sample stop, Montpelier', when:'5-11pm nightly', desc:'Sample entry. Drive slowly, it takes a while.', lat:37.8210, lng:-77.6840}
+  ]
+};
+
+// ⚠ AI MAINTENANCE RULE: update SITE_VERSION and both other stamp spots on every edit.
+const SITE_VERSION = '26.09.11_23-44-0001';
+(function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
+
+// =========================================================================
+// HELPERS
+// =========================================================================
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function round5(n){ return Math.round(n * 1e5) / 1e5; }
+function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+function titleCaseAddress(str){ return str ? str.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) : str; }
+// Street on one line, "City ZIP" on the next, "VA" dropped (as farmstand.html).
+function formatAddr(addr){
+  if(!addr) return 'Location shared via GPS';
+  const parts = addr.split(',').map(p=>p.trim()).filter(Boolean);
+  if(parts.length < 2) return esc(addr);
+  let rest = parts.slice(1).join(', ').replace(/\b(Virginia|VA)\b\.?/gi, '').replace(/\s{2,}/g, ' ');
+  rest = rest.replace(/,\s*,/g, ',').replace(/,\s*$/, '').replace(/^,\s*/, '').trim();
+  return `${esc(parts[0])}<br>${esc(rest)}`;
+}
+// A house with no display name is called after its street, never its number.
+function displayName(h){
+  if(h.name) return h.name;
+  const street = (h.addr || '').split(',')[0].replace(/^\s*\d+[A-Za-z]?\s+/, '').trim();
+  return street ? 'House on ' + street : 'Decorated house';
+}
+function distMiles(lat1,lng1,lat2,lng2){
+  const R=3958.8, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function b64urlEncode(str){ // identical to tour-planner.html
+  const bytes = new TextEncoder().encode(str); let bin = '';
+  for(let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function setStatus(kind, msg){
+  const bar = document.getElementById('statusBar');
+  bar.className = 'status-bar show ' + kind;
+  bar.textContent = msg;
+}
+function clearStatus(){ document.getElementById('statusBar').className = 'status-bar'; }
+
+// =========================================================================
+// SEASON CHOICE: date default + manual override
+// =========================================================================
+const params = new URLSearchParams(location.search);
+// ?date=2026-12-10 previews the page as of that day. Parsed as local noon so
+// a timezone offset can never tip it into the neighbouring day.
+const NOW = (function(){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(params.get('date') || '');
+  return m ? new Date(+m[1], +m[2]-1, +m[3], 12) : new Date();
+})();
+function md(d){ return (d.getMonth()+1)*100 + d.getDate(); }
+function mdOf(pair){ return pair[0]*100 + pair[1]; }
+function inWindow(key, d){
+  const s = SEASONS[key], v = md(d), a = mdOf(s.from), b = mdOf(s.to);
+  return a <= b ? (v >= a && v <= b) : (v >= a || v <= b);
+}
+function pickSeason(d){
+  if(inWindow('halloween', d)) return 'halloween';
+  if(inWindow('christmas', d)) return 'christmas';
+  const v = md(d); // off-season: the one that opens next
+  return (v > mdOf(SEASONS.halloween.to) && v < mdOf(SEASONS.christmas.from)) ? 'christmas' : 'halloween';
+}
+// Which year's list a season means. Early January still belongs to the
+// December before it; any other day means this calendar year's season.
+function seasonYear(key, d){
+  const y = d.getFullYear();
+  return (key === 'christmas' && md(d) <= mdOf(SEASONS.christmas.to)) ? y - 1 : y;
+}
+function opensLabel(key){
+  const f = SEASONS[key].from;
+  return new Date(2000, f[0]-1, f[1]).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+
+let season = SEASONS[params.get('season')] ? params.get('season') : pickSeason(NOW);
+
+// =========================================================================
+// MARKERS (inline SVG, no image files)
+// =========================================================================
+function svgPumpkin(){
+  return `<svg class="house-pin" viewBox="0 0 40 42" width="34" height="36" aria-hidden="true">
+    <path d="M20 10c0-4 2-7 6-8" stroke="#2f5d1e" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="12.5" cy="25" rx="9" ry="13" fill="#d9601a"/><ellipse cx="27.5" cy="25" rx="9" ry="13" fill="#d9601a"/>
+    <ellipse cx="20" cy="25" rx="9.5" ry="14" fill="#f07a22" stroke="#b94f0f" stroke-width="1"/>
+    <path d="M11 22l4-5 3 5z M29 22l-4-5-3 5z" fill="#3a1a06"/>
+    <path d="M11.5 29Q20 37 28.5 29L25.5 30.5 23.5 28.5 20 31 16.5 28.5 14.5 30.5Z" fill="#3a1a06"/></svg>`;
+}
+function svgGhost(){
+  return `<svg class="house-pin" viewBox="0 0 36 42" width="30" height="36" aria-hidden="true">
+    <path d="M18 2C9 2 4 9 4 18v21l5-4 4.5 4 4.5-4 4.5 4 4.5-4 5 4V18C32 9 27 2 18 2z" fill="#fff" stroke="#5B2A86" stroke-width="2"/>
+    <ellipse cx="13" cy="16" rx="2.6" ry="3.6" fill="#1b1b1b"/><ellipse cx="23" cy="16" rx="2.6" ry="3.6" fill="#1b1b1b"/>
+    <ellipse cx="18" cy="25" rx="2.6" ry="3.2" fill="#1b1b1b"/></svg>`;
+}
+function svgBulb(color){
+  return `<svg class="house-pin" viewBox="0 0 24 40" width="22" height="36" aria-hidden="true" style="filter:drop-shadow(0 0 5px ${color}) drop-shadow(0 2px 2px rgba(0,0,0,.4))">
+    <rect x="8" y="1" width="8" height="8" rx="1.5" fill="#34423a"/>
+    <path d="M12 38C5 30 4 22 5.5 16 7 11 9 9 12 9s5 2 6.5 7C20 22 19 30 12 38z" fill="${color}" stroke="rgba(0,0,0,.3)"/>
+    <ellipse cx="9.5" cy="17" rx="1.8" ry="4.5" fill="rgba(255,255,255,.55)"/></svg>`;
+}
+function svgSanta(){
+  return `<svg class="house-pin" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+    <path d="M6 30C8 16 16 6 28 8c4 1 6 5 5 10l-3-3c-4 2-6 8-6 15z" fill="#C8102E"/>
+    <rect x="3" y="28" width="28" height="9" rx="4.5" fill="#fff" stroke="#d6d6d6"/>
+    <circle cx="32" cy="20" r="4.5" fill="#fff" stroke="#d6d6d6"/></svg>`;
+}
+function houseIcon(h){
+  const cat = (SEASONS[season].cats[h.cat] || SEASONS[season].cats.other);
+  const kind = cat.marker;
+  const html = kind === 'ghost' ? svgGhost() : kind === 'santa' ? svgSanta()
+             : kind === 'bulb' ? svgBulb(BULB_COLORS[h.n % BULB_COLORS.length]) : svgPumpkin();
+  const size = kind === 'bulb' ? [22,36] : kind === 'ghost' ? [30,36] : [36,36];
+  return L.divIcon({ className:'', html, iconSize:size, iconAnchor:[size[0]/2, size[1]-1], popupAnchor:[0,-size[1]+6] });
+}
+function makeMeIcon(){
+  return L.divIcon({ className:'', iconSize:[20,20], iconAnchor:[10,10],
+    html:`<div style="width:20px;height:20px;border-radius:50%;background:#2b7fff;border:3px solid #fff;box-shadow:0 0 0 5px rgba(43,127,255,.28);"></div>` });
+}
+
+// =========================================================================
+// GARLAND under the hero: light string (Christmas) or pumpkins + ghosts
+// (Halloween), redrawn at the real pixel width on resize.
+// =========================================================================
+function drawGarland(){
+  const el = document.getElementById('garland');
+  const w = el.clientWidth; if(!w) return;
+  const xmas = season === 'christmas';
+  const n = Math.max(3, Math.round(w / (xmas ? 46 : 78)));
+  const step = w / n;
+  let wire = 'M0 1', items = '';
+  for(let i=0;i<n;i++){
+    const xm = i*step + step/2;
+    wire += ` Q${xm.toFixed(1)} 17 ${((i+1)*step).toFixed(1)} 1`;
+    const delay = ((i*7) % 11) * 0.22;
+    if(xmas){
+      items += `<g transform="translate(${(xm-6).toFixed(1)},8)"><rect x="3.5" y="0" width="5" height="5" rx="1" fill="#2b2b2b"/>`+
+               `<path class="tw" style="animation-delay:${delay}s" d="M6 26C1.5 21 1 15 2 11.5 3 7.5 4.5 5 6 5s3 2.5 4 6.5C11 15 10.5 21 6 26z" fill="${BULB_COLORS[i % BULB_COLORS.length]}"/></g>`;
+    } else {
+      items += `<g transform="translate(${(xm-8).toFixed(1)},8)"><g class="bob" style="animation-delay:${delay}s">`+
+               `<line x1="8" y1="0" x2="8" y2="5" stroke="#2b2b2b"/>`+
+               (i % 2 ? `<path d="M8 5c-4 0-6.5 3-6.5 7.5V24l2.2-2 2.1 2 2.2-2 2.2 2 2.1-2 2.2 2V12.5C14.5 8 12 5 8 5z" fill="#fff" stroke="#5B2A86" stroke-width="1.2"/><circle cx="6" cy="12" r="1.2"/><circle cx="10" cy="12" r="1.2"/>`
+                      : `<ellipse cx="8" cy="15" rx="7.5" ry="7" fill="#f07a22" stroke="#b94f0f"/><path d="M5 13l1.6-2 1.2 2z M11 13l-1.6-2-1.2 2z M4.5 17q3.5 3 7 0z" fill="#3a1a06"/>`)+
+               `</g></g>`;
+    }
+  }
+  el.innerHTML = `<svg width="${w}" height="40" viewBox="0 0 ${w} 40"><path d="${wire}" fill="none" stroke="#1f2a1f" stroke-width="1.6"/>${items}</svg>`;
+}
+
+// =========================================================================
+// SNOW (Christmas only). One canvas, capped flake count and ~30fps, device
+// pixel ratio capped at 1.5, stops while the tab is hidden. Off by default
+// for anyone whose device asks for reduced motion; the button remembers.
+// =========================================================================
+const Snow = (function(){
+  const cv = document.getElementById('snow');
+  const ctx = cv.getContext('2d');
+  let flakes = [], raf = 0, last = 0, running = false, W = 0, H = 0;
+  function mk(anyY){
+    return { x: Math.random()*W, y: anyY ? Math.random()*H : -6, r: 1.1 + Math.random()*2.2,
+             vy: 16 + Math.random()*30, vx: -6 + Math.random()*12, ph: Math.random()*6.28 };
+  }
+  function size(){
+    W = window.innerWidth; H = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(Math.min(70, W/14));
+    while(flakes.length < n) flakes.push(mk(true));
+    flakes.length = n;
+  }
+  function frame(t){
+    raf = requestAnimationFrame(frame);
+    if(t - last < 33) return;
+    const dt = Math.min((t - last)/1000, 0.1); last = t;
+    ctx.clearRect(0,0,W,H);
+    // Two batched passes (halo, then flake) instead of two fills per flake.
+    // The blue-grey halo is what keeps a white flake visible on a white page.
+    ctx.beginPath();
+    for(const f of flakes){
+      f.ph += dt; f.y += f.vy*dt; f.x += f.vx*dt + Math.sin(f.ph)*0.3;
+      if(f.y > H+6 || f.x < -10 || f.x > W+10) Object.assign(f, mk(false));
+      ctx.moveTo(f.x + f.r + 1, f.y); ctx.arc(f.x, f.y, f.r + 1, 0, 6.2832);
+    }
+    ctx.fillStyle = 'rgba(110,130,160,.30)'; ctx.fill();
+    ctx.beginPath();
+    for(const f of flakes){ ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.2832); }
+    ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.fill();
+  }
+  function start(){
+    if(running || document.hidden) return;
+    running = true; cv.hidden = false; size();
+    last = performance.now(); raf = requestAnimationFrame(frame);
+  }
+  function stop(){
+    running = false; cancelAnimationFrame(raf);
+    ctx.clearRect(0,0,W,H); cv.hidden = true;
+  }
+  let rt = 0;
+  window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(()=>{ if(running) size(); }, 150); });
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) stop(); else syncSnow(); });
+  return { start, stop };
+})();
+const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function snowWanted(){
+  const pref = lsGet('seasonalMap.snow');
+  return pref ? pref === 'on' : !reducedMotion;
+}
+function syncSnow(){
+  const btn = document.getElementById('snowBtn');
+  const xmas = season === 'christmas';
+  btn.classList.toggle('hidden', !xmas);
+  const on = xmas && snowWanted();
+  btn.setAttribute('aria-pressed', String(on));
+  btn.textContent = on ? '❄ Snow On' : '❄ Snow Off';
+  if(on) Snow.start(); else Snow.stop();
+}
+document.getElementById('snowBtn').addEventListener('click', ()=>{
+  lsSet('seasonalMap.snow', snowWanted() ? 'off' : 'on');
+  syncSnow();
+});
+
+// =========================================================================
+// MAP + DATA
+// =========================================================================
+const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 18
+}).addTo(map);
+
+let RAW_ROWS = null;       // CSV rows, fetched once; a season switch only re-filters
+let loadError = '';
+let HOUSES = [];           // current season's houses, in current display order
+const markers = {};
+const picked = new Set();  // house numbers (h.n) picked for the route
+let meMarker = null;
+let activeCat = 'all';
+let lastFit = null;        // bounds of the current houses, for the refit on load
+
+// Re-measure before fitting: Leaflet caches the container size at init, and
+// on a cold first load (fonts, nav still arriving) that cached size ran
+// larger than the real box, so the fit zoomed one level too far in and two
+// sample pins ended up off the edge. The window-load refit catches the rest.
+function fitToHouses(){
+  map.invalidateSize();
+  if(lastFit) map.fitBounds(lastFit, {padding:[30,30], maxZoom:12});
+  else map.setView(MAP_CENTER, MAP_ZOOM);
+}
+window.addEventListener('load', ()=>{ if(!meMarker && !map._popup) fitToHouses(); });
+
+function normCats(raw){
+  const cats = SEASONS[season].cats;
+  const parts = (raw || '').toString().toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+  const keys = [];
+  parts.forEach(p=>{
+    const k = Object.keys(cats).find(key => key === p || cats[key].match.test(p)) || 'other';
+    if(!keys.includes(k)) keys.push(k);
+  });
+  return keys.length ? keys : ['other'];
+}
+function normSeason(v){
+  v = (v || '').toString().toLowerCase();
+  if(/hallow|spook|oct/.test(v)) return 'halloween';
+  if(/christ|xmas|holiday|dec|light/.test(v)) return 'christmas';
+  return '';
+}
+// Approved must be exactly TRUE. farmstand.html also treats a blank as
+// approved (for its old Google Form rows); private homes get no such pass.
+function isApproved(r){ return (r['Approved'] || '').toString().trim().toLowerCase() === 'true'; }
+function rowYearOk(r){
+  const y = parseInt(r['Year'], 10);
+  return isNaN(y) || y === seasonYear(season, NOW);
+}
+function parseRows(rows){
+  return rows
+    .filter(r => normSeason(r['Season']) === season && rowYearOk(r) && isApproved(r))
+    .map(r => {
+      const cats = normCats(r['Category']);
+      return { name: (r['Name'] || '').trim(), addr: titleCaseAddress((r['Address'] || '').trim()),
+               cats, cat: cats[0], when: (r['When'] || '').trim(), desc: (r['Description'] || '').trim(),
+               lat: parseFloat(r['Lat']), lng: parseFloat(r['Lng']) };
+    })
+    .filter(h => !isNaN(h.lat) && !isNaN(h.lng));
+}
+function countPending(rows){
+  let pending = 0, needsFix = 0;
+  rows.forEach(r=>{
+    if(normSeason(r['Season']) !== season || !rowYearOk(r) || isApproved(r)) return;
+    if(!(r['Name'] || r['Address'] || r['Lat'])) return;
+    pending++;
+    if((r['Description'] || '').includes('NEEDS ADDRESS FIX')) needsFix++;
+  });
+  return {pending, needsFix};
+}
+function renderReviewPill(pending, needsFix){
+  const btn = document.getElementById('reviewBtn');
+  if(!pending){ btn.classList.add('hidden'); return; }
+  document.getElementById('reviewBadgeCount').textContent = pending;
+  const parts = [`${pending} pending review`];
+  if(needsFix) parts.push(`${needsFix} need${needsFix===1?'s':''} address fix`);
+  btn.title = parts.join(' · ');
+  btn.classList.remove('hidden');
+}
+
+async function loadData(){
+  if(CSV_URL){
+    setStatus('loading', '⏳ Loading houses…');
+    try{
+      const res = await fetch(CSV_URL);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      RAW_ROWS = Papa.parse(await res.text(), {header:true, skipEmptyLines:true}).data;
+    }catch(err){
+      RAW_ROWS = []; loadError = err.message;
+    }
+  }
+  applySeason();
+}
+
+// Everything that depends on the season, in one place.
+function applySeason(){
+  const S = SEASONS[season];
+  document.body.dataset.season = season;
+  document.getElementById('heroTitle').innerHTML = `${esc(S.h1)} <span>${esc(S.h1Span)}</span>`;
+  document.getElementById('heroTag').textContent = S.tag;
+  document.title = `${S.h1} ${S.h1Span} | 804Michael`;
+  document.querySelectorAll('.season-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.season === season)));
+  document.getElementById('modalHint').textContent = S.hint;
+  document.getElementById('fCatGroup').innerHTML = Object.keys(S.cats).filter(k => k !== 'other')
+    .map(k => `<label class="cat-check"><input type="checkbox" value="${k}"> ${esc(S.cats[k].label)}</label>`).join('');
+  drawGarland();
+  syncSnow();
+
+  picked.clear(); activeCat = 'all';
+  if(meMarker){ map.removeLayer(meMarker); meMarker = null; }
+
+  const notes = [];
+  let houses;
+  if(!CSV_URL){
+    houses = SAMPLE[season].map(h => Object.assign({}, h, {cat: h.cats[0]}));
+    notes.push('📋 Sample houses. Sheet not connected yet.');
+  } else if(loadError){
+    houses = [];
+    notes.push(`⚠️ Could not load the map (${loadError}). Try again shortly.`);
+  } else {
+    houses = parseRows(RAW_ROWS);
+    const {pending, needsFix} = countPending(RAW_ROWS);
+    renderReviewPill(pending, needsFix);
+  }
+  if(!inWindow(season, NOW)) notes.push(`${S.label} map opens ${opensLabel(season)}. Add a house now.`);
+  if(notes.length) setStatus(loadError ? 'error' : 'demo', notes.join(' · ')); else clearStatus();
+
+  renderHouses(houses);
+  updateTray();
+}
+
+function renderHouses(houses){
+  houses = houses.slice().sort((a,b)=> displayName(a).localeCompare(displayName(b)));
+  houses.forEach((h,i)=>{ h.n = i+1; });
+  HOUSES = houses;
+  document.getElementById('stopCount').textContent = houses.length + (houses.length === 1 ? ' house' : ' houses');
+
+  // Filter chips: only categories that actually appear.
+  const S = SEASONS[season];
+  const toolbar = document.getElementById('toolbar');
+  toolbar.querySelectorAll('.chip:not([data-cat="all"])').forEach(c=>c.remove());
+  toolbar.querySelector('[data-cat="all"]').classList.add('active');
+  [...new Set(houses.flatMap(h=>h.cats))].forEach(key=>{
+    const c = S.cats[key] || S.cats.other;
+    const btn = document.createElement('button');
+    btn.className = 'chip'; btn.dataset.cat = key;
+    btn.innerHTML = `<span class="dot" style="background:${c.color}"></span>${esc(c.label)}`;
+    toolbar.appendChild(btn);
+  });
+
+  Object.values(markers).forEach(m=>map.removeLayer(m));
+  for(const k in markers) delete markers[k];
+  const bounds = [];
+  houses.forEach(h=>{
+    const m = L.marker([h.lat, h.lng], {icon: houseIcon(h), title: displayName(h)}).addTo(map);
+    m.bindPopup(()=>popupHtml(h), {maxWidth:300, minWidth:230, autoPanPadding:[20,80]});
+    m.on('click', ()=> highlightCard(h.n));
+    markers[h.n] = m;
+    bounds.push([h.lat, h.lng]);
+  });
+  lastFit = bounds.length ? bounds : null;
+  fitToHouses();
+  renderCards();
+}
+
+function actsHtml(h){
+  const on = picked.has(h.n);
+  return `<div class="acts">
+    <button type="button" class="route-btn" data-n="${h.n}" aria-pressed="${on}">${on ? '✓ In Route' : '+ Route'}</button>
+    <a class="dir-btn" href="${dirUrl(h.lat,h.lng)}" target="_blank" rel="noopener">Directions →</a>
+  </div>`;
+}
+function popupHtml(h){
+  return `<div class="popup-title"><a href="#card-${h.n}" data-jump="${h.n}">${esc(displayName(h))}</a></div>
+    <div class="popup-addr">${formatAddr(h.addr)}</div>
+    ${h.when ? `<div class="popup-when">🕘 ${esc(h.when)}</div>` : ''}
+    ${actsHtml(h)}`;
+}
+function cardHtml(h){
+  const S = SEASONS[season];
+  return `<div class="name">${esc(displayName(h))}</div>
+    <div class="cat">${h.cats.map(c => esc((S.cats[c] || S.cats.other).label)).join(' · ')}</div>
+    <div class="addr">${formatAddr(h.addr)}</div>
+    ${h.when ? `<div class="when">🕘 ${esc(h.when)}</div>` : ''}
+    ${h.distance !== undefined ? `<div class="dist">📍 ${h.distance.toFixed(1)} mi ${h.distanceIsDriving ? 'drive' : 'away'}</div>` : ''}
+    ${h.desc ? `<div class="desc">${esc(h.desc)}</div>` : ''}
+    ${actsHtml(h)}`;
+}
+function renderCards(){
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  if(!HOUSES.length){
+    grid.innerHTML = `<div class="empty-state">No houses on the ${esc(SEASONS[season].label)} map yet. Know a good one? Tap Add a House.</div>`;
+    return;
+  }
+  HOUSES.forEach(h=>{
+    const S = SEASONS[season];
+    const card = document.createElement('div');
+    card.className = 'house-card' + (picked.has(h.n) ? ' picked' : '');
+    card.id = 'card-' + h.n;
+    card.style.borderLeftColor = (S.cats[h.cat] || S.cats.other).color;
+    card.innerHTML = cardHtml(h);
+    if(activeCat !== 'all' && !h.cats.includes(activeCat)) card.classList.add('hidden');
+    grid.appendChild(card);
+  });
+}
+function highlightCard(n){
+  document.querySelectorAll('.house-card.selected').forEach(c=>c.classList.remove('selected'));
+  const card = document.getElementById('card-' + n);
+  if(card) card.classList.add('selected');
+}
+function openOnMap(h){
+  map.setView([h.lat, h.lng], 15, {animate:false});
+  map.panBy([0, -140], {animate:false});
+  if(markers[h.n]) markers[h.n].openPopup();
+  highlightCard(h.n);
+  document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
+}
+function houseByN(n){ return HOUSES.find(h => h.n === n); }
+function visibleHouses(){ return HOUSES.filter(h => activeCat === 'all' || h.cats.includes(activeCat)); }
+
+// One delegated handler for cards, and one for popups (their DOM is rebuilt
+// by Leaflet every time one opens, so per-element listeners would be lost).
+document.getElementById('cardGrid').addEventListener('click', e=>{
+  if(e.target.closest('.dir-btn')) return; // let the link open
+  const rb = e.target.closest('.route-btn');
+  if(rb){ togglePick(+rb.dataset.n); return; }
+  const card = e.target.closest('.house-card');
+  if(card){ const h = houseByN(+card.id.slice(5)); if(h) openOnMap(h); }
+});
+document.getElementById('map').addEventListener('click', e=>{
+  const rb = e.target.closest('.route-btn');
+  if(rb){ togglePick(+rb.dataset.n); return; }
+  const j = e.target.closest('[data-jump]');
+  if(j){
+    e.preventDefault();
+    const n = +j.dataset.jump; highlightCard(n);
+    const card = document.getElementById('card-' + n);
+    if(card) card.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+});
+
+document.getElementById('toolbar').addEventListener('click', e=>{
+  const btn = e.target.closest('.chip'); if(!btn) return;
+  activeCat = btn.dataset.cat;
+  document.querySelectorAll('#toolbar .chip').forEach(c=>c.classList.toggle('active', c === btn));
+  HOUSES.forEach(h=>{
+    const show = activeCat === 'all' || h.cats.includes(activeCat);
+    const m = markers[h.n];
+    if(m){ if(show && !map.hasLayer(m)) m.addTo(map); if(!show) map.removeLayer(m); }
+    const card = document.getElementById('card-' + h.n);
+    if(card) card.classList.toggle('hidden', !show);
+  });
+});
+
+// =========================================================================
+// ROUTE PICKS, TOUR PLANNER HANDOFF, PRINT
+// =========================================================================
+function togglePick(n){
+  const note = document.getElementById('trayNote');
+  if(picked.has(n)) picked.delete(n);
+  else if(picked.size >= MAX_ROUTE){ note.textContent = `Route is full at ${MAX_ROUTE}. Remove one first.`; return; }
+  else picked.add(n);
+  note.textContent = 'Up to 10. Opens in the Tour Planner in driving order.';
+  document.querySelectorAll(`.route-btn[data-n="${n}"]`).forEach(b=>{
+    const on = picked.has(n);
+    b.setAttribute('aria-pressed', String(on));
+    b.textContent = on ? '✓ In Route' : '+ Route';
+  });
+  const card = document.getElementById('card-' + n);
+  if(card) card.classList.toggle('picked', picked.has(n));
+  updateTray();
+}
+function pickedHouses(){ return HOUSES.filter(h => picked.has(h.n)); }
+function updateTray(){
+  const tray = document.getElementById('routeTray');
+  const k = picked.size;
+  tray.classList.toggle('hidden', !k);
+  document.body.classList.toggle('tray-open', !!k);
+  document.getElementById('trayCount').textContent = `${k} picked`;
+}
+document.getElementById('trayClear').addEventListener('click', ()=>{ [...picked].forEach(togglePick); });
+
+// Builds the same #tour= payload tour-planner.html's own "copy link" makes
+// (serializeTour: [version, name, [[address, lat, lng, blurb, notes, budget,
+// windowStart, windowEnd, rating, skipped], ...]]), so the planner opens with
+// these houses loaded and its optimiser works out the driving order.
+// ⚠ LAUNCH BLOCKER: the planner is Michael's agent tool, and its Save/Reuse
+// Tours panel lists his saved client tours to whoever opens it (GET
+// /api/tours has no auth). Fine while this page is hidden; must be fixed, or
+// this handoff pointed somewhere visitor-safe, before the page goes public.
+function tourPlannerUrl(list){
+  const S = SEASONS[season];
+  const rows = list.map(h => [h.addr || `${round5(h.lat)}, ${round5(h.lng)}`, round5(h.lat), round5(h.lng),
+                              displayName(h), '', '', '', '', 0, 0]);
+  const payload = [TOUR_FILE_V, `${S.label} ${seasonYear(season, NOW)} drive`, rows];
+  return '/tour-planner#tour=' + b64urlEncode(JSON.stringify(payload));
+}
+document.getElementById('trayPlan').addEventListener('click', ()=>{
+  const list = pickedHouses();
+  if(!list.length) return;
+  window.open(tourPlannerUrl(list), '_blank', 'noopener');
+});
+
+function printList(list, which){
+  const S = SEASONS[season];
+  const rows = list.map((h,i)=>`<tr><td class="box">☐</td><td>${i+1}</td><td><b>${esc(displayName(h))}</b>${h.desc ? '<br>' + esc(h.desc.slice(0,140)) : ''}</td>
+    <td>${formatAddr(h.addr)}</td><td>${esc(h.when)}</td></tr>`).join('');
+  document.getElementById('printSheet').innerHTML =
+    `<h2>${esc(S.h1)} ${esc(S.h1Span)} ${seasonYear(season, NOW)}</h2>
+     <p class="ps-sub">${esc(which)} · ${list.length} ${list.length === 1 ? 'house' : 'houses'}. Please drive slowly and stay on the street.</p>
+     <table><thead><tr><th></th><th>#</th><th>House</th><th>Address</th><th>When</th></tr></thead><tbody>${rows}</tbody></table>
+     <p class="ps-foot">Live map: 804re.com/seasonal-map · Sponsored by 804Michael Real Estate · Call 804-Michael or text 804-642-4235</p>`;
+  window.print();
+}
+document.getElementById('printBtn').addEventListener('click', ()=>{
+  const list = visibleHouses();
+  if(!list.length){ setStatus('demo', 'Nothing to print yet.'); return; }
+  printList(list, activeCat === 'all' ? 'All houses' : (SEASONS[season].cats[activeCat] || {}).label);
+});
+document.getElementById('trayPrint').addEventListener('click', ()=>{
+  printList(pickedHouses(), 'Your picks');
+});
+
+// =========================================================================
+// NEAR ME: straight-line sort, then ONE OSRM table request for the nearest
+// few (farmstand.html fires one route request per stand, which is fine for
+// a dozen stands and not for a few hundred houses).
+// =========================================================================
+async function drivingMiles(from, list){
+  const coords = [from, ...list].map(p => `${p.lng},${p.lat}`).join(';');
+  try{
+    const res = await fetch(`https://router.project-osrm.org/table/v1/driving/${coords}?sources=0&annotations=distance`);
+    if(!res.ok) return null;
+    const d = await res.json();
+    if(d.code !== 'Ok' || !d.distances) return null;
+    return d.distances[0].slice(1).map(m => m == null ? null : m / 1609.34);
+  }catch(e){ return null; }
+}
+document.getElementById('nearMeBtn').addEventListener('click', ()=>{
+  if(!navigator.geolocation){ setStatus('error', '⚠️ Location not supported on this browser.'); return; }
+  if(!HOUSES.length){ setStatus('demo', 'No houses on the map yet.'); return; }
+  setStatus('locating', '📡 Finding you…');
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const me = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    if(meMarker) map.removeLayer(meMarker);
+    meMarker = L.marker([me.lat, me.lng], {icon: makeMeIcon()}).addTo(map).bindPopup('<b>You are here</b>');
+    HOUSES.forEach(h=>{ h.distance = distMiles(me.lat, me.lng, h.lat, h.lng); h.distanceIsDriving = false; });
+    HOUSES.sort((a,b)=> a.distance - b.distance);
+    const near = HOUSES.slice(0, DRIVE_LOOKUP_MAX);
+    setStatus('locating', '🚗 Working out drive distances…');
+    const miles = await drivingMiles(me, near);
+    if(miles) near.forEach((h,i)=>{ if(miles[i] != null){ h.distance = miles[i]; h.distanceIsDriving = true; } });
+    const rest = HOUSES.slice(DRIVE_LOOKUP_MAX);
+    near.sort((a,b)=> a.distance - b.distance);
+    HOUSES = near.concat(rest);
+    renderCards();
+    const nearest = HOUSES[0];
+    map.fitBounds([[me.lat, me.lng], ...HOUSES.slice(0,3).map(h=>[h.lat,h.lng])], {padding:[40,40]});
+    if(markers[nearest.n]) markers[nearest.n].openPopup();
+    setStatus('locating', `📍 Nearest: ${displayName(nearest)}, ${nearest.distance.toFixed(1)} mi`);
+  }, err=>{
+    setStatus('error', '⚠️ Could not get your location. Check location permission.');
+  }, {enableHighAccuracy:true, timeout:10000});
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  HOUSES.forEach(h=>{ delete h.distance; delete h.distanceIsDriving; });
+  applySeason();
+});
+
+document.getElementById('shareBtn').addEventListener('click', async ()=>{
+  const S = SEASONS[season];
+  // The shared link carries the season, so a friend opening it in late
+  // October sees what you were looking at, not the date default.
+  const url = location.origin + location.pathname + '?season=' + season;
+  const btn = document.getElementById('shareBtn');
+  if(navigator.share){
+    try{ await navigator.share({title: `${S.h1} ${S.h1Span}`, text: S.share, url}); }catch(e){}
+    return;
+  }
+  try{
+    await navigator.clipboard.writeText(`${S.share}: ${url}`);
+    const was = btn.textContent; btn.textContent = '✓ Copied';
+    setTimeout(()=>{ btn.textContent = was; }, 2500);
+  }catch(e){ prompt('Copy this to share:', url); }
+});
+
+document.querySelectorAll('.season-switch button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    if(b.dataset.season === season) return;
+    season = b.dataset.season;
+    const p = new URLSearchParams(location.search); p.set('season', season);
+    try{ history.replaceState(null, '', location.pathname + '?' + p.toString()); }catch(e){}
+    applySeason();
+  });
+});
+
+let garlandTimer = 0;
+window.addEventListener('resize', ()=>{ clearTimeout(garlandTimer); garlandTimer = setTimeout(drawGarland, 150); });
+
+// =========================================================================
+// ADD A HOUSE (submission modal). Address autocomplete is farmstand.html's
+// attachAutocomplete(), trimmed: a picked suggestion carries its own lat/lng,
+// so the Sheet never has to guess where free text was meant to be.
+// =========================================================================
+const STATE_ABBR = {virginia:'VA','north carolina':'NC',maryland:'MD','district of columbia':'DC','west virginia':'WV'};
+function stateToAbbr(name){ if(!name) return ''; if(name.length === 2) return name.toUpperCase(); return STATE_ABBR[name.trim().toLowerCase()] || name; }
+function attachAutocomplete(inputEl, onSelect){
+  const wrap = document.createElement('div'); wrap.className = 'addr-ac-wrap';
+  inputEl.parentNode.insertBefore(wrap, inputEl); wrap.appendChild(inputEl);
+  const list = document.createElement('ul'); list.className = 'addr-ac-list'; list.hidden = true; wrap.appendChild(list);
+  let timer = null, active = -1, items = [], controller = null;
+  function close(){ list.hidden = true; list.innerHTML = ''; items = []; active = -1; }
+  function setActive(i){
+    const kids = list.querySelectorAll('.addr-ac-item');
+    kids.forEach(el=>el.classList.remove('active'));
+    if(i >= 0 && i < kids.length){ kids[i].classList.add('active'); kids[i].scrollIntoView({block:'nearest'}); }
+    active = i;
+  }
+  function select(item){ inputEl.value = item.display; close(); onSelect(item); }
+  function render(arr){
+    items = arr; active = -1; list.innerHTML = '';
+    if(!arr.length){ close(); return; }
+    arr.forEach((item,i)=>{
+      const li = document.createElement('li'); li.className = 'addr-ac-item'; li.textContent = item.display;
+      li.addEventListener('mousedown', e=>{ e.preventDefault(); select(item); });
+      li.addEventListener('mouseenter', ()=> setActive(i));
+      list.appendChild(li);
+    });
+    list.hidden = false;
+  }
+  function toSuggestion(r){
+    const a = r.address || {};
+    const road = a.road || a.pedestrian || a.path || '';
+    const street = ((a.house_number ? a.house_number + ' ' : '') + road).trim() || (r.display_name || '').split(',')[0];
+    const city = a.city || a.town || a.village || a.hamlet || a.county || '';
+    const zip = (a.postcode || '').split('-')[0];
+    const base = [street, city, stateToAbbr(a.state || '')].filter(Boolean).join(', ');
+    return { display: zip ? base + ' ' + zip : base, lat: parseFloat(r.lat), lng: parseFloat(r.lon) };
+  }
+  function fetchSuggestions(q){
+    if(controller) controller.abort();
+    controller = new AbortController();
+    const url = `${NOMINATIM}?format=json&limit=6&addressdetails=1&countrycodes=us&q=${encodeURIComponent(q)}&viewbox=${ADDR_VIEWBOX}&bounded=0`;
+    fetch(url, {signal: controller.signal, headers:{'Accept-Language':'en-US,en'}})
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { if(inputEl.value.trim() === q) render((Array.isArray(data) ? data : []).map(toSuggestion).filter(s=>s.display)); })
+      .catch(err => { if(err.name !== 'AbortError') close(); });
+  }
+  inputEl.addEventListener('input', ()=>{
+    const q = inputEl.value.trim(); clearTimeout(timer);
+    if(q.length < ADDR_MIN_CHARS){ close(); return; }
+    timer = setTimeout(()=>{ if(inputEl.value.trim() === q) fetchSuggestions(q); }, ADDR_DEBOUNCE_MS);
+  });
+  inputEl.addEventListener('keydown', e=>{
+    if(list.hidden) return;
+    if(e.key === 'ArrowDown'){ e.preventDefault(); setActive(Math.min(active+1, items.length-1)); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); setActive(Math.max(active-1, 0)); }
+    else if(e.key === 'Enter' && active >= 0 && items[active]){ e.preventDefault(); select(items[active]); }
+    else if(e.key === 'Escape') close();
+  });
+  inputEl.addEventListener('blur', ()=> setTimeout(close, 120));
+}
+
+const modalOverlay = document.getElementById('modalOverlay');
+const geoStatus = document.getElementById('geoStatus');
+const submitBtn = document.getElementById('submitAdd');
+const locChips = document.querySelectorAll('.loc-chip');
+let locationMode = null, gpsCoords = null, addrCoords = null;
+
+attachAutocomplete(document.getElementById('fAddress'), item=>{ addrCoords = {lat:item.lat, lng:item.lng}; });
+document.getElementById('fAddress').addEventListener('input', ()=>{ addrCoords = null; });
+
+locChips.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    locationMode = btn.dataset.mode;
+    locChips.forEach(b=>b.classList.toggle('active', b === btn));
+    if(locationMode === 'gps'){
+      document.getElementById('fAddressWrap').classList.add('hidden');
+      addrCoords = null;
+      geoStatus.className = 'geo-status waiting'; geoStatus.textContent = '📡 Locating…';
+      if(!navigator.geolocation){ geoStatus.className = 'geo-status fail'; geoStatus.textContent = '⚠️ Not supported here. Use Enter Address.'; return; }
+      navigator.geolocation.getCurrentPosition(pos=>{
+        gpsCoords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+        geoStatus.className = 'geo-status ok'; geoStatus.textContent = `✅ Location captured (±${Math.round(pos.coords.accuracy)}m)`;
+      }, ()=>{
+        geoStatus.className = 'geo-status fail'; geoStatus.textContent = '⚠️ No location. Use Enter Address.';
+      }, {enableHighAccuracy:true, timeout:10000});
+    } else {
+      gpsCoords = null;
+      geoStatus.className = 'geo-status hidden';
+      document.getElementById('fAddressWrap').classList.remove('hidden');
+    }
+  });
+});
+
+function resetModal(){
+  ['fName','fAddress','fWhen','fDesc','fCompany'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fOwnerOk').checked = false;
+  document.querySelectorAll('#fCatGroup input:checked').forEach(el => el.checked = false);
+  locationMode = null; gpsCoords = null; addrCoords = null;
+  locChips.forEach(b=>b.classList.remove('active'));
+  geoStatus.className = 'geo-status hidden';
+  document.getElementById('fAddressWrap').classList.add('hidden');
+}
+function openModal(){ resetModal(); modalOverlay.classList.add('show'); }
+function closeModal(){ modalOverlay.classList.remove('show'); resetModal(); }
+document.getElementById('addBtn').addEventListener('click', openModal);
+document.getElementById('closeModal').addEventListener('click', closeModal);
+document.getElementById('cancelAdd').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e=>{ if(e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && modalOverlay.classList.contains('show')) closeModal(); });
+
+submitBtn.addEventListener('click', async ()=>{
+  const address = document.getElementById('fAddress').value.trim();
+  const missing = [];
+  if(locationMode === 'gps'){ if(!gpsCoords) missing.push('No location captured. Allow location, or use Enter Address.'); }
+  else if(locationMode === 'address'){
+    if(!address) missing.push('Enter an address.');
+    else if(!addrCoords) missing.push('Pick the address from the suggestions.');
+  } else missing.push('Set a location: Use My Location or Enter Address.');
+  if(!document.getElementById('fOwnerOk').checked) missing.push("Tick the box confirming the owner is OK with it.");
+  if(missing.length){
+    alert(missing.length === 1 ? missing[0] : 'Please fix:\n\n• ' + missing.join('\n• '));
+    return;
+  }
+  const coords = gpsCoords || addrCoords;
+  const payload = {
+    season, year: seasonYear(season, NOW),
+    name: document.getElementById('fName').value.trim(),
+    address: locationMode === 'address' ? address : '',
+    category: Array.from(document.querySelectorAll('#fCatGroup input:checked')).map(el=>el.value).join(', '),
+    when: document.getElementById('fWhen').value.trim(),
+    description: document.getElementById('fDesc').value.trim(),
+    lat: coords ? coords.lat : '', lng: coords ? coords.lng : '',
+    ownerOk: true,
+    company: document.getElementById('fCompany').value, // honeypot; the script drops the row if filled
+    source: gpsCoords ? 'GPS submission' : 'Address submission'
+  };
+  if(!SUBMIT_URL){ alert('Not connected yet (SUBMIT_URL empty). See docs/seasonal-submit.gs.'); return; }
+  submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
+  try{
+    // Apps Script web apps send no CORS headers, so this is fire-and-forget
+    // exactly as on farmstand.html.
+    await fetch(SUBMIT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload)});
+    alert("Thanks! It will show on the map once it's been reviewed. Not there in a few days? Text 804-642-4235.");
+    closeModal();
+  }catch(err){
+    alert('Something went wrong. Please try again.');
+  }finally{
+    submitBtn.disabled = false; submitBtn.textContent = 'Submit';
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>
