@@ -20,8 +20,13 @@
 //   {
 //     overrides: { "<card-id>": { title, badge, badgeKind, desc, bullets[], href } },
 //     added:     [ { id, title, badge, badgeKind, desc, bullets[], href } ],
-//     hidden:    [ "<card-id>", ... ]
+//     hidden:    [ "<card-id>", ... ],
+//     deleted:   [ "<card-id>", ... ]
 //   }
+// "hidden" is reversible from the page (the Hidden cards row). "deleted" is
+// permanent: it lists cards written into dev.html that Michael deleted from
+// the page, which can't edit the repo. A session editing dev.html should
+// remove those cards' markup and then drop the ids (see CLAUDE.md).
 // "overrides" only ever holds the fields that differ from the HTML, so a card
 // never edited from the page has no entry at all and keeps whatever the repo
 // says — which means editing dev.html by hand still works normally, as long
@@ -110,7 +115,12 @@ function cleanState(raw) {
   const hidden = Array.isArray(s.hidden)
     ? s.hidden.map(cleanId).filter(Boolean).slice(0, MAX_CARDS)
     : [];
-  return { overrides: overrides, added: added, hidden: hidden };
+  // Without this, a POST would silently drop the deleted list and a deleted
+  // card would reappear on the next load.
+  const deleted = Array.isArray(s.deleted)
+    ? s.deleted.map(cleanId).filter(Boolean).slice(0, MAX_CARDS)
+    : [];
+  return { overrides: overrides, added: added, hidden: hidden, deleted: deleted };
 }
 
 export async function onRequestOptions() {
@@ -122,7 +132,7 @@ export async function onRequestGet(context) {
   try {
     if (!env.DEV_ORDER_KV) return json({ state: null, error: 'KV not bound' });
     const raw = await env.DEV_ORDER_KV.get(CARDS_KEY);
-    return json({ state: raw ? cleanState(JSON.parse(raw)) : { overrides: {}, added: [], hidden: [] } });
+    return json({ state: raw ? cleanState(JSON.parse(raw)) : { overrides: {}, added: [], hidden: [], deleted: [] } });
   } catch (err) {
     return json({ state: null, error: String((err && err.message) || err) });
   }

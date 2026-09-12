@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_22-05-0078                            ║
+  ║  SITE VERSION: 26.09.11_22-11-0079                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
   ║  counter file — the next session reads the LAST revision      ║
   ║  number off this file itself (any of the 3 spots below)       ║
   ║  and increments it by 1.                                      ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-05-0078    ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-11-0079    ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -249,6 +249,13 @@
     .dev-modal-actions .dev-save:hover{background:var(--red-dark)}
     .dev-modal-actions .dev-remove{margin-left:auto;color:var(--red);border-color:var(--red)}
     .dev-modal-actions .dev-remove:hover{background:var(--red);color:var(--white)}
+    /* Hide is the outlined button (reversible); Delete is solid red (not). */
+    .dev-modal-actions .dev-delete{margin-left:0;background:var(--red);color:var(--white)}
+    .dev-modal-actions .dev-delete:hover{background:var(--red-dark);border-color:var(--red-dark)}
+    .dev-hidden-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:-6px 0 14px;font-size:.85rem;color:var(--gray-muted)}
+    .dev-hidden-bar[hidden]{display:none}
+    .dev-hidden-bar button{border:1.5px solid var(--gray-mid);background:var(--white);border-radius:999px;padding:3px 11px;font-family:'Barlow',sans-serif;font-size:.85rem;color:var(--gray-text);cursor:pointer}
+    .dev-hidden-bar button:hover{border-color:var(--red);color:var(--red)}
     /* The note box when JS has hoisted it to the top of the page on mobile —
        it lands outside the Notes panel's white card, so it needs its own
        breathing room and a label to stop it reading as an orphan. */
@@ -365,6 +372,8 @@
     <p>Page is unlinked from main nav &amp; blocked from search indexing (noindex, nofollow). It's just a bookmark-able list of pages being built before they go live &mdash; bookmark <code>804re.com/dev</code> directly, since you won't find it by clicking around the site.</p>
   </div>
   <p class="dev-cards-hint" id="dev-cards-hint"></p>
+  <!-- Filled by JS: one chip per hidden card; clicking a chip brings it back. -->
+  <div class="dev-hidden-bar" id="dev-hidden-bar" hidden></div>
 
   <!-- Shared editor for both "edit this card" and "+ Add Card". -->
   <div class="dev-modal-overlay" id="dev-card-modal" hidden>
@@ -411,6 +420,7 @@
         <button type="button" class="dev-save" id="dev-modal-save">Save</button>
         <button type="button" id="dev-modal-cancel">Cancel</button>
         <button type="button" class="dev-remove" id="dev-modal-remove">Hide Card</button>
+        <button type="button" class="dev-remove dev-delete" id="dev-modal-delete">Delete Card</button>
       </div>
     </div>
   </div>
@@ -885,7 +895,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-05-0078</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_22-11-0079</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -896,7 +906,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_22-05-0078';
+  const SITE_VERSION = '26.09.11_22-11-0079';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -956,7 +966,16 @@
     var API_URL = '/api/dev-cards';
     var grid = document.querySelector('.dev-grid');
     var hintEl = document.getElementById('dev-cards-hint');
-    var state = { overrides:{}, added:[], hidden:[] };
+    var state = { overrides:{}, added:[], hidden:[], deleted:[] };
+    // Hide vs Delete (2026-09-11). "hidden" is reversible: the Hidden cards
+    // row lists each one with an unhide chip. "deleted" is not: an added card
+    // is erased outright, and a card written into this file (which the page
+    // cannot edit) is listed in state.deleted so it stays gone everywhere;
+    // CLAUDE.md tells the next session to remove its markup.
+    // A hidden card's element is kept here, detached, so Unhide can put the
+    // same element back (edit pencil, drag wiring and all) without a reload.
+    var hiddenEls = {};
+    var hiddenBar = document.getElementById('dev-hidden-bar');
     var serverOk = false;
 
     // ── Card colours (2026-09-05) ──────────────────────────────────────
@@ -1271,16 +1290,83 @@
       }
       window.devReflowCompleted = reflowCompleted;
       if(!grid) return;
-      (state.hidden||[]).forEach(function(id){ var c = cardById(id); if(c) c.remove(); });
+      var hiddenIds = state.hidden || [];
+      var gone = hiddenIds.concat(state.deleted || []);
+      gone.forEach(function(id){
+        var c = cardById(id);
+        if(!c) return;
+        if(hiddenIds.indexOf(id) > -1) hiddenEls[id] = c;
+        c.remove();
+      });
+      // A card this browser took out earlier that the newest state no longer
+      // hides (unhidden on another device) goes back in.
+      Object.keys(hiddenEls).forEach(function(id){
+        if(gone.indexOf(id) > -1) return;
+        if(!cardById(id)) grid.appendChild(hiddenEls[id]);
+        delete hiddenEls[id];
+      });
       Object.keys(state.overrides||{}).forEach(function(id){
         var c = cardById(id); if(c) writeCard(c, state.overrides[id]);
       });
       (state.added||[]).forEach(function(d){
+        if(gone.indexOf(d.id) > -1) return;
         if(cardById(d.id)) { writeCard(cardById(d.id), d); return; }
         grid.appendChild(buildCard(d));
       });
       [].forEach.call(grid.querySelectorAll('.dev-card'), addEditButton);
       reflowCompleted();
+      renderHiddenBar();
+    }
+
+    function hiddenTitle(id){
+      var a = (state.added||[]).filter(function(c){ return c.id === id; })[0];
+      if(a && a.title) return a.title;
+      var o = (state.overrides||{})[id];
+      if(o && o.title) return o.title;
+      return hiddenEls[id] ? readCard(hiddenEls[id]).title : id;
+    }
+
+    function renderHiddenBar(){
+      if(!hiddenBar) return;
+      var ids = (state.hidden||[]).filter(function(id){ return (state.deleted||[]).indexOf(id) === -1; });
+      hiddenBar.innerHTML = '';
+      hiddenBar.hidden = !ids.length;
+      if(!ids.length) return;
+      var lbl = document.createElement('span');
+      lbl.textContent = 'Hidden cards:';
+      hiddenBar.appendChild(lbl);
+      ids.forEach(function(id){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = hiddenTitle(id) + ' ↺';
+        b.title = 'Unhide this card';
+        b.addEventListener('click', function(){ unhideCard(id); });
+        hiddenBar.appendChild(b);
+      });
+    }
+
+    // Puts a hidden card back at the end of the grid (drag it where you want
+    // it). Uses the kept element if there is one; an added card hidden in an
+    // earlier visit is rebuilt from the saved state instead. devBindCardDrag
+    // is safe to call twice (it checks data-drag-bound), which matters for a
+    // card hidden at page load, before the drag code ever wired it up.
+    function unhideCard(id){
+      state.hidden = (state.hidden||[]).filter(function(x){ return x !== id; });
+      var el = hiddenEls[id];
+      delete hiddenEls[id];
+      if(!el){
+        var a = (state.added||[]).filter(function(c){ return c.id === id; })[0];
+        if(a) el = buildCard(a);
+      }
+      if(el && !cardById(id)){
+        grid.appendChild(el);
+        if(state.overrides && state.overrides[id]) writeCard(el, state.overrides[id]);
+        addEditButton(el);
+        if(typeof window.devBindCardDrag === 'function') window.devBindCardDrag(el);
+      }
+      if(window.devReflowCompleted) window.devReflowCompleted();
+      renderHiddenBar();
+      persist();
     }
 
     function cacheLocal(){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(state)); }catch(e){} }
@@ -1367,13 +1453,10 @@
       editingId = id;
       var isNew = !id;
       document.getElementById('dev-modal-title').textContent = isNew ? 'Add Card' : 'Edit Card';
-      // A seeded card cannot be deleted - it lives in the page source - so the
-      // button says "Hide". One you added yourself really does go. Saying the
-      // same word for both was why the delete was hard to find.
-      var rmBtn = document.getElementById('dev-modal-remove');
-      rmBtn.hidden = isNew;
-      rmBtn.textContent = (!isNew && (state.added||[]).some(function(c){ return c.id === id; }))
-        ? 'Delete Card' : 'Hide Card';
+      // Every existing card offers both: Hide (reversible from the Hidden
+      // cards row) and Delete (permanent). A brand-new card has neither.
+      document.getElementById('dev-modal-remove').hidden = isNew;
+      document.getElementById('dev-modal-delete').hidden = isNew;
       var d = isNew ? {title:'',badge:'In Progress',badgeKind:'',desc:'',bullets:[],href:'',color:''} : readCard(cardById(id));
       fTitle.value = d.title; fBadge.value = d.badge; fKind.value = d.badgeKind;
       fDesc.value = d.desc; fBul.value = (d.bullets||[]).join('\n'); fHref.value = d.href || '';
@@ -1464,23 +1547,40 @@
       closeModal();
     });
 
+    // Hide: reversible. The card leaves the grid and gets a chip in the
+    // Hidden cards row; its element is kept so Unhide puts back the same one.
     document.getElementById('dev-modal-remove').addEventListener('click', function(){
       if(!editingId) return;
-      var wasAdded = (state.added||[]).some(function(c){ return c.id === editingId; });
-      // Hiding is reversible - the card is still in the page source. Deleting a
-      // card you added is not, so it asks twice and the second question says
-      // plainly that there is no undo.
-      if(wasAdded){
-        if(!confirm('Delete this card?')) return;
-        if(!confirm('Are you sure you want to delete?\n\nThis is not reversable.')) return;
-      } else if(!confirm('Hide this card from the hub?\n\nIt stays in the page source - ask Claude to bring it back.')){
-        return;
-      }
-      if(wasAdded){ state.added = state.added.filter(function(c){ return c.id !== editingId; }); }
-      else { state.hidden = (state.hidden||[]).concat([editingId]); }
-      var el = cardById(editingId);
+      if(!confirm('Hide this card?\n\nYou can bring it back from the Hidden cards list above the grid.')) return;
+      var id = editingId, el = cardById(id);
+      if((state.hidden||[]).indexOf(id) === -1) state.hidden = (state.hidden||[]).concat([id]);
+      if(el){ hiddenEls[id] = el; el.remove(); }
+      if(window.devReflowCompleted) window.devReflowCompleted();
+      renderHiddenBar();
+      persist();
+      closeModal();
+    });
+
+    // Delete: permanent, so it asks twice and the second question says plainly
+    // there is no undo. A card added from this page is erased from the saved
+    // state. A card written into dev.html can't be erased from here, so its id
+    // goes on state.deleted, which keeps it gone on every device until a
+    // session removes its markup (see CLAUDE.md).
+    document.getElementById('dev-modal-delete').addEventListener('click', function(){
+      if(!editingId) return;
+      if(!confirm('Delete this card?')) return;
+      if(!confirm('Are you sure you want to delete it?\n\nThis cannot be undone.')) return;
+      var id = editingId;
+      var wasAdded = (state.added||[]).some(function(c){ return c.id === id; });
+      if(wasAdded){ state.added = state.added.filter(function(c){ return c.id !== id; }); }
+      else if((state.deleted||[]).indexOf(id) === -1){ state.deleted = (state.deleted||[]).concat([id]); }
+      state.hidden = (state.hidden||[]).filter(function(x){ return x !== id; });
+      if(state.overrides) delete state.overrides[id];
+      delete hiddenEls[id];
+      var el = cardById(id);
       if(el) el.remove();
       if(window.devReflowCompleted) window.devReflowCompleted();
+      renderHiddenBar();
       persist();
       closeModal();
     });

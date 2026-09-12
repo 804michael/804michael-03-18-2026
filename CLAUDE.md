@@ -39,6 +39,14 @@ checked in, so a missing one looks like a bug in the page, not in the setup.
 `api/county-lookup.js` and `api/heigit-status.js` need nothing — they are plain
 server-side fetches that exist only to dodge CORS.
 
+**Deleted dev cards.** On `dev.html`, Hide Card is reversible (the Hidden cards
+row brings a card back) and Delete Card is permanent. Deleting a card that is
+written into `dev.html` can't edit the repo, so its id goes on
+`cards-state.deleted`, which keeps it gone on every device. Whenever you edit
+`dev.html`, first read `https://804re.com/api/dev-cards` (a plain GET), delete
+the markup of every card listed in `state.deleted`, and mention it in your
+report. The ids can stay in the list; they are harmless once the markup is gone.
+
 Related endpoints deliberately **share one namespace under different keys**
 (`card-order` / `notes-list` / `cards-state` all live in `DEV_ORDER_KV`) rather
 than asking for another dashboard setup step. Follow that when adding one.
