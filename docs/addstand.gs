@@ -28,6 +28,13 @@
  * MODERATION: every row is written with Approved = FALSE so nothing
  * appears on the public map until you flip that cell to TRUE.
  *
+ * SAFETY: every visitor-typed field goes through clean() before it is
+ * written: trimmed, control characters removed, length-capped, and
+ * prefixed with an apostrophe if it starts with = + - or @, so a
+ * submission can't run as a Sheets formula. The apostrophe isn't
+ * displayed and isn't included in the published CSV. Lat/Lng must be
+ * numbers. (Same approach as docs/seasonal-submit.gs.)
+ *
  * ADDRESS NORMALIZATION: when a manually-typed address geocodes
  * successfully, the sheet's Address cell is overwritten with Google's own
  * formatted result ("Street, City, State Zip") instead of whatever the
@@ -43,6 +50,19 @@
  * re-run geocodeRow/geocodeMissingRows from the geocode script, or paste
  * coordinates in by hand.
  */
+
+// Text in, safe cell value out: trimmed, control characters removed,
+// capped, and never starting with a formula character.
+function clean(v, max) {
+  var s = (v === null || v === undefined) ? '' : String(v);
+  s = s.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  return s;
+}
+function num(v) {
+  var n = parseFloat(v);
+  return isFinite(n) ? n : '';
+}
 
 function doPost(e) {
   try {
@@ -60,10 +80,10 @@ function doPost(e) {
       return 0;
     }
 
-    var lat = data.lat || "";
-    var lng = data.lng || "";
+    var lat = num(data.lat);
+    var lng = num(data.lng);
     var geocodeFailed = false;
-    var addressForSheet = data.address || "";
+    var addressForSheet = clean(data.address, 200);
 
     // Fallback: if no coordinates but an address was typed manually (GPS
     // was unavailable/denied on the visitor's device), geocode it here
@@ -80,7 +100,7 @@ function doPost(e) {
         // result ("Street, City, State Zip"), so the sheet stays consistent
         // no matter how loosely the address was entered (e.g. "Ashland").
         if (result.results[0].formatted_address) {
-          addressForSheet = result.results[0].formatted_address;
+          addressForSheet = clean(result.results[0].formatted_address, 200);
         }
       } else {
         geocodeFailed = true;
@@ -94,19 +114,19 @@ function doPost(e) {
 
     var c;
     if ((c = col("Timestamp")) > 0)        row[c - 1] = new Date();
-    if ((c = col("Name", "Farm Name", "Farm/Vendor Name")) > 0) row[c - 1] = data.name || "";
+    if ((c = col("Name", "Farm Name", "Farm/Vendor Name")) > 0) row[c - 1] = clean(data.name, 120);
     if ((c = col("Address")) > 0)          row[c - 1] = addressForSheet;
-    if ((c = col("Category", "Goods Sold", "Good Sold")) > 0) row[c - 1] = data.category || "";
+    if ((c = col("Category", "Goods Sold", "Good Sold")) > 0) row[c - 1] = clean(data.category, 200);
     if ((c = col("Description")) > 0) {
       row[c - 1] = geocodeFailed
-        ? "⚠️ NEEDS ADDRESS FIX — automatic lookup couldn't find this address. " + (data.description || "")
-        : (data.description || "");
+        ? "⚠️ NEEDS ADDRESS FIX — automatic lookup couldn't find this address. " + clean(data.description, 1000)
+        : clean(data.description, 1000);
     }
-    if ((c = col("Website", "Website or Social Link", "Link", "Social Link")) > 0) row[c - 1] = data.website || "";
-    if ((c = col("Days", "Days Available")) > 0)   row[c - 1] = data.days || "";
-    if ((c = col("Open", "Open Time")) > 0)        row[c - 1] = data.openTime || "";
-    if ((c = col("Close", "Close Time")) > 0)      row[c - 1] = data.closeTime || "";
-    if ((c = col("Hours", "Hours or Dates Available")) > 0) row[c - 1] = data.hours || ""; // legacy fallback field
+    if ((c = col("Website", "Website or Social Link", "Link", "Social Link")) > 0) row[c - 1] = clean(data.website, 300);
+    if ((c = col("Days", "Days Available")) > 0)   row[c - 1] = clean(data.days, 80);
+    if ((c = col("Open", "Open Time")) > 0)        row[c - 1] = clean(data.openTime, 20);
+    if ((c = col("Close", "Close Time")) > 0)      row[c - 1] = clean(data.closeTime, 20);
+    if ((c = col("Hours", "Hours or Dates Available")) > 0) row[c - 1] = clean(data.hours, 300); // legacy fallback field
     if ((c = col("Lat")) > 0)              row[c - 1] = lat;
     if ((c = col("Lng")) > 0)              row[c - 1] = lng;
     if ((c = col("Approved")) > 0)         row[c - 1] = "FALSE";

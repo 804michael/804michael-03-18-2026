@@ -1,13 +1,13 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_22-05-0057                            ║
+  ║  SITE VERSION: 26.09.11_23-50-0058                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,        ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on   ║
   ║  every single write to this file. There is no separate       ║
   ║  counter file — the next session reads the LAST revision     ║
   ║  number off this file itself (any of the 3 spots below)      ║
   ║  and increments it by 1.                                     ║
-  ║  Displayed with a lowercase "v", e.g. v26.09.11_22-05-0057   ║
+  ║  Displayed with a lowercase "v", e.g. v26.09.11_23-50-0058   ║
   ║                                                               ║
   ║  ⚠  AI ASSISTANT INSTRUCTIONS — PLEASE READ BEFORE EDITING   ║
   ║  Whenever you modify this file you MUST update the version    ║
@@ -383,7 +383,7 @@
   </div>
 
   <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: YY.MM.DD HH_MM" -->
-  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_22-05-0057</p>
+  <p id="site-version-display" style="text-align:center;font-size:.88rem;color:var(--gray-muted);letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif;margin:0 0 8px;font-weight:400">v26.09.11_23-50-0058</p>
   <footer>Map data © OpenStreetMap contributors · 804re.com<br/>804Michael | Malcolm Real Estate, Ashland, Virginia<br/><a href="/privacy" style="color:#555;text-decoration:underline">Privacy</a> &middot; <a href="/terms" style="color:#555;text-decoration:underline">Terms of Use</a> &middot; <a href="/accessibility" style="color:#555;text-decoration:underline">Accessibility</a> &middot; <a href="/fair-housing" style="color:#555;text-decoration:underline">Fair Housing</a></footer>
 </div>
 
@@ -508,13 +508,19 @@ function normCategories(raw){
 }
 
 function dirUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`; }
+// Escapes Sheet text before it goes into innerHTML, so a submission can never
+// carry markup or script onto the page (same helper as seasonal-map.html).
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 function normalizeUrl(url){
   if(!url) return '';
   let u = url.trim();
   if(!u) return '';
   if(u.startsWith('@')) u = 'instagram.com/' + u.slice(1); // best-effort guess for bare @handles
   if(!/^https?:\/\//i.test(u)) u = 'https://' + u;
-  return u;
+  // Only a well-formed http(s) address survives; anything else returns ''.
+  try{ const p = new URL(u); return /^https?:$/.test(p.protocol) ? p.href : ''; }catch(e){ return ''; }
 }
 // Normalizes inconsistent capitalization from manual typing (Form or GPS-fallback address entry)
 // so "123 main st, ashland VA" and "123 MAIN ST, ASHLAND VA" both display the same way.
@@ -615,7 +621,7 @@ function clearStatus(){ document.getElementById('statusBar').className = 'status
 // ⚠ AI MAINTENANCE RULE
 // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
 // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-const SITE_VERSION = '26.09.11_22-05-0057';
+const SITE_VERSION = '26.09.11_23-50-0058';
 (function(){ const el = document.getElementById('site-version-display'); if(el) el.textContent = 'v' + SITE_VERSION; })();
 
 const map = L.map('map', {scrollWheelZoom:false}).setView(MAP_CENTER, MAP_ZOOM);
@@ -659,7 +665,7 @@ function renderStands(stands){
     const c = categories[key] || categories.other;
     const btn = document.createElement('button');
     btn.className = 'chip'; btn.dataset.cat = key;
-    btn.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    btn.innerHTML = `<span class="dot" style="background:${c.color}"></span>${esc(c.label)}`;
     toolbar.appendChild(btn);
   });
 
@@ -703,9 +709,9 @@ function renderStands(stands){
 
 function popupHtml(s, catInfo){
   return `
-    <div class="popup-title"><a href="#card-${s.n}" class="popup-title-link" onclick="jumpToCard(${s.n}); return false;">${s.name}</a></div>
+    <div class="popup-title"><a href="#card-${s.n}" class="popup-title-link" onclick="jumpToCard(${s.n}); return false;">${esc(s.name)}</a></div>
     <div class="popup-addr">${formatAddr(s.addr)}</div>
-    ${s.hours ? `<div class="popup-hours">🕘 ${s.hours}</div>` : ''}
+    ${s.hours ? `<div class="popup-hours">🕘 ${esc(s.hours)}</div>` : ''}
     <div class="popup-dir-wrap"><a class="popup-dir" href="${dirUrl(s.lat,s.lng)}" target="_blank" rel="noopener">Get Directions →</a></div>
   `;
 }
@@ -722,23 +728,24 @@ function jumpToCard(n){
 function formatAddr(addr){
   if(!addr) return 'Location shared via GPS';
   const parts = addr.split(',').map(p=>p.trim()).filter(Boolean);
-  if(parts.length < 2) return addr;
+  if(parts.length < 2) return esc(addr);
   const street = parts[0];
   let rest = parts.slice(1).join(', ');
   rest = rest.replace(/\b(Virginia|VA)\b\.?/gi, '').replace(/\s{2,}/g, ' ').trim();
   rest = rest.replace(/,\s*,/g, ',').replace(/,\s*$/, '').replace(/^,\s*/, '').trim();
-  return `${street}<br>${rest}`;
+  return `${esc(street)}<br>${esc(rest)}`;
 }
 function cardHtml(s, catInfo){
-  const catLabels = (s.cats || [s.cat]).map(c => (categories[c] || categories.other).label).join(' · ');
+  const url = normalizeUrl(s.website);
+  const catLabels = (s.cats || [s.cat]).map(c => esc((categories[c] || categories.other).label)).join(' · ');
   return `
-    <div class="row"><span class="name">${s.name}</span></div>
+    <div class="row"><span class="name">${esc(s.name)}</span></div>
     <div class="cat">${catLabels}</div>
     <div class="addr">${formatAddr(s.addr)}</div>
-    ${s.hours ? `<div class="hours">🕘 ${s.hours}</div>` : ''}
+    ${s.hours ? `<div class="hours">🕘 ${esc(s.hours)}</div>` : ''}
     ${s.distance !== undefined ? `<div class="dist">📍 ${s.distance.toFixed(1)} mi ${s.distanceIsDriving ? 'driving' : ''} away</div>` : ''}
-    <div class="desc">${s.desc || ''}</div>
-    ${s.website ? `<div class="website"><a href="${normalizeUrl(s.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a></div>` : ''}
+    <div class="desc">${esc(s.desc)}</div>
+    ${url ? `<div class="website"><a href="${esc(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Visit Website</a></div>` : ''}
   `;
 }
 
