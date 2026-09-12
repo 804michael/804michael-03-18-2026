@@ -22,6 +22,10 @@
  *    the next digest instead of being lost.
  *  Fail-safe: if the digest triggers were never installed, digest forms are
  *  emailed immediately, so a skipped setup step can't strand a lead.
+ *  SUBJECTS start with a red "!" emoji: "Seller LEAD from 804re.com: ..." for
+ *  an immediate lead, "Lead digest from 804re.com: 3 new (...)" for a digest.
+ *  Every lead shows a Form row (which form) and a Page row (which page), plus
+ *  a "Reply to" link whose subject is safe for the client to see.
  *
  * SETUP (one time, about 15 minutes, signed in as 804re.com@gmail.com):
  *  1. Create a new Google Sheet named "804re.com Leads".
@@ -63,6 +67,7 @@
 
 var TO_EMAIL = 'michael@804michael.com';
 var SENDER_NAME = '804re.com';
+var ALERT = String.fromCharCode(0x2757);  // the red "!" emoji (U+2757) that starts every subject line
 var DIGEST_HOURS = [8, 12, 16, 20];  // local hours; every 3 hours would be [6, 9, 12, 15, 18, 21]
 var MAX_PER_HOUR = 30;               // immediate emails per hour; extras wait for the digest
 var HEADERS = ['Timestamp', 'Form', 'Name', 'Email', 'Phone', 'Details', 'Page', 'Emailed', 'Data'];
@@ -72,13 +77,17 @@ var HEADERS = ['Timestamp', 'Form', 'Name', 'Email', 'Phone', 'Details', 'Page',
 var FORMS = {
   contact: {
     title: 'Website Message', short: 'message', delivery: 'digest',
-    subject: function (f) { return 'Website message from ' + f.from_name; },
+    label: 'Message', formName: 'Message button (site menu, any page)',
+    replySubject: 'Your message to 804Michael',
+    detail: function (f) { return f.from_name; },
     rows: [['Name', 'from_name'], ['Email', 'from_email'], ['Phone', 'phone'],
            ['Message', 'message', 'long']]
   },
   seller: {
     title: 'New Seller Lead', short: 'seller', delivery: 'immediate',  // speed matters on listings
-    subject: function (f) { return 'New Seller Lead from ' + f.from_name + ' for ' + f.address + ', ' + f.city + ' (' + f.timeline + ')'; },
+    label: 'Seller', formName: 'Seller Intake form (804re.com/seller-intake)',
+    replySubject: 'Your home sale inquiry with 804Michael',
+    detail: function (f) { return f.from_name + ', ' + f.address + ', ' + f.city + ' (' + f.timeline + ')'; },
     rows: [['Name', 'from_name'], ['Preferred Contact', 'preferred_contact'], ['Best Time to Reach', 'preferred_time'],
            ['Email', 'from_email'], ['Phone', 'phone'],
            ['Street', 'address'], ['City', 'city'], ['State', 'state'], ['Zip', 'zip'],
@@ -87,7 +96,9 @@ var FORMS = {
   },
   buyer: {
     title: 'New Buyer Lead', short: 'buyer', delivery: 'digest',
-    subject: function (f) { return 'New Buyer Lead from ' + f.from_name + ' (' + f.budget + ', ' + f.timeline + ')'; },
+    label: 'Buyer', formName: 'Buyer Intake form (804re.com/buyer-intake)',
+    replySubject: 'Your home search with 804Michael',
+    detail: function (f) { return f.from_name + ' (' + f.budget + ', ' + f.timeline + ')'; },
     rows: [['Name', 'from_name'], ['Preferred Contact', 'preferred_contact'], ['Best Time to Reach', 'preferred_time'],
            ['Email', 'from_email'], ['Phone', 'phone'],
            ['Timeline', 'timeline'], ['Budget', 'budget'], ['Areas of Interest', 'areas'],
@@ -95,13 +106,17 @@ var FORMS = {
   },
   valuation: {
     title: 'New Home Value Request', short: 'home value', delivery: 'digest',
-    subject: function (f) { return 'New Home Value Request from ' + f.from_name + ' For ' + f.address; },
+    label: 'Home Value', formName: 'Home Value form',
+    replySubject: 'Your home value request with 804Michael',
+    detail: function (f) { return f.from_name + ', ' + f.address; },
     rows: [['Name', 'from_name'], ['Preferred Contact', 'preferred_contact'], ['Email', 'from_email'], ['Phone', 'phone'],
            ['Street', 'address'], ['City', 'city'], ['State', 'state'], ['Zip', 'zip'], ['Notes', 'notes', 'long']]
   },
   map: {
     title: 'Home Search Map', short: 'map', delivery: 'digest',
-    subject: function (f) { return 'Home Search Map from ' + f.from_name; },
+    label: 'Map', formName: 'Map Search share form (804re.com/map-search)',
+    replySubject: 'Your home search map',
+    detail: function (f) { return f.from_name; },
     rows: [['Name', 'from_name'], ['Email', 'from_email'], ['Map', 'map_url', 'link'], ['Their Note', 'message', 'long']]
   }
   // An immediate form with a second recipient looks like this (no page sends
@@ -109,7 +124,8 @@ var FORMS = {
   // , webinar: {
   //   title: 'Webinar Registration', short: 'webinar', delivery: 'immediate',
   //   alsoTo: ['partner@example.com'],
-  //   subject: function (f) { return 'Webinar registration: ' + f.from_name; },
+  //   label: 'Webinar', formName: 'Webinar signup page', replySubject: 'Your webinar registration',
+  //   detail: function (f) { return f.from_name; },
   //   rows: [['Name', 'from_name'], ['Email', 'from_email'], ['Phone', 'phone']]
   // }
 };
@@ -227,23 +243,42 @@ function leadTableHtml(form, f, page) {
     return '<tr><td valign="top"><b>' + esc(r[0]) + ':</b></td><td>' + v + '</td></tr>';
   }).join('');
   return '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">' +
+    '<tr><td><b>Form:</b></td><td>' + esc(form.formName || form.title) + '</td></tr>' +
     rowsHtml +
-    (page ? '<tr><td><b>Sent from page:</b></td><td><a href="' + esc(page) + '">' + esc(page) + '</a></td></tr>' : '') +
+    '<tr><td><b>Page:</b></td><td>' + (page ? '<a href="' + esc(page) + '">' + esc(page) + '</a>' : '(not recorded)') + '</td></tr>' +
     '</table>';
 }
 
 function leadPlain(form, f, page) {
-  return form.rows.map(function (r) { return r[0] + ': ' + (f[r[1]] === undefined ? '(not provided)' : f[r[1]]); }).join('\n') +
-         (page ? '\nSent from page: ' + page : '');
+  return 'Form: ' + (form.formName || form.title) + '\n' +
+         form.rows.map(function (r) { return r[0] + ': ' + (f[r[1]] === undefined ? '(not provided)' : f[r[1]]); }).join('\n') +
+         '\nPage: ' + (page || '(not recorded)');
+}
+
+// Subject of an immediate email, e.g.
+// "(red !) Seller LEAD from 804re.com: Jane Doe, 1 Main St, Ashland (1-3 months)".
+function leadSubject(form, f) {
+  var detail = form.detail ? form.detail(f) : f.from_name;
+  return (ALERT + ' ' + (form.label || form.title) + ' LEAD from 804re.com: ' + detail).slice(0, 200);
+}
+
+// "Reply to Jane" link with a subject the client can see. Hitting Reply on
+// the notification would show them "Re: ... LEAD from 804re.com" instead.
+function replyLinkHtml(form, f) {
+  if (!isEmail(f.from_email)) return '<p style="color:#666">No email given; use the phone number above.</p>';
+  return '<p><a href="mailto:' + encodeURIComponent(f.from_email) + '?subject=' +
+    encodeURIComponent(form.replySubject || 'Following up from 804Michael') + '">Reply to ' +
+    esc(f.from_name || f.from_email) + '</a></p>';
 }
 
 function sendLeadEmail(form, f, page) {
-  var html = '<p><strong>' + esc(form.title) + '</strong></p>' + leadTableHtml(form, f, page) +
-    '<p style="font-size:12px;color:#666">Reply to this email to answer ' + esc(f.from_name) + ' directly.</p>';
+  var html = '<p><strong>' + esc(form.title) + '</strong></p>' + leadTableHtml(form, f, page) + replyLinkHtml(form, f) +
+    '<p style="font-size:12px;color:#666">The link above answers ' + esc(f.from_name) + ' with a client-friendly ' +
+    'subject. Hitting Reply also reaches them, but they would see this subject line.</p>';
   var options = { htmlBody: html, name: SENDER_NAME };
   if (isEmail(f.from_email)) options.replyTo = f.from_email;
   var to = [TO_EMAIL].concat(form.alsoTo || []).join(',');
-  MailApp.sendEmail(to, form.subject(f).slice(0, 200), form.title + '\n\n' + leadPlain(form, f, page), options);
+  MailApp.sendEmail(to, leadSubject(form, f), form.title + '\n\n' + leadPlain(form, f, page), options);
 }
 
 // Emails every row whose Emailed column starts with "queued" as ONE message,
@@ -278,11 +313,7 @@ function sendDigest() {
       var when = Utilities.formatDate(new Date(values[r][cT]), tz, 'EEE MMM d, h:mm a');
       counts[form.short] = (counts[form.short] || 0) + 1;
 
-      var reply = isEmail(f.from_email)
-        ? '<p><a href="mailto:' + encodeURIComponent(f.from_email) + '?subject=' +
-          encodeURIComponent('Re: ' + (form.subject ? form.subject(f).slice(0, 150) : 'your message')) +
-          '">Reply to ' + esc(f.from_name || f.from_email) + '</a></p>'
-        : '<p style="color:#666">No email given; use the phone number above.</p>';
+      var reply = replyLinkHtml(form, f);
       htmlParts.push('<h3 style="font-family:Arial,sans-serif;margin:24px 0 8px">' + esc(form.title) +
         ' <span style="font-weight:normal;color:#666">&middot; ' + esc(when) + '</span></h3>' +
         leadTableHtml(form, f, page) + reply);
@@ -290,7 +321,7 @@ function sendDigest() {
     });
 
     var summary = Object.keys(counts).map(function (k) { return counts[k] + ' ' + k; }).join(', ');
-    var subject = '804re.com leads: ' + pending.length + ' new (' + summary + ')';
+    var subject = ALERT + ' Lead digest from 804re.com: ' + pending.length + ' new (' + summary + ')';
     var sheetUrl = SpreadsheetApp.getActiveSpreadsheet().getUrl();
     var html = '<p style="font-family:Arial,sans-serif"><strong>' + pending.length + ' new lead' +
       (pending.length === 1 ? '' : 's') + '</strong> since the last digest. ' +
