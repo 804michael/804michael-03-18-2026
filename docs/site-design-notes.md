@@ -1881,3 +1881,40 @@ parsed an undeclared `rawTour`. In an ES module that throws a ReferenceError, wh
 surrounding `try` swallowed, so no entry was ever stamped and the planner's mismatch guard
 never had anything to compare. Fixed to parse `raw`. Only feedback written from now on
 carries the stamp; older entries still read as unstamped and are trusted, as before.
+
+## Twenty-second pass - dev hub: Completed cards and card colours (2026-09-12)
+
+Found while porting the hub to the Malcolm Real Estate site (malcolmrealestate.com/dev).
+None of the three was visible on the live page yet: no card is marked Completed and no
+colour has survived a reload from another device.
+
+### Completed cards floated above the Completed rule
+
+The rule and the finished cards shared `.dev-grid`, which uses
+`grid-auto-flow: row dense` so an expanded card leaves no holes. Dense packing also
+backfills any later item into an earlier gap, so when the last row of live cards was not
+full, a Completed card was drawn in that gap, above the rule, even though the DOM order
+was right. Measured on the Malcolm copy: the card sat at top 945 with the rule at 1118.
+
+Fix: `#dev-grid-done`, a second grid under the rule. `reflowCompleted()` moves finished
+cards into it and moves a card back to the end of the main grid when it stops being
+finished. `cardById`, the order save/restore and the drag binding now look in
+`.dev-main .dev-card` (both grids). Dragging already used `dragEl.parentNode`, so a card
+reorders within whichever grid it is in; pointer capture stays on the main grid, which
+works for either because the listeners are on `document`.
+
+### A saved order pushed the Completed rule to the top
+
+`applyOrder()` appends every card to the grid in saved order. The rule is not a card, so
+it stayed where it was and every card landed after it. `applyOrder()` now calls
+`devReflowCompleted()` when it finishes.
+
+### The server stripped card colours and the Completed badge
+
+`functions/api/dev-cards.js` rebuilt each card from a fixed field list with no `color`,
+and `cleanBadgeKind` accepted `unlinked` and `review` but not `done`. So a colour picked
+on the page lived only in that browser's cache, and a Completed card came back from the
+server as In Progress on every other device. The live KV state confirmed it: no stored
+override had a colour field. Both are now accepted; colours are checked against the
+DEV_COLORS ids. Colours picked before this fix were never stored and have to be picked
+again.

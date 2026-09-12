@@ -18,8 +18,8 @@
 //
 // Shape stored under the single "cards-state" key:
 //   {
-//     overrides: { "<card-id>": { title, badge, badgeKind, desc, bullets[], href } },
-//     added:     [ { id, title, badge, badgeKind, desc, bullets[], href } ],
+//     overrides: { "<card-id>": { title, badge, badgeKind, color, desc, bullets[], href, created, edited } },
+//     added:     [ { id, ...same fields } ],
 //     hidden:    [ "<card-id>", ... ],
 //     deleted:   [ "<card-id>", ... ]
 //   }
@@ -66,10 +66,21 @@ function cleanId(v) {
 }
 
 function cleanBadgeKind(v) {
-  // Mirrors the three badge styles dev.html's CSS actually defines. Anything
-  // else would render as the default red pill with a dead class name, so it's
-  // normalised here rather than trusted.
-  return v === 'unlinked' || v === 'review' ? v : '';
+  // Mirrors the badge styles dev.html's CSS actually defines. Anything else
+  // would render as the default red pill with a dead class name, so it's
+  // normalised here rather than trusted. "done" was missing until 2026-09-12,
+  // so a card marked Completed came back from the server as In Progress.
+  return v === 'unlinked' || v === 'review' || v === 'done' ? v : '';
+}
+
+// Card head colours. Must match the ids in DEV_COLORS in dev.html ("" is the
+// default black head). Until 2026-09-12 cleanCardFields had no color field
+// at all, so every colour picked on the page was stripped on save and only
+// ever survived in that browser's localStorage cache.
+const COLOR_IDS = ['slate', 'red', 'rust', 'orange', 'amber', 'lime', 'green', 'teal', 'sky', 'blue', 'indigo', 'purple', 'pink', 'sand', 'paper'];
+
+function cleanColor(v) {
+  return COLOR_IDS.indexOf(v) > -1 ? v : '';
 }
 
 // Dates are stored as plain YYYY-MM-DD strings. Anything that is not exactly
@@ -86,6 +97,7 @@ function cleanCardFields(raw) {
     title: str(o.title, 120),
     badge: str(o.badge, 40),
     badgeKind: cleanBadgeKind(o.badgeKind),
+    color: cleanColor(o.color),
     desc: str(o.desc, MAX_STR),
     bullets: Array.isArray(o.bullets)
       ? o.bullets.map(function (b) { return str(b, 300); }).filter(Boolean).slice(0, MAX_BULLETS)

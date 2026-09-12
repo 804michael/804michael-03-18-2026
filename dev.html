@@ -1,6 +1,6 @@
 <!--
   ╔═══════════════════════════════════════════════════════════════╗
-  ║  SITE VERSION: 26.09.11_23-53-0081                            ║
+  ║  SITE VERSION: 26.09.12_00-14-0082                            ║
   ║  Format: YY.MM.DD_HH-MM-XXXX (date, underscore, time,         ║
   ║  hyphen, 4-digit revision number). XXXX increments by 1 on    ║
   ║  every single write to this file. There is no separate        ║
@@ -170,7 +170,12 @@
     .dev-badge.done{background:var(--green,#1a7a3c)}
     /* Full width of the grid, so finished work is separated by a real line
        rather than by hoping the reader notices the badge colour changed. */
-    .dev-done-bar{grid-column:1 / -1;display:flex;align-items:center;gap:12px;margin:18px 0 2px;color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.14em;text-transform:uppercase}
+    /* Completed cards moved to their own grid under this rule (2026-09-12).
+       Inside the one .dev-grid, grid-auto-flow:dense backfilled finished
+       cards into empty slots in the rows ABOVE the rule, so a Completed card
+       could sit among live work. A second grid has nothing to backfill. */
+    .dev-done-bar[hidden],.dev-grid[hidden]{display:none}
+    .dev-done-bar{display:flex;align-items:center;gap:12px;margin:26px 0 14px;color:var(--gray-muted);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.14em;text-transform:uppercase}
     .dev-done-bar::after{content:"";flex:1 1 auto;height:1.5px;background:var(--gray-mid)}
     /* Finished, not gone: still readable, just not competing with live work. */
     .dev-card.is-done{opacity:.72}
@@ -763,6 +768,9 @@
 
   </div>
 
+  <div class="dev-done-bar" id="dev-done-bar" hidden>Completed</div>
+  <div class="dev-grid dev-grid-done" id="dev-grid-done" hidden></div>
+
     </div>
 
     <aside class="dev-aside">
@@ -833,7 +841,7 @@
       </svg>
     </a>
     <!-- ⚠ AI: Update SITE_VERSION + top comment + this visible line every edit. Then start chat reply with: "📌 Version: vYY.MM.DD HH-MM" -->
-    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.11_23-53-0081</p>
+    <p id="site-version-display" style="font-size:.94rem;color:rgba(255,255,255,.4);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;font-weight:400">v26.09.12_00-14-0082</p>
     <p class="ft-copy">
       &copy; <span class="yr"></span> 804Michael | Michael Hottman Real Estate<br/>
       Internal staging page — not part of the public site navigation
@@ -844,7 +852,7 @@
 <script>
   // Whenever this file is edited, update SITE_VERSION and the top comment's SITE VERSION line.
   // In chat, begin the status reply with: "📌 Version: " + SITE_VERSION
-  const SITE_VERSION = '26.09.11_23-53-0081';
+  const SITE_VERSION = '26.09.12_00-14-0082';
   var _siteVersionEl = document.getElementById('site-version-display');
   if (_siteVersionEl) _siteVersionEl.textContent = 'v' + SITE_VERSION;
   document.querySelectorAll('.yr').forEach(el => el.textContent = new Date().getFullYear());
@@ -978,7 +986,8 @@
       hintEl.textContent = msg || '';
       hintEl.classList.toggle('bad', !!bad);
     }
-    function cardById(id){ return grid ? grid.querySelector('.dev-card[data-id="'+ (window.CSS && CSS.escape ? CSS.escape(id) : id) +'"]') : null; }
+    // Searches both grids: completed cards live in #dev-grid-done.
+    function cardById(id){ return document.querySelector('.dev-main .dev-card[data-id="'+ (window.CSS && CSS.escape ? CSS.escape(id) : id) +'"]'); }
 
     function readCard(el){
       var badge = el.querySelector('.dev-badge');
@@ -1210,21 +1219,20 @@
         var b = el.querySelector('.dev-badge');
         return !!b && b.classList.contains('done');
       }
+      // Finished cards move into #dev-grid-done under the Completed rule, and
+      // back to the end of the main grid if they stop being finished. Moving
+      // them in DOM order keeps a saved drag order intact.
       function reflowCompleted(){
-        var cards = [].slice.call(grid.querySelectorAll('.dev-card'));
-        var done = cards.filter(isDone);
-        cards.forEach(function(c){ c.classList.toggle('is-done', isDone(c)); });
+        var doneGrid = document.getElementById('dev-grid-done');
         var bar = document.getElementById('dev-done-bar');
-        if(!done.length){ if(bar) bar.remove(); return; }
-        if(!bar){
-          bar = document.createElement('div');
-          bar.id = 'dev-done-bar';
-          bar.className = 'dev-done-bar';
-          bar.textContent = 'Completed';
-        }
-        // Append in order: the bar, then every finished card after it.
-        grid.appendChild(bar);
-        done.forEach(function(c){ grid.appendChild(c); });
+        if(!doneGrid || !bar) return;
+        [].forEach.call(document.querySelectorAll('.dev-main .dev-card'), function(c){
+          var done = isDone(c);
+          c.classList.toggle('is-done', done);
+          if(done && c.parentNode !== doneGrid) doneGrid.appendChild(c);
+          else if(!done && c.parentNode === doneGrid) grid.appendChild(c);
+        });
+        bar.hidden = doneGrid.hidden = !doneGrid.children.length;
       }
       window.devReflowCompleted = reflowCompleted;
       if(!grid) return;
@@ -1251,7 +1259,7 @@
         if(cardById(d.id)) { writeCard(cardById(d.id), d); return; }
         grid.appendChild(buildCard(d));
       });
-      [].forEach.call(grid.querySelectorAll('.dev-card'), addEditButton);
+      [].forEach.call(document.querySelectorAll('.dev-main .dev-card'), addEditButton);
       reflowCompleted();
       renderHiddenBar();
     }
@@ -1547,9 +1555,12 @@
       ids.forEach(function(id){
         if(!id) return;   // the old dropline placeholder had no data-id and
                           // could get saved into the order as a null entry
-        var card = grid.querySelector('.dev-card[data-id="' + id + '"]');
+        var card = document.querySelector('.dev-main .dev-card[data-id="' + id + '"]');
         if(card) grid.appendChild(card);
       });
+      // Every card was just appended to the main grid, completed ones
+      // included; put those back under the Completed rule.
+      if(window.devReflowCompleted) window.devReflowCompleted();
     }
 
     // 1) Instant local restore so there's no flash of the default order
@@ -1571,7 +1582,7 @@
     });
 
     function saveOrder(){
-      var ids = Array.prototype.slice.call(grid.querySelectorAll('.dev-card'))
+      var ids = Array.prototype.slice.call(document.querySelectorAll('.dev-main .dev-card'))
         .map(function(c){ return c.getAttribute('data-id'); })
         .filter(Boolean);
       try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){}
@@ -1788,7 +1799,7 @@
       });
     }
     window.devBindCardDrag = bindCardDrag;
-    Array.prototype.slice.call(grid.querySelectorAll('.dev-card')).forEach(bindCardDrag);
+    Array.prototype.slice.call(document.querySelectorAll('.dev-main .dev-card')).forEach(bindCardDrag);
   })();
 
   // ── Notes & Ideas: quick-add notes from any browser, synced via
