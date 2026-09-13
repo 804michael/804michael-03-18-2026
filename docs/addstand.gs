@@ -47,11 +47,17 @@
  * FAILED ADDRESS LOOKUP: if a manually-typed address can't be geocoded,
  * the row is still saved (with blank Lat/Lng) but its Description cell
  * is prefixed with "⚠️ NEEDS ADDRESS FIX" so it's obvious during review,
- * and an email is sent to the script owner (you) right away so you don't
+ * and an email is sent to NOTIFY_EMAIL (michael@804michael.com, not the
+ * script's owner account) right away so you don't
  * have to go looking for it. Fix the address in the sheet, then either
  * re-run geocodeRow/geocodeMissingRows from the geocode script, or paste
  * coordinates in by hand.
  */
+
+// Where "needs an address fix" alerts go. A fixed address rather than
+// Session.getEffectiveUser(), so moving the script to the site's Google
+// account (804re.com@gmail.com) doesn't send alerts to an unwatched inbox.
+var NOTIFY_EMAIL = 'michael@804michael.com';
 
 // Text in, safe cell value out: trimmed, control characters removed,
 // capped, and never starting with a formula character.
@@ -138,7 +144,7 @@ function doPost(e) {
     if (geocodeFailed) {
       try {
         MailApp.sendEmail(
-          Session.getEffectiveUser().getEmail(),
+          NOTIFY_EMAIL,
           "Farmstand Trail: address needs manual fix — " + (data.name || "Unnamed stand"),
           "A new stand submission came in but the address couldn't be automatically located on the map:\n\n" +
           "Name: " + (data.name || "") + "\n" +

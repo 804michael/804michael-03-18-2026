@@ -56,6 +56,11 @@ function setupSheet() {
   sheet.setFrozenRows(1);
 }
 
+// Where "needs an address fix" alerts go. A fixed address rather than
+// Session.getEffectiveUser(), because this script lives in the site's Google
+// account (804re.com@gmail.com), whose inbox nobody watches.
+var NOTIFY_EMAIL = 'michael@804michael.com';
+
 // Text in, safe cell value out: trimmed, control characters removed,
 // capped, and never starting with a formula character.
 function clean(v, max) {
@@ -125,7 +130,7 @@ function doPost(e) {
 
     if (geocodeFailed) {
       try {
-        MailApp.sendEmail(Session.getEffectiveUser().getEmail(),
+        MailApp.sendEmail(NOTIFY_EMAIL,
           'Seasonal map: address needs a fix (' + season + ')',
           'A submission came in whose address could not be placed on the map.\n\n' +
           'Address entered: ' + address + '\n\n' +
